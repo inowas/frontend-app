@@ -1,8 +1,8 @@
-import React, {ChangeEvent, useEffect, useState} from 'react';
 import {Form, Header, Input, Segment} from 'semantic-ui-react';
-import FlopyMt3dMtdsp, {IFlopyMt3dMtdsp} from '../../../../../../core/model/flopy/packages/mt/FlopyMt3dMtdsp';
 import {InfoPopup} from '../../../../../shared';
 import {documentation} from '../../../../defaults/transport';
+import FlopyMt3dMtdsp, {IFlopyMt3dMtdsp} from '../../../../../../core/model/flopy/packages/mt/FlopyMt3dMtdsp';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 
 interface IProps {
     mtPackage: FlopyMt3dMtdsp;

@@ -1,8 +1,7 @@
-import React from 'react';
-import {Map} from 'react-leaflet';
-// @ts-ignore
-import Control from 'react-leaflet-control';
 import {Icon} from 'semantic-ui-react';
+import {Map} from 'react-leaflet';
+import Control from 'react-leaflet-control';
+import React from 'react';
 
 const styles = {
     button: {

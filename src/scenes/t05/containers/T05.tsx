@@ -1,17 +1,3 @@
-import {includes} from 'lodash';
-import React, {MouseEvent, useEffect, useState} from 'react';
-import {RouteComponentProps, withRouter} from 'react-router-dom';
-import {Dimmer, Divider, Grid, Icon, Loader, MenuItemProps, Segment} from 'semantic-ui-react';
-import {MCDA} from '../../../core/model/mcda';
-import {WeightAssignment} from '../../../core/model/mcda/criteria';
-import Criterion from '../../../core/model/mcda/criteria/Criterion';
-import {fetchTool, sendCommand} from '../../../services/api';
-import {RainbowOrLegend} from '../../../services/rainbowvis/types';
-import AppContainer from '../../shared/AppContainer';
-import ContentToolBar from '../../shared/ContentToolbar';
-import Command from '../../shared/simpleTools/commands/command';
-import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
 import {
     CriteriaDataEditor,
     CriteriaEditor,
@@ -21,9 +7,23 @@ import {
     ToolNavigation,
     WeightAssignmentEditor
 } from '../components';
+import {Dimmer, Divider, Grid, Icon, Loader, MenuItemProps, Segment} from 'semantic-ui-react';
+import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
+import {MCDA} from '../../../core/model/mcda';
+import {RainbowOrLegend} from '../../../services/rainbowvis/types';
+import {RouteComponentProps, withRouter} from 'react-router-dom';
+import {WeightAssignment} from '../../../core/model/mcda/criteria';
+import {fetchTool, sendCommand} from '../../../services/api';
 import {getMenuItems} from '../defaults';
 import {heatMapColors} from '../defaults/gis';
+import {includes} from 'lodash';
 import {updater} from '../updaters/mcda';
+import AppContainer from '../../shared/AppContainer';
+import Command from '../../shared/simpleTools/commands/command';
+import ContentToolBar from '../../shared/ContentToolbar';
+import Criterion from '../../../core/model/mcda/criteria/Criterion';
+import React, {MouseEvent, useEffect, useState} from 'react';
+import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 
 const navigation = [{
     name: 'Documentation',

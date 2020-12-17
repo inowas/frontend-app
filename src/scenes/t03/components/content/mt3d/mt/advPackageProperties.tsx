@@ -1,4 +1,3 @@
-import React, {ChangeEvent, MouseEvent, SyntheticEvent, useEffect, useState} from 'react';
 import {
     Accordion,
     AccordionTitleProps,
@@ -11,9 +10,10 @@ import {
     Segment,
     Select
 } from 'semantic-ui-react';
+import {documentation} from '../../../../defaults/transport';
 import FlopyMt3dMtadv, {IFlopyMt3dMtAdv} from '../../../../../../core/model/flopy/packages/mt/FlopyMt3dMtadv';
 import InfoPopup from '../../../../../shared/InfoPopup';
-import {documentation} from '../../../../defaults/transport';
+import React, {ChangeEvent, MouseEvent, SyntheticEvent, useEffect, useState} from 'react';
 
 interface IProps {
     mtPackage: FlopyMt3dMtadv;

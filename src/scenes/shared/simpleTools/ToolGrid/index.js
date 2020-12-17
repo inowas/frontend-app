@@ -1,6 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import {Grid, Segment} from 'semantic-ui-react';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 class ToolGrid extends React.Component {
 

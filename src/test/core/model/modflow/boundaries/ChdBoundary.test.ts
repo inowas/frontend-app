@@ -1,11 +1,11 @@
-import {LineString, Point} from 'geojson';
-import Uuid from 'uuid';
-import {Geometry} from '../../../../../core/model/geometry';
-import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {Cells} from '../../../../../core/model/modflow';
 import {ConstantHeadBoundary} from '../../../../../core/model/modflow/boundaries';
+import {Geometry} from '../../../../../core/model/geometry';
+import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
+import {LineString, Point} from 'geojson';
 import {validate} from '../../../../../services/jsonSchemaValidator';
+import Uuid from 'uuid';
 
 const createConstantHeadBoundary = () => {
     const id = Uuid.v4();

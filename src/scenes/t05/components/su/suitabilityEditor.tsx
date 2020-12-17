@@ -1,11 +1,11 @@
-import React, {MouseEvent, useEffect, useState} from 'react';
-import {RouteComponentProps, withRouter} from 'react-router-dom';
-import {Step, StepProps} from 'semantic-ui-react';
-import {MCDA} from '../../../../core/model/mcda';
-import RasterLayer from '../../../../core/model/mcda/gis/RasterLayer';
 import {IMCDA} from '../../../../core/model/mcda/MCDA.type';
 import {ITask, retrieveRasters} from '../../../../services/api/rasterHelper';
+import {MCDA} from '../../../../core/model/mcda';
+import {RouteComponentProps, withRouter} from 'react-router-dom';
+import {Step, StepProps} from 'semantic-ui-react';
 import {usePrevious} from '../../../shared/simpleTools/helpers/customHooks';
+import RasterLayer from '../../../../core/model/mcda/gis/RasterLayer';
+import React, {MouseEvent, useEffect, useState} from 'react';
 import SuitabilityClasses from './suitabilityClasses';
 import SuitabilityResults from './suitabilityResults';
 import SuitabilityWeightAssignment from './suitabilityWA';

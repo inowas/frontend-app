@@ -1,9 +1,9 @@
-import React, {ChangeEvent} from 'react';
-import {Button, Form, Modal} from 'semantic-ui-react';
-import {ModflowModel} from '../../../../../core/model/modflow';
 import {Boundary, LineBoundary, ObservationPoint} from '../../../../../core/model/modflow/boundaries';
+import {Button, Form, Modal} from 'semantic-ui-react';
 import {IObservationPoint} from '../../../../../core/model/modflow/boundaries/ObservationPoint.type';
+import {ModflowModel} from '../../../../../core/model/modflow';
 import ObservationPointMap from '../../maps/observationPointEditorMap';
+import React, {ChangeEvent} from 'react';
 
 interface IProps {
     model: ModflowModel;
@@ -27,7 +27,7 @@ class ObservationPointEditor extends React.Component<IProps, IState> {
         };
     }
 
-    public componentWillMount() {
+    public UNSAFE_componentWillMount() {
         const {boundary, observationPointId} = this.props;
         if (!observationPointId) {
             return null;
@@ -39,7 +39,7 @@ class ObservationPointEditor extends React.Component<IProps, IState> {
         }
     }
 
-    public componentWillReceiveProps(nextProps: IProps) {
+    public UNSAFE_componentWillReceiveProps(nextProps: IProps) {
         const {boundary, observationPointId} = nextProps;
         if (!observationPointId) {
             return null;

@@ -12,16 +12,14 @@ const initialState: () => any = () => ({});
 
 const models = (
     state: IModelsReducer = initialState(),
-    action: {type: string, payload: IModflowModel}
+    action: { type: string, payload: IModflowModel }
 ) => {
     switch (action.type) {
         case CLEAR:
             return initialState();
 
         case UPDATE_MODEL:
-            const id: string = action.payload.id;
-            const model = action.payload;
-            return {...state, [id]: model};
+            return {...state, [action.payload.id]: action.payload};
 
         case UNAUTHORIZED:
         case LOGOUT: {

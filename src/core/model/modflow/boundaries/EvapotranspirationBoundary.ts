@@ -1,18 +1,18 @@
-import {Polygon} from 'geojson';
-import {cloneDeep} from 'lodash';
-import Uuid from 'uuid';
-import BoundingBox from '../../geometry/BoundingBox';
-import {ICells} from '../../geometry/Cells.type';
-import GridSize from '../../geometry/GridSize';
 import {Cells, Geometry} from '../index';
-import Stressperiods from '../Stressperiods';
-import Boundary from './Boundary';
-import {ISpValues, IValueProperty} from './Boundary.type';
+import {ICells} from '../../geometry/Cells.type';
 import {
     IEvapotranspirationBoundary,
     IEvapotranspirationBoundaryExport,
     INevtop
 } from './EvapotranspirationBoundary.type';
+import {ISpValues, IValueProperty} from './Boundary.type';
+import {Polygon} from 'geojson';
+import {cloneDeep} from 'lodash';
+import Boundary from './Boundary';
+import BoundingBox from '../../geometry/BoundingBox';
+import GridSize from '../../geometry/GridSize';
+import Stressperiods from '../Stressperiods';
+import Uuid from 'uuid';
 
 export default class EvapotranspirationBoundary extends Boundary {
 

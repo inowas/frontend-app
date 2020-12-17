@@ -1,13 +1,13 @@
-import React, {useEffect} from 'react';
-import {connect, useDispatch, useSelector} from 'react-redux';
-import {RouteComponentProps, withRouter} from 'react-router';
-import {EMessageState} from '../../../core/model/messages/Message.type';
-import {Calculation, ModflowModel, Transport, VariableDensity} from '../../../core/model/modflow';
-import {IRootReducer} from '../../../reducers';
-import {ToolNavigation} from '../../shared/complexTools';
-import {removeMessage} from '../actions/actions';
 import {CALCULATION_STATE_CALCULATION_FINISHED} from '../components/content/calculation/CalculationProgress';
+import {Calculation, ModflowModel, Transport, VariableDensity} from '../../../core/model/modflow';
+import {EMessageState} from '../../../core/model/messages/Message.type';
 import {IMenu, menuItems} from '../defaults/menuItems';
+import {IRootReducer} from '../../../reducers';
+import {RouteComponentProps, withRouter} from 'react-router';
+import {ToolNavigation} from '../../shared/complexTools';
+import {connect, useDispatch, useSelector} from 'react-redux';
+import {removeMessage} from '../actions/actions';
+import React, {useEffect} from 'react';
 
 interface IStateProps {
     calculation: Calculation | null;

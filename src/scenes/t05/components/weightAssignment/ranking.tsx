@@ -1,14 +1,14 @@
-import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
-import {pure} from 'recompose';
 import {DropdownProps, Form, Grid, InputOnChangeData, Message, Segment, Table} from 'semantic-ui-react';
-import {WeightAssignment, WeightsCollection} from '../../../../core/model/mcda/criteria';
 import {IWeight} from '../../../../core/model/mcda/criteria/Weight.type';
 import {
     IWeightAssignment,
     WARankingSubMethod,
     WeightAssignmentIndex
 } from '../../../../core/model/mcda/criteria/WeightAssignment.type';
+import {WeightAssignment, WeightsCollection} from '../../../../core/model/mcda/criteria';
+import {pure} from 'recompose';
 import DragAndDropList from '../shared/dragAndDropList';
+import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 
 interface IProps {
     handleChange: (wa: WeightAssignment) => any;

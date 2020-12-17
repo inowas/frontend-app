@@ -1,6 +1,6 @@
-import React from 'react';
-import {Form, Grid, Radio, Header, Segment} from 'semantic-ui-react';
+import {Form, Grid, Header, Radio, Segment} from 'semantic-ui-react';
 import {IT02} from '../defaults';
+import React from 'react';
 
 interface IProps {
     settings: IT02['data']['settings'],

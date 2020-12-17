@@ -1,5 +1,5 @@
-import React, {ChangeEvent, useState} from 'react';
 import {Checkbox, Form, Grid, Header, Input, PopupProps} from 'semantic-ui-react';
+import React, {ChangeEvent, useState} from 'react';
 
 import {FlopyModflowMfsip} from '../../../../../../core/model/flopy/packages/mf';
 import {IFlopyModflowMfsip} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfsip';

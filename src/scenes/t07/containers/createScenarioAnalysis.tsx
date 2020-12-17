@@ -1,14 +1,14 @@
-import React from 'react';
-import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {Breadcrumb, Button, Checkbox, Form, Grid, Icon, Segment} from 'semantic-ui-react';
-import Uuid from 'uuid';
-import {ModflowModel} from '../../../core/model/modflow';
-import BoundaryCollection from '../../../core/model/modflow/boundaries/BoundaryCollection';
 import {IMetaData, IPropertyValueObject} from '../../../core/model/types';
+import {ModelMap} from '../../t03/components/maps';
+import {ModflowModel} from '../../../core/model/modflow';
+import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {fetchUrl, sendCommand} from '../../../services/api';
 import AppContainer from '../../shared/AppContainer';
-import {ModelMap} from '../../t03/components/maps';
+import BoundaryCollection from '../../../core/model/modflow/boundaries/BoundaryCollection';
+import React from 'react';
 import ScenarioAnalysisCommand from '../commands/scenarioAnalysisCommand';
+import Uuid from 'uuid';
 
 interface IState extends IPropertyValueObject {
     fetchingModels: boolean;
@@ -23,9 +23,7 @@ interface IState extends IPropertyValueObject {
     public: boolean;
 }
 
-// tslint:disable-next-line:no-empty-interface
-interface IProps extends RouteComponentProps {
-}
+type IProps = RouteComponentProps
 
 const navigation = [
     {
@@ -234,5 +232,6 @@ class CreateScenarioAnalysis extends React.Component<IProps, IState> {
     };
 }
 
-// @ts-ignore todo
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 export default withRouter<IProps>(CreateScenarioAnalysis);

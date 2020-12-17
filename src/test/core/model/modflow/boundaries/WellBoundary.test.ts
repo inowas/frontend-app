@@ -1,10 +1,10 @@
-import {Point} from 'geojson';
-import Uuid from 'uuid';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
+import {JSON_SCHEMA_URL} from '../../../../../services/api';
+import {Point} from 'geojson';
 import {Stressperiods} from '../../../../../core/model/modflow';
 import {WellBoundary} from '../../../../../core/model/modflow/boundaries';
-import {JSON_SCHEMA_URL} from '../../../../../services/api';
 import {validate} from '../../../../../services/jsonSchemaValidator';
+import Uuid from 'uuid';
 
 const createWellBoundary = () => {
     const id = Uuid.v4();

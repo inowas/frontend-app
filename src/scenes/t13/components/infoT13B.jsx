@@ -1,10 +1,10 @@
-import React from 'react';
+import {Icon, Message} from 'semantic-ui-react';
+import {SETTINGS_SELECTED_H0, SETTINGS_SELECTED_HL, SETTINGS_SELECTED_NOTHING} from '../defaults/T13B';
+import {calculateTravelTimeT13B, calculateXwd} from '../calculations';
+import {getParameterValues} from '../../shared/simpleTools/helpers';
 import {pure} from 'recompose';
 import PropTypes from 'prop-types';
-import {Icon, Message} from 'semantic-ui-react';
-import {getParameterValues} from '../../shared/simpleTools/helpers';
-import {calculateTravelTimeT13B, calculateXwd} from '../calculations';
-import {SETTINGS_SELECTED_H0, SETTINGS_SELECTED_HL, SETTINGS_SELECTED_NOTHING} from '../defaults/T13B';
+import React from 'react';
 
 const Info = ({parameters, settings}) => {
     const {W, K, L, hL, h0, ne, xi, xe} = getParameterValues(parameters);

@@ -1,13 +1,13 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {Grid, Button, Progress, Segment, List, Popup, Modal, Tab, Dimmer, Loader} from 'semantic-ui-react';
+import {Button, Dimmer, Grid, List, Loader, Modal, Popup, Progress, Segment, Tab} from 'semantic-ui-react';
+import {FitnessChart, LocalOptimizationModal, OptimizationSolutionModal} from './shared';
 import {
     OPTIMIZATION_STATE_CANCELLED,
     optimizationHasError,
     optimizationInProgress
 } from '../../../defaults/optimization';
 import {Optimization, OptimizationInput, OptimizationObject, OptimizationSolution} from '../../../../../core/model/modflow/optimization';
-import {FitnessChart, LocalOptimizationModal, OptimizationSolutionModal} from './shared';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 class OptimizationResultsComponent extends React.Component {
 
@@ -23,7 +23,8 @@ class OptimizationResultsComponent extends React.Component {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    UNSAFE_componentWillReceiveProps(nextProps, nextContext) {
         let newActiveIndex = this.state.activeIndex;
 
         if (this.props.optimization.methods.length !== nextProps.optimization.methods.length) {
@@ -177,7 +178,7 @@ class OptimizationResultsComponent extends React.Component {
                 }
             </Tab.Pane>
         );
-    };
+    }
 
     render() {
         const {activeIndex, createdBoundaries, localOptimization, optimization, selectedSolution} = this.state;

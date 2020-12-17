@@ -1,7 +1,7 @@
-import {ModflowModel} from '../../index';
-import {ZonesCollection} from '../index';
 import {ISoilmodel, ISoilmodel1v0, ISoilmodel2v0} from '../Soilmodel.type';
+import {ModflowModel} from '../../index';
 import {SoilmodelTypes} from './defaults';
+import {ZonesCollection} from '../index';
 import {fixDefaultZone, fixLayerParameters, fixMissingRelations, update1v0to2v1, update2v0to2v1} from './index';
 
 /**

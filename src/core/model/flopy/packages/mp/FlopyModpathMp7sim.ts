@@ -1,10 +1,10 @@
-import FlopyModpathMp7 from './FlopyModpathMp7';
-import FlopyModpathMp7particlegroup from './FlopyModpathMp7particlegroup';
-import FlopyModpathPackage from './FlopyModpathPackage';
 import {
     BudgetOutOptionType, OnOffType, SimulationType, StopTimeOptionType,
     TrackingDirectionType, WeakSinkSourceOptionType
 } from './types';
+import FlopyModpathMp7 from './FlopyModpathMp7';
+import FlopyModpathMp7particlegroup from './FlopyModpathMp7particlegroup';
+import FlopyModpathPackage from './FlopyModpathPackage';
 
 export default class FlopyModpathMp7sim extends FlopyModpathPackage {
     private _model: FlopyModpathMp7 | null = null;
@@ -31,7 +31,7 @@ export default class FlopyModpathMp7sim extends FlopyModpathPackage {
     private _retardationfactoroption: OnOffType = 'on';
     private _retardation: number | number[] = 1;
     private _particlegroups: FlopyModpathMp7particlegroup | FlopyModpathMp7particlegroup[] | null = null;
-    private _extension: string = 'mpsim';
+    private _extension = 'mpsim';
 
     get model(): FlopyModpathMp7 | null {
         return this._model;

@@ -1,9 +1,9 @@
 import {BoundaryCollection, HeadObservationWell} from '../../../modflow/boundaries';
-import Stressperiods from '../../../modflow/Stressperiods';
 import {IPropertyValueObject} from '../../../types';
 import {calculateHeadObservationData} from '../../helpers';
 import FlopyModflowBoundary from './FlopyModflowBoundary';
 import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
+import Stressperiods from '../../../modflow/Stressperiods';
 
 export interface IFlopyModflowMfhob {
     iuhobsv: number;

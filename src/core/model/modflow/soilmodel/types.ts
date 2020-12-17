@@ -1,5 +1,5 @@
-import {IDataDropperData} from '../../../../services/dataDropper/DataDropper.type';
 import {Array2D} from '../../geometry/Array2D.type';
+import {IDataDropperData} from '../../../../services/dataDropper/DataDropper.type';
 
 export type ZonesOrderChange = 'up' | 'down';
 

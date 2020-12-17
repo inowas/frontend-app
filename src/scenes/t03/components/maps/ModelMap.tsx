@@ -1,17 +1,17 @@
 import * as GeoJson from 'geojson';
-import {LatLngExpression} from 'leaflet';
-import {uniqueId} from 'lodash';
-import md5 from 'md5';
-import React from 'react';
+import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
+import {Boundary, BoundaryCollection, WellBoundary} from '../../../../core/model/modflow/boundaries';
+import {Cells, Geometry} from '../../../../core/model/modflow';
 import {CircleMarker, GeoJSON, Map, Polygon, Polyline} from 'react-leaflet';
+import {LatLngExpression} from 'leaflet';
+import {getStyle} from '../../../../services/geoTools/mapHelpers';
+import {renderAreaLayer} from './mapLayers';
+import {uniqueId} from 'lodash';
+import AffectedCellsLayer from '../../../../services/geoTools/affectedCellsLayer';
 import BoundingBox from '../../../../core/model/geometry/BoundingBox';
 import GridSize from '../../../../core/model/geometry/GridSize';
-import {Cells, Geometry} from '../../../../core/model/modflow';
-import {Boundary, BoundaryCollection, WellBoundary} from '../../../../core/model/modflow/boundaries';
-import AffectedCellsLayer from '../../../../services/geoTools/affectedCellsLayer';
-import {getStyle} from '../../../../services/geoTools/mapHelpers';
-import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
-import {renderAreaLayer} from './mapLayers';
+import React from 'react';
+import md5 from 'md5';
 
 export interface IProps {
     geometry: Geometry;

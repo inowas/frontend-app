@@ -1,7 +1,7 @@
-import React, {FormEvent, SyntheticEvent, useState} from 'react';
 import {CheckboxProps, Message, Radio, Segment, Table} from 'semantic-ui-react';
 import {MCDA} from '../../../../core/model/mcda';
 import {WeightsCollection} from '../../../../core/model/mcda/criteria';
+import React, {FormEvent, SyntheticEvent, useState} from 'react';
 
 const styles = {
     noMargin: {
@@ -78,8 +78,8 @@ const WeightAssignmentTable = (props: IProps) => {
                 <Message.Header>Suitability</Message.Header>
                 {mcda.withAhp ?
                     <p>Select a weight assignment method for each criteria set: the main criteria and each group of
-                        sub criteria. Click on the 'Start Calculation' button afterwards.</p> :
-                    <p>Select the desired assignment method and click on the 'Start Calculation' button
+                        sub criteria. Click on the &apos;Start Calculation&apos; button afterwards.</p> :
+                    <p>Select the desired assignment method and click on the &apos;Start Calculation&apos; button
                         afterwards.</p>
                 }
             </Message>

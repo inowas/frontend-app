@@ -1,6 +1,6 @@
-import React from 'react';
 import {Form, Input} from 'semantic-ui-react';
 import FlopySeawatSwt from '../../../../../../core/model/flopy/packages/swt/FlopySeawatSwt';
+import React from 'react';
 
 interface IProps {
     swtPackage: FlopySeawatSwt;

@@ -1,5 +1,5 @@
-import {LengthUnit} from '../../../../core/model/modflow';
 import {ILengthUnit} from '../../../../core/model/modflow/LengthUnit.type';
+import {LengthUnit} from '../../../../core/model/modflow';
 
 test('LengthUnit static feet', () => {
     const lengthUnit = LengthUnit.feet();

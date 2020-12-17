@@ -1,5 +1,3 @@
-import React, {SyntheticEvent, useEffect, useState} from 'react';
-import {RouteComponentProps, withRouter} from 'react-router';
 import {
     Button,
     Checkbox,
@@ -8,14 +6,16 @@ import {
     List,
     Segment
 } from 'semantic-ui-react';
-import uuidv4 from 'uuid';
 import {GridSize} from '../../../core/model/geometry';
 import {IGridSize} from '../../../core/model/geometry/GridSize.type';
+import {IToolMetaData} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
 import {MCDA} from '../../../core/model/mcda';
+import {RouteComponentProps, withRouter} from 'react-router';
 import {sendCommand} from '../../../services/api';
 import AppContainer from '../../shared/AppContainer';
 import Command from '../../shared/simpleTools/commands/command';
-import {IToolMetaData} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
+import React, {SyntheticEvent, useEffect, useState} from 'react';
+import uuidv4 from 'uuid';
 
 const navigation = [{
     name: 'Documentation',

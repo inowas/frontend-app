@@ -1,10 +1,10 @@
-import React, {SyntheticEvent} from 'react';
 import {DropdownProps, Form, Header, Select} from 'semantic-ui-react';
 import {FlopyModflowMf} from '../../../../../../core/model/flopy/packages/mf';
-import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
-import renderInfoPopup from '../../../../../shared/complexTools/InfoPopup';
 import {PopupPosition} from '../../../../../types';
 import {documentation} from '../../../../defaults/flow';
+import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
+import React, {SyntheticEvent} from 'react';
+import renderInfoPopup from '../../../../../shared/complexTools/InfoPopup';
 
 interface IProps {
     mfPackage: FlopyModflowMf;

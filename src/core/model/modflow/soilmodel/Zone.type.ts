@@ -1,5 +1,5 @@
-import {ICell, ICells} from '../../geometry/Cells.type';
 import {GeoJson} from '../../geometry/Geometry.type';
+import {ICell, ICells} from '../../geometry/Cells.type';
 import {IRasterParameterLegacy} from './RasterParameter.type';
 
 export interface IZone {

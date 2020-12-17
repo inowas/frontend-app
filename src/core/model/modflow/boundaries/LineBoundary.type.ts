@@ -1,7 +1,7 @@
-import {LineString} from 'geojson';
-import {ICells} from '../../geometry/Cells.type';
 import {IBoundaryFeature} from './Boundary.type';
+import {ICells} from '../../geometry/Cells.type';
 import {IObservationPoint, IObservationPointExport} from './ObservationPoint.type';
+import {LineString} from 'geojson';
 
 export type LineBoundaryType = 'chd' | 'fhb' | 'ghb' | 'riv' | 'drn' | 'hfb' | 'str';
 

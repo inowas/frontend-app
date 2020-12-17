@@ -1,12 +1,12 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import {Button, Form, Grid, Icon, Message, Segment, Table} from 'semantic-ui-react';
-import Slider from 'rc-slider';
-import {createSliderWithTooltip} from 'rc-slider';
-import {OptimizationLocation, OptimizationInput, OptimizationObjective} from '../../../../../core/model/modflow/optimization';
-import {OptimizationMap} from './shared';
 import {ModflowModel} from '../../../../../core/model/modflow';
+import {OptimizationInput, OptimizationLocation, OptimizationObjective} from '../../../../../core/model/modflow/optimization';
+import {OptimizationMap} from './shared';
+import {createSliderWithTooltip} from 'rc-slider';
 import ContentToolBar from '../../../../shared/ContentToolbar';
+import PropTypes from 'prop-types';
+import React from 'react';
+import Slider from 'rc-slider';
 
 const Range = createSliderWithTooltip(Slider.Range);
 
@@ -29,7 +29,7 @@ class OptimizationObjectivesComponent extends React.Component {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         this.setState({
             optimizationInput: nextProps.optimizationInput.toObject()
         });
@@ -45,7 +45,7 @@ class OptimizationObjectivesComponent extends React.Component {
         this.props.onChange(input, true);
     };
 
-    handleClickNew = (e, {name, value}) => {
+    handleClickNew = (e, {value}) => {
         const newObjective = new OptimizationObjective();
         newObjective.type = value;
         newObjective.location.ts.max = this.props.model.stressperiods.count - 1;

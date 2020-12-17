@@ -1,12 +1,12 @@
-import {cloneDeep, isEqual, sortBy} from 'lodash';
-import md5 from 'md5';
-import simpleDiff from '../../../../services/diffTools/simpleDiff';
+import {Boundary, BoundaryFactory} from './index';
+import {BoundaryType, IBoundary, IBoundaryExport} from './Boundary.type';
 import {Collection} from '../../collection/Collection';
+import {cloneDeep, isEqual, sortBy} from 'lodash';
 import BoundingBox from '../../geometry/BoundingBox';
 import GridSize from '../../geometry/GridSize';
 import Stressperiods from '../Stressperiods';
-import {BoundaryType, IBoundary, IBoundaryExport} from './Boundary.type';
-import {Boundary, BoundaryFactory} from './index';
+import md5 from 'md5';
+import simpleDiff from '../../../../services/diffTools/simpleDiff';
 
 export interface IBoundaryComparisonItem {
     id: string;

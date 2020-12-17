@@ -1,7 +1,7 @@
-import {cloneDeep} from 'lodash';
-import uuidv4 from 'uuid/v4';
-import CriteriaRelation from './CriteriaRelation';
 import {IWeight} from './Weight.type';
+import {cloneDeep} from 'lodash';
+import CriteriaRelation from './CriteriaRelation';
+import uuidv4 from 'uuid/v4';
 
 class Weight {
 

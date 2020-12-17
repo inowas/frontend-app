@@ -1,8 +1,8 @@
-import Slider from 'rc-slider';
-import React, {ChangeEvent, useState} from 'react';
-import {Form, Grid, InputOnChangeData, Message, Segment, Table} from 'semantic-ui-react';
 import {CriteriaCollection, WeightAssignment, WeightsCollection} from '../../../../core/model/mcda/criteria';
+import {Form, Grid, InputOnChangeData, Message, Segment, Table} from 'semantic-ui-react';
 import {IWeightAssignment} from '../../../../core/model/mcda/criteria/WeightAssignment.type';
+import React, {ChangeEvent, useState} from 'react';
+import Slider from 'rc-slider';
 
 interface IProps {
     criteriaCollection: CriteriaCollection;
@@ -32,6 +32,7 @@ interface IRelation {
     value: number;
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 const SliderWithTooltip = Slider.createSliderWithTooltip(Slider);
 
@@ -44,7 +45,7 @@ const fromSliderValue = (value: number) => {
 
 const toSliderValue = (value: number) => {
     if (value >= 1) {
-        return -1 * value + 1;
+        return (-1 * value) + 1;
     }
     return Math.pow(value, -1) - 1;
 };

@@ -1,8 +1,4 @@
-import {ValidationError} from 'ajv';
-import React, {ChangeEvent, useState} from 'react';
-import {RouteComponentProps, withRouter} from 'react-router-dom';
-import {Button, Dimmer, Grid, Header, List, Loader, Modal, Segment} from 'semantic-ui-react';
-import Uuid from 'uuid';
+import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 import {
     BoundingBox,
     Cells,
@@ -11,17 +7,21 @@ import {
     Soilmodel,
     Stressperiods
 } from '../../../core/model/modflow';
-import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
+import {Button, Dimmer, Grid, Header, List, Loader, Modal, Segment} from 'semantic-ui-react';
+import {CoordinateSystemDisclaimer} from '../../shared/complexTools';
 import {IBoundary} from '../../../core/model/modflow/boundaries/Boundary.type';
-import ModflowModel from '../../../core/model/modflow/ModflowModel';
 import {IModflowModel} from '../../../core/model/modflow/ModflowModel.type';
 import {ISoilmodel} from '../../../core/model/modflow/soilmodel/Soilmodel.type';
 import {JSON_SCHEMA_URL, sendCommand} from '../../../services/api';
+import {RouteComponentProps, withRouter} from 'react-router-dom';
+import {ValidationError} from 'ajv';
 import {dxGeometry, dyGeometry} from '../../../services/geoTools/distance';
 import {validate} from '../../../services/jsonSchemaValidator';
-import {CoordinateSystemDisclaimer} from '../../shared/complexTools';
-import ModflowModelCommand from '../../t03/commands/modflowModelCommand';
 import ModelImportMap from './ModelImportMap';
+import ModflowModel from '../../../core/model/modflow/ModflowModel';
+import ModflowModelCommand from '../../t03/commands/modflowModelCommand';
+import React, {ChangeEvent, useState} from 'react';
+import Uuid from 'uuid';
 
 interface IPayload extends IModflowModel {
     boundaries: IBoundary[];

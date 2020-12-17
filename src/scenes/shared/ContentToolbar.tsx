@@ -1,6 +1,6 @@
-import React, {ReactChild, useEffect, useState} from 'react';
 import {Button, Dropdown, Grid, Icon, Message, Popup, Transition} from 'semantic-ui-react';
 import {usePrevious} from './simpleTools/helpers/customHooks';
+import React, {ReactChild, useEffect, useState} from 'react';
 
 interface IMessage {
     content: string;

@@ -20,12 +20,12 @@ ds7 =
 */
 
 import {FlowAndHeadBoundary} from '../../../modflow/boundaries';
-import BoundaryCollection from '../../../modflow/boundaries/BoundaryCollection';
-import Stressperiods from '../../../modflow/Stressperiods';
 import {IPropertyValueObject} from '../../../types';
 import {calculateFlowAndHeadBoundarySpData} from '../../helpers';
+import BoundaryCollection from '../../../modflow/boundaries/BoundaryCollection';
 import FlopyModflowBoundary from './FlopyModflowBoundary';
 import FlopyModflowPackage from './FlopyModflowPackage';
+import Stressperiods from '../../../modflow/Stressperiods';
 
 export interface IFlopyModflowMffhb {
     nbdtim: number;

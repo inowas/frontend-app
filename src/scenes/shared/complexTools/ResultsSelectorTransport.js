@@ -1,7 +1,7 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import {Form, Grid, Header, Segment} from 'semantic-ui-react';
 import {Soilmodel, Stressperiods, Transport} from '../../../core/model/modflow';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 import Moment from 'moment';
 import Slider from 'rc-slider';
@@ -30,7 +30,8 @@ class ResultsSelectorTransport extends React.Component {
         this.setState({temporaryTotim: this.props.data.totim});
     }
 
-    componentWillReceiveProps(nextProps, nextContext) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    UNSAFE_componentWillReceiveProps(nextProps, nextContext) {
         this.setState({temporaryTotim: nextProps.data.totim});
     }
 

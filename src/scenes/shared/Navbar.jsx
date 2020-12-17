@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {Container, Dropdown, Icon, Menu} from 'semantic-ui-react';
 import {Link, withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';

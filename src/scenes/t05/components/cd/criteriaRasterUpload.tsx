@@ -1,17 +1,17 @@
-import React, {useState} from 'react';
-import {Button, Checkbox, Form, Grid, Icon, Message, Segment} from 'semantic-ui-react';
-import {BoundingBox, GridSize} from '../../../../core/model/geometry';
 import {Array2D} from '../../../../core/model/geometry/Array2D.type';
-import {Criterion, Rule, RulesCollection} from '../../../../core/model/mcda/criteria';
+import {BoundingBox, GridSize} from '../../../../core/model/geometry';
+import {Button, Checkbox, Form, Grid, Icon, Message, Segment} from 'semantic-ui-react';
 import {CriteriaType} from '../../../../core/model/mcda/criteria/Criterion.type';
+import {Criterion, Rule, RulesCollection} from '../../../../core/model/mcda/criteria';
+import {IRasterFileMetadata} from '../../../../services/api/types';
 import {RasterLayer} from '../../../../core/model/mcda/gis';
 import {RasterParameter} from '../../../../core/model/modflow/soilmodel';
-import {dropData} from '../../../../services/api';
-import {IRasterFileMetadata} from '../../../../services/api/types';
-import {max, min} from '../../../shared/rasterData/helpers';
-import RasterfileUploadModal from '../../../shared/rasterData/rasterfileUploadModal';
 import {criterionStep} from '../../defaults/defaults';
+import {dropData} from '../../../../services/api';
+import {max, min} from '../../../shared/rasterData/helpers';
 import CriteriaRasterMap from './criteriaRasterMap';
+import RasterfileUploadModal from '../../../shared/rasterData/rasterfileUploadModal';
+import React, {useState} from 'react';
 
 interface IProps {
     criterion: Criterion;

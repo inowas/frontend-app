@@ -1,15 +1,15 @@
-import {cloneDeep} from 'lodash';
-import moment, {DurationInputArg1, DurationInputArg2} from 'moment';
-import React, {ChangeEvent, useState} from 'react';
-import {Button, Checkbox, Icon, Input, InputOnChangeData, Table} from 'semantic-ui-react';
-import {Stressperiods} from '../../../../../core/model/modflow';
+import {AdvancedCsvUpload} from '../../../../shared/simpleTools/upload';
 import {
     Boundary,
     FlowAndHeadBoundary,
     HeadObservationWell
 } from '../../../../../core/model/modflow/boundaries';
+import {Button, Checkbox, Icon, Input, InputOnChangeData, Table} from 'semantic-ui-react';
 import {ISpValues} from '../../../../../core/model/modflow/boundaries/Boundary.type';
-import {AdvancedCsvUpload} from '../../../../shared/simpleTools/upload';
+import {Stressperiods} from '../../../../../core/model/modflow';
+import {cloneDeep} from 'lodash';
+import React, {ChangeEvent, useState} from 'react';
+import moment, {DurationInputArg1, DurationInputArg2} from 'moment';
 
 interface IActiveInput {
     col: number;

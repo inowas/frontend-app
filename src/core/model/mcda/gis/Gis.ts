@@ -1,10 +1,10 @@
-import {booleanContains, booleanOverlap} from '@turf/turf';
-import {getGridCells} from '../../../../services/geoTools';
-import {BoundingBox, Geometry} from '../../geometry';
 import {Array2D} from '../../geometry/Array2D.type';
-import GridSize from '../../geometry/GridSize';
+import {BoundingBox, Geometry} from '../../geometry';
 import {Cells} from '../../modflow';
 import {IGis, IGis1v0} from './Gis.type';
+import {booleanContains, booleanOverlap} from '@turf/turf';
+import {getGridCells} from '../../../../services/geoTools';
+import GridSize from '../../geometry/GridSize';
 import RasterLayer from './RasterLayer';
 import VectorLayersCollection from './VectorLayersCollection';
 

@@ -1,23 +1,23 @@
 import * as turf from '@turf/turf';
-import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
-import {Button, Dropdown, DropdownProps, Form, InputOnChangeData, List, Popup} from 'semantic-ui-react';
-import uuid from 'uuid';
-import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {
     Boundary,
     BoundaryCollection,
     HeadObservationWell,
     LineBoundary, PointBoundary
 } from '../../../../../core/model/modflow/boundaries';
+import {Button, Dropdown, DropdownProps, Form, InputOnChangeData, List, Popup} from 'semantic-ui-react';
+import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {RechargeBoundary, WellBoundary} from '../../../../../core/model/modflow/boundaries';
+import BoundaryDateTimeValuesDataTable from './boundaryDateTimeValuesDataTable';
+import BoundaryGeometryEditor from './boundaryGeometryEditor';
+import BoundaryMap from '../../maps/boundaryMap';
+import BoundaryValuesDataTable from './boundaryValuesDataTable';
 import EvapotranspirationBoundary from '../../../../../core/model/modflow/boundaries/EvapotranspirationBoundary';
 import FlowAndHeadBoundary from '../../../../../core/model/modflow/boundaries/FlowAndHeadBoundary';
 import NoContent from '../../../../shared/complexTools/noContent';
-import BoundaryMap from '../../maps/boundaryMap';
-import BoundaryDateTimeValuesDataTable from './boundaryDateTimeValuesDataTable';
-import BoundaryGeometryEditor from './boundaryGeometryEditor';
-import BoundaryValuesDataTable from './boundaryValuesDataTable';
 import ObservationPointEditor from './observationPointEditor';
+import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
+import uuid from 'uuid';
 
 interface IProps {
     boundary: Boundary;

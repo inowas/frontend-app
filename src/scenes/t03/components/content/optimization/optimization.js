@@ -1,29 +1,29 @@
-import React from 'react';
-import {withRouter} from 'react-router-dom';
-import PropTypes from 'prop-types';
-import {sendCommand} from '../../../../../services/api';
 import {ModflowModel} from '../../../../../core/model/modflow';
 import {connect} from 'react-redux';
+import {sendCommand} from '../../../../../services/api';
 import {updateOptimization} from '../../../actions/actions';
+import {withRouter} from 'react-router-dom';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 import {Button, Grid, Icon, List, Menu, Popup, Progress, Segment} from 'semantic-ui-react';
 import {
-    getMessage, optimizationHasError, optimizationInProgress,
-    OPTIMIZATION_STATE_CANCELLED, OPTIMIZATION_STATE_CANCELLING,
-    OPTIMIZATION_STATE_FINISHED, OPTIMIZATION_STATE_STARTED
+    OPTIMIZATION_STATE_CANCELLED, OPTIMIZATION_STATE_CANCELLING, OPTIMIZATION_STATE_FINISHED,
+    OPTIMIZATION_STATE_STARTED, getMessage,
+    optimizationHasError, optimizationInProgress
 } from '../../../defaults/optimization';
 
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {Optimization} from '../../../../../core/model/modflow/optimization';
 import {
-    OptimizationParametersComponent,
-    OptimizationObjectsComponent,
-    OptimizationObjectivesComponent,
     OptimizationConstraintsComponent,
+    OptimizationObjectivesComponent,
+    OptimizationObjectsComponent,
+    OptimizationParametersComponent,
     OptimizationResultsComponent
 } from './index';
-import Command from '../../../commands/modflowModelCommand';
 import {fetchUrl} from '../../../../../services/api';
+import Command from '../../../commands/modflowModelCommand';
 
 class OptimizationContainer extends React.Component {
     constructor(props) {
@@ -41,7 +41,7 @@ class OptimizationContainer extends React.Component {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         this.setState({
             model: nextProps.model.toObject(),
             optimization: nextProps.optimization ? nextProps.optimization.toObject() : null

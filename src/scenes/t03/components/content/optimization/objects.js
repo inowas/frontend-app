@@ -1,11 +1,11 @@
-import React from 'react';
-import {Button, Form, Grid, Icon, Table, Accordion, Message} from 'semantic-ui-react';
-import PropTypes from 'prop-types';
+import {Accordion, Button, Form, Grid, Icon, Message, Table} from 'semantic-ui-react';
 import {FluxDataTable, SubstanceEditor} from './shared';
-import {OptimizationInput, OptimizationObject} from '../../../../../core/model/modflow/optimization';
-import OptimizationMap from './shared/map';
 import {ModflowModel} from '../../../../../core/model/modflow';
+import {OptimizationInput, OptimizationObject} from '../../../../../core/model/modflow/optimization';
 import ContentToolBar from '../../../../shared/ContentToolbar';
+import OptimizationMap from './shared/map';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 const styles = {
     dropDownWithButtons: {
@@ -29,7 +29,7 @@ class OptimizationObjectsComponent extends React.Component {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         this.setState({
             optimizationInput: nextProps.optimizationInput.toObject()
         });

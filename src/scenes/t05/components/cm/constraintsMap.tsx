@@ -1,18 +1,18 @@
-import {Control, DrawEvents} from 'leaflet';
-import md5 from 'md5';
-import React, {useRef, useState} from 'react';
-import {FeatureGroup, GeoJSON, Map, Polygon} from 'react-leaflet';
-import {EditControl} from 'react-leaflet-draw';
-import {pure} from 'recompose';
-import {Button, Popup} from 'semantic-ui-react';
-import uuidv4 from 'uuid/v4';
-import {Geometry} from '../../../../core/model/geometry';
-import GridSize from '../../../../core/model/geometry/GridSize';
-import {Gis, VectorLayer, VectorLayersCollection} from '../../../../core/model/mcda/gis';
-import ActiveCellsLayer from '../../../../services/geoTools/activeCellsLayer';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
+import {Button, Popup} from 'semantic-ui-react';
+import {Control, DrawEvents} from 'leaflet';
+import {EditControl} from 'react-leaflet-draw';
+import {FeatureGroup, GeoJSON, Map, Polygon} from 'react-leaflet';
+import {Geometry} from '../../../../core/model/geometry';
+import {Gis, VectorLayer, VectorLayersCollection} from '../../../../core/model/mcda/gis';
 import {heatMapColors} from '../../defaults/gis';
+import {pure} from 'recompose';
+import ActiveCellsLayer from '../../../../services/geoTools/activeCellsLayer';
 import CriteriaRasterMap from '../cd/criteriaRasterMap';
+import GridSize from '../../../../core/model/geometry/GridSize';
+import React, {useRef, useState} from 'react';
+import md5 from 'md5';
+import uuidv4 from 'uuid/v4';
 
 interface IProps {
     gridSize: GridSize;
@@ -76,6 +76,7 @@ const ConstraintsMap = (props: IProps) => {
     };
 
     const handleClickDrawArea = () => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         refDrawControl._toolbars.draw._modes.polygon.handler.enable();
     };

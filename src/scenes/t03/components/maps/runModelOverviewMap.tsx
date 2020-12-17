@@ -1,10 +1,10 @@
-import {uniqueId} from 'lodash';
-import React from 'react';
+import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import {GeoJSON, Map} from 'react-leaflet';
 import {ModflowModel} from '../../../../core/model/modflow';
-import AffectedCellsLayer from '../../../../services/geoTools/affectedCellsLayer';
-import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import {disableMap, getStyle, invalidateSize} from './index';
+import {uniqueId} from 'lodash';
+import AffectedCellsLayer from '../../../../services/geoTools/affectedCellsLayer';
+import React from 'react';
 
 interface IProps {
     model: ModflowModel;

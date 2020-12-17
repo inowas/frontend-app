@@ -1,10 +1,10 @@
-import {orderBy} from 'lodash';
-import moment, {Moment} from 'moment/moment';
-import {TimeUnit} from './index';
-import Stressperiod from './Stressperiod';
 import {IStressPeriod, IStressPeriodWithTotim} from './Stressperiod.type';
 import {IStressPeriods} from './Stressperiods.type';
 import {ITimeUnit} from './TimeUnit.type';
+import {TimeUnit} from './index';
+import {orderBy} from 'lodash';
+import Stressperiod from './Stressperiod';
+import moment, {Moment} from 'moment/moment';
 
 class Stressperiods {
 

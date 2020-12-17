@@ -1,5 +1,3 @@
-import {flatten, max, min} from 'lodash';
-import React from 'react';
 import {
     Area,
     AreaChart,
@@ -9,9 +7,11 @@ import {
     LineChart,
     ReferenceLine, ResponsiveContainer, Tooltip, TooltipProps, XAxis, YAxis
 } from 'recharts';
-import {Message} from 'semantic-ui-react';
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
 import {GridSize} from '../../../core/model/modflow';
+import {Message} from 'semantic-ui-react';
+import {flatten, max, min} from 'lodash';
+import React from 'react';
 
 const cbPalette = [
     '#0A75A0' /* navy */,

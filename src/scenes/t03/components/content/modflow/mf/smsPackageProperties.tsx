@@ -1,4 +1,3 @@
-import React, {ChangeEvent, FormEvent, SyntheticEvent, useState} from 'react';
 import {
     Checkbox,
     CheckboxProps,
@@ -14,6 +13,7 @@ import {FlopyModflowMfsms} from '../../../../../../core/model/flopy/packages/mf'
 import {IFlopyModflowMfsms} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfsms';
 import {InfoPopup} from '../../../../../shared';
 import {documentation} from '../../../../defaults/flow';
+import React, {ChangeEvent, FormEvent, SyntheticEvent, useState} from 'react';
 
 const styles = {
     headerLabel: {

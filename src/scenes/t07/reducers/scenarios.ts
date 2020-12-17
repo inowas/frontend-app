@@ -1,6 +1,6 @@
-import {cloneDeep} from 'lodash';
 import {IBoundary} from '../../../core/model/modflow/boundaries/Boundary.type';
 import {IModflowModel} from '../../../core/model/modflow/ModflowModel.type';
+import {cloneDeep} from 'lodash';
 
 export const CLEAR = 'T07_CLEAR';
 export const UPDATE_SCENARIO = 'T07_UPDATE_SCENARIO';
@@ -30,6 +30,7 @@ const scenarios = (
                 });
             }
 
+            // eslint-disable-next-line no-case-declarations
             const newState: IScenariosReducer = cloneDeep(state);
 
             newState.push({

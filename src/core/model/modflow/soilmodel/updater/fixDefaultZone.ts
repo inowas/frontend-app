@@ -1,5 +1,5 @@
-import {LayersCollection, ZonesCollection} from '../index';
 import {ISoilmodel} from '../Soilmodel.type';
+import {LayersCollection, ZonesCollection} from '../index';
 
 const fixDefaultZone = (soilmodel: ISoilmodel) => {
     const zc = ZonesCollection.fromObject(soilmodel.properties.zones);

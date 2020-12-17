@@ -1,36 +1,3 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {useHistory, useRouteMatch} from 'react-router-dom';
-import {Grid, Menu, Segment} from 'semantic-ui-react';
-import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
-import {
-    FlopyModflowMf,
-    FlopyModflowMfbas,
-    FlopyModflowMfchd,
-    FlopyModflowMfdis,
-    FlopyModflowMfdrn,
-    FlopyModflowMfevt,
-    FlopyModflowMffhb,
-    FlopyModflowMfghb,
-    FlopyModflowMfhob,
-    FlopyModflowMfoc,
-    FlopyModflowMfrch,
-    FlopyModflowMfriv,
-    FlopyModflowMfwel
-} from '../../../../../core/model/flopy/packages/mf';
-import FlopyModflow, {flowPackages, packagesMap} from '../../../../../core/model/flopy/packages/mf/FlopyModflow';
-import {IFlopyModflow, IFlopyModflowPackage} from '../../../../../core/model/flopy/packages/mf/FlopyModflow.type';
-import FlopyModflowPackage from '../../../../../core/model/flopy/packages/mf/FlopyModflowPackage';
-import {EMessageState} from '../../../../../core/model/messages/Message.type';
-import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
-import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
-import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
-import {IRootReducer} from '../../../../../reducers';
-import {sendCommand} from '../../../../../services/api';
-import ContentToolBar from '../../../../shared/ContentToolbar2';
-import {addMessage, removeMessage, updateMessage, updatePackages} from '../../../actions/actions';
-import ModflowModelCommand from '../../../commands/modflowModelCommand';
-import {IEditingState, initialEditingState, messageDirty, messageSaving} from '../../../defaults/messages';
 import {
     BasPackageProperties,
     ChdPackageProperties,
@@ -48,6 +15,39 @@ import {
     SolverPackageProperties,
     WelPackageProperties
 } from './mf';
+import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
+import {EMessageState} from '../../../../../core/model/messages/Message.type';
+import {
+    FlopyModflowMf,
+    FlopyModflowMfbas,
+    FlopyModflowMfchd,
+    FlopyModflowMfdis,
+    FlopyModflowMfdrn,
+    FlopyModflowMfevt,
+    FlopyModflowMffhb,
+    FlopyModflowMfghb,
+    FlopyModflowMfhob,
+    FlopyModflowMfoc,
+    FlopyModflowMfrch,
+    FlopyModflowMfriv,
+    FlopyModflowMfwel
+} from '../../../../../core/model/flopy/packages/mf';
+import {Grid, Menu, Segment} from 'semantic-ui-react';
+import {IEditingState, initialEditingState, messageDirty, messageSaving} from '../../../defaults/messages';
+import {IFlopyModflow, IFlopyModflowPackage} from '../../../../../core/model/flopy/packages/mf/FlopyModflow.type';
+import {IRootReducer} from '../../../../../reducers';
+import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
+import {addMessage, removeMessage, updateMessage, updatePackages} from '../../../actions/actions';
+import {sendCommand} from '../../../../../services/api';
+import {useDispatch, useSelector} from 'react-redux';
+import {useHistory, useRouteMatch} from 'react-router-dom';
+import ContentToolBar from '../../../../shared/ContentToolbar2';
+import FlopyModflow, {flowPackages, packagesMap} from '../../../../../core/model/flopy/packages/mf/FlopyModflow';
+import FlopyModflowPackage from '../../../../../core/model/flopy/packages/mf/FlopyModflowPackage';
+import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
+import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
+import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import React, {useEffect, useRef, useState} from 'react';
 
 const sideBar = (boundaries: BoundaryCollection) => ([
     {id: undefined, name: 'Modflow package', enabled: true},

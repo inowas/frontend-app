@@ -1,9 +1,6 @@
 import * as turf from '@turf/turf';
-import {default as geojson} from 'geojson';
-import {DrawEvents} from 'leaflet';
-import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {useHistory, useParams, withRouter} from 'react-router-dom';
+import {BoundaryCollection} from '../../../../../../core/model/modflow/boundaries';
+import {CALCULATE_CELLS_INPUT} from '../../../../worker/t03.worker';
 import {
     Checkbox,
     CheckboxProps, Dimmer, Divider,
@@ -15,25 +12,28 @@ import {
     List, Loader,
     Segment
 } from 'semantic-ui-react';
-import uuid from 'uuid';
-import {ICells} from '../../../../../../core/model/geometry/Cells.type';
+import {DrawEvents} from 'leaflet';
 import {default as Geometry} from '../../../../../../core/model/geometry/Geometry';
-import {IGeometry} from '../../../../../../core/model/geometry/Geometry.type';
-import {ModflowModel, Soilmodel} from '../../../../../../core/model/modflow';
-import {BoundaryCollection} from '../../../../../../core/model/modflow/boundaries';
-import {Zone, ZonesCollection} from '../../../../../../core/model/modflow/soilmodel';
-import {IZone} from '../../../../../../core/model/modflow/soilmodel/Zone.type';
-import {IRootReducer} from '../../../../../../reducers';
-import {sendCommand} from '../../../../../../services/api';
-import ContentToolBar from '../../../../../shared/ContentToolbar';
-import {addMessage, addZone} from '../../../../actions/actions';
-import Command from '../../../../commands/modflowModelCommand';
-import {messageError} from '../../../../defaults/messages';
-import {CALCULATE_CELLS_INPUT} from '../../../../worker/t03.worker';
 import {ICalculateCellsInputData} from '../../../../worker/t03.worker.type';
-import {asyncWorker} from '../../../../worker/worker';
+import {ICells} from '../../../../../../core/model/geometry/Cells.type';
+import {IGeometry} from '../../../../../../core/model/geometry/Geometry.type';
+import {IRootReducer} from '../../../../../../reducers';
+import {IZone} from '../../../../../../core/model/modflow/soilmodel/Zone.type';
+import {ModflowModel, Soilmodel} from '../../../../../../core/model/modflow';
 import {UploadGeoJSONModal} from '../../create';
+import {Zone, ZonesCollection} from '../../../../../../core/model/modflow/soilmodel';
 import {ZonesMap} from './index';
+import {addMessage, addZone} from '../../../../actions/actions';
+import {asyncWorker} from '../../../../worker/worker';
+import {default as geojson} from 'geojson';
+import {messageError} from '../../../../defaults/messages';
+import {sendCommand} from '../../../../../../services/api';
+import {useDispatch, useSelector} from 'react-redux';
+import {useHistory, useParams, withRouter} from 'react-router-dom';
+import Command from '../../../../commands/modflowModelCommand';
+import ContentToolBar from '../../../../../shared/ContentToolbar';
+import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
+import uuid from 'uuid';
 
 interface IVisibleZone extends IZone {
     isActive: boolean;

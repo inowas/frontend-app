@@ -1,14 +1,14 @@
+import {Cells, Geometry} from '../index';
+import {ICells} from '../../geometry/Cells.type';
+import {IGeneralHeadBoundary, IGeneralHeadBoundaryExport} from './GeneralHeadBoundary.type';
+import {ISpValues, IValueProperty} from './Boundary.type';
 import {LineString} from 'geojson';
 import {cloneDeep} from 'lodash';
-import Uuid from 'uuid';
 import BoundingBox from '../../geometry/BoundingBox';
-import {ICells} from '../../geometry/Cells.type';
 import GridSize from '../../geometry/GridSize';
-import {Cells, Geometry} from '../index';
-import Stressperiods from '../Stressperiods';
-import {ISpValues, IValueProperty} from './Boundary.type';
-import {IGeneralHeadBoundary, IGeneralHeadBoundaryExport} from './GeneralHeadBoundary.type';
 import LineBoundary from './LineBoundary';
+import Stressperiods from '../Stressperiods';
+import Uuid from 'uuid';
 
 export default class GeneralHeadBoundary extends LineBoundary {
 
