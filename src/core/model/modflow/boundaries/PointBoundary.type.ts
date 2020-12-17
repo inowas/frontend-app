@@ -1,6 +1,6 @@
-import {Point} from 'geojson';
 import {ICells} from '../../geometry/Cells.type';
 import {ISpValues} from './Boundary.type';
+import {Point} from 'geojson';
 
 export interface IPointBoundary {
     id: string;

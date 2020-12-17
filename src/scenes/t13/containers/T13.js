@@ -1,7 +1,7 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import {Button, Dimmer, Grid, Header, Icon, Image, Segment} from 'semantic-ui-react';
 import {withRouter} from 'react-router-dom';
-import {Button, Grid, Header, Icon, Image, Segment, Dimmer} from 'semantic-ui-react';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 import {AppContainer} from '../../shared';
 

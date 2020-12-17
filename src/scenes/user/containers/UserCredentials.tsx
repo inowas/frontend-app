@@ -1,9 +1,9 @@
-import React, {ChangeEvent, useState} from 'react';
-import {useSelector} from 'react-redux';
 import {Button, Container, Form, Grid, Header, Image, Message} from 'semantic-ui-react';
 import {IRootReducer} from '../../../reducers';
 import {sendCommand} from '../../../services/api';
+import {useSelector} from 'react-redux';
 import NavBar from '../../shared/Navbar';
+import React, {ChangeEvent, useState} from 'react';
 import UserCommand from '../commands/userCommand';
 import logo from '../images/favicon.png';
 

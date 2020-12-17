@@ -1,8 +1,8 @@
+import {CALCULATION_STARTED} from '../components/content/calculation/CalculationProgress';
+import {CLEAR} from './model';
 import {Calculation} from '../../../core/model/modflow';
 import {ICalculation} from '../../../core/model/modflow/Calculation.type';
 import {LOGOUT, UNAUTHORIZED} from '../../user/actions/actions';
-import {CALCULATION_STARTED} from '../components/content/calculation/CalculationProgress';
-import {CLEAR} from './model';
 
 export const START_CALCULATION = 'T03_START_CALCULATION';
 export const UPDATE_CALCULATION = 'T03_UPDATE_CALCULATION';

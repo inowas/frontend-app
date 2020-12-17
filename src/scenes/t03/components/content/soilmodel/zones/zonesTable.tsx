@@ -1,15 +1,15 @@
-import React, {ChangeEvent, MouseEvent, useState} from 'react';
 import {
     Button,
     ButtonProps, Header, Icon, Input, InputOnChangeData, Label, LabelProps, Popup, Segment, Table
 } from 'semantic-ui-react';
-import uuidv4 from 'uuid/v4';
+import {ILayerParameterZone} from '../../../../../../core/model/modflow/soilmodel/LayerParameterZone.type';
 import {
     LayerParameterZonesCollection,
     RasterParameter,
     ZonesCollection
 } from '../../../../../../core/model/modflow/soilmodel';
-import {ILayerParameterZone} from '../../../../../../core/model/modflow/soilmodel/LayerParameterZone.type';
+import React, {ChangeEvent, MouseEvent, useState} from 'react';
+import uuidv4 from 'uuid/v4';
 
 const styles = {
     input: {

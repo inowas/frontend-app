@@ -9,8 +9,8 @@ import FlopyMt3dMtgcg, {IFlopyMt3dMtgcg} from './FlopyMt3dMtgcg';
 import FlopyMt3dMtrct, {IFlopyMt3dMtrct} from './FlopyMt3dMtrct';
 import FlopyMt3dMtssm, {IFlopyMt3dMtssm} from './FlopyMt3dMtssm';
 
-import {Transport} from '../../../modflow';
 import {BoundaryCollection} from '../../../modflow/boundaries';
+import {Transport} from '../../../modflow';
 import FlopyMt3dPackage from './FlopyMt3dPackage';
 
 export interface IFlopyMt3d extends IPropertyValueObject {

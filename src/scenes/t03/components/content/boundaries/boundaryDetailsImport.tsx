@@ -1,14 +1,14 @@
-import React, {ChangeEvent, SyntheticEvent} from 'react';
+import {Boundary, BoundaryCollection, LineBoundary} from '../../../../../core/model/modflow/boundaries';
 import {DropdownProps, Header, InputOnChangeData, Label, Segment} from 'semantic-ui-react';
 import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
-import {Boundary, BoundaryCollection, LineBoundary} from '../../../../../core/model/modflow/boundaries';
 import {RechargeBoundary, WellBoundary} from '../../../../../core/model/modflow/boundaries';
+import BoundaryGeometryEditor from './boundaryGeometryEditor';
+import BoundaryMap from '../../maps/boundaryMap';
+import BoundaryValuesDataTable from './boundaryValuesDataTable';
 import EvapotranspirationBoundary from '../../../../../core/model/modflow/boundaries/EvapotranspirationBoundary';
 import NoContent from '../../../../shared/complexTools/noContent';
-import BoundaryMap from '../../maps/boundaryMap';
-import BoundaryGeometryEditor from './boundaryGeometryEditor';
-import BoundaryValuesDataTable from './boundaryValuesDataTable';
 import ObservationPointEditor from './observationPointEditor';
+import React, {ChangeEvent, SyntheticEvent} from 'react';
 
 interface IProps {
     boundary: Boundary;

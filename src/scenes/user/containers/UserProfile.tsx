@@ -1,10 +1,10 @@
-import React, {ChangeEvent, useEffect, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
 import {Button, Container, Form, Grid, Header, Image, Message} from 'semantic-ui-react';
 import {IRootReducer} from '../../../reducers';
-import {sendCommand} from '../../../services/api';
-import NavBar from '../../shared/Navbar';
 import {putUserProfile} from '../actions/actions';
+import {sendCommand} from '../../../services/api';
+import {useDispatch, useSelector} from 'react-redux';
+import NavBar from '../../shared/Navbar';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import UserCommand from '../commands/userCommand';
 import logo from '../images/favicon.png';
 

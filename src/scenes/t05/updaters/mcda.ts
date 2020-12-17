@@ -1,8 +1,8 @@
 import {Criterion, WeightAssignmentsCollection} from '../../../core/model/mcda/criteria';
 import {Gis} from '../../../core/model/mcda/gis';
 import {IMCDA1v0, IMCDAPayload} from '../../../core/model/mcda/MCDA.type';
-import Suitability from '../../../core/model/mcda/Suitability';
 import {LATEST_VERSION} from '../defaults/defaults';
+import Suitability from '../../../core/model/mcda/Suitability';
 
 export const updater = (mcda: IMCDAPayload | IMCDA1v0): IMCDAPayload => {
     if (!mcda.version || mcda.version !== LATEST_VERSION) {

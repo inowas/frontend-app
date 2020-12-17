@@ -1,17 +1,17 @@
 import * as turf from '@turf/turf';
-import {ICells} from '../../../../../core/model/geometry/Cells.type';
-import {Cells, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {Boundary, BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
-import LayersCollection from '../../../../../core/model/modflow/soilmodel/LayersCollection';
-import SoilmodelLayer from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
+import {CALCULATE_CELLS_INPUT} from '../../../worker/t03.worker';
+import {Cells, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
+import {ICalculateCellsInputData} from '../../../worker/t03.worker.type';
+import {ICells} from '../../../../../core/model/geometry/Cells.type';
+import {asyncWorker} from '../../../worker/worker';
 import {saveLayer} from '../../../../../core/model/modflow/soilmodel/updater/services';
+import {sendCommand} from '../../../../../services/api';
+import LayersCollection from '../../../../../core/model/modflow/soilmodel/LayersCollection';
+import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import SoilmodelLayer from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
 import Zone from '../../../../../core/model/modflow/soilmodel/Zone';
 import ZonesCollection from '../../../../../core/model/modflow/soilmodel/ZonesCollection';
-import {sendCommand} from '../../../../../services/api';
-import ModflowModelCommand from '../../../commands/modflowModelCommand';
-import {CALCULATE_CELLS_INPUT} from '../../../worker/t03.worker';
-import {ICalculateCellsInputData} from '../../../worker/t03.worker.type';
-import {asyncWorker} from '../../../worker/worker';
 
 export const boundaryUpdater = (
     boundaries: BoundaryCollection,

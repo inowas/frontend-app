@@ -1,12 +1,12 @@
 import {Point} from 'geojson';
-import Uuid from 'uuid';
-import FlopyModflowMfwel from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfwel';
-import Cells from '../../../../../../core/model/geometry/Cells';
-import Geometry from '../../../../../../core/model/geometry/Geometry';
 import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
-import WellBoundary from '../../../../../../core/model/modflow/boundaries/WellBoundary';
+import Cells from '../../../../../../core/model/geometry/Cells';
+import FlopyModflowMfwel from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfwel';
+import Geometry from '../../../../../../core/model/geometry/Geometry';
 import Stressperiod from '../../../../../../core/model/modflow/Stressperiod';
 import Stressperiods from '../../../../../../core/model/modflow/Stressperiods';
+import Uuid from 'uuid';
+import WellBoundary from '../../../../../../core/model/modflow/boundaries/WellBoundary';
 
 const createStressperiods = () => {
     const stressperiods = Stressperiods.fromDefaults();

@@ -1,8 +1,8 @@
-import React, {MouseEvent} from 'react';
-import {RouteComponentProps, withRouter} from 'react-router-dom';
-import {Icon, Menu, MenuItemProps, Segment} from 'semantic-ui-react';
 import {EMessageState} from '../../../core/model/messages/Message.type';
 import {IMenuItem} from '../../t03/defaults/menuItems';
+import {Icon, Menu, MenuItemProps, Segment} from 'semantic-ui-react';
+import {RouteComponentProps, withRouter} from 'react-router-dom';
+import React, {MouseEvent} from 'react';
 
 interface IMenuSection {
     header: string;

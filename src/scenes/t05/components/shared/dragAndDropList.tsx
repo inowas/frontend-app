@@ -1,15 +1,15 @@
-import React, {CSSProperties} from 'react';
+import {Button, Segment} from 'semantic-ui-react';
 import {
     DragDropContext,
     Draggable,
     DraggableProvided,
+    DropResult,
     Droppable,
     DroppableProvided,
-    DroppableStateSnapshot,
-    DropResult
+    DroppableStateSnapshot
 } from 'react-beautiful-dnd';
 import {pure} from 'recompose';
-import {Button, Segment} from 'semantic-ui-react';
+import React, {CSSProperties} from 'react';
 
 const styles = {
     draggable: {
@@ -123,7 +123,6 @@ const dragAndDropList = (props: IProps) => {
                             >
                                 {(dProvided: DraggableProvided) => {
                                     return (
-                                        // @ts-ignore todo
                                         <div
                                             ref={dProvided.innerRef}
                                             {...dProvided.draggableProps}

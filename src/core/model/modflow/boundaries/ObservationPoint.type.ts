@@ -1,5 +1,5 @@
-import {Point} from 'geojson';
 import {ISpValues} from './Boundary.type';
+import {Point} from 'geojson';
 
 export interface IObservationPoint {
     type: 'Feature';

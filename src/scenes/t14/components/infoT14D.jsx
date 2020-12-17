@@ -1,8 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import {Icon, Message} from 'semantic-ui-react';
 import {calcDQ} from '../calculations/calculationT14D';
 import {getParameterValues} from '../../shared/simpleTools/helpers';
-import {Icon, Message} from 'semantic-ui-react';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 const Info = ({parameters}) => {
     const {Qw, t, S, T, d, W, Kdash, Bdashdash, Sigma, bdash} = getParameterValues(parameters);

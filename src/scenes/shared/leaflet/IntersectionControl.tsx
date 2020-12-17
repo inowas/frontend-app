@@ -1,8 +1,7 @@
-import React from 'react';
-// @ts-ignore
-import Control from 'react-leaflet-control';
-import {pure} from 'recompose';
 import {Button, Popup} from 'semantic-ui-react';
+import {pure} from 'recompose';
+import Control from 'react-leaflet-control';
+import React from 'react';
 
 const styles = {
     leafletButton: {

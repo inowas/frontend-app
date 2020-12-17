@@ -1,11 +1,11 @@
-import {Point} from 'geojson';
-import Uuid from 'uuid';
-import {Geometry} from '../../../../../core/model/geometry';
-import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {Cells, Stressperiods} from '../../../../../core/model/modflow';
+import {Geometry} from '../../../../../core/model/geometry';
 import {HeadObservationWell} from '../../../../../core/model/modflow/boundaries';
+import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
+import {Point} from 'geojson';
 import {validate} from '../../../../../services/jsonSchemaValidator';
+import Uuid from 'uuid';
 
 const createHeadObservationWell = () => {
     const id = Uuid.v4();

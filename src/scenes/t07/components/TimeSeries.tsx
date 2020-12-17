@@ -1,21 +1,21 @@
-import { upperFirst } from 'lodash';
-import moment from 'moment';
-import React, { SyntheticEvent, useEffect, useState } from 'react';
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { Dimmer, DropdownProps, Form, Grid, Loader, Segment } from 'semantic-ui-react';
 import { Array2D } from '../../../core/model/geometry/Array2D.type';
 import { BoundaryCollection, ModflowModel } from '../../../core/model/modflow';
+import { CallbackFunction, ErrorCallbackFunction } from '../../types';
+import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Dimmer, DropdownProps, Form, Grid, Loader, Segment } from 'semantic-ui-react';
+import { EResultType } from '../../t03/components/content/results/flowResults';
 import { IBoundary } from '../../../core/model/modflow/boundaries/Boundary.type';
 import { ICalculation } from '../../../core/model/modflow/Calculation.type';
 import { IModflowModel } from '../../../core/model/modflow/ModflowModel.type';
 import { ISoilmodel } from '../../../core/model/modflow/soilmodel/Soilmodel.type';
+import { MODFLOW_CALCULATION_URL } from '../../../services/api';
 import { ScenarioAnalysis } from '../../../core/model/scenarioAnalysis';
 import { axios } from '../../../services';
-import { MODFLOW_CALCULATION_URL } from '../../../services/api';
-import { EResultType } from '../../t03/components/content/results/flowResults';
 import { heatMapColors } from '../../t05/defaults/gis';
-import { CallbackFunction, ErrorCallbackFunction } from '../../types';
+import { upperFirst } from 'lodash';
+import React, { SyntheticEvent, useEffect, useState } from 'react';
 import TimeSeriesMap from './TimeSeriesMap';
+import moment from 'moment';
 
 interface IProps {
     models: { [id: string]: IModflowModel };

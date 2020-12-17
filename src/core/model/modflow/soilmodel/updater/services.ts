@@ -1,12 +1,12 @@
-import {cloneDeep, uniq} from 'lodash';
-import ModflowModelCommand from '../../../../../scenes/t03/commands/modflowModelCommand';
-import {sendCommand} from '../../../../../services/api';
-import {dropData, FileData} from '../../../../../services/dataDropper';
 import {Array2D} from '../../../geometry/Array2D.type';
+import {FileData, dropData} from '../../../../../services/dataDropper';
 import {IModflowModel} from '../../ModflowModel.type';
-import {Soilmodel} from '../index';
 import {ISoilmodel} from '../Soilmodel.type';
 import {ISoilmodelLayer} from '../SoilmodelLayer.type';
+import {Soilmodel} from '../index';
+import {cloneDeep, uniq} from 'lodash';
+import {sendCommand} from '../../../../../services/api';
+import ModflowModelCommand from '../../../../../scenes/t03/commands/modflowModelCommand';
 
 export const saveLayer = (
     layer: ISoilmodelLayer,
@@ -139,7 +139,7 @@ export const saveSoilmodel = (
 
     if (saveProperties) {
         onEachTask({
-            message: `Saving soilmodel properties.`,
+            message: 'Saving soilmodel properties.',
             task: task++
         });
         return sendCommand(
@@ -370,7 +370,7 @@ export const fetchSoilmodel = (
     }
 
     onEachTask({
-        message: `Fetching finished.`,
+        message: 'Fetching finished.',
         fetching: false
     });
 

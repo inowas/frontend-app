@@ -1,10 +1,10 @@
 import {BoundaryCollection, ConstantHeadBoundary} from '../../../modflow/boundaries';
-import Stressperiods from '../../../modflow/Stressperiods';
 import {IPropertyValueObject} from '../../../types';
-import {calculateLineBoundarySpData} from '../../helpers';
 import {IStressPeriodData} from './FlopyModflow.type';
+import {calculateLineBoundarySpData} from '../../helpers';
 import FlopyModflowLineBoundary from './FlopyModflowLineBoundary';
 import FlopyModflowPackage from './FlopyModflowPackage';
+import Stressperiods from '../../../modflow/Stressperiods';
 
 /*
 https://modflowpy.github.io/flopydoc/mfchd.html

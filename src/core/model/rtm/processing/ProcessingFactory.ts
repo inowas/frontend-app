@@ -1,5 +1,5 @@
-import {ValueProcessing} from './index';
 import {IProcessing, ITimeProcessing, IValueProcessing} from './Processing.type';
+import {ValueProcessing} from './index';
 import TimeProcessing from './TimeProcessing';
 
 const isValueProcessing = (arg: any): arg is IValueProcessing => arg.type === 'value';

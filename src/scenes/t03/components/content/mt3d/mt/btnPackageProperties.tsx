@@ -1,4 +1,3 @@
-import React, {ChangeEvent, MouseEvent, useEffect, useState} from 'react';
 import {
     Accordion,
     AccordionTitleProps,
@@ -9,9 +8,10 @@ import {
     Icon,
     Input
 } from 'semantic-ui-react';
+import {documentation} from '../../../../defaults/transport';
 import FlopyMt3dMtbtn, {IFlopyMt3dMtBtn} from '../../../../../../core/model/flopy/packages/mt/FlopyMt3dMtbtn';
 import InfoPopup from '../../../../../shared/InfoPopup';
-import {documentation} from '../../../../defaults/transport';
+import React, {ChangeEvent, MouseEvent, useEffect, useState} from 'react';
 
 interface IProps {
     mtPackage: FlopyMt3dMtbtn;

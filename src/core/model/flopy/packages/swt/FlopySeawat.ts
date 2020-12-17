@@ -1,10 +1,10 @@
+import {FlopySeawatPackage, FlopySeawatSwt, FlopySeawatSwtvdf, FlopySeawatSwtvsc} from './index';
 import {GenericObject} from '../../../genericObject/GenericObject';
-import {VariableDensity} from '../../../modflow';
-import {IPropertyValueObject} from '../../../types';
 import {IFlopySeawatSwt} from './FlopySeawatSwt';
 import {IFlopySeawatSwtvdf} from './FlopySeawatSwtvdf';
 import {IFlopySeawatSwtvsc} from './FlopySeawatSwtvsc';
-import {FlopySeawatPackage, FlopySeawatSwt, FlopySeawatSwtvdf, FlopySeawatSwtvsc} from './index';
+import {IPropertyValueObject} from '../../../types';
+import {VariableDensity} from '../../../modflow';
 
 export interface IFlopySeawat extends IPropertyValueObject {
     enabled: boolean;

@@ -1,9 +1,9 @@
-import {delc, delr} from '../../../../../services/geoTools/distance';
 import {Array2D} from '../../../geometry/Array2D.type';
-import {ModflowModel} from '../../../modflow';
-import Soilmodel from '../../../modflow/soilmodel/Soilmodel';
 import {IPropertyValueObject} from '../../../types';
+import {ModflowModel} from '../../../modflow';
+import {delc, delr} from '../../../../../services/geoTools/distance';
 import FlopyModflowPackage from './FlopyModflowPackage';
+import Soilmodel from '../../../modflow/soilmodel/Soilmodel';
 
 export interface IFlopyModflowMfdis {
     nlay: number;

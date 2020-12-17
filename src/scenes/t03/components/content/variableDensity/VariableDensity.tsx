@@ -1,23 +1,23 @@
-import {useEffect} from 'react';
-import {useRef} from 'react';
 import * as React from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {useParams} from 'react-router-dom';
 import {Button, Checkbox, CheckboxProps, Form, Grid, Menu, Message, Segment} from 'semantic-ui-react';
 import {EMessageState, IMessage} from '../../../../../core/model/messages/Message.type';
-import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
-import {ModflowModel, Transport, VariableDensity} from '../../../../../core/model/modflow';
 import {IRootReducer} from '../../../../../reducers';
-import {sendCommand} from '../../../../../services/api';
-import ContentToolBar from '../../../../shared/ContentToolbar2';
+import {ModflowModel, Transport, VariableDensity} from '../../../../../core/model/modflow';
 import {
     addMessage,
     removeMessage,
     updateMessage,
     updateVariableDensity
 } from '../../../actions/actions';
-import Command from '../../../commands/modflowModelCommand';
 import {messageDirty, messageSaving} from '../../../defaults/messages';
+import {sendCommand} from '../../../../../services/api';
+import {useDispatch, useSelector} from 'react-redux';
+import {useEffect} from 'react';
+import {useParams} from 'react-router-dom';
+import {useRef} from 'react';
+import Command from '../../../commands/modflowModelCommand';
+import ContentToolBar from '../../../../shared/ContentToolbar2';
+import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
 
 const VariableDensityProperties = () => {
     const T03 = useSelector((state: IRootReducer) => state.T03);

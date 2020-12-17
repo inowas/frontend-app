@@ -1,7 +1,7 @@
-import Soilmodel from '../../../modflow/soilmodel/Soilmodel';
 import {IPropertyValueObject} from '../../../types';
 import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
 import FlopyModflowPackage from './FlopyModflowPackage';
+import Soilmodel from '../../../modflow/soilmodel/Soilmodel';
 
 export interface IFlopyModflowMfswi2 {
     nsrf: number;

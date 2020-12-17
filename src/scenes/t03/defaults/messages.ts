@@ -1,5 +1,5 @@
-import Uuid from 'uuid';
 import {EMessageState, IMessage} from '../../../core/model/messages/Message.type';
+import Uuid from 'uuid';
 
 export const messageDirty = (origin: string): IMessage => ({
     id: Uuid.v4(),

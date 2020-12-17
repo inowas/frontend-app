@@ -1,9 +1,9 @@
-import React from 'react';
-import {CircleMarker, FeatureGroup, GeoJSON, LayersControl, Map} from 'react-leaflet';
-import {BoundingBox, Geometry} from '../../../core/model/modflow';
-import {Boundary, BoundaryCollection, HeadObservationWell, WellBoundary} from '../../../core/model/modflow/boundaries';
-import {getStyle} from '../../../services/geoTools/mapHelpers';
 import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
+import {Boundary, BoundaryCollection, HeadObservationWell, WellBoundary} from '../../../core/model/modflow/boundaries';
+import {BoundingBox, Geometry} from '../../../core/model/modflow';
+import {CircleMarker, FeatureGroup, GeoJSON, LayersControl, Map} from 'react-leaflet';
+import {getStyle} from '../../../services/geoTools/mapHelpers';
+import React from 'react';
 
 interface IProps {
     boundaries: BoundaryCollection;

@@ -1,16 +1,16 @@
-import {cloneDeep} from 'lodash';
-import React from 'react';
-import {Checkbox, Grid, Header} from 'semantic-ui-react';
-import uuidv4 from 'uuid/v4';
 import {Array2D} from '../../../../../../core/model/geometry/Array2D.type';
-import {ModflowModel} from '../../../../../../core/model/modflow';
-import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
-import {LayerParameterZonesCollection, RasterParameter} from '../../../../../../core/model/modflow/soilmodel';
+import {Checkbox, Grid, Header} from 'semantic-ui-react';
 import {ILayerParameterZone} from '../../../../../../core/model/modflow/soilmodel/LayerParameterZone.type';
+import {LayerParameterZonesCollection, RasterParameter} from '../../../../../../core/model/modflow/soilmodel';
+import {ModflowModel} from '../../../../../../core/model/modflow';
+import {cloneDeep} from 'lodash';
+import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
+import RasterDataImage from '../../../../../shared/rasterData/rasterDataImage';
+import React from 'react';
 import Soilmodel from '../../../../../../core/model/modflow/soilmodel/Soilmodel';
 import SoilmodelLayer from '../../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
-import RasterDataImage from '../../../../../shared/rasterData/rasterDataImage';
 import ZonesEditor from '../zones/zonesEditor';
+import uuidv4 from 'uuid/v4';
 
 interface IProps {
     boundaries: BoundaryCollection;

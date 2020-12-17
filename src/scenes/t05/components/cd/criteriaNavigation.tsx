@@ -1,10 +1,10 @@
-import React, {ChangeEvent, MouseEvent, useEffect, useState} from 'react';
-import {RouteComponentProps, withRouter} from 'react-router-dom';
+import { CriteriaCollection } from '../../../../core/model/mcda/criteria';
 import {Form, Icon, Input, InputOnChangeData, Menu, MenuItemProps, Segment} from 'semantic-ui-react';
 import {IGridSize} from '../../../../core/model/geometry/GridSize.type';
 import {MCDA} from '../../../../core/model/mcda';
-import { CriteriaCollection } from '../../../../core/model/mcda/criteria';
+import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {criterionStep} from '../../defaults/defaults';
+import React, {ChangeEvent, MouseEvent, useEffect, useState} from 'react';
 
 const styles = {
     noPaddingBottom: {

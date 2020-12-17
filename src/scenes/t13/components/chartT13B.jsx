@@ -1,20 +1,19 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {pure} from 'recompose';
-
 import {
-    ResponsiveContainer,
-    LineChart,
-    XAxis,
-    YAxis,
     CartesianGrid,
-    Line, Label
+    Label,
+    Line,
+    LineChart,
+    ResponsiveContainer,
+    XAxis, YAxis
 } from 'recharts'
+import {pure} from 'recompose';
+import PropTypes from 'prop-types';
+import React from 'react';
 
+import {Button, Grid, Icon, Segment} from 'semantic-ui-react';
 import {SETTINGS_SELECTED_H0, SETTINGS_SELECTED_HL, SETTINGS_SELECTED_NOTHING} from '../defaults/T13B';
 import {calculateTravelTimeT13B, calculateXwd} from '../calculations';
 import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
-import {Button, Grid, Icon, Segment} from 'semantic-ui-react';
 
 export function calculateDiagramData(w, K, ne, L1, h1, xMin, xMax, dX) {
     const data = [];
@@ -45,14 +44,14 @@ const renderLabels = (xe, xi, L, data) => {
     if (xe > L) {
         return (
             <Segment inverted color='orange' secondary style={styles.diagramErrorLabel}>
-                <p>Arrival location x<sub>e</sub> can not be bigger than the aquifer's length, L<sup>'</sup>.</p>
+                <p>Arrival location x<sub>e</sub> can not be bigger than the aquifer&apos;s length, L<sup>&apos;</sup>.</p>
             </Segment>
         );
     }
     if (xi > L) {
         return (
             <Segment inverted color='orange' secondary >
-                <p>Initial location x<sub>i</sub> can not be bigger than the aquifer's length, L<sup>'</sup>.</p>
+                <p>Initial location x<sub>i</sub> can not be bigger than the aquifer&apos;s length, L<sup>&apos;</sup>.</p>
             </Segment>
         );
     }

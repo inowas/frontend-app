@@ -47,7 +47,7 @@ class BoundarySynchronizer extends React.Component<IProps, IState> {
         };
     }
 
-    public componentWillReceiveProps(nextProps: IProps) {
+    public UNSAFE_componentWillReceiveProps(nextProps: IProps) {
         const boundaryList = nextProps.currentBoundaries.compareWith(
             nextProps.model.stressperiods, nextProps.newBoundaries
         );

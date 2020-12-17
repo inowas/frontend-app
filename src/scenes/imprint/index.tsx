@@ -1,6 +1,6 @@
-import React from 'react';
 import {Grid, Header} from 'semantic-ui-react';
 import AppContainer from '../shared/AppContainer';
+import React from 'react';
 
 const imprint = () => (
     <AppContainer navbarItems={[]}>

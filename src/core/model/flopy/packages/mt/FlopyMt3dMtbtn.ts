@@ -1,5 +1,5 @@
-import {Transport} from '../../../modflow';
 import {IPropertyValueObject} from '../../../types';
+import {Transport} from '../../../modflow';
 import FlopyMt3dPackage from './FlopyMt3dPackage';
 
 export interface IFlopyMt3dMtBtn extends IPropertyValueObject {

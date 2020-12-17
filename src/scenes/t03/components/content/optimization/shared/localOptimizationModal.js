@@ -1,7 +1,7 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import {Button, Form, Grid, Modal, Segment} from 'semantic-ui-react';
-import {OptimizationObjective, OptimizationInput, OptimizationSolution} from '../../../../../../core/model/modflow/optimization';
+import {OptimizationInput, OptimizationObjective, OptimizationSolution} from '../../../../../../core/model/modflow/optimization';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 class LocalOptimizationModal extends React.Component {
 
@@ -13,7 +13,8 @@ class LocalOptimizationModal extends React.Component {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    UNSAFE_componentWillReceiveProps(nextProps, nextContext) {
         this.setState({
             optimization: nextProps.optimizationInput.toObject()
         });

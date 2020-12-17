@@ -1,14 +1,14 @@
-import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 import {Button, DropdownProps, Form, Grid, Icon, InputOnChangeData, Message, Radio, Table} from 'semantic-ui-react';
-import GridSize from '../../../../core/model/geometry/GridSize';
-import {Criterion, Rule, RulesCollection} from '../../../../core/model/mcda/criteria';
 import {CriteriaType, ICriterion} from '../../../../core/model/mcda/criteria/Criterion.type';
+import {Criterion, Rule, RulesCollection} from '../../../../core/model/mcda/criteria';
+import {ILegendItemDiscrete} from '../../../../services/rainbowvis/types';
 import {IRule, RuleIndex} from '../../../../core/model/mcda/criteria/Rule.type';
 import {RasterLayer} from '../../../../core/model/mcda/gis';
-import {dropData} from '../../../../services/api';
-import {ILegendItemDiscrete} from '../../../../services/rainbowvis/types';
 import {criterionStep} from '../../defaults/defaults';
+import {dropData} from '../../../../services/api';
 import CriteriaRasterMap from './criteriaRasterMap';
+import GridSize from '../../../../core/model/geometry/GridSize';
+import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 
 const legend: ILegendItemDiscrete[] = [
     {

@@ -1,8 +1,8 @@
-import React from 'react';
-import {pure} from 'recompose';
-import PropTypes from 'prop-types';
-import ParameterSlider from '../../scenes/shared/simpleTools/parameterSlider';
 import {Button, Grid} from 'semantic-ui-react';
+import {pure} from 'recompose';
+import ParameterSlider from '../../scenes/shared/simpleTools/parameterSlider';
+import PropTypes from 'prop-types';
+import React from 'react';
 import SliderParameter from './simpleTools/parameterSlider/SliderParameter';
 
 const styles = {
@@ -28,7 +28,7 @@ class Parameters extends React.Component {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         this.setState({
             parameters: nextProps.parameters.map(p => p.toObject)
         });
@@ -69,7 +69,7 @@ class Parameters extends React.Component {
                 {params}
             </Grid>
         );
-    };
+    }
 }
 
 Parameters.propTypes = {

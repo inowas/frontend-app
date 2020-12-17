@@ -131,6 +131,8 @@ export const exportChartImage = (ref: TChart | null) => {
     if (!ref) {
         return null;
     }
+
+    // eslint-disable-next-line react/no-find-dom-node
     const domNode = ReactDOM.findDOMNode(ref);
     if (!(domNode instanceof Element)) {
         return null;

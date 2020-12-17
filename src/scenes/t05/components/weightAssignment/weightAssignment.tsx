@@ -1,4 +1,3 @@
-import React, {MouseEvent, useState} from 'react';
 import {
     Button,
     Dropdown,
@@ -9,15 +8,16 @@ import {
     Message,
     Table
 } from 'semantic-ui-react';
+import {ICriterion} from '../../../../core/model/mcda/criteria/Criterion.type';
 import {MCDA} from '../../../../core/model/mcda';
 import {WeightAssignment} from '../../../../core/model/mcda/criteria';
-import CriteriaCollection from '../../../../core/model/mcda/criteria/CriteriaCollection';
-import {ICriterion} from '../../../../core/model/mcda/criteria/Criterion.type';
 import {WeightAssignmentType} from '../../../../core/model/mcda/criteria/WeightAssignment.type';
+import CriteriaCollection from '../../../../core/model/mcda/criteria/CriteriaCollection';
 import MultiInfluence from './multiInfluence';
 import PairwiseComparison from './pairwise';
 import Ranking from './ranking';
 import Rating from './rating';
+import React, {MouseEvent, useState} from 'react';
 
 interface IProps {
     toolName: string;
@@ -103,7 +103,7 @@ const WeightAssignmentEditor = (props: IProps) => {
         );
     };
 
-    const renderMethods = (name: string, criterion: ICriterion | null = null, key: number = -1) => {
+    const renderMethods = (name: string, criterion: ICriterion | null = null, key = -1) => {
         const subCriteria = !criterion ? mcda.criteriaCollection.findBy('parent', null) :
             mcda.criteriaCollection.findBy('parent', criterion.id);
 

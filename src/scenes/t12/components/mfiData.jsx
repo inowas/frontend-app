@@ -1,8 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import {Button, Form, Header, Input, Table} from 'semantic-ui-react';
-import uuidv4 from 'uuid';
 import {cloneDeep} from 'lodash';
+import PropTypes from 'prop-types';
+import React from 'react';
+import uuidv4 from 'uuid';
 
 class MfiData extends React.Component {
     constructor(props) {
@@ -13,7 +13,7 @@ class MfiData extends React.Component {
         };
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         this.setState({
             mfi: this.setMfiIds(newProps.mfi)
         });

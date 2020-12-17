@@ -1,10 +1,10 @@
-import React from 'react';
-import {pure} from 'recompose';
-import PropTypes from 'prop-types';
 import {Form, Grid, Header, Icon, Message, Radio, Segment} from 'semantic-ui-react';
 import {SETTINGS_SELECTED_H0, SETTINGS_SELECTED_HL} from '../defaults/T13B';
 import {calculateXwd} from '../calculations';
 import {getParameterValues} from '../../shared/simpleTools/helpers';
+import {pure} from 'recompose';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 const Settings = ({settings, onChange, parameters}) => {
 

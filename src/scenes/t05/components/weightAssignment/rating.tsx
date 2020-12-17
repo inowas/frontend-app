@@ -1,7 +1,7 @@
-import React, {ChangeEvent, useState} from 'react';
 import {Form, Grid, Input, InputOnChangeData, Message, Segment, Table} from 'semantic-ui-react';
-import {Weight, WeightAssignment, WeightsCollection} from '../../../../core/model/mcda/criteria';
 import {IWeightAssignment} from '../../../../core/model/mcda/criteria/WeightAssignment.type';
+import {Weight, WeightAssignment, WeightsCollection} from '../../../../core/model/mcda/criteria';
+import React, {ChangeEvent, useState} from 'react';
 
 interface IProps {
     handleChange: (wa: WeightAssignment) => any;

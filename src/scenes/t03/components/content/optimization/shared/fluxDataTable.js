@@ -1,8 +1,7 @@
-/* eslint-disable react/no-multi-comp */
-import React from 'react';
-import PropTypes from 'prop-types';
-import moment from 'moment/moment';
 import {Table} from 'semantic-ui-react';
+import PropTypes from 'prop-types';
+import React from 'react';
+import moment from 'moment/moment';
 
 const styles = {
     input: {
@@ -20,7 +19,8 @@ class FluxDataTable extends React.Component {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    UNSAFE_componentWillReceiveProps(nextProps, nextContext) {
         this.setState({
             rows: nextProps.rows
         });

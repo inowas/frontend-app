@@ -1,8 +1,8 @@
-import {IGridSize} from '../geometry/GridSize.type';
 import {ICriterion, ICriterion1v0} from './criteria/Criterion.type';
-import {IWeightAssignment} from './criteria/WeightAssignment.type';
 import {IGis, IGis1v0} from './gis/Gis.type';
+import {IGridSize} from '../geometry/GridSize.type';
 import {ISuitability, ISuitability1v0} from './Suitability.type';
+import {IWeightAssignment} from './criteria/WeightAssignment.type';
 
 export interface IMCDA {
     criteria: ICriterion[];

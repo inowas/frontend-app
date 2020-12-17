@@ -1,6 +1,6 @@
+import {CLEAR} from './model';
 import {IVariableDensity} from '../../../core/model/modflow/variableDensity/VariableDensity.type';
 import {LOGOUT, UNAUTHORIZED} from '../../user/actions/actions';
-import {CLEAR} from './model';
 
 export const UPDATE_VARIABLE_DENSITY = 'T03_UPDATE_VARIABLE_DENSITY';
 

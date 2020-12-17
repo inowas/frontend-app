@@ -1,20 +1,20 @@
-import {LineString} from 'geojson';
-import {cloneDeep, orderBy, sortedUniq} from 'lodash';
-import moment, {DurationInputArg1, DurationInputArg2, Moment} from 'moment';
-import Uuid from 'uuid';
-import BoundingBox from '../../geometry/BoundingBox';
-import {ICells} from '../../geometry/Cells.type';
-import GridSize from '../../geometry/GridSize';
 import {Cells, Geometry} from '../index';
-import Stressperiods from '../Stressperiods';
-import {ISpValues, IValueProperty} from './Boundary.type';
+import {ICells} from '../../geometry/Cells.type';
 import {
     IFlowAndHeadBoundary,
     IFlowAndHeadBoundaryExport,
     IFlowAndHeadBoundaryFeature
 } from './FlowAndHeadBoundary.type';
-import LineBoundary from './LineBoundary';
 import {IObservationPoint} from './ObservationPoint.type';
+import {ISpValues, IValueProperty} from './Boundary.type';
+import {LineString} from 'geojson';
+import {cloneDeep, orderBy, sortedUniq} from 'lodash';
+import BoundingBox from '../../geometry/BoundingBox';
+import GridSize from '../../geometry/GridSize';
+import LineBoundary from './LineBoundary';
+import Stressperiods from '../Stressperiods';
+import Uuid from 'uuid';
+import moment, {DurationInputArg1, DurationInputArg2, Moment} from 'moment';
 
 export default class FlowAndHeadBoundary extends LineBoundary {
 

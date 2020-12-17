@@ -1,8 +1,4 @@
-import {LineString, Point, Polygon} from 'geojson';
-import BoundingBox from '../../geometry/BoundingBox';
-import {ICells} from '../../geometry/Cells.type';
-import {GeoJson} from '../../geometry/Geometry.type';
-import GridSize from '../../geometry/GridSize';
+import {Boundary} from './index';
 import {
     BoundaryType,
     IBoundary,
@@ -10,26 +6,30 @@ import {
     IBoundaryFeature,
     ISpValues
 } from './Boundary.type';
-import ConstantHeadBoundary from './ConstantHeadBoundary';
+import {GeoJson} from '../../geometry/Geometry.type';
+import {ICells} from '../../geometry/Cells.type';
 import {IConstantHeadBoundary, IConstantHeadBoundaryExport} from './ConstantHeadBoundary.type';
-import DrainageBoundary from './DrainageBoundary';
 import {IDrainageBoundary, IDrainageBoundaryExport} from './DrainageBoundary.type';
-import EvapotranspirationBoundary from './EvapotranspirationBoundary';
 import {IEvapotranspirationBoundary, IEvapotranspirationBoundaryExport} from './EvapotranspirationBoundary.type';
-import FlowAndHeadBoundary from './FlowAndHeadBoundary';
 import {IFlowAndHeadBoundary, IFlowAndHeadBoundaryExport} from './FlowAndHeadBoundary.type';
-import GeneralHeadBoundary from './GeneralHeadBoundary';
 import {IGeneralHeadBoundary, IGeneralHeadBoundaryExport} from './GeneralHeadBoundary.type';
-import HeadObservationWell from './HeadObservationWell';
 import {IHeadObservationWell, IHeadObservationWellExport} from './HeadObservationWell.type';
-import {Boundary} from './index';
 import {IObservationPoint} from './ObservationPoint.type';
-import RechargeBoundary from './RechargeBoundary';
 import {IRechargeBoundary, IRechargeBoundaryExport} from './RechargeBoundary.type';
-import RiverBoundary from './RiverBoundary';
 import {IRiverBoundary, IRiverBoundaryExport} from './RiverBoundary.type';
-import WellBoundary from './WellBoundary';
 import {IWellBoundary, IWellBoundaryExport} from './WellBoundary.type';
+import {LineString, Point, Polygon} from 'geojson';
+import BoundingBox from '../../geometry/BoundingBox';
+import ConstantHeadBoundary from './ConstantHeadBoundary';
+import DrainageBoundary from './DrainageBoundary';
+import EvapotranspirationBoundary from './EvapotranspirationBoundary';
+import FlowAndHeadBoundary from './FlowAndHeadBoundary';
+import GeneralHeadBoundary from './GeneralHeadBoundary';
+import GridSize from '../../geometry/GridSize';
+import HeadObservationWell from './HeadObservationWell';
+import RechargeBoundary from './RechargeBoundary';
+import RiverBoundary from './RiverBoundary';
+import WellBoundary from './WellBoundary';
 
 export default abstract class BoundaryFactory {
 

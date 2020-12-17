@@ -1,12 +1,11 @@
-import {union} from '@turf/turf';
 import * as turf from '@turf/turf';
-import {LatLngExpression} from 'leaflet';
-import React from 'react';
-import {FeatureGroup, Polygon, Polyline} from 'react-leaflet';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../core/model/geometry';
+import {FeatureGroup, Polygon, Polyline} from 'react-leaflet';
+import {LatLngExpression} from 'leaflet';
+import {union} from '@turf/turf';
+import React from 'react';
 
-const createCellPolygons = (boundingBox: BoundingBox, gridSize: GridSize, cells: Cells, style: object = {}) => {
-
+const createCellPolygons = (boundingBox: BoundingBox, gridSize: GridSize, cells: Cells, style = {}) => {
     const dX = boundingBox.dX / gridSize.nX;
     const dY = boundingBox.dY / gridSize.nY;
     const gridCells: Array<[number, number, number, number]> = [];
@@ -15,10 +14,10 @@ const createCellPolygons = (boundingBox: BoundingBox, gridSize: GridSize, cells:
         const x = a[0];
         const y = a[1];
 
-        const cXmin = boundingBox.xMin + x * dX;
-        const cXmax = boundingBox.xMin + (x + 1) * dX;
-        const cYmin = boundingBox.yMax - y * dY;
-        const cYmax = boundingBox.yMax - (y + 1) * dY;
+        const cXmin = boundingBox.xMin + (x * dX);
+        const cXmax = boundingBox.xMin + ((x + 1) * dX);
+        const cYmin = boundingBox.yMax - (y * dY);
+        const cYmax = boundingBox.yMax - ((y + 1) * dY);
 
         gridCells.push([cXmin, cXmax, cYmin, cYmax]);
     });
@@ -41,7 +40,7 @@ const createCellPolygons = (boundingBox: BoundingBox, gridSize: GridSize, cells:
     });
 };
 
-const createPolygon = (boundingBox: BoundingBox, gridSize: GridSize, cells: Cells, style: object = {}) => {
+const createPolygon = (boundingBox: BoundingBox, gridSize: GridSize, cells: Cells, style = {}) => {
 
     const dX = boundingBox.dX / gridSize.nX;
     const dY = boundingBox.dY / gridSize.nY;
@@ -85,10 +84,10 @@ const createPolygon = (boundingBox: BoundingBox, gridSize: GridSize, cells: Cell
             const x1 = e[1];
             const y = rIdx;
 
-            const cXmin = boundingBox.xMin + x0 * dX;
-            const cXmax = boundingBox.xMin + (x1 + 1) * dX;
-            const cYmin = boundingBox.yMax - y * dY;
-            const cYmax = boundingBox.yMax - (y + 1) * dY;
+            const cXmin = boundingBox.xMin + (x0 * dX);
+            const cXmax = boundingBox.xMin + ((x1 + 1) * dX);
+            const cYmin = boundingBox.yMax - (y * dY);
+            const cYmax = boundingBox.yMax - ((y + 1) * dY);
 
             mergedCells.push([cXmin, cXmax, cYmin, cYmax]);
         });

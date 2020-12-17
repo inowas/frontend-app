@@ -1,8 +1,8 @@
 import {Array2D} from '../../../geometry/Array2D.type';
-import Soilmodel from '../../../modflow/soilmodel/Soilmodel';
 import {IPropertyValueObject} from '../../../types';
 import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
 import FlopyModflowPackage from './FlopyModflowPackage';
+import Soilmodel from '../../../modflow/soilmodel/Soilmodel';
 
 export interface IFlopyModflowMflpf extends IPropertyValueObject {
     laytyp: number | number[];

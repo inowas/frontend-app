@@ -1,15 +1,15 @@
 import * as turf from '@turf/helpers';
-import {lineDistance, lineSlice} from '@turf/turf';
+import {Boundary, ObservationPoint} from './index';
+import {Cells, Geometry} from '../index';
+import {IConstantHeadBoundaryFeature} from './ConstantHeadBoundary.type';
+import {IObservationPoint} from './ObservationPoint.type';
+import {ISpValues} from './Boundary.type';
 import {LineString, Point} from 'geojson';
-import moment, {Moment} from 'moment';
+import {lineDistance, lineSlice} from '@turf/turf';
 import BoundingBox from '../../geometry/BoundingBox';
 import GridSize from '../../geometry/GridSize';
-import {Cells, Geometry} from '../index';
 import Stressperiods from '../Stressperiods';
-import {ISpValues} from './Boundary.type';
-import {IConstantHeadBoundaryFeature} from './ConstantHeadBoundary.type';
-import {Boundary, ObservationPoint} from './index';
-import {IObservationPoint} from './ObservationPoint.type';
+import moment, {Moment} from 'moment';
 
 const distanceOnLine = (boundaryGeometry: LineString, opGeometry: Point) => {
     const start = turf.point(boundaryGeometry.coordinates[0]);

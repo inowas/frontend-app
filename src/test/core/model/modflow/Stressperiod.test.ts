@@ -1,5 +1,5 @@
-import moment from 'moment';
 import {Stressperiod} from '../../../../core/model/modflow';
+import moment from 'moment';
 
 test('Stressperiod constructor', () => {
 

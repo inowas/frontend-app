@@ -1,12 +1,12 @@
-import React, {SyntheticEvent} from 'react';
 import {DropdownProps, Form} from 'semantic-ui-react';
 import {FlopyModflowMfbcf, FlopyModflowMflpf} from '../../../../../../core/model/flopy/packages/mf';
 import FlopyModflow, {flowPackages} from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
 import FlopyModflowFlowPackage from '../../../../../../core/model/flopy/packages/mf/FlopyModflowFlowPackage';
+import React, {SyntheticEvent} from 'react';
 
-import InfoPopup from '../../../../../shared/InfoPopup';
 import {documentation} from '../../../../defaults/flow';
 import BcfPackageProperties from './bcfPackageProperties';
+import InfoPopup from '../../../../../shared/InfoPopup';
 import LpfPackageProperties from './lpfPackageProperties';
 
 interface IProps {

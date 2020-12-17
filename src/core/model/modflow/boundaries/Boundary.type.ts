@@ -19,10 +19,10 @@ import {
     IGeneralHeadBoundaryFeature
 } from './GeneralHeadBoundary.type';
 import {IHeadObservationWell, IHeadObservationWellExport} from './HeadObservationWell.type';
-import {LineBoundaryType} from './LineBoundary.type';
 import {IRechargeBoundary, IRechargeBoundaryExport} from './RechargeBoundary.type';
 import {IRiverBoundary, IRiverBoundaryExport, IRiverBoundaryFeature} from './RiverBoundary.type';
 import {IWellBoundary, IWellBoundaryExport} from './WellBoundary.type';
+import {LineBoundaryType} from './LineBoundary.type';
 
 export type BoundaryType = 'evt' | 'rch' | 'wel' | 'hob' | 'lak' | LineBoundaryType;
 

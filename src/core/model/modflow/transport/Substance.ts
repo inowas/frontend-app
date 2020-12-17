@@ -1,5 +1,5 @@
-import Uuid from 'uuid';
 import {IBoundaryConcentration, ISubstance} from './Substance.type';
+import Uuid from 'uuid';
 
 class Substance {
 

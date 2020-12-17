@@ -1,6 +1,6 @@
-import {Polygon} from 'geojson';
 import {Array2D} from '../../../../../core/model/geometry/Array2D.type';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
+import {Polygon} from 'geojson';
 import {defaultSoilmodelParameters} from '../../../../../scenes/t03/defaults/soilmodel';
 
 export const eSoilmodel = {
@@ -224,7 +224,7 @@ export const eSoilmodelLegacy = {
                     isActive: true,
                     label: 'hk',
                     name: 'Horizontal conductivity along rows',
-                    unit: 'm\/day',
+                    unit: 'm/day',
                     value: 10
                 },
                 hani: {
@@ -240,7 +240,7 @@ export const eSoilmodelLegacy = {
                     isActive: true,
                     label: 'vka',
                     name: 'Vertical hydraulic conductivity',
-                    unit: 'm\/day',
+                    unit: 'm/day',
                     value: 1
                 },
                 ss: {
@@ -256,7 +256,7 @@ export const eSoilmodelLegacy = {
                     isActive: true,
                     label: 'sy',
                     name: 'Specific yield',
-                    unit: '1\/m',
+                    unit: '1/m',
                     value: 0.15
                 }
             }, {

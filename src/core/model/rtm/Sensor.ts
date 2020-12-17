@@ -1,7 +1,7 @@
+import {ISensor} from './Sensor.type';
+import {ParameterCollection} from './ParameterCollection';
 import {Point} from 'geojson';
 import {cloneDeep} from 'lodash';
-import {ParameterCollection} from './ParameterCollection';
-import {ISensor} from './Sensor.type';
 
 export default class Sensor {
 

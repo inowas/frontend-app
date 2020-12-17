@@ -1,8 +1,8 @@
-import {DurationInputArg1, DurationInputArg2} from 'moment';
-import moment from 'moment/moment';
-import React, {ChangeEvent, MouseEvent, useState} from 'react';
 import {Button, Checkbox, CheckboxProps, Form, Icon, InputOnChangeData, Popup, Table} from 'semantic-ui-react';
+import {DurationInputArg1, DurationInputArg2} from 'moment';
 import {Stressperiods} from '../../../../../core/model/modflow';
+import React, {ChangeEvent, MouseEvent, useState} from 'react';
+import moment from 'moment/moment';
 
 interface IProps {
     stressperiods: Stressperiods;

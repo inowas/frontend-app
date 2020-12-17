@@ -1,4 +1,3 @@
-import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 import {
     Button,
     DropdownProps,
@@ -13,10 +12,11 @@ import {
     Select,
     Table
 } from 'semantic-ui-react';
+import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 // import Graph from 'vis-react';
-import {MCDA} from '../../../core/model/mcda';
 import {CriteriaCollection, Criterion} from '../../../core/model/mcda/criteria';
 import {CriteriaType, CriterionIndex, ICriterion} from '../../../core/model/mcda/criteria/Criterion.type';
+import {MCDA} from '../../../core/model/mcda';
 
 const styles = {
     graph: {

@@ -1,21 +1,21 @@
-import {AllGeoJSON} from '@turf/helpers';
 import * as turf from '@turf/turf';
-import {GeoJsonObject} from 'geojson';
-import {uniqueId} from 'lodash';
-import React, {FormEvent, useEffect, useState} from 'react';
-import {GeoJSON, Map} from 'react-leaflet';
+import {AllGeoJSON} from '@turf/helpers';
+import {BasicTileLayer} from '../../../../../services/geoTools/tileLayers';
+import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../core/model/modflow';
 import {Button, Checkbox, Form, Grid, Icon, InputOnChangeData, Modal} from 'semantic-ui-react';
+import {CALCULATE_CELLS_INPUT} from '../../../worker/t03.worker';
+import {GeoJSON, Map} from 'react-leaflet';
+import {GeoJsonObject} from 'geojson';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {IGridSize} from '../../../../../core/model/geometry/GridSize.type';
-import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../core/model/modflow';
-import AffectedCellsLayer from '../../../../../services/geoTools/affectedCellsLayer';
+import {asyncWorker} from '../../../worker/worker';
 import {dxCell, dyCell} from '../../../../../services/geoTools/distance';
 import {getStyle} from '../../../../../services/geoTools/mapHelpers';
-import {BasicTileLayer} from '../../../../../services/geoTools/tileLayers';
-import SliderWithTooltip from '../../../../shared/complexTools/SliderWithTooltip';
-import {CALCULATE_CELLS_INPUT} from '../../../worker/t03.worker';
-import {asyncWorker} from '../../../worker/worker';
 import {renderAreaLayer} from '../../maps/mapLayers';
+import {uniqueId} from 'lodash';
+import AffectedCellsLayer from '../../../../../services/geoTools/affectedCellsLayer';
+import React, {FormEvent, useEffect, useState} from 'react';
+import SliderWithTooltip from '../../../../shared/complexTools/SliderWithTooltip';
 
 interface IProps {
     boundingBox: BoundingBox;

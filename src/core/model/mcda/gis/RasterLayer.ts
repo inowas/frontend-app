@@ -1,12 +1,12 @@
-import uuidv4 from 'uuid/v4';
-import {rainbowFactory} from '../../../../scenes/shared/rasterData/helpers';
-import {heatMapColors} from '../../../../scenes/t05/defaults/gis';
-import {ILegendItemContinuous, ILegendItemDiscrete} from '../../../../services/rainbowvis/types';
-import {BoundingBox} from '../../geometry';
 import {Array2D} from '../../geometry/Array2D.type';
-import {RulesCollection} from '../criteria';
+import {BoundingBox} from '../../geometry';
 import {CriteriaType} from '../criteria/Criterion.type';
+import {ILegendItemContinuous, ILegendItemDiscrete} from '../../../../services/rainbowvis/types';
 import {IRasterLayer, IRasterLayer1v0} from './RasterLayer.type';
+import {RulesCollection} from '../criteria';
+import {heatMapColors} from '../../../../scenes/t05/defaults/gis';
+import {rainbowFactory} from '../../../../scenes/shared/rasterData/helpers';
+import uuidv4 from 'uuid/v4';
 
 class RasterLayer {
 

@@ -1,10 +1,10 @@
 import {BoundaryCollection, DrainageBoundary} from '../../../modflow/boundaries';
-import Stressperiods from '../../../modflow/Stressperiods';
 import {IPropertyValueObject} from '../../../types';
-import {calculateLineBoundarySpData} from '../../helpers';
 import {IStressPeriodData} from './FlopyModflow.type';
+import {calculateLineBoundarySpData} from '../../helpers';
 import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
 import FlopyModflowLineBoundary from './FlopyModflowLineBoundary';
+import Stressperiods from '../../../modflow/Stressperiods';
 
 /*
 https://modflowpy.github.io/flopydoc/mfdrn.html

@@ -1,18 +1,18 @@
-import React, {MouseEvent, useEffect, useState} from 'react';
-import {connect} from 'react-redux';
-import {withRouter} from 'react-router-dom';
+import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {Button, Grid, Menu, MenuItemProps, Segment} from 'semantic-ui-react';
-import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
+import {IPropertyValueObject} from '../../../../../core/model/types';
+import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
+import {Mp7PackageProperties, Mp7basPackageProperties} from './index';
+import {connect} from 'react-redux';
+import {sendCommand} from '../../../../../services/api';
+import {updatePackages} from '../../../actions/actions';
+import {withRouter} from 'react-router-dom';
+import ContentToolBar from '../../../../shared/ContentToolbar';
 import FlopyModpath from '../../../../../core/model/flopy/packages/mp/FlopyModpath';
 import FlopyModpathPackage from '../../../../../core/model/flopy/packages/mp/FlopyModpathPackage';
-import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
-import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
-import {IPropertyValueObject} from '../../../../../core/model/types';
-import {sendCommand} from '../../../../../services/api';
-import ContentToolBar from '../../../../shared/ContentToolbar';
-import {updatePackages} from '../../../actions/actions';
+import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
-import {Mp7basPackageProperties, Mp7PackageProperties} from './index';
+import React, {MouseEvent, useEffect, useState} from 'react';
 
 const baseUrl = '/tools/T03/';
 

@@ -1,13 +1,13 @@
-import React, {MouseEvent, SyntheticEvent, useState} from 'react';
 import {Accordion, AccordionTitleProps, DropdownProps, Form, Grid, Header, Icon, Input, Label} from 'semantic-ui-react';
-import {FlopyModflowMfbas} from '../../../../../../core/model/flopy/packages/mf';
 import {Array2D} from '../../../../../../core/model/geometry/Array2D.type';
+import {FlopyModflowMfbas} from '../../../../../../core/model/flopy/packages/mf';
 import {GridSize, Soilmodel} from '../../../../../../core/model/modflow';
 import {ILegendItemDiscrete} from '../../../../../../services/rainbowvis/types';
-import renderInfoPopup from '../../../../../shared/complexTools/InfoPopup';
-import {RasterDataImage} from '../../../../../shared/rasterData';
 import {PopupPosition} from '../../../../../types';
+import {RasterDataImage} from '../../../../../shared/rasterData';
 import {documentation} from '../../../../defaults/flow';
+import React, {MouseEvent, SyntheticEvent, useState} from 'react';
+import renderInfoPopup from '../../../../../shared/complexTools/InfoPopup';
 
 interface IProps {
     mfPackage: FlopyModflowMfbas;

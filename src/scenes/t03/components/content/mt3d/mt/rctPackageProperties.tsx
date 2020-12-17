@@ -1,9 +1,9 @@
-import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 import {DropdownProps, Form, Header, Input, Segment} from 'semantic-ui-react';
-import FlopyMt3dMtrct, {IFlopyMt3dMtrct} from '../../../../../../core/model/flopy/packages/mt/FlopyMt3dMtrct';
-import ToggleableInput from '../../../../../shared/complexTools/ToggleableInput';
-import InfoPopup from '../../../../../shared/InfoPopup';
 import {documentation} from '../../../../defaults/transport';
+import FlopyMt3dMtrct, {IFlopyMt3dMtrct} from '../../../../../../core/model/flopy/packages/mt/FlopyMt3dMtrct';
+import InfoPopup from '../../../../../shared/InfoPopup';
+import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
+import ToggleableInput from '../../../../../shared/complexTools/ToggleableInput';
 
 interface IProps {
     mtPackage: FlopyMt3dMtrct;
