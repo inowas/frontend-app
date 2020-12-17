@@ -1,5 +1,5 @@
-import React from 'react';
 import {Route, Switch} from 'react-router-dom';
+import React from 'react';
 
 import * as Scenes from './scenes';
 import PrivateRoute from './services/router/PrivateRoute';
@@ -17,6 +17,8 @@ const getRoutes = () => {
         return (
             <Switch>
                 <PrivateRoute exact={true} path="/" component={Scenes.LandingPage} forRoles={['ROLE_USER']}/>
+                <PrivateRoute exact={true} path="/admin/:property?/:id?" component={Scenes.Admin}
+                              forRoles={['ROLE_ADMIN']}/>
                 <PrivateRoute exact={true} path="/tools" component={Scenes.Dashboard} forRoles={['ROLE_USER']}/>
                 <PrivateRoute
                     exact={true}
@@ -76,6 +78,7 @@ const getRoutes = () => {
 
                 <Route path="/imprint" component={Scenes.Imprint}/>
                 <Route path="/terms-and-conditions" component={Scenes.TermsAndConditions}/>
+                <Route path="/login/:id?/:token?" component={Scenes.Login}/>
                 <Route path="/login" component={Scenes.Login}/>
                 <Route path="/logout" component={Scenes.Logout}/>
                 <Route path="/signup" component={Scenes.SignUp}/>
@@ -86,6 +89,8 @@ const getRoutes = () => {
     return (
         <Switch>
             <PrivateRoute exact={true} path="/" component={Scenes.LandingPage} forRoles={['ROLE_USER']}/>
+            <PrivateRoute exact={true} path="/admin/:property?/:id?" component={Scenes.Admin}
+                          forRoles={['ROLE_ADMIN']}/>
             <PrivateRoute exact={true} path="/tools" component={Scenes.Dashboard} forRoles={['ROLE_USER']}/>
             <PrivateRoute exact={true} path="/tools/T01" component={Scenes.T01} forRoles={['ROLE_USER']}/>
             <PrivateRoute exact={true} path="/tools/T02/:id?" component={Scenes.T02} forRoles={['ROLE_USER']}/>
@@ -160,7 +165,7 @@ const getRoutes = () => {
 
             <Route path="/imprint" component={Scenes.Imprint}/>
             <Route path="/terms-and-conditions" component={Scenes.TermsAndConditions}/>
-            <Route path="/login" component={Scenes.Login}/>
+            <Route path="/login/:id?/:token?" component={Scenes.Login}/>
             <Route path="/logout" component={Scenes.Logout}/>
             <Route path="/signup" component={Scenes.SignUp}/>
         </Switch>

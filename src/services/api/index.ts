@@ -55,7 +55,7 @@ export const sendCommand = (
 
 export const asyncSendCommand = async (command: AbstractCommand) => {
     const api = createApi(getToken());
-    return api.post('messagebox', command.toObject()).then((response) => response.data)
+    return api.post('messagebox', command.toObject()).then((response) => response.data);
 };
 
 export const sendCommandAsync = async (command: AbstractCommand) => {
@@ -339,6 +339,11 @@ export const submitSignUpCredentials = ({name, email, password}: ISubmitSignUpCr
 export const submitLoginCredentials = ({username, password}: { username: string, password: string }) => {
     const api = createApi();
     return api.post('login_check', {username, password});
+};
+
+export const submitTokenLogin = (userId: string, token: string) => {
+    const api = createApi();
+    return api.post('token_login', {user_id: userId, token});
 };
 
 export const dropData = (

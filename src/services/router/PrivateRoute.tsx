@@ -1,10 +1,10 @@
-import React, {ComponentType, useEffect, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {Route, useHistory} from 'react-router-dom';
 import {IRootReducer} from '../../reducers';
-import {setUser, unauthorized} from '../../scenes/user/actions/actions';
-import {getFetched, hasSessionKey} from '../../scenes/user/reducers';
+import {Route, useHistory} from 'react-router-dom';
 import {fetchUrl} from '../api';
+import {getFetched, hasSessionKey} from '../../scenes/user/reducers';
+import {setUser, unauthorized} from '../../scenes/user/actions/actions';
+import {useDispatch, useSelector} from 'react-redux';
+import React, {ComponentType, useEffect, useState} from 'react';
 
 interface IProps {
     component: ComponentType<any>;

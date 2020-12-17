@@ -1,7 +1,7 @@
-import uuidv4 from 'uuid';
 import {ISensorParameter} from '../../../core/model/rtm/Sensor.type';
+import uuidv4 from 'uuid';
 
-export const defaultsWithSession = (session: any) => {
+export const defaultsWithSession = (session?: any) => {
     const dws = defaults;
     if (session && !session.token) {
         dws.permissions = 'r--';

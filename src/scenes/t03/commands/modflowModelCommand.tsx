@@ -1,14 +1,14 @@
-import AbstractCommand from '../../../core/model/command/AbstractCommand';
-import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
+import {Boundary} from '../../../core/model/modflow/boundaries';
 import {IBoundingBox} from '../../../core/model/geometry/BoundingBox.type';
 import {ICells} from '../../../core/model/geometry/Cells.type';
 import {IGeometry} from '../../../core/model/geometry/Geometry.type';
 import {IGridSize} from '../../../core/model/geometry/GridSize.type';
-import {ModflowModel} from '../../../core/model/modflow';
-import {Boundary} from '../../../core/model/modflow/boundaries';
-import SoilmodelLayer from '../../../core/model/modflow/soilmodel/SoilmodelLayer';
 import {IStressPeriods} from '../../../core/model/modflow/Stressperiods.type';
 import {JSON_SCHEMA_URL} from '../../../services/api';
+import {ModflowModel} from '../../../core/model/modflow';
+import AbstractCommand from '../../../core/model/command/AbstractCommand';
+import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
+import SoilmodelLayer from '../../../core/model/modflow/soilmodel/SoilmodelLayer';
 
 class ModflowModelCommand extends AbstractCommand {
 
