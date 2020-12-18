@@ -6,7 +6,6 @@ import {
     WeightAssignmentIndex
 } from '../../../../core/model/mcda/criteria/WeightAssignment.type';
 import {WeightAssignment, WeightsCollection} from '../../../../core/model/mcda/criteria';
-import {pure} from 'recompose';
 import DragAndDropList from '../shared/dragAndDropList';
 import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 
@@ -217,4 +216,4 @@ const Ranking = (props: IProps) => {
     );
 };
 
-export default pure(Ranking);
+export default Ranking;

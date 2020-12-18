@@ -93,7 +93,7 @@ const SoilmodelEditor = () => {
         saving: null
     });
 
-    const {id, pid, property, type} = useParams();
+    const {id, pid, property, type} = useParams<{ id: string, pid: string, property: string, type: string }>();
 
     const dispatch = useDispatch();
     const location = useLocation();
@@ -125,6 +125,7 @@ const SoilmodelEditor = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pid, soilmodel]);
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const searchParams = new URLSearchParams(location.search);
     const activeParamType = searchParams.get('type') || 'soilmodel';
     const activeParam = searchParams.get('param') || 'properties';

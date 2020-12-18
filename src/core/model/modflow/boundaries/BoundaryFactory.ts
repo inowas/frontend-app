@@ -49,7 +49,7 @@ export default abstract class BoundaryFactory {
             });
         }
 
-        switch (type) {
+        switch (type as any) {
             case 'chd':
                 return new ConstantHeadBoundary(obj as IConstantHeadBoundary);
             case 'drn':

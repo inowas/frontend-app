@@ -27,7 +27,7 @@ const VariableDensityProperties = () => {
     const messages = MessagesCollection.fromObject(T03.messages);
 
     const dispatch = useDispatch();
-    const {property} = useParams();
+    const {property} = useParams<{property: string}>();
 
     const variableDensityRef = useRef<VariableDensity>();
     const editingState = useRef<{ [key: string]: IMessage | null }>({

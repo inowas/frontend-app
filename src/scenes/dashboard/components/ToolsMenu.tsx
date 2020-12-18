@@ -1,7 +1,6 @@
 import {IToolMenuItem, myTools} from '../defaults/tools';
 import {Icon, Menu} from 'semantic-ui-react';
 import {includes} from 'lodash';
-import {pure} from 'recompose';
 import React from 'react';
 import getConfig from '../../../config.default';
 
@@ -52,4 +51,4 @@ const toolsMenu = ({activeTool, onClick, roles, tools}: IProps) => {
     );
 };
 
-export default pure(toolsMenu);
+export default toolsMenu;
