@@ -6,7 +6,7 @@ import {
 } from 'recharts';
 import {calculateTravelTimeT13A} from '../calculations';
 import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
-import {pure} from 'recompose';
+
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -160,4 +160,4 @@ Chart.propTypes = {
     parameters: PropTypes.array.isRequired,
 };
 
-export default pure(Chart);
+export default Chart;

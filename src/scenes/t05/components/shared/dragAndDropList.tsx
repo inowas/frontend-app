@@ -8,7 +8,6 @@ import {
     DroppableProvided,
     DroppableStateSnapshot
 } from 'react-beautiful-dnd';
-import {pure} from 'recompose';
 import React, {CSSProperties} from 'react';
 
 const styles = {
@@ -168,4 +167,4 @@ const dragAndDropList = (props: IProps) => {
     );
 };
 
-export default pure(dragAndDropList);
+export default dragAndDropList;

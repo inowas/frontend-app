@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {getParameterValues} from '../../shared/simpleTools/helpers';
 import {Icon, Message} from 'semantic-ui-react';
 import {calcLambda, calcMu, calculateQCrit, calcXt} from '../calculations/calculationT09D';
-import {pure} from 'recompose';
+
 
 const Info = ({parameters, settings}) => {
     const {k, b, q, Q, xw, rhof, rhos} = getParameterValues(parameters);
@@ -53,4 +53,4 @@ Info.propTypes = {
     parameters: PropTypes.array.isRequired
 };
 
-export default pure(Info);
+export default Info;

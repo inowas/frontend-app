@@ -293,12 +293,15 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
             this._props.dis = FlopyModflowMfdis.fromObject(this._props.dis).update(model, soilmodel).toObject();
         }
 
-        if (pType === 'oc') {// eslint-disable-next-line no-case-declarations
+        if (pType === 'oc') {
             let oc;
             this._props.oc ?
                 oc = FlopyModflowMfoc.fromObject(this._props.oc).update(model, this._props.oc.stress_period_data) :
                 oc = FlopyModflowMfoc.create(model);
-            oc ? this._props.oc = oc.toObject() : delete this._props.oc;
+
+            if (oc) {
+                this._props.oc = oc.toObject()
+            }
         }
 
         if (pType === 'chd') {
@@ -309,7 +312,7 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
             chd ? this._props.chd = chd.toObject() : delete this._props.chd;
         }
 
-        if (pType === 'ghb') {// eslint-disable-next-line no-case-declarations
+        if (pType === 'ghb') {
             let ghb;
             this._props.ghb ?
                 ghb = FlopyModflowMfghb.fromObject(this._props.ghb).update(boundaries, model.stressperiods) :
@@ -317,7 +320,7 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
             ghb ? this._props.ghb = ghb.toObject() : delete this._props.ghb;
         }
 
-        if (pType === 'drn') {// eslint-disable-next-line no-case-declarations
+        if (pType === 'drn') {
             let drn;
             this._props.drn ?
                 drn = FlopyModflowMfdrn.fromObject(this._props.drn).update(boundaries, model.stressperiods) :
@@ -325,7 +328,7 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
             drn ? this._props.drn = drn.toObject() : delete this._props.drn;
         }
 
-        if (pType === 'evt') {// eslint-disable-next-line no-case-declarations
+        if (pType === 'evt') {
             let evt;
             this._props.evt ?
                 evt = FlopyModflowMfevt.fromObject(this._props.evt)
@@ -334,7 +337,7 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
             evt ? this._props.evt = evt.toObject() : delete this._props.evt;
         }
 
-        if (pType === 'fhb') {// eslint-disable-next-line no-case-declarations
+        if (pType === 'fhb') {
             let fhb;
             this._props.fhb ?
                 fhb = FlopyModflowMffhb.fromObject(this._props.fhb).update(boundaries, model.stressperiods) :

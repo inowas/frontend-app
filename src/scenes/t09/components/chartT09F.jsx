@@ -1,4 +1,4 @@
-import {pure} from 'recompose';
+
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -167,4 +167,4 @@ Chart.propTypes = {
     parameters: PropTypes.array.isRequired
 };
 
-export default pure(Chart);
+export default Chart;

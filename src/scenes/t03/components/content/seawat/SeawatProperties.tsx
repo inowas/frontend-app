@@ -1,7 +1,7 @@
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {EMessageState, IMessage} from '../../../../../core/model/messages/Message.type';
+import {FlopySeawat} from '../../../../../core/model/flopy';
 import {
-    FlopySeawat,
     FlopySeawatPackage,
     FlopySeawatSwtvdf,
     FlopySeawatSwtvsc

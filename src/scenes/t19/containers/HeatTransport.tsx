@@ -37,7 +37,7 @@ const HeatTransport = () => {
 
     const dispatch = useDispatch();
     const history = useHistory();
-    const {id} = useParams();
+    const {id} = useParams<{id: string}>();
 
     const T19 = useSelector((state: IRootReducer) => state.T19);
     const htm = T19.htm ? Htm.fromObject(T19.htm) : null;

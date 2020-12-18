@@ -1,5 +1,4 @@
 import {Button, Grid} from 'semantic-ui-react';
-import {pure} from 'recompose';
 import ParameterSlider from '../../scenes/shared/simpleTools/parameterSlider';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -78,4 +77,4 @@ Parameters.propTypes = {
     parameters: PropTypes.array.isRequired
 };
 
-export default pure(Parameters);
+export default Parameters;

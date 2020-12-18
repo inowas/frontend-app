@@ -43,8 +43,7 @@ class BoundaryDetailsImport extends React.Component<IProps, IState> {
         };
     }
 
-    // eslint-disable-next-line react/no-deprecated
-    public componentWillReceiveProps(nextProps: IProps) {
+    public UNSAFE_componentWillReceiveProps(nextProps: IProps) {
         if (!nextProps.boundary) {
             return;
         }

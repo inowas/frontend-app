@@ -17,7 +17,7 @@ interface IProps {
 }
 
 const ContentToolBar = (props: IProps) => {
-    const {property} = useParams();
+    const {property} = useParams<{property: string}>();
 
     const T03 = useSelector((state: IRootReducer) => state.T03);
     const messages = MessagesCollection.fromObject(T03.messages);
