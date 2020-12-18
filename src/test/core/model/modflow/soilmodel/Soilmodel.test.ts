@@ -1,8 +1,7 @@
-import {Polygon} from 'geojson';
 import {Geometry, GridSize} from '../../../../../core/model/geometry';
-import BoundingBox from '../../../../../core/model/geometry/BoundingBox';
 import {Soilmodel} from '../../../../../core/model/modflow';
 import {calculateActiveCells} from '../../../../../services/geoTools';
+import BoundingBox from '../../../../../core/model/geometry/BoundingBox';
 
 const boundingBox = new BoundingBox([[17.07494, 50.023623], [18.687221, 50.759482]]);
 const geometry = new Geometry({

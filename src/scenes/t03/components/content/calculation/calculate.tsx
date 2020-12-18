@@ -1,17 +1,17 @@
-import React, {useEffect, useState} from 'react';
-import {useDispatch} from 'react-redux';
-import {Grid, Header, Segment} from 'semantic-ui-react';
-import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
-import {Calculation, ModflowModel} from '../../../../../core/model/modflow';
-import Terminal from '../../../../shared/complexTools/Terminal';
-import {startCalculation} from '../../../actions/actions';
-import RunModelOverviewMap from '../../maps/runModelOverviewMap';
 import {
     CALCULATION_STARTED,
     CALCULATION_STATE_CALCULATING,
     CALCULATION_STATE_CALCULATION_FINISHED
 } from './CalculationProgress';
+import {Calculation, ModflowModel} from '../../../../../core/model/modflow';
 import {CalculationButton, CalculationProgress} from './index';
+import {Grid, Header, Segment} from 'semantic-ui-react';
+import {startCalculation} from '../../../actions/actions';
+import {useDispatch} from 'react-redux';
+import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
+import React, {useEffect, useState} from 'react';
+import RunModelOverviewMap from '../../maps/runModelOverviewMap';
+import Terminal from '../../../../shared/complexTools/Terminal';
 
 interface IProps {
     model: ModflowModel;

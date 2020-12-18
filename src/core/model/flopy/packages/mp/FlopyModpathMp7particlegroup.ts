@@ -2,7 +2,7 @@ import FlopyModpathMp7particledata from './FlopyModpathMp7particledata';
 import FlopyModpathPackage from './FlopyModpathPackage';
 
 export default class FlopyModpathMp7particlegroup extends FlopyModpathPackage {
-    private _particlegroupname: string = 'PG1';
+    private _particlegroupname = 'PG1';
     private _filename: string | null = null;
     private _releasedata: number | number[] = 0.0;
     private _particledata: FlopyModpathMp7particledata | null = null;

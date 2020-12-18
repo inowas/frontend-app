@@ -1,9 +1,9 @@
-import uuidv4 from 'uuid/v4';
+import {CriteriaRelation, Weight, WeightsCollection} from './index';
+import {ICriteriaRelation} from './CriteriaRelation.type';
+import {IWeightAssignment, WARankingSubMethod, WeightAssignmentType} from './WeightAssignment.type';
 import {calculatePwcWeights} from '../calculations';
 import CriteriaCollection from './CriteriaCollection';
-import {ICriteriaRelation} from './CriteriaRelation.type';
-import {CriteriaRelation, Weight, WeightsCollection} from './index';
-import {IWeightAssignment, WARankingSubMethod, WeightAssignmentType} from './WeightAssignment.type';
+import uuidv4 from 'uuid/v4';
 
 const methods = {
     rtn: 'Rating',

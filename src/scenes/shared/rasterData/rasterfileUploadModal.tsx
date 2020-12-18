@@ -1,4 +1,4 @@
-import React, {ChangeEvent, FormEvent, MouseEvent, SyntheticEvent, useState} from 'react';
+import {Array2D, Array3D} from '../../../core/model/geometry/Array2D.type';
 import {
     Button,
     CheckboxProps,
@@ -19,16 +19,16 @@ import {
     Segment,
 } from 'semantic-ui-react';
 import {GridSize} from '../../../core/model/geometry';
-import {Array2D, Array3D} from '../../../core/model/geometry/Array2D.type';
+import {IRasterFileMetadata} from '../../../services/api/types';
+import {InterpolationType} from './types';
+import {RainbowOrLegend} from '../../../services/rainbowvis/types';
 import {RasterParameter} from '../../../core/model/modflow/soilmodel';
 import {fetchRasterData, fetchRasterMetaData, uploadRasterfile} from '../../../services/api';
-import {IRasterFileMetadata} from '../../../services/api/types';
-import {RainbowOrLegend} from '../../../services/rainbowvis/types';
 import RasterDataImage from './rasterDataImage';
 import RasterFromCSV from './rasterFromCSV';
 import RasterFromPoints from './rasterFromPoints';
 import RasterFromProject from './rasterFromProject';
-import {InterpolationType} from './types';
+import React, {ChangeEvent, FormEvent, MouseEvent, SyntheticEvent, useState} from 'react';
 
 const styles = {
     input: {

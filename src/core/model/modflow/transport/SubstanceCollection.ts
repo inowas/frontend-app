@@ -1,7 +1,7 @@
-import {sortBy} from 'lodash';
 import {Collection} from '../../collection/Collection';
-import Substance from './Substance';
 import {ISubstance} from './Substance.type';
+import {sortBy} from 'lodash';
+import Substance from './Substance';
 
 class SubstanceCollection extends Collection<Substance> {
 

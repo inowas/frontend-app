@@ -1,17 +1,17 @@
-import React, {useEffect, useRef} from 'react';
-import {Image} from 'semantic-ui-react';
-import {GridSize} from '../../../core/model/geometry';
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
-import {rainbowFactory} from '../../../services/rainbowvis/helpers';
-import Rainbow from '../../../services/rainbowvis/Rainbowvis';
+import {ColorLegend, ColorLegendDiscrete} from './index';
+import {GridSize} from '../../../core/model/geometry';
 import {
     ILegendItem,
     ILegendItemContinuous,
     ILegendItemDiscrete,
     RainbowOrLegend
 } from '../../../services/rainbowvis/types';
+import {Image} from 'semantic-ui-react';
 import {createGridData, max, min} from './helpers';
-import {ColorLegend, ColorLegendDiscrete} from './index';
+import {rainbowFactory} from '../../../services/rainbowvis/helpers';
+import Rainbow from '../../../services/rainbowvis/Rainbowvis';
+import React, {useEffect, useRef} from 'react';
 
 const styles = {
     canvas: {

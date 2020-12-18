@@ -1,9 +1,4 @@
-import {cloneDeep} from 'lodash';
-import React, {ReactNode, useEffect, useState} from 'react';
-import {connect} from 'react-redux';
-import {RouteComponentProps, withRouter} from 'react-router-dom';
-import {Grid, Icon} from 'semantic-ui-react';
-import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
+import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 import {
     Calculation,
     ModflowModel,
@@ -11,13 +6,12 @@ import {
     Transport,
     VariableDensity
 } from '../../../core/model/modflow';
-import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
-import Optimization from '../../../core/model/modflow/optimization/Optimization';
-import {sendCommand} from '../../../services/api';
-import AppContainer from '../../shared/AppContainer';
-import MessageBox from '../../shared/MessageBox';
-import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
+import {CalculationProcess} from '../components/content/calculation';
+import {ContentWrapper} from '../components/content/index';
+import {DataFetcherWrapper} from '../components';
+import {Grid, Icon} from 'semantic-ui-react';
 import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
+import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {
     clear,
     updateBoundaries,
@@ -29,12 +23,18 @@ import {
     updateTransport,
     updateVariableDensity
 } from '../actions/actions';
+import {cloneDeep} from 'lodash';
+import {connect} from 'react-redux';
+import {sendCommand} from '../../../services/api';
+import AppContainer from '../../shared/AppContainer';
+import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
+import MessageBox from '../../shared/MessageBox';
 import ModflowModelCommand from '../commands/modflowModelCommand';
-import {DataFetcherWrapper} from '../components';
-import {CalculationProcess} from '../components/content/calculation';
-import {ContentWrapper} from '../components/content/index';
-import OptimizationProgressBar from '../components/content/optimization/optimizationProgressBar';
 import Navigation from './navigation';
+import Optimization from '../../../core/model/modflow/optimization/Optimization';
+import OptimizationProgressBar from '../components/content/optimization/optimizationProgressBar';
+import React, {ReactNode, useEffect, useState} from 'react';
+import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 
 const navDocumentation = [{
     name: 'Documentation',

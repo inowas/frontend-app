@@ -1,13 +1,13 @@
-import React, {useState} from 'react';
 import {Checkbox, Form, Grid, Header, Input, Label} from 'semantic-ui-react';
 import {FlopyModflowMfdis, FlopyModflowMfriv} from '../../../../../../core/model/flopy/packages/mf';
-import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
-import {IFlopyModflowMfriv} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfriv';
 import {GridSize} from '../../../../../../core/model/modflow';
-import {RainbowOrLegend} from '../../../../../../services/rainbowvis/types';
+import {IFlopyModflowMfriv} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfriv';
 import {InfoPopup} from '../../../../../shared';
+import {RainbowOrLegend} from '../../../../../../services/rainbowvis/types';
 import {RasterDataImage} from '../../../../../shared/rasterData';
 import {documentation} from '../../../../defaults/flow';
+import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
+import React, {useState} from 'react';
 
 interface IProps {
     mfPackage: FlopyModflowMfriv;

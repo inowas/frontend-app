@@ -1,12 +1,12 @@
-import React, {SyntheticEvent, useEffect, useMemo, useState} from 'react';
-import {useSelector} from 'react-redux';
-import {Container, DropdownProps, Form, Grid, Header, Segment, Table} from 'semantic-ui-react';
-import {ModflowModel} from '../../../../../core/model/modflow';
-import {IRootReducer} from '../../../../../reducers';
-import {fetchCalculationObservations} from '../../../../../services/api';
-import {ILinearRegression} from '../../../../../services/statistics/calculateStatistics';
 import {CALCULATE_STATISTICS_INPUT} from '../../../worker/t03.worker';
+import {Container, DropdownProps, Form, Grid, Header, Segment, Table} from 'semantic-ui-react';
+import {ILinearRegression} from '../../../../../services/statistics/calculateStatistics';
+import {IRootReducer} from '../../../../../reducers';
+import {ModflowModel} from '../../../../../core/model/modflow';
 import {asyncWorker} from '../../../worker/worker';
+import {fetchCalculationObservations} from '../../../../../services/api';
+import {useSelector} from 'react-redux';
+import React, {SyntheticEvent, useEffect, useMemo, useState} from 'react';
 
 import {
     ChartObservedVsCalculatedHeads,

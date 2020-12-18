@@ -1,4 +1,6 @@
 const getConfig = () => ({
+    // eslint-disable-next-line no-restricted-globals
+    URL: `${location.protocol}//${location.host}`,
     BASE_URL: process.env.REACT_APP_API_URL + '/v3',
     DATADROPPER_URL: process.env.REACT_APP_DATADROPPER_URL || 'https://datadropper.inowas.com',
     DISABLE_TOOL: process.env.REACT_APP_DISABLE_TOOL || '',

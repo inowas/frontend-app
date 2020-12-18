@@ -1,8 +1,8 @@
 import * as turf from '@turf/turf';
-import {isEqual, uniqWith} from 'lodash';
-import {Collection} from '../../collection/Collection';
-import {Sensor} from './index';
+import {Collection} from '../collection/Collection';
 import {ISensor} from './Sensor.type';
+import {Sensor} from './index';
+import {isEqual, uniqWith} from 'lodash';
 
 export class SensorCollection extends Collection<Sensor> {
     public static fromObject(obj: ISensor[]) {

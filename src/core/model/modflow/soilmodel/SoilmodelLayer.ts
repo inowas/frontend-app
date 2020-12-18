@@ -1,14 +1,14 @@
-import {cloneDeep} from 'lodash';
-import uuidv4 from 'uuid/v4';
-import {defaultSoilmodelLayerParameters} from '../../../../scenes/t03/defaults/soilmodel';
-import {GridSize} from '../../geometry';
 import {Array2D} from '../../geometry/Array2D.type';
+import {GridSize} from '../../geometry';
 import {ICell} from '../../geometry/Cells.type';
-import {LayerParameterZonesCollection} from './index';
 import {ILayerParameter} from './LayerParameter.type';
 import {ILayerParameterZone} from './LayerParameterZone.type';
 import {ISoilmodelLayer} from './SoilmodelLayer.type';
+import {LayerParameterZonesCollection} from './index';
+import {cloneDeep} from 'lodash';
+import {defaultSoilmodelLayerParameters} from '../../../../scenes/t03/defaults/soilmodel';
 import ZonesCollection from './ZonesCollection';
+import uuidv4 from 'uuid/v4';
 
 class SoilmodelLayer {
 

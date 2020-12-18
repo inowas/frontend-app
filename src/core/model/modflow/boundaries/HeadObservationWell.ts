@@ -1,15 +1,15 @@
+import {Cells, Geometry} from '../index';
+import {ICells} from '../../geometry/Cells.type';
+import {IHeadObservationWell, IHeadObservationWellExport} from './HeadObservationWell.type';
+import {ISpValues, IValueProperty} from './Boundary.type';
 import {Point} from 'geojson';
 import {cloneDeep, orderBy} from 'lodash';
-import moment, {DurationInputArg1, DurationInputArg2, Moment} from 'moment';
-import Uuid from 'uuid';
 import BoundingBox from '../../geometry/BoundingBox';
-import {ICells} from '../../geometry/Cells.type';
 import GridSize from '../../geometry/GridSize';
-import {Cells, Geometry} from '../index';
-import Stressperiods from '../Stressperiods';
-import {ISpValues, IValueProperty} from './Boundary.type';
-import {IHeadObservationWell, IHeadObservationWellExport} from './HeadObservationWell.type';
 import PointBoundary from './PointBoundary';
+import Stressperiods from '../Stressperiods';
+import Uuid from 'uuid';
+import moment, {DurationInputArg1, DurationInputArg2, Moment} from 'moment';
 
 export default class HeadObservationWell extends PointBoundary {
     set dateTimes(value: Moment[]) {

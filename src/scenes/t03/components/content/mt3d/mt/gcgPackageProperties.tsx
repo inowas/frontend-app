@@ -1,8 +1,8 @@
-import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 import {DropdownProps, Form, Header, Input, Segment, Select} from 'semantic-ui-react';
-import FlopyMt3dMtgcg, {IFlopyMt3dMtgcg} from '../../../../../../core/model/flopy/packages/mt/FlopyMt3dMtgcg';
 import {InfoPopup} from '../../../../../shared';
 import {documentation} from '../../../../defaults/transport';
+import FlopyMt3dMtgcg, {IFlopyMt3dMtgcg} from '../../../../../../core/model/flopy/packages/mt/FlopyMt3dMtgcg';
+import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 
 interface IProps {
     mtPackage: FlopyMt3dMtgcg;

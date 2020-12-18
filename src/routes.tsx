@@ -1,3 +1,6 @@
+import React from 'react';
+import {Route, Switch} from 'react-router-dom';
+
 import * as Scenes from './scenes';
 import {Route, Switch} from 'react-router-dom';
 import PrivateRoute from './services/router/PrivateRoute';
@@ -16,20 +19,14 @@ const getRoutes = () => {
         return (
             <Switch>
                 <PrivateRoute exact={true} path="/" component={Scenes.LandingPage} forRoles={['ROLE_USER']}/>
+                <PrivateRoute exact={true} path="/admin/:property?/:id?" component={Scenes.Admin}
+                              forRoles={['ROLE_ADMIN']}/>
                 <PrivateRoute exact={true} path="/tools" component={Scenes.Dashboard} forRoles={['ROLE_USER']}/>
-                <PrivateRoute
-                    exact={true}
-                    path="/tools/T03/"
-                    component={Scenes.T03.CreateModel}
-                    forRoles={['ROLE_USER']}
-                />
+                <PrivateRoute exact={true} path="/tools/T03/" component={Scenes.T03.CreateModel}
+                              forRoles={['ROLE_USER']}/>
                 <PrivateRoute exact={true} path="/tools/T05/" component={Scenes.T05Create} forRoles={['ROLE_USER']}/>
-                <PrivateRoute
-                    exact={true}
-                    path="/tools/T07/"
-                    component={Scenes.T07.CreateScenarioAnalysis}
-                    forRoles={['ROLE_USER']}
-                />
+                <PrivateRoute exact={true} path="/tools/T07/" component={Scenes.T07.CreateScenarioAnalysis}
+                              forRoles={['ROLE_USER']}/>
                 <PrivateRoute exact={true} path="/tools/T10/" component={Scenes.T10Create} forRoles={['ROLE_USER']}/>
                 <PrivateRoute path="/credentials" component={Scenes.UserCredentials} forRoles={['ROLE_USER']}/>
                 <PrivateRoute path="/profile" component={Scenes.UserProfile} forRoles={['ROLE_USER']}/>
@@ -40,10 +37,8 @@ const getRoutes = () => {
                 <Route exact={true} path="/tools/T04" component={Scenes.T04}/>
                 <Route exact={true} path="/tools/T05/:id/:property?/:cid?/:tool?" component={Scenes.T05}/>
                 <Route exact={true} path="/tools/T06" component={Scenes.T06}/>
-                <Route
-                    exact={true}
-                    path="/tools/T07/:id/:property?/:type?/:pid?"
-                    component={Scenes.T07.EditScenarioAnalysis}
+                <Route exact={true} path="/tools/T07/:id/:property?/:type?/:pid?"
+                       component={Scenes.T07.EditScenarioAnalysis}
                 />
                 <Route exact={true} path="/tools/T08/:id?" component={Scenes.T08}/>
                 <Route exact={true} path="/tools/T09" component={Scenes.T09}/>
@@ -76,6 +71,7 @@ const getRoutes = () => {
 
                 <Route path="/imprint" component={Scenes.Imprint}/>
                 <Route path="/terms-and-conditions" component={Scenes.TermsAndConditions}/>
+                <Route path="/login/:id?/:token?" component={Scenes.Login}/>
                 <Route path="/login" component={Scenes.Login}/>
                 <Route path="/logout" component={Scenes.Logout}/>
                 <Route path="/signup" component={Scenes.SignUp}/>
@@ -86,6 +82,8 @@ const getRoutes = () => {
     return (
         <Switch>
             <PrivateRoute exact={true} path="/" component={Scenes.LandingPage} forRoles={['ROLE_USER']}/>
+            <PrivateRoute exact={true} path="/admin/:property?/:id?" component={Scenes.Admin}
+                          forRoles={['ROLE_ADMIN']}/>
             <PrivateRoute exact={true} path="/tools" component={Scenes.Dashboard} forRoles={['ROLE_USER']}/>
             <PrivateRoute exact={true} path="/tools/T01" component={Scenes.T01} forRoles={['ROLE_USER']}/>
             <PrivateRoute exact={true} path="/tools/T02/:id?" component={Scenes.T02} forRoles={['ROLE_USER']}/>
@@ -162,7 +160,7 @@ const getRoutes = () => {
 
             <Route path="/imprint" component={Scenes.Imprint}/>
             <Route path="/terms-and-conditions" component={Scenes.TermsAndConditions}/>
-            <Route path="/login" component={Scenes.Login}/>
+            <Route path="/login/:id?/:token?" component={Scenes.Login}/>
             <Route path="/logout" component={Scenes.Logout}/>
             <Route path="/signup" component={Scenes.SignUp}/>
         </Switch>

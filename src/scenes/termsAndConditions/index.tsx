@@ -1,5 +1,6 @@
-import React from 'react';
+/* eslint-disable */
 import AppContainer from '../shared/AppContainer';
+import React from 'react';
 
 const termsAndConditions = () => {
     return (
@@ -10,9 +11,8 @@ const termsAndConditions = () => {
 
                     <p>Welcome to INOWAS!</p>
 
-                    <p>These terms and conditions outline the rules and regulations for the use of Research Group INOWAS
-                        from
-                        TU-Dresden's Website, located at dss.inowas.com.</p>
+                    <p>These terms and conditions outline the rules and regulations for the use of Research
+                        Group INOWAS from TU-Dresden&apos;s Website, located at dss.inowas.com.</p>
 
                     <p>By accessing this website we assume you accept these terms and conditions. Do not continue to use
                         INOWAS
@@ -25,27 +25,22 @@ const termsAndConditions = () => {
 
                     <p>The following terminology applies to these Terms and Conditions, Privacy Statement and Disclaimer
                         Notice
-                        and all Agreements: "Client", "You" and "Your" refers to you, the person log on this website and
-                        compliant to the Company’s terms and conditions. "The Company", "Ourselves", "We", "Our" and
-                        "Us",
-                        refers to our Company. "Party", "Parties", or "Us", refers to both the Client and ourselves. All
-                        terms
-                        refer to the offer, acceptance and consideration of payment necessary to undertake the process
-                        of our
-                        assistance to the Client in the most appropriate manner for the express purpose of meeting the
-                        Client’s
-                        needs in respect of provision of the Company’s stated services, in accordance with and subject
-                        to,
-                        prevailing law of Netherlands. Any use of the above terminology or other words in the singular,
-                        plural,
-                        capitalization and/or he/she or they, are taken as interchangeable and therefore as referring to
-                        same.</p>
+                        and all Agreements: &quot;Client&quot;, &quot;You&quot; and &quot;Your&quot; refers to you, the
+                        person log on this website and compliant to the Company’s terms and conditions. &quot;The
+                        Company&quot;, &quot;Ourselves&quot;, &quot;We&quot;, &quot;Our&quot; and &quot;Us&quot;,
+                        refers to our Company. &quot;Party&quot;, &quot;Parties&quot;, or &quot;Us&quot;, refers to both
+                        the Client and ourselves. All terms refer to the offer, acceptance and consideration of payment
+                        necessary to undertake the process of our assistance to the Client in the most appropriate
+                        manner for the express purpose of meeting the Client’s needs in respect of provision of the
+                        Company’s stated services, in accordance with and subject to, prevailing law of Netherlands.
+                        Any use of the above terminology or other words in the singular, plural, capitalization and/or
+                        he/she or they, are taken as interchangeable and therefore as referring to same.</p>
 
                     <h3><strong>Cookies</strong></h3>
 
                     <p>We employ the use of cookies. By accessing INOWAS, you agreed to use cookies in agreement with
                         the
-                        Research Group INOWAS from TU-Dresden's Privacy Policy.</p>
+                        Research Group INOWAS from TU-Dresden&apos;s Privacy Policy.</p>
 
                     <p>Most interactive websites use cookies to let us retrieve the user’s details for each visit.
                         Cookies are
@@ -195,7 +190,7 @@ const termsAndConditions = () => {
                         </li>
                     </ul>
 
-                    <p>No use of Research Group INOWAS from TU-Dresden's logo or other artwork will be allowed for
+                    <p>No use of Research Group INOWAS from TU-Dresden&apos;s logo or other artwork will be allowed for
                         linking
                         absent a trademark license agreement.</p>
 

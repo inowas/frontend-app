@@ -1,5 +1,5 @@
-import {ModflowModel} from '../../index';
 import {ISoilmodel} from '../Soilmodel.type';
+import {ModflowModel} from '../../index';
 import {SoilmodelTypes} from './defaults';
 import {saveSoilmodel} from './services';
 import updateSoilmodel from './updateSoilmodel';

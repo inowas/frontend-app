@@ -1,8 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {Segment, Form} from 'semantic-ui-react';
+import {Form, Segment} from 'semantic-ui-react';
 import {OptimizationInput} from '../../../../../core/model/modflow/optimization';
 import ContentToolBar from '../../../../shared/ContentToolbar';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 class OptimizationParametersComponent extends React.Component {
 
@@ -13,7 +13,8 @@ class OptimizationParametersComponent extends React.Component {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    UNSAFE_componentWillReceiveProps(nextProps, nextContext) {
         this.setState({
             optimizationInput: nextProps.optimizationInput.toObject(),
         });

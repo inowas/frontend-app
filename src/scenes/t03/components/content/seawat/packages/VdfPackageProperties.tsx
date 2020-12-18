@@ -1,11 +1,11 @@
-import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 import {DropdownProps, Form, Input} from 'semantic-ui-react';
-import FlopySeawatSwtvdf, {IFlopySeawatSwtvdf} from '../../../../../../core/model/flopy/packages/swt/FlopySeawatSwtvdf';
-import {Substance, Transport} from '../../../../../../core/model/modflow/transport';
-import renderInfoPopup from '../../../../../shared/complexTools/InfoPopup';
-import InfoPopup from '../../../../../shared/InfoPopup';
 import {PopupPosition} from '../../../../../types';
+import {Substance, Transport} from '../../../../../../core/model/modflow/transport';
 import {documentation} from '../../../../defaults/flow';
+import FlopySeawatSwtvdf, {IFlopySeawatSwtvdf} from '../../../../../../core/model/flopy/packages/swt/FlopySeawatSwtvdf';
+import InfoPopup from '../../../../../shared/InfoPopup';
+import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
+import renderInfoPopup from '../../../../../shared/complexTools/InfoPopup';
 
 interface IProps {
     swtPackage: FlopySeawatSwtvdf;

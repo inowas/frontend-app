@@ -1,12 +1,12 @@
-import {cloneDeep} from 'lodash';
 import * as math from 'mathjs';
-import uuidv4 from 'uuid/v4';
 import {Array2D} from '../../geometry/Array2D.type';
-import RasterLayer from '../gis/RasterLayer';
 import {CriteriaType, ICriterion, ICriterion1v0} from './Criterion.type';
 import {IRule} from './Rule.type';
-import RulesCollection from './RulesCollection';
+import {cloneDeep} from 'lodash';
 import {criterionStep} from '../../../../scenes/t05/defaults/defaults';
+import RasterLayer from '../gis/RasterLayer';
+import RulesCollection from './RulesCollection';
+import uuidv4 from 'uuid/v4';
 
 class Criterion {
 

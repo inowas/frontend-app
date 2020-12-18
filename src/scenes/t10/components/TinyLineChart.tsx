@@ -1,8 +1,8 @@
-import {LTOB} from 'downsample';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore todo
+// @ts-ignore
 import {DataPoint} from 'downsample/dist/types';
-import {DataSource, IDateTimeValue} from '../../../core/model/rtm/monitoring/Sensor.type';
+import {DataSource, IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
+import {LTOB} from 'downsample';
 import {Line, LineChart, YAxis} from 'recharts';
 import {Loader} from 'semantic-ui-react';
 import React, {useEffect, useState} from 'react';

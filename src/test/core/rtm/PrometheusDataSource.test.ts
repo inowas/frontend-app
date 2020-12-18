@@ -1,5 +1,5 @@
+import PrometheusDataSource from '../../../core/model/rtm/PrometheusDataSource';
 import uuid from 'uuid';
-import PrometheusDataSource from '../../../core/model/rtm/monitoring/PrometheusDataSource';
 
 import {IPrometheusDataSource} from '../../../core/model/rtm/monitoring/Sensor.type';
 

@@ -1,5 +1,5 @@
-import React, {ChangeEvent, useState} from 'react';
 import {Form, Header, Input} from 'semantic-ui-react';
+import React, {ChangeEvent, useState} from 'react';
 
 import {FlopyModflowMfsor} from '../../../../../../core/model/flopy/packages/mf';
 import {IFlopyModflowMfsor} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfsor';

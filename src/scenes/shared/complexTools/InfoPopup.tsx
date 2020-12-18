@@ -1,6 +1,6 @@
-import React from 'react';
 import {Icon, Popup} from 'semantic-ui-react';
 import {PopupPosition} from '../../types';
+import React from 'react';
 
 const renderInfoPopup = (
     description: JSX.Element | string,

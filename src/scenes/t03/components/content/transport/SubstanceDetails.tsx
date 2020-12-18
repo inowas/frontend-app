@@ -1,4 +1,4 @@
-import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
+import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {
     Button,
     Dropdown,
@@ -11,12 +11,12 @@ import {
     Label,
     Segment
 } from 'semantic-ui-react';
-import {Stressperiods} from '../../../../../core/model/modflow';
-import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
-import {Substance} from '../../../../../core/model/modflow/transport';
 import {ISubstance} from '../../../../../core/model/modflow/transport/Substance.type';
-import NoContent from '../../../../shared/complexTools/noContent';
+import {Stressperiods} from '../../../../../core/model/modflow';
+import {Substance} from '../../../../../core/model/modflow/transport';
 import {SubstanceValuesDataTable} from './index';
+import NoContent from '../../../../shared/complexTools/noContent';
+import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 
 interface IProps {
     boundaries: BoundaryCollection;

@@ -1,6 +1,6 @@
-import React from 'react';
 import {Button, Form, Header, Modal} from 'semantic-ui-react';
 import {ISpValues, IValueProperty} from '../../../../../core/model/modflow/boundaries/Boundary.type';
+import React from 'react';
 
 interface IProps {
     onCancel: () => void;

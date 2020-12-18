@@ -1,7 +1,4 @@
-import {sortedUniq, uniq} from 'lodash';
-import {Moment} from 'moment';
 import {Array2D} from '../geometry/Array2D.type';
-import {ICell} from '../geometry/Cells.type';
 import {Cells} from '../modflow';
 import {
     EvapotranspirationBoundary,
@@ -10,10 +7,13 @@ import {
     PointBoundary,
     RechargeBoundary
 } from '../modflow/boundaries';
+import {ICell} from '../geometry/Cells.type';
+import {IObsData} from './packages/mf/FlopyModflowMfhob';
+import {IPropertyValueObject} from '../types';
+import {Moment} from 'moment';
+import {sortedUniq, uniq} from 'lodash';
 import FlowAndHeadBoundary from '../modflow/boundaries/FlowAndHeadBoundary';
 import Stressperiods from '../modflow/Stressperiods';
-import {IPropertyValueObject} from '../types';
-import {IObsData} from './packages/mf/FlopyModflowMfhob';
 
 export const min = (a: Array2D<number> | number) => {
 

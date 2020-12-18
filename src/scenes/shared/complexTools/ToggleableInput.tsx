@@ -1,5 +1,5 @@
-import React, {ChangeEvent, useState} from 'react';
 import {Icon, Input, InputOnChangeData, Popup} from 'semantic-ui-react';
+import React, {ChangeEvent, useState} from 'react';
 
 interface IProps {
     name: string;

@@ -1,4 +1,3 @@
-import React, {ChangeEvent, FormEvent, SyntheticEvent, useEffect, useState} from 'react';
 import {
     DropdownProps,
     Form,
@@ -9,16 +8,17 @@ import {
     Popup,
     TextAreaProps
 } from 'semantic-ui-react';
-import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
-import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
-import {RasterParameter} from '../../../../../core/model/modflow/soilmodel';
 import {ILayerParameter} from '../../../../../core/model/modflow/soilmodel/LayerParameter.type';
 import {ILayerParameterZone} from '../../../../../core/model/modflow/soilmodel/LayerParameterZone.type';
-import LayerParameterZonesCollection from '../../../../../core/model/modflow/soilmodel/LayerParameterZonesCollection';
-import SoilmodelLayer from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
-import {ISoilmodelLayer} from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
 import {IParameter, otherParameters} from '../../../defaults/soilmodel';
+import {ISoilmodelLayer} from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
 import {Ibound, Regular} from './parameters';
+import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
+import {RasterParameter} from '../../../../../core/model/modflow/soilmodel';
+import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
+import LayerParameterZonesCollection from '../../../../../core/model/modflow/soilmodel/LayerParameterZonesCollection';
+import React, {ChangeEvent, FormEvent, SyntheticEvent, useEffect, useState} from 'react';
+import SoilmodelLayer from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
 import ZonesEditor from './zones/zonesEditor';
 
 interface IProps {

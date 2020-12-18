@@ -1,7 +1,7 @@
+import {BoundingBox, Geometry} from '../../core/model/modflow';
 import {Coord} from '@turf/helpers';
 import {distance} from '@turf/turf';
 import GridSize from '../../core/model/geometry/GridSize';
-import {BoundingBox, Geometry} from '../../core/model/modflow';
 
 export const dxGeometry = (geometry: Geometry) => {
     const boundingBox = BoundingBox.fromGeoJson(geometry.toGeoJSON());

@@ -1,8 +1,8 @@
-import Uuid from 'uuid';
-import DataSourceCollection from '../../../core/model/rtm/monitoring/DataSourceCollection';
-import FileDataSource from '../../../core/model/rtm/monitoring/FileDataSource';
-import {IDateTimeValue, IFileDataSource} from '../../../core/model/rtm/monitoring/Sensor.type';
 import {DATADROPPER_URL} from '../../../services/api';
+import {IDateTimeValue, IFileDataSource} from '../../../core/model/rtm/Sensor.type';
+import DataSourceCollection from '../../../core/model/rtm/DataSourceCollection';
+import FileDataSource from '../../../core/model/rtm/FileDataSource';
+import Uuid from 'uuid';
 
 test('Test DatasourceCollection merge with local data', async () => {
     const data1 = [
@@ -75,8 +75,6 @@ test('Test FileDataSource, loading pre-loaded data', async () => {
     };
 
     const ds = new FileDataSource(obj);
-
-    // @ts-ignore
     ds._props.data = [{timeStamp: 1, value: 1.2}];
     await ds.loadData();
     expect(ds.data).toEqual([{timeStamp: 1, value: 1.2}]);

@@ -1,6 +1,6 @@
+import {Criterion} from '../../../../core/model/mcda/criteria';
 import {GridSize} from '../../../../core/model/geometry';
 import {MCDA} from '../../../../core/model/mcda';
-import {Criterion} from '../../../../core/model/mcda/criteria';
 
 export default {};
 

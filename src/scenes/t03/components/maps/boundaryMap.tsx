@@ -1,18 +1,18 @@
 import * as GeoJson from 'geojson';
-import {LatLngExpression} from 'leaflet';
-import {uniqueId} from 'lodash';
-import React, {Component} from 'react';
-import {CircleMarker, GeoJSON, Map, Polygon, Polyline, Tooltip} from 'react-leaflet';
-import {Geometry} from '../../../../core/model/modflow';
+import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import {
     Boundary,
     BoundaryCollection,
     HeadObservationWell,
     LineBoundary
 } from '../../../../core/model/modflow/boundaries';
-import WellBoundary from '../../../../core/model/modflow/boundaries/WellBoundary';
-import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
+import {CircleMarker, GeoJSON, Map, Polygon, Polyline, Tooltip} from 'react-leaflet';
+import {Geometry} from '../../../../core/model/modflow';
+import {LatLngExpression} from 'leaflet';
 import {getStyle} from './index';
+import {uniqueId} from 'lodash';
+import React, {Component} from 'react';
+import WellBoundary from '../../../../core/model/modflow/boundaries/WellBoundary';
 
 interface IProps {
     boundary: Boundary;

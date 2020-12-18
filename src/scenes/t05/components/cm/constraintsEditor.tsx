@@ -1,13 +1,13 @@
-import React, {FormEvent, useEffect, useState} from 'react';
 import {Button, CheckboxProps, Dimmer, Form, Grid, Loader, Message, Radio, Segment} from 'semantic-ui-react';
-import GridSize from '../../../../core/model/geometry/GridSize';
-import {MCDA} from '../../../../core/model/mcda';
 import {Gis, RasterLayer} from '../../../../core/model/mcda/gis';
 import {IGis} from '../../../../core/model/mcda/gis/Gis.type';
-import {dropData} from '../../../../services/api';
 import {ITask, retrieveRasters} from '../../../../services/api/rasterHelper';
+import {MCDA} from '../../../../core/model/mcda';
+import {dropData} from '../../../../services/api';
 import {usePrevious} from '../../../shared/simpleTools/helpers/customHooks';
 import ConstraintsMap from './constraintsMap';
+import GridSize from '../../../../core/model/geometry/GridSize';
+import React, {FormEvent, useEffect, useState} from 'react';
 
 interface IProps {
     gridSize: GridSize;

@@ -1,16 +1,14 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-
 import {
-    ResponsiveContainer,
-    XAxis,
-    YAxis,
-    CartesianGrid, BarChart, Bar, Label
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Label, ResponsiveContainer, XAxis, YAxis
 } from 'recharts';
-
+import {Button, Grid, Icon} from 'semantic-ui-react';
 import {calculateDiagramData} from '../calculations/calculationT18';
 import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
-import {Button, Grid, Icon} from 'semantic-ui-react';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 const styles = {
     chart: {
@@ -70,13 +68,13 @@ const Chart = ({parameters, settings}) => {
                                 size={'small'}
                                 onClick={() => exportChartImage(currentChart)}
                         >
-                            <Icon name='download' /> JPG
+                            <Icon name='download'/> JPG
                         </Button>
                         <Button compact basic icon
                                 size={'small'}
                                 onClick={() => exportChartData(currentChart)}
                         >
-                            <Icon name='download' /> CSV
+                            <Icon name='download'/> CSV
                         </Button>
                     </div>
                 </Grid.Column>

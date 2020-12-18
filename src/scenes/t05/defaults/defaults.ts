@@ -1,4 +1,4 @@
-export const LATEST_VERSION: string = '1.1';
+export const LATEST_VERSION = '1.1';
 
 export enum criterionStep {
     START = 0,

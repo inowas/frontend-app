@@ -1,5 +1,6 @@
 import React, {useRef} from 'react';
 
+import {Button, Grid, Icon} from 'semantic-ui-react';
 import {
     CartesianGrid,
     Label,
@@ -11,7 +12,6 @@ import {
     XAxis,
     YAxis
 } from 'recharts';
-import {Button, Grid, Icon} from 'semantic-ui-react';
 import {exportChartData, exportChartImage} from '../../shared/simpleTools/helpers';
 
 const cbPalette = [

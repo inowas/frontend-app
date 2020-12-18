@@ -1,5 +1,5 @@
-import {defaultSoilmodelParameters, otherParameters} from '../../../../../scenes/t03/defaults/soilmodel';
 import {ISoilmodel} from '../Soilmodel.type';
+import {defaultSoilmodelParameters, otherParameters} from '../../../../../scenes/t03/defaults/soilmodel';
 
 const fixLayerParameters = (soilmodel: ISoilmodel) => {
     const defaultParameters = defaultSoilmodelParameters.concat(otherParameters);

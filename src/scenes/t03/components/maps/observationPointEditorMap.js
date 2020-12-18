@@ -1,15 +1,13 @@
+import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
+import {Boundary, ObservationPoint} from '../../../../core/model/modflow/boundaries';
+import {CircleMarker, GeoJSON, Map} from 'react-leaflet';
+import {Geometry} from '../../../../core/model/geometry';
+import {disableMap, getStyle} from './index';
+import {lineString, point} from '@turf/helpers';
+import {nearestPointOnLine} from '@turf/turf';
+import {uniqueId} from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-
-import {GeoJSON, Map, CircleMarker} from 'react-leaflet';
-
-import {disableMap, getStyle} from './index';
-import {uniqueId} from 'lodash';
-import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
-import {nearestPointOnLine} from '@turf/turf';
-import {lineString, point} from '@turf/helpers';
-import {Boundary, ObservationPoint} from '../../../../core/model/modflow/boundaries';
-import {Geometry} from '../../../../core/model/geometry';
 
 const styles = {
     map: {
@@ -29,7 +27,7 @@ class ObservationPointEditorMap extends React.Component {
         };
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.setState({
             showTemporaryPoint: true,
             selectedPoint: this.props.observationPoint.geometry,

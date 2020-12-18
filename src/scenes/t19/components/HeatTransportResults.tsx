@@ -1,20 +1,9 @@
 import {Button, Checkbox, Icon, Menu, MenuItemProps, Segment, Table} from 'semantic-ui-react';
-import {
-    CartesianGrid,
-    Label,
-    ReferenceDot,
-    ResponsiveContainer,
-    Scatter,
-    ScatterChart,
-    Tooltip,
-    XAxis,
-    YAxis
-} from 'recharts';
 import {IHeatTransportResults} from '../../../core/model/htm/Htm.type';
-import {SemanticCOLORS} from 'semantic-ui-react/dist/commonjs/generic';
+import {calculateDomain} from './helpers';
 import {downloadFile} from '../../shared/simpleTools/helpers';
+import HeatTransportResultLineChart from './HeatTransportResultLineChart';
 import React, {MouseEvent, useEffect, useState} from 'react';
-import _ from 'lodash';
 import moment from 'moment';
 
 interface IProps {
@@ -28,11 +17,21 @@ const HeatTransportResults = (props: IProps) => {
     const [useSameTimes, setUseSameTimes] = useState<boolean>(true);
 
     useEffect(() => {
-        const ts = props.results.data.map((row) => row.date);
-        const fTs = _.orderBy(_.uniq(ts));
-        const min = moment(fTs[0]).unix();
-        const max = moment(fTs[fTs.length - 1]).unix();
-        setTimesteps([min, max]);
+        const tsx = calculateDomain(
+            props.results.data.map((row) => ({
+                x: moment(row.date).unix(),
+                obs: row.observed,
+                sim: row.simulated
+            })),
+            props.results.points.map((point) => ({
+                fill: point.point_type === 'max' ? 'red' : (point.point_type === 'min' ? 'green' : 'blue'),
+                x: moment(point.date).unix(),
+                y: point.simulated,
+                type: point.point_type
+            }))
+        );
+        setTimesteps(tsx);
+
     }, [props.results]);
 
     const traveltimes = props.results.traveltimes;
@@ -63,8 +62,6 @@ const HeatTransportResults = (props: IProps) => {
             });
         }
 
-        console.log(arrayOfObjects);
-
         let csvContent = 'data:text/csv;charset=utf-8,';
         csvContent += keys.join(',');
         csvContent += '\r\n';
@@ -77,129 +74,17 @@ const HeatTransportResults = (props: IProps) => {
         downloadFile(`${filename}.csv`, encodedUri);
     };
 
-    const renderChart = (type: string, dataObs: Array<{ x: number, y: number }>,
-                         dataSim: Array<{ x: number, y: number }>) => {
-        const formatDateTimeTicks = (dt: number) => {
-            return moment.unix(dt).format(props.dateTimeFormat);
-        };
-
-        const formatTemperatureTicks = (t: number) => {
-            return t.toFixed(2);
-        };
-
-        const filteredPoints: Array<{
-            fill: SemanticCOLORS,
-            x: number,
-            y: number,
-            type: string
-        }> = props.results.points.filter((point) => point.label.includes(type)).map((point) => ({
-            fill: point.point_type === 'max' ? 'red' : (point.point_type === 'min' ? 'green' : 'blue'),
-            x: moment(point.date).unix(),
-            y: point.simulated,
-            type: point.point_type
-        }));
-
-        const getTicks = () => {
-            if (timesteps && useSameTimes) {
-                const dateStart = moment.unix(timesteps[0]);
-                const dateEnd = moment.unix(timesteps[1]);
-                const interim = dateStart.clone();
-                const timeValues: number[] = [];
-
-                while (dateEnd > interim || interim.format('M') === dateEnd.format('M')) {
-                    timeValues.push(moment(interim.format('YYYY-MM')).unix());
-                    interim.add(1, 'month');
-                }
-                return timeValues;
-            }
-            return undefined;
-        };
-
-        const getTooltip = (value: any, name: string) => {
-            if (name === 'x') {
-                return [moment.unix(value).format(props.dateTimeFormat), 'Date'];
-            }
-            return [`${value}°C`, 'T'];
-        };
-
-        return (
-            <ResponsiveContainer height={300}>
-                <ScatterChart>
-                    <CartesianGrid strokeDasharray="3 3"/>
-                    <XAxis
-                        dataKey={'x'}
-                        domain={useSameTimes ? timesteps : ['auto', 'auto']}
-                        name={'x'}
-                        tickFormatter={formatDateTimeTicks}
-                        ticks={getTicks()}
-                        type={'number'}
-                    />
-                    <YAxis
-                        label={{value: 'T [°C]', angle: -90, position: 'insideLeft'}}
-                        dataKey={'y'}
-                        name={'y'}
-                        domain={['auto', 'auto']}
-                        tickFormatter={formatTemperatureTicks}
-                    />
-                    <Scatter
-                        data={dataObs}
-                        line={{strokeWidth: 2, stroke: '#db3434'}}
-                        lineType={'joint'}
-                        name={'observed'}
-                        fill='#00000000'
-                    />
-                    <Scatter
-                        data={dataSim}
-                        line={{strokeWidth: 2, stroke: '#3498DB'}}
-                        lineType={'joint'}
-                        name={'simulated'}
-                        fill='#00000000'
-                    />
-                    <Tooltip formatter={getTooltip} cursor={{strokeDasharray: '3 3'}}/>
-                    {filteredPoints.map((point, key) => (
-                        <ReferenceDot
-                            key={key}
-                            label={
-                                <Label
-                                    fill={point.fill}
-                                    fontSize={12}
-                                    offset={5}
-                                    position="top"
-                                    value={point.type}
-                                />
-                            }
-                            x={point.x}
-                            y={point.y}
-                            r={10}
-                            fill={point.fill}
-                            fillOpacity={0.4}
-                            stroke="none"
-                        />
-                    ))}
-                </ScatterChart>
-            </ResponsiveContainer>
-        );
-    };
-
     const renderGraph = () => {
-        const dataSw = props.results.data.filter((row) => row.type === 'surface-water');
-        const dataSwObs = dataSw.map((row) => ({
+        const dataSw = props.results.data.filter((row) => row.type === 'surface-water').map((row) => ({
             x: moment(row.date).unix(),
-            y: row.observed
-        }));
-        const dataSwSim = dataSw.map((row) => ({
-            x: moment(row.date).unix(),
-            y: row.simulated
+            obs: row.observed,
+            sim: row.simulated
         }));
 
-        const dataGw = props.results.data.filter((row) => row.type === 'groundwater');
-        const dataGwObs = dataGw.map((row) => ({
+        const dataGw = props.results.data.filter((row) => row.type === 'groundwater').map((row) => ({
             x: moment(row.date).unix(),
-            y: row.observed
-        }));
-        const dataGwSim = dataGw.map((row) => ({
-            x: moment(row.date).unix(),
-            y: row.simulated
+            obs: row.observed,
+            sim: row.simulated
         }));
 
         return (
@@ -211,7 +96,14 @@ const HeatTransportResults = (props: IProps) => {
                     toggle={true}
                 />
                 <h3>surface-water</h3>
-                {renderChart('surface-water', dataSwObs, dataSwSim)}
+                <HeatTransportResultLineChart
+                    data={dataSw}
+                    dateTimeFormat={props.dateTimeFormat}
+                    results={props.results}
+                    timesteps={timesteps}
+                    type='surface-water'
+                    useSameTimes={useSameTimes}
+                />
                 <div className="downloadButtons">
                     <Button
                         compact={true}
@@ -224,7 +116,14 @@ const HeatTransportResults = (props: IProps) => {
                     </Button>
                 </div>
                 <h3>groundwater</h3>
-                {renderChart('groundwater', dataGwObs, dataGwSim)}
+                <HeatTransportResultLineChart
+                    data={dataGw}
+                    dateTimeFormat={props.dateTimeFormat}
+                    results={props.results}
+                    timesteps={timesteps}
+                    type='groundwater'
+                    useSameTimes={useSameTimes}
+                />
             </React.Fragment>
         );
     };

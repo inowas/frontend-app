@@ -1,8 +1,8 @@
-import BoundaryCollection from '../../../modflow/boundaries/BoundaryCollection';
-import Stressperiods from '../../../modflow/Stressperiods';
 import {IPropertyValueObject} from '../../../types';
+import BoundaryCollection from '../../../modflow/boundaries/BoundaryCollection';
 import FlopyModflowBoundary from './FlopyModflowBoundary';
 import FlopyModflowPackage from './FlopyModflowPackage';
+import Stressperiods from '../../../modflow/Stressperiods';
 
 /*
 https://modflowpy.github.io/flopydoc/mfhfb.html

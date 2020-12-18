@@ -2,16 +2,16 @@ import {ModflowModel} from '../../../modflow';
 import FlopyModpathPackage from './FlopyModpathPackage';
 
 export default class FlopyModpathMp7 extends FlopyModpathPackage {
-    private _modelname: string = 'modpath7test';
-    private _simfileExt: string = 'mpsim';
-    private _namefileExt: string = 'mpnam';
-    private _version: string = 'modpath7';
-    private _exeName: string = 'mp7';
+    private _modelname = 'modpath7test';
+    private _simfileExt = 'mpsim';
+    private _namefileExt = 'mpnam';
+    private _version = 'modpath7';
+    private _exeName = 'mp7';
     private _flowmodel: ModflowModel | null = null;
     private _headfilename: string | null = null;
     private _budgetfilename: string | null = null;
-    private _modelWs: string = '.';
-    private _verbose: boolean = false;
+    private _modelWs = '.';
+    private _verbose = false;
 
     get modelname(): string {
         return this._modelname;

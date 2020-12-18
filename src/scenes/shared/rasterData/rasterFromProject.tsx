@@ -6,7 +6,7 @@ import {IModflowModel} from '../../../core/model/modflow/ModflowModel.type';
 import {IPropertyValueObject} from '../../../core/model/types';
 import {IRootReducer} from '../../../reducers';
 import {ISoilmodel} from '../../../core/model/modflow/soilmodel/Soilmodel.type';
-import {IToolInstance} from '../../dashboard/defaults/tools';
+import {IToolInstance} from '../../types';
 import {RasterDataMap} from './index';
 import {fetchApiWithToken, fetchCalculationDetails, fetchCalculationResultsFlow, fetchUrl} from '../../../services/api';
 import {fetchSoilmodel} from '../../../core/model/modflow/soilmodel/updater/services';

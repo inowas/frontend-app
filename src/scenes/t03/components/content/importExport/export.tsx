@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
-import {useSelector} from 'react-redux';
-import {Grid, Segment} from 'semantic-ui-react';
-import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import {BoundaryCollection, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
+import {Grid, Segment} from 'semantic-ui-react';
 import {IRootReducer} from '../../../../../reducers';
+import {useSelector} from 'react-redux';
+import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
+import React, {useState} from 'react';
 
 const ExportUI = () => {
     const [copyToClipBoardSuccessful, setCopyToClipBoardSuccessful] = useState<boolean>(false);

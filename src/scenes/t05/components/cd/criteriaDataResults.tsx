@@ -1,10 +1,10 @@
-import React, {FormEvent, useState} from 'react';
 import {Button, Checkbox, CheckboxProps, Form, Grid, Icon, Radio, Segment} from 'semantic-ui-react';
-import GridSize from '../../../../core/model/geometry/GridSize';
 import {Criterion} from '../../../../core/model/mcda/criteria';
 import {RainbowOrLegend} from '../../../../services/rainbowvis/types';
 import {heatMapColors} from '../../defaults/gis';
 import CriteriaRasterMap from './criteriaRasterMap';
+import GridSize from '../../../../core/model/geometry/GridSize';
+import React, {FormEvent, useState} from 'react';
 
 interface IProps {
     criterion: Criterion;

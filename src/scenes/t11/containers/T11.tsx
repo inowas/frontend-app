@@ -1,6 +1,6 @@
-import React from 'react';
-import Iframe from 'react-iframe';
 import {Icon} from 'semantic-ui-react';
+import Iframe from 'react-iframe';
+import React from 'react';
 
 import {AppContainer} from '../../shared';
 

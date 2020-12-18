@@ -1,12 +1,12 @@
-import { LeafletMouseEvent } from 'leaflet';
-import React, { useRef } from 'react';
+import { BasicTileLayer } from '../../../services/geoTools/tileLayers';
+import { BoundaryCollection, ModflowModel } from '../../../core/model/modflow';
 import { FeatureGroup, LayersControl, Map, Rectangle } from 'react-leaflet';
 import { ICell } from '../../../core/model/geometry/Cells.type';
-import { BoundaryCollection, ModflowModel } from '../../../core/model/modflow';
+import { LeafletMouseEvent } from 'leaflet';
 import { getActiveCellFromCoordinate } from '../../../services/geoTools';
-import { BasicTileLayer } from '../../../services/geoTools/tileLayers';
-import CenterControl from '../../shared/leaflet/CenterControl';
 import {renderAreaLayer, renderBoundaryOverlays, renderBoundingBoxLayer} from '../../t03/components/maps/mapLayers';
+import CenterControl from '../../shared/leaflet/CenterControl';
+import React, { useRef } from 'react';
 
 interface IProps {
     activeCell: ICell;

@@ -1,7 +1,7 @@
 import {GenericObject} from '../../genericObject/GenericObject';
+import {ITransport} from './Transport.type';
 import Substance from './Substance';
 import SubstanceCollection from './SubstanceCollection';
-import {ITransport} from './Transport.type';
 
 class Transport extends GenericObject<ITransport> {
 

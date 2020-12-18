@@ -320,7 +320,7 @@ class SensorDataSource extends GenericObject<ISensorDataSource> {
 
     public async loadData() {
         if (this._props.data) {
-            return;
+            return await this._props.data;
         }
 
         this._props.fetching = true;
@@ -336,6 +336,8 @@ class SensorDataSource extends GenericObject<ISensorDataSource> {
             this._props.fetching = false;
             this._props.error = e;
         }
+
+        return await this._props.data;
     }
 
     protected sortData = () => {

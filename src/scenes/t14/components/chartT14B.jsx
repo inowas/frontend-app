@@ -1,19 +1,19 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import {calcDQ, calculateDiagramData} from '../calculations/calculationT14B';
 import {pure} from 'recompose';
-import {calculateDiagramData, calcDQ} from '../calculations/calculationT14B';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 import {
-    ResponsiveContainer,
-    LineChart,
+    CartesianGrid,
+    Label,
     Line,
-    XAxis,
-    YAxis,
-    CartesianGrid, Label
+    LineChart,
+    ResponsiveContainer,
+    XAxis, YAxis
 } from 'recharts';
 
-import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers/index';
 import {Button, Grid, Icon, Segment} from 'semantic-ui-react';
+import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers/index';
 
 const styles = {
     chart: {

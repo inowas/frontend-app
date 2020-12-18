@@ -1,7 +1,6 @@
-import {Collection} from '../../collection/Collection';
+import {Collection} from '../collection/Collection';
 import {DataSourceFactory} from './index';
 import {IDataSource, IDateTimeValue} from './Sensor.type';
-import {cloneDeep, concat} from 'lodash';
 
 export class DataSourceCollection extends Collection<IDataSource> {
     public static fromObject(obj: IDataSource[]) {
@@ -48,37 +47,37 @@ export class DataSourceCollection extends Collection<IDataSource> {
     };
 
     public async mergedData() {
+        const dataSets = [];
         for (const dsObj of this.all) {
             const dsInst = DataSourceFactory.fromObject(dsObj);
-            await dsInst.loadData();
+            dataSets.push(await dsInst.loadData());
         }
 
-        return this.mergeData();
+        return this.mergeData(dataSets);
     }
 
     public toObject() {
         return this.all;
     }
 
-    private mergeData = () => {
+    private mergeData = (dataSets: any[]) => {
         let result: IDateTimeValue[] = [];
-        this.all.forEach((dsObj, key) => {
-            const dsInst = DataSourceFactory.fromObject(dsObj);
-            if (dsInst.data) {
+        dataSets.forEach((data, key) => {
+            if (data) {
                 if (key === 0) {
-                    result = dsInst.data;
+                    result = data;
                     return;
                 }
 
-                if (dsInst.data.length === 0) {
+                if (data.length === 0) {
                     return;
                 }
 
-                const begin = dsInst.data[0].timeStamp;
-                const end = dsInst.data[dsInst.data.length - 1].timeStamp;
+                const begin = data[0].timeStamp;
+                const end = data[data.length - 1].timeStamp;
 
                 result = result.filter((d) => d.timeStamp < begin || d.timeStamp > end);
-                result = concat(result, dsInst.data);
+                result = concat(result, data);
                 result.sort((a, b) => a.timeStamp - b.timeStamp);
             }
         });

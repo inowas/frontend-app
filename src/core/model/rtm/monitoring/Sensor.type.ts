@@ -1,5 +1,5 @@
-import {IDataDropperFile} from '../../../../services/dataDropper/DataDropper.type';
-import {IProcessing} from '../processing/Processing.type';
+import {IDataDropperFile} from '../../../services/dataDropper/DataDropper.type';
+import {IProcessing} from './processing/Processing.type';
 import {Point} from 'geojson';
 import FileDataSource from './FileDataSource';
 import PrometheusDataSource from './PrometheusDataSource';
@@ -67,6 +67,10 @@ export interface IReducedSensorDataSource {
 export interface IReducedFileDataSource {
     id: string;
     file: IDataDropperFile;
+    begin?: number | null;
+    end?: number | null;
+    gte?: number | null;
+    lte?: number | null;
 }
 
 // todo: GENERIC (IDateTimeValue to Array2D)

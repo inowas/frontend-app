@@ -1,17 +1,17 @@
-import {cloneDeep} from 'lodash';
-import uuidv4 from 'uuid/v4';
-import {defaultSoilmodelParameters} from '../../../../scenes/t03/defaults/soilmodel';
-import {Cells, Geometry} from '../../geometry';
 import { Array2D } from '../../geometry/Array2D.type';
-import {ModflowModel} from '../index';
-import {LayersCollection, RasterParametersCollection, ZonesCollection} from './index';
+import {Cells, Geometry} from '../../geometry';
 import {ISoilmodel, ISoilmodel1v0, ISoilmodel2v0, ISoilmodelExport} from './Soilmodel.type';
-import SoilmodelLayer from './SoilmodelLayer';
 import {ISoilmodelLayer} from './SoilmodelLayer.type';
-import SoilmodelLegacy from './SoilmodelLegacy';
-import {version} from './updater/defaults';
-import updateSoilmodel from './updater/updateSoilmodel';
 import {IZone} from './Zone.type';
+import {LayersCollection, RasterParametersCollection, ZonesCollection} from './index';
+import {ModflowModel} from '../index';
+import {cloneDeep} from 'lodash';
+import {defaultSoilmodelParameters} from '../../../../scenes/t03/defaults/soilmodel';
+import {version} from './updater/defaults';
+import SoilmodelLayer from './SoilmodelLayer';
+import SoilmodelLegacy from './SoilmodelLegacy';
+import updateSoilmodel from './updater/updateSoilmodel';
+import uuidv4 from 'uuid/v4';
 
 class Soilmodel {
     get layersCollection() {

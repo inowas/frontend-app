@@ -1,5 +1,5 @@
-import {IPropertyValueObject} from '../../types';
 import {ILayerParameterZone2v0} from './LayerParameterZone.type';
+import {IPropertyValueObject} from '../../types';
 import {IRasterParameter} from './RasterParameter.type';
 import {ISoilmodelLayer, ISoilmodelLayer1v0, ISoilmodelLayer2v0, ISoilmodelLayerExport} from './SoilmodelLayer.type';
 import {IZone, IZone2v0} from './Zone.type';

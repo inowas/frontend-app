@@ -1,9 +1,9 @@
-import React, {SyntheticEvent} from 'react';
 import {DropdownProps, Form, Header, Input, Select} from 'semantic-ui-react';
 import {FlopyMt3dMt} from '../../../../../../core/model/flopy/packages/mt';
-import renderInfoPopup from '../../../../../shared/complexTools/InfoPopup';
 import {PopupPosition} from '../../../../../types';
 import {documentation} from '../../../../defaults/transport';
+import React, {SyntheticEvent} from 'react';
+import renderInfoPopup from '../../../../../shared/complexTools/InfoPopup';
 
 interface IProps {
     mtPackage: FlopyMt3dMt;

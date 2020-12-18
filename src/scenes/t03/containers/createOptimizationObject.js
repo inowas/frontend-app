@@ -1,17 +1,17 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {withRouter} from 'react-router-dom';
-import {connect} from 'react-redux';
-import {Form, Grid, Icon, Segment} from 'semantic-ui-react';
-import AppContainer from '../../shared/AppContainer';
-import {FluxDataTable, SubstanceEditor} from '../components/content/optimization/shared';
-import {Optimization, OptimizationObject} from '../../../core/model/modflow/optimization';
 import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
+import {FluxDataTable, SubstanceEditor} from '../components/content/optimization/shared';
+import {Form, Grid, Icon, Segment} from 'semantic-ui-react';
 import {ModflowModel} from '../../../core/model/modflow';
-import {fetchUrl} from '../../../services/api';
+import {Optimization, OptimizationObject} from '../../../core/model/modflow/optimization';
 import {clear, updateBoundaries, updateModel, updateOptimization} from '../actions/actions';
-import OptimizationMap from '../components/maps/optimizationMap';
+import {connect} from 'react-redux';
+import {fetchUrl} from '../../../services/api';
 import {getActiveCellFromCoordinate} from '../../../services/geoTools';
+import {withRouter} from 'react-router-dom';
+import AppContainer from '../../shared/AppContainer';
+import OptimizationMap from '../components/maps/optimizationMap';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 const navigation = [{
     name: 'Documentation',
@@ -34,9 +34,10 @@ class CreateOptimizationObject extends React.Component {
         return this.setState({isLoading: true},
             () => this.fetchModel(id)
         );
-    };
+    }
 
-    componentWillReceiveProps(nextProps, nextContext) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    UNSAFE_componentWillReceiveProps(nextProps, nextContext) {
         const {id} = nextProps.match.params;
         if (!this.props.model || this.props.model.id !== id) {
             if (!this.state.isLoading) {
@@ -65,7 +66,7 @@ class CreateOptimizationObject extends React.Component {
                 () => this.handleError(error)
             )
         );
-    };
+    }
 
     fetchBoundaries(id) {
         fetchUrl(`modflowmodels/${id}/boundaries`,
@@ -75,7 +76,7 @@ class CreateOptimizationObject extends React.Component {
                 () => this.handleError(error)
             )
         );
-    };
+    }
 
     fetchOptimization(id) {
         fetchUrl(`modflowmodels/${id}/optimization`,
@@ -85,7 +86,7 @@ class CreateOptimizationObject extends React.Component {
                 () => this.handleError(error)
             )
         );
-    };
+    }
 
     handleError = error => {
         const {response} = error;

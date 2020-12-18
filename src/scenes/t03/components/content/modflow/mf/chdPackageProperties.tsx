@@ -1,13 +1,13 @@
-import React, {ChangeEvent, useState} from 'react';
-import {Form, Grid, Header, Input, Label, Segment} from 'semantic-ui-react';
 import {FlopyModflowMfchd, FlopyModflowMfdis} from '../../../../../../core/model/flopy/packages/mf';
-import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
-import {IFlopyModflowMfchd} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfchd';
+import {Form, Grid, Header, Input, Label, Segment} from 'semantic-ui-react';
 import {GridSize} from '../../../../../../core/model/modflow';
+import {IFlopyModflowMfchd} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfchd';
 import {RainbowOrLegend} from '../../../../../../services/rainbowvis/types';
+import {documentation} from '../../../../defaults/flow';
+import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
 import InfoPopup from '../../../../../shared/InfoPopup';
 import RasterDataImage from '../../../../../shared/rasterData/rasterDataImage';
-import {documentation} from '../../../../defaults/flow';
+import React, {ChangeEvent, useState} from 'react';
 
 interface IProps {
     mfPackage: FlopyModflowMfchd;

@@ -24,7 +24,7 @@ class AbstractCollection {
 
     get length() {
         return this._items.length;
-    };
+    }
 
     add(item) {
         this._items.push(this.validateInput(item));

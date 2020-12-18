@@ -1,11 +1,11 @@
-import {LineString} from 'geojson';
-import moment from 'moment';
-import Uuid from 'uuid';
-import {FlopyModflowMfriv} from '../../../../../../core/model/flopy/packages/mf';
-import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../../core/model/geometry';
 import {BoundaryCollection, Stressperiod} from '../../../../../../core/model/modflow';
+import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../../core/model/geometry';
+import {FlopyModflowMfriv} from '../../../../../../core/model/flopy/packages/mf';
+import {LineString} from 'geojson';
 import {RiverBoundary} from '../../../../../../core/model/modflow/boundaries';
 import Stressperiods from '../../../../../../core/model/modflow/Stressperiods';
+import Uuid from 'uuid';
+import moment from 'moment';
 
 const createBoundaries = () => {
     const id = Uuid.v4();

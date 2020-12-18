@@ -1,5 +1,5 @@
-import Rule from '../../../../../core/model/mcda/criteria/Rule';
 import {IRule} from '../../../../../core/model/mcda/criteria/Rule.type';
+import Rule from '../../../../../core/model/mcda/criteria/Rule';
 
 export default {};
 

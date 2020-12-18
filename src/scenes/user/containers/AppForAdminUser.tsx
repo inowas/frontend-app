@@ -1,9 +1,9 @@
-import React, {ReactNode} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {Redirect} from 'react-router-dom';
-import {IRootReducer} from '../../../reducers';
 import {Action} from '../actions/index';
+import {IRootReducer} from '../../../reducers';
+import {Redirect} from 'react-router-dom';
 import {getFetched, hasSessionKey, isAdmin} from '../reducers';
+import {useDispatch, useSelector} from 'react-redux';
+import React, {ReactNode} from 'react';
 
 interface IProps {
     children: ReactNode;

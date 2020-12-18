@@ -1,13 +1,13 @@
-import React, {useRef, useState} from 'react';
-import {FeatureGroup, LayersControl, Map} from 'react-leaflet';
-import {EditControl} from 'react-leaflet-draw';
-import {Geometry} from '../../../../core/model/modflow';
+import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import {BoundaryFactory} from '../../../../core/model/modflow/boundaries';
 import {BoundaryType} from '../../../../core/model/modflow/boundaries/Boundary.type';
-import BoundaryCollection from '../../../../core/model/modflow/boundaries/BoundaryCollection';
-import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
-import CenterControl from '../../../shared/leaflet/CenterControl';
+import {EditControl} from 'react-leaflet-draw';
+import {FeatureGroup, LayersControl, Map} from 'react-leaflet';
+import {Geometry} from '../../../../core/model/modflow';
 import { renderAreaLayer, renderBoundaryOverlays } from './mapLayers';
+import BoundaryCollection from '../../../../core/model/modflow/boundaries/BoundaryCollection';
+import CenterControl from '../../../shared/leaflet/CenterControl';
+import React, {useRef, useState} from 'react';
 
 interface IProps {
     area: Geometry;

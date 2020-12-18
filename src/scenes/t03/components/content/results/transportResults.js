@@ -1,17 +1,16 @@
-import React from 'react';
-import Uuid from 'uuid';
-import {connect} from 'react-redux';
-import PropTypes from 'prop-types';
-
 import {Accordion, Button, Grid, Header, Icon, Segment} from 'semantic-ui-react';
-import {Calculation, ModflowModel, Soilmodel, Transport} from '../../../../../core/model/modflow';
-import ResultsMap from '../../maps/resultsMap';
-import ResultsChart from '../../../../shared/complexTools/ResultsChart';
-import {fetchCalculationResultsTransport, sendCommand} from '../../../../../services/api';
-import ScenarioAnalysisCommand from '../../../../t07/commands/scenarioAnalysisCommand';
-import {withRouter} from 'react-router-dom';
-import ResultsSelectorTransport from '../../../../shared/complexTools/ResultsSelectorTransport';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
+import {Calculation, ModflowModel, Soilmodel, Transport} from '../../../../../core/model/modflow';
+import {connect} from 'react-redux';
+import {fetchCalculationResultsTransport, sendCommand} from '../../../../../services/api';
+import {withRouter} from 'react-router-dom';
+import PropTypes from 'prop-types';
+import React from 'react';
+import ResultsChart from '../../../../shared/complexTools/ResultsChart';
+import ResultsMap from '../../maps/resultsMap';
+import ResultsSelectorTransport from '../../../../shared/complexTools/ResultsSelectorTransport';
+import ScenarioAnalysisCommand from '../../../../t07/commands/scenarioAnalysisCommand';
+import Uuid from 'uuid';
 
 class TransportResults extends React.Component {
 
@@ -35,13 +34,16 @@ class TransportResults extends React.Component {
 
         if (props.calculation instanceof Calculation) {
             const totalTimes = props.calculation.times.total_times;
-            this.state.layerValues = props.calculation.layer_values;
-            this.state.selectedTotim = totalTimes.slice(-1)[0];
-            this.state.totalTimes = totalTimes;
+            this.setState({
+                layerValues: props.calculation.layer_values,
+                selectedTotim: totalTimes.slice(-1)[0],
+                totalTimes
+            })
         }
     }
 
-    componentWillReceiveProps(nextProps, nextContext) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    UNSAFE_componentWillReceiveProps(nextProps, nextContext) {
         if (!(nextProps.calculation instanceof Calculation)) {
             return null;
         }
@@ -124,7 +126,16 @@ class TransportResults extends React.Component {
             )
         }
 
-        const {data, selectedCol, selectedRow, selectedSubstance, selectedLay, selectedTotim, layerValues, totalTimes} = this.state;
+        const {
+            data,
+            selectedCol,
+            selectedRow,
+            selectedSubstance,
+            selectedLay,
+            selectedTotim,
+            layerValues,
+            totalTimes
+        } = this.state;
         const {model, boundaries, soilmodel, transport} = this.props;
         const {activeIndex} = this.state;
 

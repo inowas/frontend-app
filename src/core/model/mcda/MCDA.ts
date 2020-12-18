@@ -1,16 +1,16 @@
-import {cloneDeep} from 'lodash';
-import math from 'mathjs';
-import uuidv4 from 'uuid/v4';
-import {LATEST_VERSION} from '../../../scenes/t05/defaults/defaults';
-import {BoundingBox, GridSize} from '../geometry';
 import {Array2D} from '../geometry/Array2D.type';
-import {multiplyElementWise, sumRasters} from './calculations';
+import {BoundingBox, GridSize} from '../geometry';
 import {CriteriaCollection, WeightAssignmentsCollection} from './criteria';
-import Criterion from './criteria/Criterion';
-import WeightAssignment from './criteria/WeightAssignment';
 import {Gis, RasterLayer} from './gis';
 import {IMCDA, IMCDAPayload} from './MCDA.type';
+import {LATEST_VERSION} from '../../../scenes/t05/defaults/defaults';
+import {cloneDeep} from 'lodash';
+import {multiplyElementWise, sumRasters} from './calculations';
+import Criterion from './criteria/Criterion';
 import Suitability from './Suitability';
+import WeightAssignment from './criteria/WeightAssignment';
+import math from 'mathjs';
+import uuidv4 from 'uuid/v4';
 
 class MCDA {
 

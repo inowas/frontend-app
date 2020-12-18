@@ -1,4 +1,4 @@
-import {Geometry} from '../../geometry';
+import {Geometry} from '../geometry';
 import {IRtm} from './Rtm.type';
 import {Sensor} from './index';
 import {SensorCollection} from './SensorCollection';

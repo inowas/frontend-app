@@ -1,8 +1,8 @@
-import React from 'react';
-import {Form, Grid, Input} from 'semantic-ui-react';
 import {FlopyModpathMp7} from '../../../../../../core/model/flopy/packages/mp';
-import renderInfoPopup from '../../../../../shared/complexTools/InfoPopup';
+import {Form, Grid, Input} from 'semantic-ui-react';
 import {documentation} from '../../../../defaults/modpath';
+import React from 'react';
+import renderInfoPopup from '../../../../../shared/complexTools/InfoPopup';
 
 interface IProps {
     mfPackage: FlopyModpathMp7;

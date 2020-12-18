@@ -1,6 +1,6 @@
-import React, {MouseEvent} from 'react';
-import {pure} from 'recompose';
 import {Button, Icon, Menu, Popup} from 'semantic-ui-react';
+import {pure} from 'recompose';
+import React, {MouseEvent} from 'react';
 import SubstanceCollection from '../../../../../core/model/modflow/transport/SubstanceCollection';
 
 interface IProps {

@@ -1,17 +1,17 @@
-import {ParseResult} from 'papaparse';
-import React, {ChangeEvent, CSSProperties, useEffect, useState} from 'react';
-import {ColorResult, SketchPicker} from 'react-color';
 import {Button, Dropdown, Grid, Icon, Input, InputOnChangeData, Message, Segment, Table} from 'semantic-ui-react';
-import uuidv4 from 'uuid/v4';
+import {ColorResult, SketchPicker} from 'react-color';
 import {Criterion} from '../../../../core/model/mcda/criteria';
 import {ICriterion} from '../../../../core/model/mcda/criteria/Criterion.type';
 import {IRule} from '../../../../core/model/mcda/criteria/Rule.type';
+import {ParseResult} from 'papaparse';
+import {criterionStep} from '../../defaults/defaults';
 import {dropData} from '../../../../services/api';
-import Rainbow from '../../../../services/rainbowvis/Rainbowvis';
+import {heatMapColors} from '../../defaults/gis';
 import {rainbowFactory} from '../../../shared/rasterData/helpers';
 import CsvUpload from '../../../shared/simpleTools/upload/CsvUpload';
-import {criterionStep} from '../../defaults/defaults';
-import {heatMapColors} from '../../defaults/gis';
+import Rainbow from '../../../../services/rainbowvis/Rainbowvis';
+import React, {CSSProperties, ChangeEvent, useEffect, useState} from 'react';
+import uuidv4 from 'uuid/v4';
 
 const styles = {
     popover: {

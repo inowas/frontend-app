@@ -1,14 +1,14 @@
 import {
     Bounds,
-    default as Leaflet,
-    DomUtil, latLngBounds as toLatLngBounds,
+    DomUtil,
     LatLngExpression, Layer,
-    Util
+    default as Leaflet, Util,
+    latLngBounds as toLatLngBounds
 } from 'leaflet';
+import {IData} from './ReactLeafletHeatMapCanvasOverlay.type';
+import {ILegendItemContinuous, ILegendItemDiscrete, RainbowOrLegend} from '../../../services/rainbowvis/types';
 import {MapLayerProps} from 'react-leaflet';
 import Rainbow from '../../../services/rainbowvis/Rainbowvis';
-import {ILegendItemContinuous, ILegendItemDiscrete, RainbowOrLegend} from '../../../services/rainbowvis/types';
-import {IData} from './ReactLeafletHeatMapCanvasOverlay.type';
 
 export const canvasHeatMapOverlayClass = Layer.extend({
     options: {

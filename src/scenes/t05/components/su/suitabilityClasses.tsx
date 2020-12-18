@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
 import {Button, Grid, Icon, Message, Segment, Table} from 'semantic-ui-react';
+import {IRule} from '../../../../core/model/mcda/criteria/Rule.type';
 import {MCDA} from '../../../../core/model/mcda';
 import {Rule} from '../../../../core/model/mcda/criteria';
-import {IRule} from '../../../../core/model/mcda/criteria/Rule.type';
 import CriteriaReclassificationModal from '../cd/criteriaReclassificationModal';
+import React, {useState} from 'react';
 
 interface IProps {
     handleChange: (mcda: MCDA) => any;

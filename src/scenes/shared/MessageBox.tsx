@@ -1,12 +1,12 @@
-import moment from 'moment';
-import React from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {Header, Icon, List, Segment} from 'semantic-ui-react';
-import getConfig from '../../config.default';
 import {EMessageState, IMessage} from '../../core/model/messages/Message.type';
-import MessagesCollection from '../../core/model/messages/MessagesCollection';
+import {Header, Icon, List, Segment} from 'semantic-ui-react';
 import {IRootReducer} from '../../reducers';
 import {removeMessage} from '../t03/actions/actions';
+import {useDispatch, useSelector} from 'react-redux';
+import MessagesCollection from '../../core/model/messages/MessagesCollection';
+import React from 'react';
+import getConfig from '../../config.default';
+import moment from 'moment';
 
 // tslint:disable-next-line:variable-name
 const MessageBox = () => {
