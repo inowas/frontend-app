@@ -53,7 +53,7 @@ const CreateZone = () => {
     const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
     const soilmodel = T03.soilmodel ? Soilmodel.fromObject(T03.soilmodel) : null;
 
-    const {id, property} = useParams();
+    const {id, property} = useParams<{id: string, property: string}>();
     const history = useHistory();
     const dispatch = useDispatch();
     const baseUrl = '/tools/T03';

@@ -1,5 +1,5 @@
 import {Button, Popup} from 'semantic-ui-react';
-import {pure} from 'recompose';
+
 import Control from 'react-leaflet-control';
 import React from 'react';
 
@@ -71,4 +71,4 @@ const intersectionControl = (props: IProps) => {
     );
 };
 
-export default pure(intersectionControl);
+export default intersectionControl;

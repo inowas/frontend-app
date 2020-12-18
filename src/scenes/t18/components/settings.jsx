@@ -1,6 +1,6 @@
 import {Form, Grid, Header, Radio, Segment} from 'semantic-ui-react';
 import {SETTINGS_INFILTRATION_TYPE_BASIN, SETTINGS_INFILTRATION_TYPE_CYLINDER} from '../defaults/T18';
-import {pure} from 'recompose';
+
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -46,4 +46,4 @@ Settings.propTypes = {
     settings: PropTypes.object.isRequired,
 };
 
-export default pure(Settings);
+export default Settings;

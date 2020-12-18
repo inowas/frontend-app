@@ -21,8 +21,7 @@ const Login = () => {
 
     const dispatch = useDispatch();
     const history = useHistory();
-    const {id, token} = useParams();
-
+    const {id, token} = useParams<{id: string, token: string}>();
     const session = useSelector((state: IRootReducer) => state.session);
 
     const [username, setUsername] = useState<string>('');

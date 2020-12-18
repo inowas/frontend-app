@@ -94,10 +94,9 @@ export function calculateDiagramData(settings, vx, DL, R, C0, xMax, tMax, tau) {
 
         let dt = Math.floor(tMax / 25);
 
-        // eslint-disable-next-line no-unused-vars
-        let tStart = tMax - dt * 25;
+        //let tStart = tMax - dt * 25;
         if (dt < 1) {
-            tStart = 1;
+            //tStart = 1;
             dt = 1;
         }
         for (let t = 0; t <= tMax; t += dt) {
@@ -120,10 +119,9 @@ export function calculateDiagramData(settings, vx, DL, R, C0, xMax, tMax, tau) {
         xMax = calcX(tMax, vx, R, DL);
         let dx = xMax / 25;
 
-        // eslint-disable-next-line no-unused-vars
-        let xStart = xMax - dx * 25;
+        //let xStart = xMax - dx * 25;
         if (dx < 1) {
-            xStart = 1;
+            //xStart = 1;
             dx = 1;
         }
         for (let x = 0; x <= xMax; x += dx) {

@@ -27,7 +27,7 @@ const Transport = () => {
     const messages = MessagesCollection.fromObject(T03.messages);
 
     const dispatch = useDispatch();
-    const {property} = useParams();
+    const {property} = useParams<{property: string}>();
 
     const transportRef = useRef<TransportAlias>();
     const editingState = useRef<{ [key: string]: IMessage | null }>({

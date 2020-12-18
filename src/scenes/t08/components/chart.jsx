@@ -1,7 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {pure} from 'recompose';
-
 import {
     ResponsiveContainer,
     LineChart,
@@ -153,13 +151,13 @@ const Chart = ({settings, parameters}) => {
                                 size={'small'}
                                 onClick={() => exportChartImage(currentChart)}
                         >
-                            <Icon name='download' /> JPG
+                            <Icon name='download'/> JPG
                         </Button>
                         <Button compact basic icon
                                 size={'small'}
                                 onClick={() => exportChartData(currentChart)}
                         >
-                            <Icon name='download' /> CSV
+                            <Icon name='download'/> CSV
                         </Button>
                     </div>
                 </Grid.Column>
@@ -173,4 +171,4 @@ Chart.propTypes = {
     parameters: PropTypes.array.isRequired
 };
 
-export default pure(Chart);
+export default Chart;

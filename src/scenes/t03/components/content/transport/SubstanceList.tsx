@@ -1,5 +1,4 @@
 import {Button, Icon, Menu, Popup} from 'semantic-ui-react';
-import {pure} from 'recompose';
 import React, {MouseEvent} from 'react';
 import SubstanceCollection from '../../../../../core/model/modflow/transport/SubstanceCollection';
 
@@ -72,4 +71,4 @@ const SubstanceList = ({addSubstance, substances, onClick, onRemove, selected, r
     );
 };
 
-export default pure(SubstanceList);
+export default SubstanceList;

@@ -10,7 +10,7 @@ import {dxCell, dyCell} from '../../../../services/geoTools/distance';
 import BoundingBox from '../../geometry/BoundingBox';
 import GridSize from '../../geometry/GridSize';
 import Stressperiods from '../Stressperiods';
-import Uuid from 'uuid';
+import uuid from 'uuid';
 
 export default abstract class Boundary {
 
@@ -71,7 +71,7 @@ export default abstract class Boundary {
 
     public clone() {
         const b = this._class.fromObject(this._props);
-        b.id = Uuid.v4();
+        b.id = uuid.v4();
         b.name = this.name + ' (clone)';
         return b;
     }

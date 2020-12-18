@@ -197,7 +197,9 @@ const T05 = (props: IProps) => {
                     />
                 );*/
             case 'wa':
+                // eslint-disable-next-line no-case-declarations
                 const filteredWeightAssignment = mcda.weightAssignmentsCollection.findById(cCid);
+                // eslint-disable-next-line no-case-declarations
                 const weightAssignment = cCid && filteredWeightAssignment ? filteredWeightAssignment : null;
                 return (
                     <WeightAssignmentEditor
@@ -212,6 +214,7 @@ const T05 = (props: IProps) => {
                     />
                 );
             case 'cd':
+                // eslint-disable-next-line no-case-declarations
                 const criterion = cCid ? mcda.criteriaCollection.findById(cCid) : null;
 
                 if (criterion) {
@@ -238,7 +241,9 @@ const T05 = (props: IProps) => {
                     />
                 );
             default:
+                // eslint-disable-next-line no-case-declarations
                 const path = props.match.path;
+                // eslint-disable-next-line no-case-declarations
                 const basePath = path.split(':')[0];
                 return (
                     props.history.push(

@@ -169,6 +169,7 @@ const BoundaryDetails = (props: IProps) => {
                 options = {enabled: true, label: 'Evapotranspiration option', name: 'nevtop'};
                 break;
             default:
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 options = {enabled: false, label: '', name: ''};
                 break;
         }

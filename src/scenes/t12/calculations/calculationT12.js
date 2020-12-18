@@ -40,6 +40,7 @@ export const calcMFI = (data) => {
 
     preprocessedData.forEach(param => {
         sumX += param.V;
+        // eslint-disable-next-line no-unused-vars
         sumX2 += param.V * param.V;
         sumY += param.tV;
     });
@@ -55,6 +56,7 @@ export const calcMFI = (data) => {
 
     preprocessedData.forEach(param => {
         xxbar += (param.V - xBar) * (param.V - xBar);
+        // eslint-disable-next-line no-unused-vars
         yybar += (param.tV - yBar) * (param.tV - yBar);
         xybar += (param.V - xBar) * (param.tV - yBar);
     });

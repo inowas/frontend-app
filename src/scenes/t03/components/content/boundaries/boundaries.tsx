@@ -28,7 +28,7 @@ const Boundaries = (props: IProps) => {
     const [selectedBoundary, setSelectedBoundary] = useState<IBoundary | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    const {id, pid, property} = useParams();
+    const {id, pid, property} = useParams<{id: string, pid: string, property: string}>();
     const prevPid = usePrevious<string>(pid);
 
     const types = props.types;
