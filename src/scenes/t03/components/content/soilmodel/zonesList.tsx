@@ -1,7 +1,6 @@
 import {Button, Icon, Menu, Popup} from 'semantic-ui-react';
 import {IZone} from '../../../../../core/model/modflow/soilmodel/Zone.type';
 import {Zone, ZonesCollection} from '../../../../../core/model/modflow/soilmodel';
-import {pure} from 'recompose';
 import LayersCollection from '../../../../../core/model/modflow/soilmodel/LayersCollection';
 import React from 'react';
 
@@ -87,4 +86,4 @@ const ZonesList = ({layers, zones, onClick, onClone, onRemove, readOnly, selecte
     );
 };
 
-export default pure(ZonesList);
+export default ZonesList;

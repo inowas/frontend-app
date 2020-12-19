@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Icon, Message} from 'semantic-ui-react';
 import {getParameterValues} from '../../shared/simpleTools/helpers';
-import {pure} from 'recompose';
+
 
 export const calculateXT = (i, b, rho_f, rho_s) => {
     const frac1 = (i * b * rho_f) / (rho_s - rho_f);
@@ -29,4 +29,4 @@ Info.propTypes = {
     parameters: PropTypes.array.isRequired
 };
 
-export default pure(Info);
+export default Info;

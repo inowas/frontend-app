@@ -1,7 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {pure} from 'recompose';
-
 import {
     Bar,
     BarChart,
@@ -90,4 +88,4 @@ Chart.propTypes = {
     parameters: PropTypes.array.isRequired,
 };
 
-export default pure(Chart);
+export default Chart;

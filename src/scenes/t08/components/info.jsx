@@ -1,5 +1,4 @@
 import React from 'react';
-import {pure} from 'recompose';
 import PropTypes from 'prop-types';
 import {Message, Icon} from 'semantic-ui-react';
 import {calcC, calcCTau, calculateDL, calculateR, calculateVx} from '../calculations/calculationT08';
@@ -50,4 +49,4 @@ Info.propTypes = {
     parameters: PropTypes.array.isRequired
 };
 
-export default pure(Info);
+export default Info;

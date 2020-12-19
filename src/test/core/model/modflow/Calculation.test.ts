@@ -59,6 +59,8 @@ test('Calculation static fromQuery', () => {
         ]
     };
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const calculation = Calculation.fromQuery(query);
     expect(calculation).toBeInstanceOf(Calculation);
     expect(calculation.id).toEqual(query.calculation_id);
@@ -113,6 +115,8 @@ test('Calculation static fromObject, toObject', () => {
         ]
     };
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const calculation = Calculation.fromObject(obj);
     expect(calculation).toBeInstanceOf(Calculation);
     expect(calculation.id).toEqual(obj.calculation_id);

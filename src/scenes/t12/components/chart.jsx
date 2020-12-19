@@ -18,7 +18,7 @@ import {
 } from 'recharts';
 
 import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
-import {pure} from 'recompose';
+
 
 import {Button, Grid, Icon, Segment} from 'semantic-ui-react';
 
@@ -132,4 +132,4 @@ Chart.propTypes = {
     parameters: PropTypes.array.isRequired
 };
 
-export default pure(Chart);
+export default Chart;

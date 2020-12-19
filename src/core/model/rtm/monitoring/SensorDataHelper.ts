@@ -24,6 +24,8 @@ export async function retrieveData(sensorData: ISensorData, caching = false) {
         const json = await response.json() as IServerSensorData[];
         const data = json.map((d) => {
             const timeStamp = moment.utc(d.date_time).unix();
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             delete d.date_time;
             const value = Object.values(d)[0] as number;
             return {

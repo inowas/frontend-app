@@ -8,7 +8,6 @@ import {Icon, Message} from 'semantic-ui-react';
 import {LatLng, LatLngBoundsExpression} from 'leaflet';
 import {calculateActiveCells} from '../../../../services/geoTools';
 import {getStyle} from './index';
-import {pure} from 'recompose';
 import React from 'react';
 import md5 from 'md5';
 
@@ -221,4 +220,4 @@ class CreateModelMap extends React.Component<ICreateModelMapProps, ICreateModelM
     }
 }
 
-export default pure(CreateModelMap);
+export default CreateModelMap;

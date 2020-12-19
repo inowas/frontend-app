@@ -123,6 +123,8 @@ class FlopyMt3d extends GenericObject<IFlopyMt3d> {
         }
 
         const obj = {...this._props};
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         delete obj.enabled;
 
         return {

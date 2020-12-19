@@ -2,7 +2,7 @@ import {Icon, Message} from 'semantic-ui-react';
 import {SETTINGS_SELECTED_H0, SETTINGS_SELECTED_HL, SETTINGS_SELECTED_NOTHING} from '../defaults/T13B';
 import {calculateTravelTimeT13B, calculateXwd} from '../calculations';
 import {getParameterValues} from '../../shared/simpleTools/helpers';
-import {pure} from 'recompose';
+
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -42,4 +42,4 @@ Info.propTypes = {
     settings: PropTypes.object.isRequired,
 };
 
-export default pure(Info);
+export default Info;

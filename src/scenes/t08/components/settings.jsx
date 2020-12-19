@@ -1,5 +1,4 @@
 import React from 'react';
-import {pure} from 'recompose';
 import PropTypes from 'prop-types';
 import {Form, Grid, Header, Radio, Segment} from 'semantic-ui-react';
 
@@ -73,4 +72,4 @@ Settings.propTypes = {
     settings: PropTypes.object.isRequired,
 };
 
-export default pure(Settings);
+export default Settings;

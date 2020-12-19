@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {mounding} from 'gwflowjs/lib/library';
-import {pure} from 'recompose';
 
 import {
     CartesianGrid, Label,
@@ -183,4 +182,4 @@ Chart.propTypes = {
     parameters: PropTypes.array.isRequired
 };
 
-export default pure(Chart);
+export default Chart;

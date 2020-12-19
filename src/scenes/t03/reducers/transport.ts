@@ -6,7 +6,7 @@ export const UPDATE_TRANSPORT = 'T03_UPDATE_TRANSPORT';
 
 const initialState = null;
 
-const Transport = (state: ITransport | null = initialState, action: {
+const transport = (state: ITransport | null = initialState, action: {
     type: string,
     payload: ITransport
 }) => {
@@ -27,4 +27,4 @@ const Transport = (state: ITransport | null = initialState, action: {
     }
 };
 
-export default Transport;
+export default transport;

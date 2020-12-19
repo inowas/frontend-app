@@ -111,6 +111,8 @@ export default class FlopySeawat extends GenericObject<IFlopySeawat> {
         }
 
         const obj = {...this._props};
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         delete obj.enabled;
 
         return {

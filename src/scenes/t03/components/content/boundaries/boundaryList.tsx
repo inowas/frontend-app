@@ -32,8 +32,7 @@ class BoundaryList extends React.Component<IBoundaryListProps, IBoundaryListStat
         };
     }
 
-    // eslint-disable-next-line react/no-deprecated
-    public componentWillReceiveProps(nextProps: IBoundaryListProps) {
+    public UNSAFE_componentWillReceiveProps(nextProps: IBoundaryListProps) {
         this.setState({
             selectedType: nextProps.types && nextProps.types.length === 1 ? nextProps.types[0] : 'all'
         });

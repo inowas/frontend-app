@@ -6,7 +6,6 @@ import {FeatureGroup, GeoJSON, Map, Polygon} from 'react-leaflet';
 import {Geometry} from '../../../../core/model/geometry';
 import {Gis, VectorLayer, VectorLayersCollection} from '../../../../core/model/mcda/gis';
 import {heatMapColors} from '../../defaults/gis';
-import {pure} from 'recompose';
 import ActiveCellsLayer from '../../../../services/geoTools/activeCellsLayer';
 import CriteriaRasterMap from '../cd/criteriaRasterMap';
 import GridSize from '../../../../core/model/geometry/GridSize';
@@ -185,4 +184,4 @@ const ConstraintsMap = (props: IProps) => {
     );
 };
 
-export default pure(ConstraintsMap);
+export default ConstraintsMap;

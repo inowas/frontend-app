@@ -1,14 +1,14 @@
+import {calculateXwd} from '../calculations';
+import {getParameterValues} from '../../shared/simpleTools/helpers';
+
+import Background from '../../../scenes/shared/Background';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {pure} from 'recompose';
-import Background from '../../../scenes/shared/Background';
-import {getParameterValues} from '../../shared/simpleTools/helpers';
-import {calculateXwd} from '../calculations';
 
-import image13B from '../images/T13B.png';
-import image13C from '../images/T13C.png';
 import {Container, Header} from 'semantic-ui-react';
 import {withRouter} from 'react-router-dom';
+import image13B from '../images/T13B.png';
+import image13C from '../images/T13C.png';
 
 const tool = (xwd) => {
     if (xwd >= 0) {
@@ -57,4 +57,4 @@ BackgroundT13D.propTypes = {
     parameters: PropTypes.array.isRequired,
 };
 
-export default withRouter(pure(BackgroundT13D));
+export default withRouter(BackgroundT13D);

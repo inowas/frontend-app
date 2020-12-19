@@ -1,6 +1,5 @@
 import {DropdownProps, Form, Grid, Header, Segment} from 'semantic-ui-react';
 import {Stressperiods} from '../../../core/model/modflow';
-import {pure} from 'recompose';
 import Moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import SliderWithTooltip from './SliderWithTooltip';
@@ -156,4 +155,4 @@ const ResultsSelectorBudget = (props: IProps) => {
     );
 };
 
-export default pure(ResultsSelectorBudget);
+export default ResultsSelectorBudget;

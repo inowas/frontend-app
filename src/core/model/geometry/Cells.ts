@@ -64,7 +64,7 @@ export const getPointFromCell = (cell: ICell, boundingBox: BoundingBox, gridSize
 
 const distanceOnLine = (ls: Feature<LineString>, point: NearestPointOnLine) => {
     const start = turf.point(ls.geometry.coordinates[0]);
-    const end = turf.point(point.geometry!.coordinates);
+    const end = point.geometry ? turf.point(point.geometry.coordinates) : start;
     const linestring = turf.lineString(ls.geometry.coordinates);
     const sliced = lineSlice(start, end, linestring);
     return lineDistance(sliced);
