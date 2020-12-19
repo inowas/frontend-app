@@ -19,6 +19,7 @@ export interface IRtModelling extends ISimpleTool<IRtModellingData> {
 export interface IRtModellingData {
     model_id: string | null;
     automatic_calculation: boolean;
+    calculation_id?: string;
     start_date_time: string;
     time_resolution: ETimeResolution;
     simulated_times: number[];

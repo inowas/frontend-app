@@ -5,12 +5,12 @@ import {IRtm} from '../../../core/model/rtm/monitoring/Rtm.type';
 import {ISensor} from '../../../core/model/rtm/monitoring/Sensor.type';
 import {Rtm} from '../../../core/model/rtm/monitoring';
 import {fetchApiWithToken} from '../../../services/api';
+import {fetchData} from '../services/rtmFetcher';
 import {useSelector} from 'react-redux';
+import RTModelling from '../../../core/model/rtm/modelling/RTModelling';
 import RTModellingMethod from '../../../core/model/rtm/modelling/RTModellingMethod';
 import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 import uuid from 'uuid';
-import {fetchData} from "../services/rtmFetcher";
-import RTModelling from "../../../core/model/rtm/modelling/RTModelling";
 
 interface IError {
     id: string;

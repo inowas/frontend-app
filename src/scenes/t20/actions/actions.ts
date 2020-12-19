@@ -1,7 +1,7 @@
 import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 import {CLEAR, UPDATE_RTMODELLING} from '../reducers/rtmodelling';
 import {Calculation, ModflowModel, Soilmodel, Transport, VariableDensity} from '../../../core/model/modflow';
-import {IToolInstance} from '../../dashboard/defaults/tools';
+import {IToolInstance} from '../../types';
 import {PROCESSING_PACKAGES} from '../reducers/packages';
 import {START_CALCULATION, UPDATE_CALCULATION} from '../reducers/calculation';
 import {UPDATE_BOUNDARIES} from '../reducers/boundaries';

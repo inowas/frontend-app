@@ -19,10 +19,10 @@ import {
 } from './t03.worker.type';
 import {ICells} from '../../../core/model/geometry/Cells.type';
 import {IFlopyPackages} from '../../../core/model/flopy/packages/FlopyPackages.type';
+import {IStatistics} from '../../t03/components/content/observation/statistics';
 import {calculateActiveCells} from '../../../services/geoTools';
 import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
 import calculateStatistics from '../../../services/statistics/calculateStatistics';
-import { IStatistics } from '../../t03/components/content/observation/statistics';
 
 export const CALCULATE_STATISTICS_INPUT = 'CALCULATE_STATISTICS_INPUT';
 export const CALCULATE_STATISTICS_RESULT = 'CALCULATE_STATISTICS_RESULT';

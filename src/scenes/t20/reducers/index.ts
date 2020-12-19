@@ -4,7 +4,7 @@ import {IModflowModel} from '../../../core/model/modflow/ModflowModel.type';
 import {IPackagesReducer} from '../../t03/reducers/packages';
 import {IRtModelling} from '../../../core/model/rtm/modelling/RTModelling.type';
 import {ISoilmodel} from '../../../core/model/modflow/soilmodel/Soilmodel.type';
-import {IToolInstance} from '../../dashboard/defaults/tools';
+import {IToolInstance} from '../../types';
 import {ITransport} from '../../../core/model/modflow/transport/Transport.type';
 import {IVariableDensity} from '../../../core/model/modflow/variableDensity/VariableDensity.type';
 import {combineReducers} from 'redux';

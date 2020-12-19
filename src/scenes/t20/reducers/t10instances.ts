@@ -1,5 +1,5 @@
 import {CLEAR} from './rtmodelling';
-import {IToolInstance} from '../../dashboard/defaults/tools';
+import {IToolInstance} from '../../types';
 import {LOGOUT, UNAUTHORIZED} from '../../user/actions/actions';
 
 export const UPDATE_T10_INSTANCES = 'T20_UPDATE_T10_INSTANCES';

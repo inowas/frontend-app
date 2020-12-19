@@ -2,7 +2,7 @@ import {CLEAR} from './rtmodelling';
 import {ISoilmodel} from '../../../core/model/modflow/soilmodel/Soilmodel.type';
 import {LOGOUT, UNAUTHORIZED} from '../../user/actions/actions';
 
-export const UPDATE_SOILMODEL = 'T10_UPDATE_SOILMODEL';
+export const UPDATE_SOILMODEL = 'T20_UPDATE_SOILMODEL';
 
 const initialState = () => null;
 

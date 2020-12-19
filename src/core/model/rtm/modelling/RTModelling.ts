@@ -30,6 +30,10 @@ class RTModelling extends GenericObject<IRtModelling> {
         this._props.name = value;
     }
 
+    get calculationId() {
+        return this._props.data.calculation_id;
+    }
+
     get data(): IRtModellingData {
         return this._props.data;
     }

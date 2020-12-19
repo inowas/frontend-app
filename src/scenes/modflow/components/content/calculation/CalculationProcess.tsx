@@ -6,7 +6,6 @@ import {IT20Reducer} from '../../../../t20/reducers';
 import {Message} from 'semantic-ui-react';
 import {
     fetchCalculationDetails,
-    sendCommand,
     sendModflowCalculationRequest
 } from '../../../../../services/api';
 import {useDispatch} from 'react-redux';
@@ -24,7 +23,6 @@ import FlopyModpath from '../../../../../core/model/flopy/packages/mp/FlopyModpa
 import FlopyMt3d from '../../../../../core/model/flopy/packages/mt/FlopyMt3d';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import FlopySeawat from '../../../../../core/model/flopy/packages/swt/FlopySeawat';
-import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import React, {useEffect, useRef, useState} from 'react';
 import Soilmodel from '../../../../../core/model/modflow/soilmodel/Soilmodel';
 import Transport from '../../../../../core/model/modflow/transport/Transport';

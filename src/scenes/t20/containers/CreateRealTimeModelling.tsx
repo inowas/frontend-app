@@ -13,7 +13,7 @@ import {DatePicker} from '../../shared/uiComponents';
 import {ETimeResolution} from '../../../core/model/rtm/modelling/RTModelling.type';
 import {IDatePickerProps} from '../../shared/uiComponents/DatePicker';
 import {IModflowModel} from '../../../core/model/modflow/ModflowModel.type';
-import {IToolInstance} from '../../dashboard/defaults/tools';
+import {IToolInstance} from '../../types';
 import {Map} from 'react-leaflet';
 import {ModflowModel} from '../../../core/model/modflow';
 import {createToolInstance} from '../../dashboard/commands';

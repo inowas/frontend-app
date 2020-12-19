@@ -1,5 +1,5 @@
 import {CLEAR} from './htm';
-import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
+import {IDateTimeValue} from '../../../core/model/rtm/monitoring/Sensor.type';
 import {LOGOUT, UNAUTHORIZED} from '../../user/actions/actions';
 import _ from 'lodash';
 

@@ -21,14 +21,14 @@ interface IProps {
     model?: ModflowModel;
     property: string;
     reducer: IT03Reducer | IT20Reducer;
-    updatePackages: (packages: FlopyPackages) => {type: string, payload: IFlopyPackages}
-    startCalculation: () => {type: string};
+    updatePackages: (packages: FlopyPackages) => { type: string, payload: IFlopyPackages }
+    startCalculation: () => { type: string };
 }
 
 const PackageActualizationWrapper = (props: IProps) => {
     const [isCalculating, setIsCalculating] = useState<boolean>(true);
     const [isError, setError] = useState<any>(false);
-    
+
     const dispatch = useDispatch();
     const model = props.model || (props.reducer.model ? ModflowModel.fromObject(props.reducer.model) : null);
     const calculation = props.reducer.calculation ? Calculation.fromObject(props.reducer.calculation) : null;
@@ -106,12 +106,14 @@ const PackageActualizationWrapper = (props: IProps) => {
     const {property} = props;
 
     if (property === 'calculation') {
-        return (<Content.Calculation
-            model={model}
-            packages={packages}
-            calculation={calculation}
-            startCalculation={props.startCalculation}
-        />);
+        return (
+            <Content.Calculation
+                model={model}
+                packages={packages}
+                calculation={calculation}
+                startCalculation={props.startCalculation}
+            />
+        );
     }
 
     return null;

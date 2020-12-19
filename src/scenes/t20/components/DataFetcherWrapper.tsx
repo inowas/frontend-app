@@ -1,7 +1,7 @@
 import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 import {IRootReducer} from '../../../reducers';
 import {IRtModelling} from '../../../core/model/rtm/modelling/RTModelling.type';
-import {IToolInstance} from '../../dashboard/defaults/tools';
+import {IToolInstance} from '../../types';
 import {List, Modal} from 'semantic-ui-react';
 import {ModflowModel, Soilmodel, Transport, VariableDensity} from '../../../core/model/modflow';
 import {
@@ -64,6 +64,8 @@ const DataFetcherWrapper = (props: IProps) => {
     });
 
     const dispatch = useDispatch();
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const {id} = useParams();
 
     const T20 = useSelector((state: IRootReducer) => state.T20);

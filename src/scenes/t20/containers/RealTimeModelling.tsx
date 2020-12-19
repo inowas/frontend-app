@@ -32,6 +32,8 @@ const navigation = [{
 const RealTimeModelling = () => {
     const dispatch = useDispatch();
     const history = useHistory();
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const {id, property} = useParams();
 
     const T20 = useSelector((state: IRootReducer) => state.T20);

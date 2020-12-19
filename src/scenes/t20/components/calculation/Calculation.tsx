@@ -1,7 +1,7 @@
 import {BoundaryCollection, ModflowModel, Stressperiods} from '../../../../core/model/modflow';
-import {Segment} from 'semantic-ui-react';
 import {IRootReducer} from '../../../../reducers';
 import {PackageActualizationWrapper} from '../../../modflow/components/content';
+import {Segment} from 'semantic-ui-react';
 import {appendBoundaryData} from '../appendBoundaryData';
 import {startCalculation, updatePackages, updateRTModelling} from '../../actions/actions';
 import {useDispatch, useSelector} from 'react-redux';
@@ -21,6 +21,15 @@ const Calculation = () => {
             handleCalculate();
         }
     }, [rtm, model, boundaries])
+
+    useEffect(() => {
+        if (rtm && T20.calculation && T20.calculation.calculation_id
+            && T20.calculation.calculation_id !== rtm.calculationId) {
+            const cRtm = rtm.toObject();
+            cRtm.data.calculation_id = T20.calculation.calculation_id;
+            dispatch(updateRTModelling(RTModelling.fromObject(cRtm)));
+        }
+    }, [T20.calculation]);
 
     if (!rtm || !model || !boundaries) {
         return null;

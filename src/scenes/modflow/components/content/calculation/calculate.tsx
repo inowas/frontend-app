@@ -32,11 +32,11 @@ const Calculate = (props: IProps) => {
 
         const {calculation, model, packages} = props;
 
-        if (model.readOnly) {
+        /*if (model.readOnly) {
             setCanBeCalculated(false);
             setShowProgress(false);
             return;
-        }
+        }*/
 
         if (!calculation || !packages) {
             setCanBeCalculated(true);
