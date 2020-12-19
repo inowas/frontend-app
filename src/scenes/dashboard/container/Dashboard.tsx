@@ -1,6 +1,3 @@
-import React, {MouseEvent, useEffect, useRef, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {
     Button,
     Container,

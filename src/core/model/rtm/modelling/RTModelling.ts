@@ -1,9 +1,9 @@
 import {
     EMethodType,
     ETimeResolution,
+    IRTModellingHead,
     IRtModelling,
-    IRtModellingData,
-    IRTModellingHead, IRtModellingResults,
+    IRtModellingData, IRtModellingResults,
     RTModellingObservationPoint
 } from './RTModelling.type';
 import {GenericObject} from '../../genericObject/GenericObject';
@@ -11,7 +11,6 @@ import {LineBoundary} from '../../modflow/boundaries';
 import BoundaryCollection from '../../modflow/boundaries/BoundaryCollection';
 import _, {cloneDeep} from 'lodash';
 import uuid from 'uuid';
-import {ModflowModel} from "../../modflow";
 
 class RTModelling extends GenericObject<IRtModelling> {
 

@@ -1,6 +1,6 @@
 import {BoundaryCollection, ModflowModel, Soilmodel, VariableDensity} from '../../modflow';
 import {FlopyMt3d} from '../../flopy/packages/mt';
-import {FlopySeawat} from '../../flopy/packages/swt';
+import {FlopySeawat} from '../../flopy';
 import { IBoundary } from '../../modflow/boundaries/Boundary.type';
 import { IFlopyPackages } from '../../flopy/packages/FlopyPackages.type';
 import {IModflowModel} from '../../modflow/ModflowModel.type';

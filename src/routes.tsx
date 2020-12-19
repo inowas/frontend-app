@@ -1,6 +1,3 @@
-import React from 'react';
-import {Route, Switch} from 'react-router-dom';
-
 import * as Scenes from './scenes';
 import {Route, Switch} from 'react-router-dom';
 import PrivateRoute from './services/router/PrivateRoute';
