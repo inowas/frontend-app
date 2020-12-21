@@ -145,7 +145,7 @@ const Dashboard = (props: IProps) => {
                     if (t.id === id) {
                         t.name = name;
                         t.description = description;
-                        t.public = !isPublic;
+                        t.public = isPublic;
                     }
                     return t;
                 }));
