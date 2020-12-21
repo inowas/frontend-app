@@ -68,7 +68,9 @@ const RealTimeModelling = () => {
     const renderContent = () => {
         if (property === 'calculation') {
             return (
-                <Calculation/>
+                <Calculation
+                    onChange={handleSave}
+                />
             );
         }
         if (property === 'boundaries') {

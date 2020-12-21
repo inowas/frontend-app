@@ -1,36 +1,30 @@
 import {Button, Grid, Header, Icon, List, Popup, Segment} from 'semantic-ui-react';
+import {Calculation, ModflowModel} from '../../../../../core/model/modflow';
 import {IModflowFile} from '../../../../../services/api/types';
-import {IRootReducer} from '../../../../../reducers';
-import {ModflowModel} from '../../../../../core/model/modflow';
-import {useSelector} from 'react-redux';
+import {MODFLOW_CALCULATION_URL, fetchModflowFile} from '../../../../../services/api';
 import React, {useEffect, useState} from 'react';
 import Terminal from '../../../../shared/complexTools/Terminal';
 
-import {MODFLOW_CALCULATION_URL, fetchModflowFile} from '../../../../../services/api';
+interface IProps {
+    calculation: Calculation | null;
+    model: ModflowModel;
+}
 
-const ModflowFiles = () => {
-
+const ModflowFiles = (props: IProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
-
-    // Todo show errors
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [isError, setIsError] = useState<boolean>(false);
     const [selectedFile, setSelectedFile] = useState<string | null>(null);
     const [copyToClipBoardSuccessful, setCopyToClipBoardSuccessful] = useState<boolean>(false);
     const [file, setFile] = useState<IModflowFile | null>(null);
 
-    const calculation = useSelector((state: IRootReducer) => state.T03.calculation);
-    const model = useSelector((state: IRootReducer) => state.T03.model);
-
     useEffect(() => {
-        if (!calculation) {
+        if (!props.calculation) {
             return;
         }
 
-        calculation.files.forEach((f) => {
-            if (f.endsWith('.list')) {
+        props.calculation.files.forEach((f) => {
+            if (props.calculation && f.endsWith('.list')) {
                 setSelectedFile(f);
-                fetchFile(calculation.calculation_id, f);
+                fetchFile(props.calculation.id, f);
             }
         });
 
@@ -47,19 +41,18 @@ const ModflowFiles = () => {
                 setIsLoading(false);
             },
             () => {
-                setIsError(false);
                 setIsLoading(false);
             });
     };
 
     const onClickFile = (f: string) => {
-        if (!calculation) {
-            return;
+        if (!props.calculation) {
+            return null;
         }
 
         setSelectedFile(f);
         setCopyToClipBoardSuccessful(false);
-        fetchFile(calculation.calculation_id, f);
+        fetchFile(props.calculation.id, f);
     };
 
     const onCopyToClipboard = () => {
@@ -82,11 +75,11 @@ const ModflowFiles = () => {
         setCopyToClipBoardSuccessful(true);
     };
 
-    if (!calculation || !model) {
+    if (!props.calculation) {
         return null;
     }
 
-    const files = calculation.files.filter((f) => !f.toLowerCase().startsWith('mt'))
+    const files = props.calculation.files.filter((f) => !f.toLowerCase().startsWith('mt'))
         .sort((a, b) => a.localeCompare(b, undefined, {sensitivity: 'base'}));
 
     return (
@@ -108,10 +101,10 @@ const ModflowFiles = () => {
 
                         </List>
                     </Segment>
-                    {!ModflowModel.fromObject(model).readOnly &&
+                    {!props.model.readOnly &&
                     <a
                         className="ui button positive fluid"
-                        href={`${MODFLOW_CALCULATION_URL}/${calculation.calculation_id}/download`}
+                        href={`${MODFLOW_CALCULATION_URL}/${props.calculation.id}/download`}
                         target="_blank"
                         rel="noopener noreferrer"
                     >

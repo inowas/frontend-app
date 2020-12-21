@@ -8,7 +8,11 @@ import {useDispatch, useSelector} from 'react-redux';
 import RTModelling from '../../../../core/model/rtm/modelling/RTModelling';
 import React, {useEffect} from 'react';
 
-const Calculation = () => {
+interface IProps {
+    onChange: (rtm: RTModelling) => void;
+}
+
+const Calculation = (props: IProps) => {
     const dispatch = useDispatch();
 
     const T20 = useSelector((state: IRootReducer) => state.T20);
@@ -20,6 +24,7 @@ const Calculation = () => {
         if (rtm && !rtm.results) {
             handleCalculate();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [rtm, model, boundaries])
 
     useEffect(() => {
@@ -29,6 +34,7 @@ const Calculation = () => {
             cRtm.data.calculation_id = T20.calculation.calculation_id;
             dispatch(updateRTModelling(RTModelling.fromObject(cRtm)));
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [T20.calculation]);
 
     if (!rtm || !model || !boundaries) {
@@ -46,7 +52,7 @@ const Calculation = () => {
 
         const cRtm = rtm.toObject();
         cRtm.data.results = {boundaries: results.boundaries, model: model.toObject()};
-        dispatch(updateRTModelling(RTModelling.fromObject(cRtm)));
+        props.onChange(RTModelling.fromObject(cRtm));
     };
 
     if (rtm && rtm.results) {

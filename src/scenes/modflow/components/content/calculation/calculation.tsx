@@ -26,8 +26,8 @@ const CalculationWrapper = (props: IProps) => {
             component: <Calculate model={props.model} calculation={props.calculation} packages={props.packages}
                                   startCalculation={props.startCalculation}/>
         },
-        {id: 'logs', name: 'Calculation logs', component: <Log/>},
-        {id: 'files', name: 'Model files', component: <Files/>},
+        {id: 'logs', name: 'Calculation logs', component: <Log calculation={props.calculation}/>},
+        {id: 'files', name: 'Model files', component: <Files calculation={props.calculation} model={props.model}/>},
     ];
 
     return (

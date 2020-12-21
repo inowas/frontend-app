@@ -101,6 +101,11 @@ export const appendBoundaryData = (
         cStressperiods.stressperiods.push(newSp);
     });
 
+    const newLastSpDate = new Date(
+        cStressperiods.stressperiods[cStressperiods.stressperiods.length - 1].start_date_time);
+
+    cStressperiods.end_date_time = addDays(newLastSpDate, 1);
+
     return {
         boundaries: cBoundaries,
         stressperiods: cStressperiods

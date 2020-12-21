@@ -1,22 +1,22 @@
+import {Calculation} from '../../../../../core/model/modflow';
 import {Grid, Header, Icon, Popup, Segment} from 'semantic-ui-react';
-import {IRootReducer} from '../../../../../reducers';
-import {useSelector} from 'react-redux';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import React, {useState} from 'react';
 import Terminal from '../../../../shared/complexTools/Terminal';
 
-// tslint:disable-next-line:variable-name
-const Log = () => {
+interface IProps {
+    calculation: Calculation | null;
+}
+
+const Log = (props: IProps) => {
 
     const [copyToClipBoardSuccessful, setCopyToClipBoardSuccessful] = useState<boolean>(false);
 
-    const calculation = useSelector((state: IRootReducer) => state.T03.calculation);
-
     const onCopyToClipboard = () => {
-        if (!calculation) {
+        if (!props.calculation) {
             return;
         }
-        const {message} = calculation;
+        const {message} = props.calculation;
         const dummy = document.createElement('textarea');
         // to avoid breaking orgain page when copying more words
         // cant copy when adding below this code
@@ -51,7 +51,7 @@ const Log = () => {
                         </Button>
                     </Header>
                     <Segment color={'grey'}>
-                        {calculation && <Terminal content={calculation.message}/>}
+                        {props.calculation && <Terminal content={props.calculation.message}/>}
                     </Segment>
                 </Grid.Column>
             </Grid.Row>
