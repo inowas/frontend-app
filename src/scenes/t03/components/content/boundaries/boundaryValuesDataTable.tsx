@@ -184,6 +184,7 @@ const BoundaryValuesDataTable = (props: IProps) => {
                 valueProperties={boundary.valueProperties}
             />
             }
+            {!props.readOnly &&
             <p style={{marginTop: '10px'}}>
                 <b>Time dependent boundary values{boundary instanceof LineBoundary ? ' observation point' : ''}</b>
                 <Button
@@ -198,6 +199,7 @@ const BoundaryValuesDataTable = (props: IProps) => {
                     Upload csv
                 </Button>
             </p>
+            }
             {spValues && spValues.length > 20 &&
             <Pagination
                 activePage={paginationPage}

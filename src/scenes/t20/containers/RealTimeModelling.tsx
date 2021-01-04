@@ -19,6 +19,8 @@ import Calculation from '../components/calculation/Calculation';
 import DataFetcherWrapper from '../components/DataFetcherWrapper';
 import RTModelling from '../../../core/model/rtm/modelling/RTModelling';
 import RTModellingBoundaries from '../components/RTModellingBoundaries';
+import RTModellingBoundaryPreview from '../components/RTModellingBoundaryPreview';
+import RTModellingResults from '../components/RTModellingResults';
 import RTModellingSetup from '../components/RTModellingSetup';
 import React, {useEffect} from 'react';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
@@ -34,7 +36,7 @@ const RealTimeModelling = () => {
     const history = useHistory();
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const {id, property} = useParams();
+    const {id, property, pid} = useParams();
 
     const T20 = useSelector((state: IRootReducer) => state.T20);
     const rtm = T20.rtmodelling ? RTModelling.fromObject(T20.rtmodelling) : null;
@@ -74,9 +76,21 @@ const RealTimeModelling = () => {
             );
         }
         if (property === 'boundaries') {
+            if (pid) {
+                return (
+                    <RTModellingBoundaryPreview/>
+                );
+            }
             return (
                 <RTModellingBoundaries
                     onChange={handleSave}
+                />
+            );
+        }
+        if (property === 'flow' || property === 'budget') {
+            return (
+                <RTModellingResults
+                    property={property}
                 />
             );
         }
@@ -145,11 +159,6 @@ const RealTimeModelling = () => {
                                                 name: 'Budget',
                                                 property: 'budget',
                                                 icon: <Icon name="chart bar outline"/>
-                                            },
-                                            {
-                                                name: 'Concentration',
-                                                property: 'concentration',
-                                                icon: <Icon name="chart area"/>
                                             }
                                         ]
                                     }

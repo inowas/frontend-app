@@ -14,6 +14,7 @@ import {ModflowModel} from '../../../core/model/modflow';
 import {fetchApiWithToken} from '../../../services/api';
 import {updateBoundaries} from '../actions/actions';
 import {useDispatch, useSelector} from 'react-redux';
+import {useHistory} from 'react-router-dom';
 import MethodModal from './MethodModal';
 import RTModelling from '../../../core/model/rtm/modelling/RTModelling';
 import RTModellingMethod from '../../../core/model/rtm/modelling/RTModellingMethod';
@@ -40,6 +41,7 @@ const RTModellingBoundaries = (props: IProps) => {
     const t10Instances = T20.t10instances;
 
     const dispatch = useDispatch();
+    const history = useHistory();
 
     const fetchBoundaries = async () => {
         if (!model || !rtm) {
@@ -149,6 +151,8 @@ const RTModellingBoundaries = (props: IProps) => {
         setActiveRow({method, bId, propertyKey, opId});
     };
 
+    const handleClickPreview = (bId: string) => () => history.push(`boundaries/${bId}`);
+
     const handleSave = () => {
         const cRtm = rtm.toObject();
         cRtm.data.head = heads;
@@ -180,6 +184,13 @@ const RTModellingBoundaries = (props: IProps) => {
                     icon={true}
                 >
                     <Icon name='pencil'/>
+                </Button>
+                <Button
+                    floated="right"
+                    onClick={handleClickPreview(bid)}
+                    icon={true}
+                >
+                    <Icon name='eye' />
                 </Button>
             </Button.Group>
         );

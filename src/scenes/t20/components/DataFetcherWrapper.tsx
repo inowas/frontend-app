@@ -1,19 +1,19 @@
 import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
+import {Calculation, ModflowModel, Soilmodel, Transport, VariableDensity} from '../../../core/model/modflow';
 import {IRootReducer} from '../../../reducers';
 import {IRtModelling} from '../../../core/model/rtm/modelling/RTModelling.type';
 import {IToolInstance} from '../../types';
 import {List, Modal} from 'semantic-ui-react';
-import {ModflowModel, Soilmodel, Transport, VariableDensity} from '../../../core/model/modflow';
 import {
     clear,
-    updateBoundaries,
+    updateBoundaries, updateCalculation,
     updateModel,
     updatePackages,
     updateRTModelling, updateSoilmodel,
     updateT10Instances,
     updateTransport, updateVariableDensity
 } from '../actions/actions';
-import {fetchApiWithToken} from '../../../services/api';
+import {fetchApiWithToken, fetchCalculationDetails} from '../../../services/api';
 import {rtModellingFetcher} from '../services/rtmFetcher';
 import {uniqBy} from 'lodash';
 import {useDispatch, useSelector} from 'react-redux';
@@ -31,6 +31,9 @@ const DataFetcherWrapper = (props: IProps) => {
 
     const [fetchingBoundaries, setFetchingBoundaries] = useState<boolean>(true);
     const [fetchingBoundariesSuccess, setFetchingBoundariesSuccess] = useState<boolean | null>(null);
+
+    const [fetchingCalculation, setFetchingCalculation] = useState<boolean>(true);
+    const [fetchingCalculationSuccess, setFetchingCalculationSuccess] = useState<boolean | null>(null);
 
     const [fetchingInstances, setFetchingInstances] = useState<boolean>(true);
     const [fetchingInstancesSuccess, setFetchingInstancesSuccess] = useState<boolean | null>(null);
@@ -105,6 +108,28 @@ const DataFetcherWrapper = (props: IProps) => {
         }
     };
 
+    const fetchCalculation = async (cId: string) => {
+
+        fetchCalculationDetails(cId)
+            .then((cData) => dispatch(updateCalculation(Calculation.fromQuery(cData))))
+            // tslint:disable-next-line:no-console
+            .catch((cError) => console.log(cError));
+
+
+        /*setFetchingCalculation(true);
+        try {
+            const c = await fetchApiWithToken(`${MODFLOW_CALCULATION_URL}/${cId}`);
+            console.log(c);
+            const calculation = Calculation.fromQuery(c.data);
+            dispatch(updateCalculation(calculation));
+            setFetchingCalculationSuccess(true)
+        } catch (err) {
+            setFetchingCalculationSuccess(false)
+        } finally {
+            setFetchingCalculation(false);
+        }*/
+    };
+
     const fetchInstances = async () => {
         setFetchingInstances(true);
         try {
@@ -167,6 +192,12 @@ const DataFetcherWrapper = (props: IProps) => {
                 (result) => {
                     dispatch(updateRTModelling(result));
                     fetchModflowModel(r);
+                    if (result.calculationId) {
+                        fetchCalculation(result.calculationId);
+                    } else {
+                        setFetchingCalculation(false);
+                        setFetchingCalculationSuccess(true);
+                    }
                     setFetchingRtmSuccess(true);
                     setRtmFetcher({message: 'Done', fetching: false});
                 }
@@ -253,6 +284,7 @@ const DataFetcherWrapper = (props: IProps) => {
                             {name: 'Main model', loading: fetchingModel, success: fetchingModelSuccess},
                             {name: renderRtm(), loading: fetchingRtm, success: fetchingRtmSuccess},
                             {name: 'Boundaries', loading: fetchingBoundaries, success: fetchingBoundariesSuccess},
+                            {name: 'Calculation', loading: fetchingCalculation, success: fetchingCalculationSuccess},
                             {name: 'Packages', loading: fetchingPackages, success: fetchingPackagesSuccess},
                             {name: 'Soilmodel', loading: fetchingSoilmodel, success: fetchingSoilmodelSuccess},
                             {name: 'Transport', loading: fetchingTransport, success: fetchingTransportSuccess},
