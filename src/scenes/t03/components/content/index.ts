@@ -1,7 +1,7 @@
-import {BudgetResults, FlowResults, TransportResults} from './results';
 import {Modpath} from './modpath';
 import {Statistics} from './observation';
 import {Transport} from './transport';
+import {TransportResults} from './results';
 import Boundaries from './boundaries/boundaries';
 import Calculation from './calculation/calculation';
 import ContentWrapper from './ContentWrapper';
@@ -18,13 +18,11 @@ import VariableDensityProperties from './variableDensity/VariableDensity';
 
 export {
     Boundaries,
-    BudgetResults,
     Calculation,
     ContentWrapper,
     CreateBoundary,
     Discretization,
     Export,
-    FlowResults,
     Modflow,
     Modpath,
     Mt3d,

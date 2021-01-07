@@ -34,6 +34,7 @@ const Calculation = (props: IProps) => {
             cRtm.data.calculation_id = T20.calculation.calculation_id;
             dispatch(updateRTModelling(RTModelling.fromObject(cRtm)));
         }
+        // eslint-disable-next-line
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [T20.calculation]);
 
