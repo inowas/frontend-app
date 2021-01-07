@@ -1,4 +1,4 @@
-import {GenericObject} from '../genericObject/GenericObject';
+import {GenericObject} from '../../genericObject/GenericObject';
 import {IDateTimeValue, ISensorDataSource} from './Sensor.type';
 import {cloneDeep} from 'lodash';
 import {getUrlPathRegex, pathIsValid, retrieveData} from './SensorDataHelper';

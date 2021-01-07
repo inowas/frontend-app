@@ -4,6 +4,8 @@ import {Bar, BarChart, CartesianGrid, Cell, Tooltip, XAxis, YAxis} from 'rechart
 import {Button, Checkbox, CheckboxProps, Grid, Header, Icon, List, Message, Segment} from 'semantic-ui-react';
 import {Calculation, ModflowModel} from '../../../../../core/model/modflow';
 import {IBudgetData, IBudgetType} from '../../../../../services/api/types';
+import {IT03Reducer} from '../../../../t03/reducers';
+import {IT20Reducer} from '../../../../t20/reducers';
 import {connect} from 'react-redux';
 import {exportChartData, exportChartImage} from '../../../../shared/simpleTools/helpers';
 import {fetchCalculationResultsBudget} from '../../../../../services/api';
@@ -13,40 +15,41 @@ import ResultsSelectorBudget from '../../../../shared/complexTools/ResultsSelect
 type budgetData = Array<{ name: string, value: number, active: boolean, position: number }> | null;
 
 interface IProps {
-    calculation: Calculation | null;
-    model: ModflowModel;
+    reducer: IT03Reducer | IT20Reducer;
 }
 
 const BudgetResults = (props: IProps) => {
+    const calculation = props.reducer.calculation ? Calculation.fromObject(props.reducer.calculation) : null;
+    const model = props.reducer.model ? ModflowModel.fromObject(props.reducer.model) : null;
+
     const [data, setData] = useState<budgetData>(null);
     const [fetching, setFetching] = useState<boolean>(true);
     const [isError, setIsError] = useState<AxiosError | null>(null);
     const [selectedTotim, setSelectedTotim] = useState<number>(
-        props.calculation && props.calculation.times ? props.calculation.times.budget.idx.slice(-1)[0] : 0
+        calculation && calculation.times ? calculation.times.budget.idx.slice(-1)[0] : 0
     );
     const [selectedType, setSelectedType] = useState<IBudgetType>('cumulative');
     const [totalTimes] = useState<number[] | null>(
-        props.calculation && props.calculation.times ? props.calculation.times.budget.total_times : []
+        calculation && calculation.times ? calculation.times.budget.total_times : []
     );
     const chartRef = useRef<BarChart>(null);
-    const {model} = props;
 
     useEffect(() => {
-        if (props.calculation) {
+        if (props.reducer.calculation) {
             fetchData({
                 totim: selectedTotim,
                 type: selectedType,
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props.calculation]);
+    }, [props.reducer.calculation]);
 
     const fetchData = ({type, totim}: { type: IBudgetType, totim: number }) => {
-        if (!props.calculation) {
+        if (!calculation) {
             return;
         }
 
-        const calculationId = props.calculation.id;
+        const calculationId = calculation.id;
         if (calculationId) {
             setFetching(true);
             fetchCalculationResultsBudget({calculationId, totim},
@@ -139,7 +142,7 @@ const BudgetResults = (props: IProps) => {
             <Grid padded={true}>
                 <Grid.Row>
                     <Grid.Column>
-                        {totalTimes &&
+                        {model && totalTimes &&
                         <ResultsSelectorBudget
                             data={{
                                 type: selectedType,

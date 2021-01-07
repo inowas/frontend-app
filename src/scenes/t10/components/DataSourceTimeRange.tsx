@@ -1,4 +1,4 @@
-import {DataSource} from '../../../core/model/rtm/Sensor.type';
+import {DataSource} from '../../../core/model/rtm/monitoring/Sensor.type';
 import React from 'react';
 import moment from 'moment';
 

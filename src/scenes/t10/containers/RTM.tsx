@@ -1,10 +1,10 @@
 import {DataSources, Processing, SensorMetaData, Sensors, Visualization} from '../components/index';
 import {Grid, Icon, Message} from 'semantic-ui-react';
-import {IRtm} from '../../../core/model/rtm/Rtm.type';
-import {ISensorParameter} from '../../../core/model/rtm/Sensor.type';
+import {IRtm} from '../../../core/model/rtm/monitoring/Rtm.type';
+import {ISensorParameter} from '../../../core/model/rtm/monitoring/Sensor.type';
 import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
 import {Redirect, useLocation, useParams, useRouteMatch} from 'react-router-dom';
-import {Rtm, Sensor} from '../../../core/model/rtm';
+import {Rtm, Sensor} from '../../../core/model/rtm/monitoring';
 import {fetchUrl, sendCommand} from '../../../services/api';
 import AppContainer from '../../shared/AppContainer';
 import React, {useEffect, useState} from 'react';

@@ -1,4 +1,4 @@
-import {DataSourceCollection, Rtm} from '../../../core/model/rtm';
+import {DataSourceCollection, Rtm} from '../../../core/model/rtm/monitoring';
 import {
     DropdownProps,
     Form,
@@ -6,9 +6,9 @@ import {
     Segment
 } from 'semantic-ui-react';
 import {HeatTransportInputChart} from '.';
-import {IDateTimeValue, ISensor, ISensorParameter} from '../../../core/model/rtm/Sensor.type';
+import {IDateTimeValue, ISensor, ISensorParameter} from '../../../core/model/rtm/monitoring/Sensor.type';
 import {IRootReducer} from '../../../reducers';
-import {IRtm} from '../../../core/model/rtm/Rtm.type';
+import {IRtm} from '../../../core/model/rtm/monitoring/Rtm.type';
 import {ProcessingCollection} from '../../../core/model/rtm/processing';
 import {fetchApiWithToken, makeTimeProcessingRequest} from '../../../services/api';
 import {updateData, updateHtmInput} from '../actions/actions';

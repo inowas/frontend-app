@@ -3,10 +3,10 @@ import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {Button, Grid, Header, Segment} from 'semantic-ui-react';
 import {Calculation, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {FlopyModflowMfbas} from '../../../../../core/model/flopy/packages/mf';
-import {IRootReducer} from '../../../../../reducers';
+import {IT03Reducer} from '../../../../t03/reducers';
+import {IT20Reducer} from '../../../../t20/reducers';
 import {fetchCalculationResultsFlow, sendCommand} from '../../../../../services/api';
 import {useHistory} from 'react-router-dom';
-import {useSelector} from 'react-redux';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import React, {useEffect, useState} from 'react';
 import ResultsChart from '../../../../shared/complexTools/ResultsChart';
@@ -20,9 +20,11 @@ export enum EResultType {
     HEAD = 'head'
 }
 
-const FlowResults = () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [isError, setIsError] = useState<boolean>(false);
+interface IProps {
+    reducer: IT03Reducer | IT20Reducer;
+}
+
+const FlowResults = (props: IProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [selectedLay, setSelectedLay] = useState<number>(0);
     const [selectedRow, setSelectedRow] = useState<number>(0);
@@ -34,12 +36,11 @@ const FlowResults = () => {
     const [data, setData] = useState<Array2D<number> | null>(null);
     const [ibound, setIbound] = useState<Array2D<number>>();
 
-    const T03 = useSelector((state: IRootReducer) => state.T03);
-    const boundaries = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
-    const calculation = T03.calculation ? Calculation.fromObject(T03.calculation) : null;
-    const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
-    const packages = T03.packages.data ? FlopyPackages.fromObject(T03.packages.data) : null;
-    const soilmodel = T03.soilmodel ? Soilmodel.fromObject(T03.soilmodel) : null;
+    const boundaries = props.reducer.boundaries ? BoundaryCollection.fromObject(props.reducer.boundaries) : null;
+    const calculation = props.reducer.calculation ? Calculation.fromObject(props.reducer.calculation) : null;
+    const model = props.reducer.model ? ModflowModel.fromObject(props.reducer.model) : null;
+    const packages = props.reducer.packages.data ? FlopyPackages.fromObject(props.reducer.packages.data) : null;
+    const soilmodel = props.reducer.soilmodel ? Soilmodel.fromObject(props.reducer.soilmodel) : null;
 
     const history = useHistory();
 
@@ -111,7 +112,7 @@ const FlowResults = () => {
                 setData(cData);
                 setIsLoading(false);
             },
-            () => setIsError(true)
+            () => null
         );
     };
 
@@ -125,7 +126,7 @@ const FlowResults = () => {
             model.isPublic
             ),
             () => history.push('/tools/T07/' + scenarioAnalysisId),
-            () => setIsError(true)
+            () => null
         );
     };
 

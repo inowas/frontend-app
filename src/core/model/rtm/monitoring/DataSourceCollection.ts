@@ -1,4 +1,4 @@
-import {Collection} from '../collection/Collection';
+import {Collection} from '../../collection/Collection';
 import {DataSourceFactory} from './index';
 import {IDataSource, IDateTimeValue} from './Sensor.type';
 import {cloneDeep, concat} from 'lodash';

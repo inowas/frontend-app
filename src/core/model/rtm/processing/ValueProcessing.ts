@@ -1,5 +1,5 @@
 import {GenericObject} from '../../genericObject/GenericObject';
-import {IDateTimeValue} from '../Sensor.type';
+import {IDateTimeValue} from '../monitoring/Sensor.type';
 import {IValueProcessing, IValueProcessingOperator} from './Processing.type';
 
 export const operators = ['+', '-', '*', '/', '<', '<=', '>', '>=', '='];

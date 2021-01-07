@@ -1,5 +1,5 @@
 import {CLEAR, UPDATE_HTM, UPDATE_HTM_INPUT} from '../reducers/htm';
-import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
+import {IDateTimeValue} from '../../../core/model/rtm/monitoring/Sensor.type';
 import {IToolInstance} from '../../types';
 import {UPDATE_DATA} from '../reducers/data';
 import {UPDATE_T10_INSTANCES} from '../reducers/t10instances';

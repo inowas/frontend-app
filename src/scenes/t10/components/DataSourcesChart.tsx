@@ -1,7 +1,7 @@
 import {Button, Dimmer, Icon, Loader} from 'semantic-ui-react';
 import {DataPoint} from 'downsample';
-import {DataSourceCollection} from '../../../core/model/rtm';
-import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
+import {DataSourceCollection} from '../../../core/model/rtm/monitoring';
+import {IDateTimeValue} from '../../../core/model/rtm/monitoring/Sensor.type';
 import {LTOB} from 'downsample';
 import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import {exportChartData, exportChartImage} from '../../shared/simpleTools/helpers';

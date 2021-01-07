@@ -3,7 +3,7 @@ import { BoundaryCollection, ModflowModel } from '../../../core/model/modflow';
 import { CallbackFunction, ErrorCallbackFunction } from '../../types';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Dimmer, DropdownProps, Form, Grid, Loader, Segment } from 'semantic-ui-react';
-import { EResultType } from '../../t03/components/content/results/flowResults';
+import {EResultType} from '../../modflow/components/content/results/flowResults';
 import { IBoundary } from '../../../core/model/modflow/boundaries/Boundary.type';
 import { ICalculation } from '../../../core/model/modflow/Calculation.type';
 import { IModflowModel } from '../../../core/model/modflow/ModflowModel.type';

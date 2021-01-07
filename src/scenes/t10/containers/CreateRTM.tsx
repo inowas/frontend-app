@@ -9,7 +9,7 @@ import {
     InputOnChangeData,
     Segment, TextAreaProps
 } from 'semantic-ui-react';
-import {IRtm} from '../../../core/model/rtm/Rtm.type';
+import {IRtm} from '../../../core/model/rtm/monitoring/Rtm.type';
 import {createToolInstance} from '../../dashboard/commands';
 import {sendCommand} from '../../../services/api';
 import {useHistory} from 'react-router-dom';

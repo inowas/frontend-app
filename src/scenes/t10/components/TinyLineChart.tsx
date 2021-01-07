@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import {DataPoint} from 'downsample/dist/types';
-import {DataSource, IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
+import {DataSource, IDateTimeValue} from '../../../core/model/rtm/monitoring/Sensor.type';
 import {LTOB} from 'downsample';
 import {Line, LineChart, YAxis} from 'recharts';
 import {Loader} from 'semantic-ui-react';

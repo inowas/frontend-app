@@ -1,8 +1,8 @@
-import {GenericObject} from '../genericObject/GenericObject';
-import {IDataDropperFile} from '../../../services/dataDropper/DataDropper.type';
+import {GenericObject} from '../../genericObject/GenericObject';
+import {IDataDropperFile} from '../../../../services/dataDropper/DataDropper.type';
 import {IDateTimeValue, IFileDataSource} from './Sensor.type';
 import {cloneDeep} from 'lodash';
-import {dropData, retrieveData} from '../../../services/dataDropper';
+import {dropData, retrieveData} from '../../../../services/dataDropper';
 import uuid from 'uuid';
 
 class FileDataSource extends GenericObject<IFileDataSource> {
