@@ -13,18 +13,18 @@ import {
     Modal,
     Segment
 } from 'semantic-ui-react';
-import {CALCULATE_CELLS_INPUT} from '../../../../worker/t03.worker';
+import {CALCULATE_CELLS_INPUT} from '../../../../../modflow/worker/t03.worker';
 import {Cells, ModflowModel} from '../../../../../../core/model/modflow';
 import {DrawEvents} from 'leaflet';
 import {Geometry} from '../../../../../../core/model/geometry';
-import {ICalculateCellsInputData} from '../../../../worker/t03.worker.type';
+import {ICalculateCellsInputData} from '../../../../../modflow/worker/t03.worker.type';
 import {ICells} from '../../../../../../core/model/geometry/Cells.type';
 import {IZone} from '../../../../../../core/model/modflow/soilmodel/Zone.type';
 import {UploadGeoJSONModal} from '../../create';
 import {Zone, ZonesCollection} from '../../../../../../core/model/modflow/soilmodel';
 import {ZonesMap} from './index';
 import {addMessage} from '../../../../actions/actions';
-import {asyncWorker} from '../../../../worker/worker';
+import {asyncWorker} from '../../../../../modflow/worker/worker';
 import {messageError} from '../../../../defaults/messages';
 import {useDispatch} from 'react-redux';
 import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';

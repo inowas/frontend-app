@@ -1,10 +1,10 @@
 import * as turf from '@turf/turf';
 import {Boundary, BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
-import {CALCULATE_CELLS_INPUT} from '../../../worker/t03.worker';
+import {CALCULATE_CELLS_INPUT} from '../../../../modflow/worker/t03.worker';
 import {Cells, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
-import {ICalculateCellsInputData} from '../../../worker/t03.worker.type';
+import {ICalculateCellsInputData} from '../../../../modflow/worker/t03.worker.type';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
-import {asyncWorker} from '../../../worker/worker';
+import {asyncWorker} from '../../../../modflow/worker/worker';
 import {saveLayer} from '../../../../../core/model/modflow/soilmodel/updater/services';
 import {sendCommand} from '../../../../../services/api';
 import LayersCollection from '../../../../../core/model/modflow/soilmodel/LayersCollection';
