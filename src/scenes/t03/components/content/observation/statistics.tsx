@@ -1,9 +1,9 @@
-import {CALCULATE_STATISTICS_INPUT} from '../../../worker/t03.worker';
+import {CALCULATE_STATISTICS_INPUT} from '../../../../modflow/worker/t03.worker';
 import {Container, DropdownProps, Form, Grid, Header, Segment, Table} from 'semantic-ui-react';
 import {ILinearRegression} from '../../../../../services/statistics/calculateStatistics';
 import {IRootReducer} from '../../../../../reducers';
 import {ModflowModel} from '../../../../../core/model/modflow';
-import {asyncWorker} from '../../../worker/worker';
+import {asyncWorker} from '../../../../modflow/worker/worker';
 import {fetchCalculationObservations} from '../../../../../services/api';
 import {useSelector} from 'react-redux';
 import React, {SyntheticEvent, useEffect, useMemo, useState} from 'react';

@@ -5,12 +5,12 @@ import {
 import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import React from 'react';
 
-import {CALCULATE_BOUNDARIES_IMPORT_INPUT} from '../../../worker/t03.worker';
+import {CALCULATE_BOUNDARIES_IMPORT_INPUT} from '../../../../modflow/worker/t03.worker';
 import {CoordinateSystemDisclaimer} from '../../../../shared/complexTools';
 import {IBoundary, IBoundaryExport} from '../../../../../core/model/modflow/boundaries/Boundary.type';
-import {ICalculateBoundaryImportInputData} from '../../../worker/t03.worker.type';
+import {ICalculateBoundaryImportInputData} from '../../../../modflow/worker/t03.worker.type';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
-import {asyncWorker} from '../../../worker/worker';
+import {asyncWorker} from '../../../../modflow/worker/worker';
 import {validate} from '../../../../../services/jsonSchemaValidator';
 import BoundaryComparator from './boundaryComparator';
 import Soilmodel from '../../../../../core/model/modflow/soilmodel/Soilmodel';
