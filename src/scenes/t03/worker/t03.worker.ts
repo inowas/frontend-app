@@ -59,7 +59,6 @@ const calculateCells = (input: IWorkerInput<ICalculateCellsInputData>) => {
 };
 
 const calculatePackages = (input: IWorkerInput<ICalculatePackagesInputData>) => {
-
     let packages = input.data.packages ? FlopyPackages.fromObject(input.data.packages) : null;
     const model = ModflowModel.fromObject(input.data.model);
     const soilmodel = Soilmodel.fromObject(input.data.soilmodel);
