@@ -54,6 +54,7 @@ const ToolMetaData = (props: IProps) => {
     const renderBreadcrumbs = () => {
         let fTool = {name: ''};
         const filteredTools = tools.filter((t) => tool.tool === t.slug);
+        console.log(filteredTools);
         if (filteredTools.length > 0) {
             fTool = filteredTools[0];
         }
