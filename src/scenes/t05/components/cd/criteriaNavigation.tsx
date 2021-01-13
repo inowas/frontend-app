@@ -1,10 +1,9 @@
 import { CriteriaCollection } from '../../../../core/model/mcda/criteria';
 import {Form, Icon, Input, InputOnChangeData, Menu, MenuItemProps, Segment} from 'semantic-ui-react';
-import {IGridSize} from '../../../../core/model/geometry/GridSize.type';
 import {MCDA} from '../../../../core/model/mcda';
 import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {criterionStep} from '../../defaults/defaults';
-import React, {ChangeEvent, MouseEvent, useEffect, useState} from 'react';
+import React, {ChangeEvent, MouseEvent, useState} from 'react';
 
 const styles = {
     noPaddingBottom: {
@@ -22,11 +21,6 @@ interface IProps extends RouteComponentProps<any> {
 
 const CriteriaNavigation = (props: IProps) => {
     const [searchTerm, setSearchTerm] = useState<string>('');
-    const [gridSize, setGridSize] = useState<IGridSize>(props.mcda.gridSize.toObject());
-
-    useEffect(() => {
-        setGridSize(props.mcda.gridSize.toObject());
-    }, [props.mcda.gridSize]);
 
     const handleSearchCriterion = (e: ChangeEvent<HTMLInputElement>, {value}: InputOnChangeData) => {
         setSearchTerm(value);
@@ -75,7 +69,7 @@ const CriteriaNavigation = (props: IProps) => {
                                 type="number"
                                 label="Columns"
                                 name="n_x"
-                                value={gridSize.n_x}
+                                value={props.mcda.gridSize.nX}
                             />
                             <Form.Input
                                 fluid={true}
@@ -83,7 +77,7 @@ const CriteriaNavigation = (props: IProps) => {
                                 type="number"
                                 label="Rows"
                                 name="n_y"
-                                value={gridSize.n_y}
+                                value={props.mcda.gridSize.nY}
                             />
                         </Form.Group>
                     </Form>

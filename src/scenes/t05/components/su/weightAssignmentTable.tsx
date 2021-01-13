@@ -53,7 +53,9 @@ const WeightAssignmentTable = (props: IProps) => {
                             </Table.Cell>
                             <Table.Cell>{wa.name}</Table.Cell>
                             {WeightsCollection.fromObject(wa.weights).orderBy('criterion.id').all.map((w, wKey) =>
-                                <Table.Cell key={wKey}>{w.value.toFixed(3)}</Table.Cell>
+                                <Table.Cell key={wKey}>{
+                                  w.value ? w.value.toFixed(3) : NaN
+                                }</Table.Cell>
                             )}
                         </Table.Row>
                     )}
