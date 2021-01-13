@@ -1,8 +1,8 @@
 import {Button, Dropdown, Grid, Header, Icon, Label, Message, Segment, Table} from 'semantic-ui-react';
-import {DataSourceCollection, Rtm} from '../../../core/model/rtm';
+import {DataSourceCollection, Rtm} from '../../../core/model/rtm/monitoring';
 import {DataSourcesChart, ProcessingTimeRange, TimeProcessingEditor, ValueProcessingEditor} from './index';
 import {ECutRule, IProcessing} from '../../../core/model/rtm/processing/Processing.type';
-import {ISensorParameter} from '../../../core/model/rtm/Sensor.type';
+import {ISensorParameter} from '../../../core/model/rtm/monitoring/Sensor.type';
 import {ProcessingFactory} from '../../../core/model/rtm/processing';
 import {processingList} from '../defaults';
 import ProcessingCollection from '../../../core/model/rtm/processing/ProcessingCollection';

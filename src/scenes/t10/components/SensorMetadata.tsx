@@ -10,10 +10,10 @@ import {
     Segment,
     Table
 } from 'semantic-ui-react';
-import {ISensorParameter} from '../../../core/model/rtm/Sensor.type';
-import {ParameterCollection} from '../../../core/model/rtm/ParameterCollection';
+import {ISensorParameter} from '../../../core/model/rtm/monitoring/Sensor.type';
+import {ParameterCollection} from '../../../core/model/rtm/monitoring/ParameterCollection';
 import {Point} from 'geojson';
-import {Rtm, Sensor} from '../../../core/model/rtm';
+import {Rtm, Sensor} from '../../../core/model/rtm/monitoring';
 import {SensorMap} from './index';
 import {parameterList} from '../defaults';
 import React, {ChangeEvent, useState} from 'react';

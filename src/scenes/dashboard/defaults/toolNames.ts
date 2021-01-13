@@ -83,6 +83,9 @@ const toolNames = [
     }, {
         slug: 'T19',
         name: 'Heat transport'
+    }, {
+        slug: 'T20',
+        name: 'Real time modelling'
     }
 ];
 

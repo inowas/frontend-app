@@ -1,6 +1,6 @@
 import * as turf from '@turf/turf';
 import {BoundaryCollection} from '../../../../../../core/model/modflow/boundaries';
-import {CALCULATE_CELLS_INPUT} from '../../../../worker/t03.worker';
+import {CALCULATE_CELLS_INPUT} from '../../../../../modflow/worker/t03.worker';
 import {
     Checkbox,
     CheckboxProps, Dimmer, Divider,
@@ -14,7 +14,7 @@ import {
 } from 'semantic-ui-react';
 import {DrawEvents} from 'leaflet';
 import {default as Geometry} from '../../../../../../core/model/geometry/Geometry';
-import {ICalculateCellsInputData} from '../../../../worker/t03.worker.type';
+import {ICalculateCellsInputData} from '../../../../../modflow/worker/t03.worker.type';
 import {ICells} from '../../../../../../core/model/geometry/Cells.type';
 import {IGeometry} from '../../../../../../core/model/geometry/Geometry.type';
 import {IRootReducer} from '../../../../../../reducers';
@@ -24,7 +24,7 @@ import {UploadGeoJSONModal} from '../../create';
 import {Zone, ZonesCollection} from '../../../../../../core/model/modflow/soilmodel';
 import {ZonesMap} from './index';
 import {addMessage, addZone} from '../../../../actions/actions';
-import {asyncWorker} from '../../../../worker/worker';
+import {asyncWorker} from '../../../../../modflow/worker/worker';
 import {default as geojson} from 'geojson';
 import {messageError} from '../../../../defaults/messages';
 import {sendCommand} from '../../../../../../services/api';

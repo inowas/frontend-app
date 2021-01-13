@@ -1,9 +1,9 @@
 import {DATADROPPER_URL} from '../../../services/api';
-import {IFileDataSource} from '../../../core/model/rtm/Sensor.type';
-import FileDataSource from '../../../core/model/rtm/FileDataSource';
+import {FileDataSource} from '../../../core/model/rtm/monitoring';
+import {IFileDataSource} from '../../../core/model/rtm/monitoring/Sensor.type';
 import Uuid from 'uuid';
 
-test('Test FileDataSource, loading pre-loaded data', async () => {
+test('FileDataSource, loading pre-loaded data', async () => {
     const obj: IFileDataSource = {
         id: Uuid.v4(),
         file: {filename: '', server: DATADROPPER_URL}
@@ -18,7 +18,7 @@ test('Test FileDataSource, loading pre-loaded data', async () => {
     expect(ds.data).toEqual([{timeStamp: 1, value: 1.2}]);
 });
 
-test('Test FileDataSource, loading from http-resource', async () => {
+test('FileDataSource, loading from http-resource', async () => {
     const obj: IFileDataSource = {
         id: Uuid.v4(),
         file: {
@@ -34,7 +34,7 @@ test('Test FileDataSource, loading from http-resource', async () => {
 });
 
 // async/await can be used.
-test('Test FileDataSource from data', async () => {
+test('FileDataSource from data', async () => {
     const data = [{
         timeStamp: 123444,
         value: 1
@@ -52,7 +52,7 @@ test('Test FileDataSource from data', async () => {
 });
 
 // async/await can be used.
-test('Test FileDataSource from filename', async () => {
+test('FileDataSource from filename', async () => {
     const ds = await FileDataSource.fromFile({
         filename: 'fb6da03381069eec2492185b9ab2879f03a962af.json',
         server: DATADROPPER_URL
@@ -64,7 +64,7 @@ test('Test FileDataSource from filename', async () => {
     expect(data).toEqual([{timeStamp: 123444, value: 1}]);
 });
 
-test('Test FileDataSource setBegin', async () => {
+test('FileDataSource setBegin', async () => {
     const obj: IFileDataSource = {
         id: Uuid.v4(),
         file: {filename: '', server: DATADROPPER_URL}
@@ -98,7 +98,7 @@ test('Test FileDataSource setBegin', async () => {
     ]);
 });
 
-test('Test FileDataSource setEnd', async () => {
+test('FileDataSource setEnd', async () => {
     const obj: IFileDataSource = {
         id: Uuid.v4(),
         file: {filename: '', server: DATADROPPER_URL}
@@ -132,7 +132,7 @@ test('Test FileDataSource setEnd', async () => {
     ]);
 });
 
-test('Test FileDataSource setGte', async () => {
+test('FileDataSource setGte', async () => {
     const obj: IFileDataSource = {
         id: Uuid.v4(),
         file: {filename: '', server: DATADROPPER_URL}
@@ -165,7 +165,7 @@ test('Test FileDataSource setGte', async () => {
     ]);
 });
 
-test('Test FileDataSource setGte', async () => {
+test('FileDataSource setLte', async () => {
     const obj: IFileDataSource = {
         id: Uuid.v4(),
         file: {filename: '', server: DATADROPPER_URL}

@@ -1,15 +1,15 @@
 import * as turf from '@turf/turf';
 import {Button, Form, InputOnChangeData, Modal} from 'semantic-ui-react';
-import {CALCULATE_CELLS_INPUT} from '../../../../worker/t03.worker';
+import {CALCULATE_CELLS_INPUT} from '../../../../../modflow/worker/t03.worker';
 import {Cells, ModflowModel} from '../../../../../../core/model/modflow';
 import { DrawEvents } from 'leaflet';
 import {Geometry} from '../../../../../../core/model/geometry';
-import {ICalculateCellsInputData} from '../../../../worker/t03.worker.type';
+import {ICalculateCellsInputData} from '../../../../../modflow/worker/t03.worker.type';
 import {ICells} from '../../../../../../core/model/geometry/Cells.type';
 import {Polygon, default as geojson} from 'geojson';
 import {Zone, ZonesCollection} from '../../../../../../core/model/modflow/soilmodel';
 import {ZonesMap} from './index';
-import {asyncWorker} from '../../../../worker/worker';
+import {asyncWorker} from '../../../../../modflow/worker/worker';
 import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import React, {ChangeEvent, useState} from 'react';
 import uuidv4 from 'uuid/v4';

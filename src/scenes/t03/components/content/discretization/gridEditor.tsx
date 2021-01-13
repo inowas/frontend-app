@@ -1,13 +1,13 @@
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {BoundingBox, Cells, Geometry, GridSize, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
-import {CALCULATE_CELLS_INPUT} from '../../../worker/t03.worker';
+import {CALCULATE_CELLS_INPUT} from '../../../../modflow/worker/t03.worker';
 import {Dimmer, Form, Grid, Header, Progress} from 'semantic-ui-react';
 import {DiscretizationMap, GridProperties} from './index';
-import {ICalculateCellsInputData} from '../../../worker/t03.worker.type';
+import {ICalculateCellsInputData} from '../../../../modflow/worker/t03.worker.type';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {IRootReducer} from '../../../../../reducers';
 import {addMessage, updateBoundaries, updateLayer, updateSoilmodel} from '../../../actions/actions';
-import {asyncWorker} from '../../../worker/worker';
+import {asyncWorker} from '../../../../modflow/worker/worker';
 import {boundaryUpdater, layersUpdater, zonesUpdater} from './updater';
 import {dxCell, dyCell} from '../../../../../services/geoTools/distance';
 import {messageError} from '../../../defaults/messages';

@@ -6,19 +6,19 @@ import {
     BoundaryCollection,
     LineBoundary, WellBoundary,
 } from '../../../../core/model/modflow/boundaries';
-import {CALCULATE_CELLS_INPUT} from '../../worker/t03.worker';
+import {CALCULATE_CELLS_INPUT} from '../../../modflow/worker/t03.worker';
 import {Cells, Geometry, ModflowModel} from '../../../../core/model/modflow';
 import {CircleMarker, FeatureGroup, GeoJSON, Map, Polygon, Polyline} from 'react-leaflet';
 import {Dimmer, Grid, Icon, List, Loader} from 'semantic-ui-react';
 import {EditControl} from 'react-leaflet-draw';
 import {GeoJson} from '../../../../core/model/geometry/Geometry.type';
-import {ICalculateCellsInputData} from '../../worker/t03.worker.type';
+import {ICalculateCellsInputData} from '../../../modflow/worker/t03.worker.type';
 import {ICells} from '../../../../core/model/geometry/Cells.type';
 import {LatLngExpression} from 'leaflet';
 import {LineString, Point} from 'geojson';
 import {SoilmodelLayer} from '../../../../core/model/modflow/soilmodel';
 import {addMessage} from '../../actions/actions';
-import {asyncWorker} from '../../worker/worker';
+import {asyncWorker} from '../../../modflow/worker/worker';
 import {getStyle} from './index';
 import {messageError} from '../../defaults/messages';
 import {rotateCoordinateAroundPoint} from '../../../../services/geoTools/getCellFromClick';

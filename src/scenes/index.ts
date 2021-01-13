@@ -1,5 +1,6 @@
 import * as T03 from './t03/containers';
 import * as T07 from './t07/containers';
+import * as T20 from './t20/containers';
 import {AdminWrapper as Admin} from './admin';
 import {T01} from './t01/containers';
 import {T02} from './t02/containers';
@@ -68,5 +69,6 @@ export {
     T14C,
     T14D,
     T18,
-    T19
+    T19,
+    T20
 };

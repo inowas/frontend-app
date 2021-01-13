@@ -186,6 +186,22 @@ class Stressperiods {
         this.stressperiods = Stressperiods.orderStressperiods(stressperiods);
     }
 
+    public addStressPeriodsByNumberOfDays(days: number[]) {
+        console.log({days});
+        const stressperiods = this.stressperiods;
+        const lastSp = stressperiods[stressperiods.length - 1];
+        const newStressperiods = days.map((d) => {
+            return new Stressperiod({
+                start_date_time: lastSp.startDateTime.add(d, 'days').toISOString(),
+                nstp: lastSp.nstp,
+                tsmult: lastSp.tsmult,
+                steady: lastSp.steady
+            });
+        });
+        const s = stressperiods.concat(newStressperiods);
+        this.stressperiods = Stressperiods.orderStressperiods(s);
+    }
+
     public removeStressPeriod(id: number) {
         const stressperiods: Stressperiod[] = [];
         this.stressperiods.forEach((sp, idx) => {

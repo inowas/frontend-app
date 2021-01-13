@@ -1,8 +1,7 @@
-import {Route, Switch} from 'react-router-dom';
-import React from 'react';
-
 import * as Scenes from './scenes';
+import {Route, Switch} from 'react-router-dom';
 import PrivateRoute from './services/router/PrivateRoute';
+import React from 'react';
 
 import getConfig from './config.default';
 
@@ -65,6 +64,7 @@ const getRoutes = () => {
                 <Route exact={true} path="/tools/T14D/:id?" component={Scenes.T14D}/>
                 <Route exact={true} path="/tools/T18/:id?" component={Scenes.T18}/>
                 <Route exact={true} path="/tools/T19/:id?" component={Scenes.T19}/>
+                <Route exact={true} path="/tools/T20/:id/:property?/:pid?" component={Scenes.T20.EditRealTimeModelling}/>
 
                 <Route path="/imprint" component={Scenes.Imprint}/>
                 <Route path="/terms-and-conditions" component={Scenes.TermsAndConditions}/>
@@ -150,6 +150,8 @@ const getRoutes = () => {
             <PrivateRoute exact={true} path="/tools/T14D/:id?" component={Scenes.T14D} forRoles={['ROLE_USER']}/>
             <PrivateRoute exact={true} path="/tools/T18/:id?" component={Scenes.T18} forRoles={['ROLE_USER']}/>
             <PrivateRoute exact={true} path="/tools/T19/:id?" component={Scenes.T19} forRoles={['ROLE_USER']}/>
+            <PrivateRoute exact={true} path="/tools/T20/" component={Scenes.T20.CreateRealTimeModelling} forRoles={['ROLE_USER']}/>
+            <PrivateRoute exact={true} path="/tools/T20/:id/:property?/:pid?" component={Scenes.T20.EditRealTimeModelling} forRoles={['ROLE_USER']}/>
             <PrivateRoute path="/credentials" component={Scenes.UserCredentials} forRoles={['ROLE_USER']}/>
             <PrivateRoute path="/profile" component={Scenes.UserProfile} forRoles={['ROLE_USER']}/>
 

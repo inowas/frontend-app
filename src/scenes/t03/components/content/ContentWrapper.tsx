@@ -1,7 +1,10 @@
 import * as Content from './index';
 import {BoundaryFactory} from '../../../../core/model/modflow/boundaries';
 import {BoundaryType} from '../../../../core/model/modflow/boundaries/Boundary.type';
+import {BudgetResults, FlowResults} from '../../../modflow/components/content/results';
+import {IRootReducer} from '../../../../reducers';
 import {Redirect, useLocation, useParams, useRouteMatch} from 'react-router-dom';
+import {useSelector} from 'react-redux';
 import React from 'react';
 
 interface IRouterProps {
@@ -11,6 +14,7 @@ interface IRouterProps {
 }
 
 const ContentWrapper = () => {
+    const T03 = useSelector((state: IRootReducer) => state.T03);
 
     const params: IRouterProps = useParams();
     const {id, property, type} = params;
@@ -57,10 +61,10 @@ const ContentWrapper = () => {
     }
 
     if (property === 'flow') {
-        return (<Content.FlowResults/>);
+        return (<FlowResults reducer={T03}/>);
     }
     if (property === 'budget') {
-        return (<Content.BudgetResults/>);
+        return (<BudgetResults reducer={T03}/>);
     }
     if (property === 'modpath') {
         return (<Content.Modpath/>);

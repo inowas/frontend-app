@@ -1,6 +1,6 @@
 import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 import {Button, Checkbox, Form, Grid, Header, Icon, Segment} from 'semantic-ui-react';
-import {CALCULATE_CELLS_INPUT} from '../worker/t03.worker';
+import {CALCULATE_CELLS_INPUT} from '../../modflow/worker/t03.worker';
 import {
     Cells,
     Geometry,
@@ -13,7 +13,7 @@ import {
 import {DrawOnMapModal, UploadGeoJSONModal} from '../components/content/create';
 import {GridProperties} from '../components/content/discretization';
 import {IBoundingBox} from '../../../core/model/geometry/BoundingBox.type';
-import {ICalculateCellsInputData} from '../worker/t03.worker.type';
+import {ICalculateCellsInputData} from '../../modflow/worker/t03.worker.type';
 import {ICells} from '../../../core/model/geometry/Cells.type';
 import {IGeometry} from '../../../core/model/geometry/Geometry.type';
 import {IGridSize} from '../../../core/model/geometry/GridSize.type';
@@ -23,7 +23,7 @@ import {IStressPeriods} from '../../../core/model/modflow/Stressperiods.type';
 import {ITimeUnit} from '../../../core/model/modflow/TimeUnit.type';
 import {ModelMap} from '../components/maps';
 import {addMessage} from '../actions/actions';
-import {asyncWorker} from '../worker/worker';
+import {asyncWorker} from '../../modflow/worker/worker';
 import {cloneDeep} from 'lodash';
 import {messageError} from '../defaults/messages';
 import {sendCommands} from '../../../services/api/commandHelper';

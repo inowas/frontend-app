@@ -5,7 +5,7 @@ import {
     Loader, Popup,
     Segment
 } from 'semantic-ui-react';
-import {DataSourceCollection, Rtm} from '../../../../core/model/rtm';
+import {DataSourceCollection, Rtm} from '../../../../core/model/rtm/monitoring';
 import {ILegendRowProps, IParameterWithMetaData, ITimeStamps} from './types';
 import {
     Line,
