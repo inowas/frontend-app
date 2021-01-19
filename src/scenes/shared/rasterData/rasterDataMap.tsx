@@ -2,6 +2,7 @@ import {Array2D} from '../../../core/model/geometry/Array2D.type';
 import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
 import {Children, LayersControl} from 'react-leaflet';
 import {ILegendItem} from '../../../services/rainbowvis/types';
+import {LeafletMouseEvent} from 'leaflet';
 import {ModflowModel} from '../../../core/model/modflow';
 import {max, min} from './helpers';
 import {rainbowFactory} from '../../../services/rainbowvis/helpers';
@@ -40,6 +41,7 @@ interface IProps {
     children?: Children;
     data: number | Array2D<number>;
     model: ModflowModel;
+    onClickCell?: (latlng: [number, number]) => void;
     unit: string;
 }
 
@@ -47,11 +49,18 @@ const RasterDataMap = (props: IProps) => {
     const {children, model, data, unit} = props;
     const rainbowVis = rainbowFactory({min: min(data), max: max(data)});
 
+    const handleClickCell = (e: LeafletMouseEvent) => {
+      if (props.onClickCell) {
+        props.onClickCell([e.latlng.lng, e.latlng.lat]);
+      }
+    };
+
     return (
         <CustomMap
             style={styles.map}
             zoomControl={false}
             bounds={model.boundingBox.getBoundsLatLng()}
+            onclick={props.onClickCell ? handleClickCell : undefined}
         >
             <BasicTileLayer/>
             {renderBoundingBoxLayer(model.boundingBox, model.rotation, model.geometry)}
