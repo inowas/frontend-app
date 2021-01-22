@@ -34,10 +34,10 @@ const TimeSeriesMap = (props: IProps) => {
 
   const renderCell = (c: [number, number, Array2D<number>], key: number) => {
 
-    const xMin = props.model.boundingBox.xMin + (c[0] * props.model.boundingBox.dX / props.model.gridSize.nX);
-    const xMax = props.model.boundingBox.xMin + ((c[0] + 1) * props.model.boundingBox.dX / props.model.gridSize.nX);
-    const yMin = props.model.boundingBox.yMax - (c[1] * props.model.boundingBox.dY / props.model.gridSize.nY);
-    const yMax = props.model.boundingBox.yMax - ((c[1] + 1) * props.model.boundingBox.dY / props.model.gridSize.nY);
+    const xMin = props.model.boundingBox.xMin + (c[1] * props.model.boundingBox.dX / props.model.gridSize.nX);
+    const xMax = props.model.boundingBox.xMin + ((c[1] + 1) * props.model.boundingBox.dX / props.model.gridSize.nX);
+    const yMin = props.model.boundingBox.yMax - (c[0] * props.model.boundingBox.dY / props.model.gridSize.nY);
+    const yMax = props.model.boundingBox.yMax - ((c[0] + 1) * props.model.boundingBox.dY / props.model.gridSize.nY);
 
     return (
       <Rectangle
