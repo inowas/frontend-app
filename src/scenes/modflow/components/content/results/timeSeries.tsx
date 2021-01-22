@@ -82,7 +82,7 @@ const TimeSeries = (props: IProps) => {
       setSelectedCells(cSelectedCells);
     } else {
       setIsFetching(true);
-      fetchCellData(cell[0], cell[1]);
+      fetchCellData(cell[1], cell[0]);
     }
   };
 
