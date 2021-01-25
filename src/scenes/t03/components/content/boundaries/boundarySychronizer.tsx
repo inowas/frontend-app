@@ -4,155 +4,118 @@ import {IBoundary} from '../../../../../core/model/modflow/boundaries/Boundary.t
 import {IBoundaryComparisonItem} from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import {ModflowModel} from '../../../../../core/model/modflow';
 import {asyncSendCommand, fetchUrl} from '../../../../../services/api';
-import {connect} from 'react-redux';
 import {updateBoundaries} from '../../../actions/actions';
+import {useDispatch} from 'react-redux';
 import AbstractCommand from '../../../../../core/model/command/AbstractCommand';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 
-interface IStateProps {
-    currentBoundaries: BoundaryCollection;
-    newBoundaries: BoundaryCollection;
-    model: ModflowModel;
+interface IProps {
+  currentBoundaries: BoundaryCollection;
+  newBoundaries: BoundaryCollection;
+  model: ModflowModel;
+  removeExistingBoundaries: boolean;
 }
 
-interface IDispatchProps {
-    updateBoundaries: (boundaries: BoundaryCollection) => any;
-}
+const BoundarySynchronizer = (props: IProps) => {
+  const [commands, setCommands] = useState<ModflowModelCommand[]>([]);
+  const [commandsErrorSent, setCommandsErrorSent] = useState<number>(0);
+  const [commandsSuccessfullySent, setCommandsSuccessfullySent] = useState<number>(0);
+  const [showProgress, setShowProgress] = useState<boolean>(false);
+  const [isSynchronizing, setIsSynchronizing] = useState<boolean>(false);
 
-interface IState {
-    commands: ModflowModelCommand[];
-    boundaryList: IBoundaryComparisonItem[];
-    showProgress: boolean;
-    synchronizing: boolean;
-    commandsSuccessfullySent: number;
-    commandsErrorSent: number;
-}
+  const dispatch = useDispatch();
 
-type IProps = IStateProps & IDispatchProps;
+  useEffect(() => {
+    const boundaryList: IBoundaryComparisonItem[] = props.currentBoundaries.compareWith(
+      props.model.stressperiods, props.newBoundaries, props.removeExistingBoundaries
+    );
+    setCommands(calculateCommands(boundaryList));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.currentBoundaries, props.model, props.newBoundaries, props.removeExistingBoundaries]);
 
-class BoundarySynchronizer extends React.Component<IProps, IState> {
-    public constructor(props: IProps) {
-        super(props);
-        const boundaryList: IBoundaryComparisonItem[] = props.currentBoundaries.compareWith(
-            props.model.stressperiods, props.newBoundaries
-        );
-        this.state = {
-            boundaryList,
-            commands: this.calculateCommands(boundaryList),
-            commandsSuccessfullySent: 0,
-            commandsErrorSent: 0,
-            showProgress: false,
-            synchronizing: false
-        };
-    }
+  console.log('SYNCHRONIZER');
 
-    public UNSAFE_componentWillReceiveProps(nextProps: IProps) {
-        const boundaryList = nextProps.currentBoundaries.compareWith(
-            nextProps.model.stressperiods, nextProps.newBoundaries
-        );
-        this.setState({
-            boundaryList,
-            commands: this.calculateCommands(boundaryList),
-        });
-    }
+  const calculateCommands = (boundaryList: IBoundaryComparisonItem[]) => {
+    const commands: ModflowModelCommand[] = [];
+    boundaryList.forEach((item) => {
+      if (item.state === 'noUpdate') {
+        return;
+      }
 
-    public render() {
-        const {commands, commandsErrorSent, commandsSuccessfullySent, showProgress, synchronizing} = this.state;
-
-        if (showProgress) {
-            const percent = commandsSuccessfullySent / commands.length * 100;
-            return (
-                <Progress percent={percent} autoSuccess={true}>
-                    {percent > 99 ? 'The progress was successful' : 'Synchronizing'}
-                </Progress>
-            );
+      if (item.state === 'update') {
+        const newBoundary = props.newBoundaries.findById(item.id);
+        if (!(newBoundary instanceof Boundary)) {
+          return;
         }
 
-        return (
-            <Button
-                fluid={true}
-                positive={true}
-                onClick={this.synchronize}
-                loading={synchronizing}
-                disabled={commands.length === commandsErrorSent + commandsSuccessfullySent}
-            >
-                Synchronize
-            </Button>
-        );
-    }
+        commands.push(ModflowModelCommand.updateBoundary(props.model.id, newBoundary));
+      }
 
-    private calculateCommands = (boundaryList: IBoundaryComparisonItem[]) => {
-        const commands: ModflowModelCommand[] = [];
-        boundaryList.forEach((item) => {
-            if (item.state === 'noUpdate') {
-                return;
-            }
+      if (item.state === 'add') {
+        const newBoundary = props.newBoundaries.findById(item.id);
+        if (!(newBoundary instanceof Boundary)) {
+          return;
+        }
 
-            if (item.state === 'update') {
-                const newBoundary = this.props.newBoundaries.findById(item.id);
-                if (!(newBoundary instanceof Boundary)) {
-                    return;
-                }
+        commands.push(ModflowModelCommand.addBoundary(props.model.id, newBoundary));
+      }
 
-                commands.push(ModflowModelCommand.updateBoundary(this.props.model.id, newBoundary));
-            }
+      if (item.state === 'delete') {
+        commands.push(ModflowModelCommand.removeBoundary(props.model.id, item.id));
+      }
+    });
 
-            if (item.state === 'add') {
-                const newBoundary = this.props.newBoundaries.findById(item.id);
-                if (!(newBoundary instanceof Boundary)) {
-                    return;
-                }
+    return commands;
+  };
 
-                commands.push(ModflowModelCommand.addBoundary(this.props.model.id, newBoundary));
-            }
+  const synchronize = () => {
+    setShowProgress(true);
+    setIsSynchronizing(true);
 
-            if (item.state === 'delete') {
-                commands.push(ModflowModelCommand.removeBoundary(this.props.model.id, item.id));
-            }
-        });
-
-        return commands;
+    const sendCommands = async (commands: AbstractCommand[]) => {
+      for (const command of commands) {
+        try {
+          await asyncSendCommand(command);
+          setIsSynchronizing((commandsSuccessfullySent + 1 + commandsErrorSent) < commands.length);
+          setCommandsSuccessfullySent(commandsSuccessfullySent + 1);
+        } catch (e) {
+          setIsSynchronizing((commandsSuccessfullySent + 1 + commandsErrorSent) < commands.length);
+          setCommandsErrorSent(commandsErrorSent + 1);
+        }
+      }
     };
 
-    private synchronize = () => {
-        this.setState({
-            showProgress: true,
-            synchronizing: true
-        });
+    sendCommands(commands).finally(
+      () => {
+        fetchUrl(`modflowmodels/${props.model.id}/boundaries`,
+          (data: IBoundary[]) => dispatch(updateBoundaries(BoundaryCollection.fromQuery(data))));
+      }
+    );
+  };
 
-        const {commands} = this.state;
-        const sendCommands = async (commands: AbstractCommand[]) => {
-            for (const command of commands) {
-                try {
-                    await asyncSendCommand(command);
-                    this.setState((prevState) => ({
-                        commandsSuccessfullySent: prevState.commandsSuccessfullySent + 1,
-                        synchronizing: (prevState.commandsSuccessfullySent + 1 + prevState.commandsErrorSent) < commands.length,
-                    }));
-                } catch (e) {
-                    this.setState((prevState) => ({
-                        commandsErrorSent: prevState.commandsErrorSent + 1,
-                        synchronizing: (prevState.commandsSuccessfullySent + 1 + prevState.commandsErrorSent) < commands.length,
-                    }));
-                }
-            }
-        };
+  if (showProgress) {
+    const percent = commandsSuccessfullySent / commands.length * 100;
+    return (
+      <Progress percent={percent} autoSuccess={true}>
+        {percent > 99 ? 'The progress was successful' : 'Synchronizing'}
+      </Progress>
+    );
+  }
 
-        sendCommands(commands).finally(
-            () => {
-                fetchUrl(`modflowmodels/${this.props.model.id}/boundaries`,
-                    (data: IBoundary[]) => this.props.updateBoundaries(BoundaryCollection.fromQuery(data)));
-            }
-        );
-    };
+  return (
+    <Button
+      fluid={true}
+      positive={true}
+      onClick={synchronize}
+      loading={isSynchronizing}
+      disabled={commands.length === commandsErrorSent + commandsSuccessfullySent}
+    >
+      Synchronize
+    </Button>
+  );
 }
 
-const mapDispatchToProps = (dispatch: any): IDispatchProps => ({
-    updateBoundaries: (b) => {
-        dispatch(updateBoundaries(b));
-    },
-});
 
-export default connect<unknown, IDispatchProps>(null, mapDispatchToProps)(BoundarySynchronizer);
+export default BoundarySynchronizer;
 
