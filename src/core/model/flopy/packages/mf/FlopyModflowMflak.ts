@@ -70,6 +70,7 @@ export default class FlopyModflowMflak extends FlopyModflowBoundary<IFlopyModflo
         if (bd.length === 0) {
             return null;
         }
+        this.nlakes = bd.length;
 
         return this;
     };

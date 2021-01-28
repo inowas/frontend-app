@@ -1,24 +1,25 @@
 import {
-    IConstantHeadBoundary,
-    IConstantHeadBoundaryExport,
-    IConstantHeadBoundaryFeature
+  IConstantHeadBoundary,
+  IConstantHeadBoundaryExport,
+  IConstantHeadBoundaryFeature
 } from './ConstantHeadBoundary.type';
 import {IDrainageBoundary, IDrainageBoundaryExport, IDrainageBoundaryFeature} from './DrainageBoundary.type';
 import {
-    IEvapotranspirationBoundary,
-    IEvapotranspirationBoundaryExport,
+  IEvapotranspirationBoundary,
+  IEvapotranspirationBoundaryExport,
 } from './EvapotranspirationBoundary.type';
 import {
-    IFlowAndHeadBoundary,
-    IFlowAndHeadBoundaryExport,
-    IFlowAndHeadBoundaryFeature
+  IFlowAndHeadBoundary,
+  IFlowAndHeadBoundaryExport,
+  IFlowAndHeadBoundaryFeature
 } from './FlowAndHeadBoundary.type';
 import {
-    IGeneralHeadBoundary,
-    IGeneralHeadBoundaryExport,
-    IGeneralHeadBoundaryFeature
+  IGeneralHeadBoundary,
+  IGeneralHeadBoundaryExport,
+  IGeneralHeadBoundaryFeature
 } from './GeneralHeadBoundary.type';
 import {IHeadObservationWell, IHeadObservationWellExport} from './HeadObservationWell.type';
+import {ILakeBoundary, ILakeBoundaryExport} from './LakeBoundary.type';
 import {IRechargeBoundary, IRechargeBoundaryExport} from './RechargeBoundary.type';
 import {IRiverBoundary, IRiverBoundaryExport, IRiverBoundaryFeature} from './RiverBoundary.type';
 import {IWellBoundary, IWellBoundaryExport} from './WellBoundary.type';
@@ -27,47 +28,49 @@ import {LineBoundaryType} from './LineBoundary.type';
 export type BoundaryType = 'evt' | 'rch' | 'wel' | 'hob' | 'lak' | LineBoundaryType;
 
 export type IBoundary = IConstantHeadBoundary | IGeneralHeadBoundary | IDrainageBoundary | IEvapotranspirationBoundary |
-    IFlowAndHeadBoundary | IHeadObservationWell | IRechargeBoundary | IRiverBoundary | IWellBoundary;
+  IFlowAndHeadBoundary | IHeadObservationWell | ILakeBoundary | IRechargeBoundary | IRiverBoundary | IWellBoundary;
 
 export type IBoundaryFeature =
-    IConstantHeadBoundaryFeature
-    | IDrainageBoundaryFeature
-    | IGeneralHeadBoundaryFeature
-    | IFlowAndHeadBoundaryFeature
-    | IRiverBoundaryFeature;
+  IConstantHeadBoundaryFeature
+  | IDrainageBoundaryFeature
+  | IGeneralHeadBoundaryFeature
+  | IFlowAndHeadBoundaryFeature
+  | IRiverBoundaryFeature;
 
 export type IBoundaryExport =
-    IConstantHeadBoundaryExport
-    | IDrainageBoundaryExport
-    | IGeneralHeadBoundaryExport
-    | IRiverBoundaryExport
-    | IFlowAndHeadBoundaryExport
-    | IEvapotranspirationBoundaryExport
-    | IHeadObservationWellExport
-    | IRechargeBoundaryExport
-    | IWellBoundaryExport;
+  IConstantHeadBoundaryExport
+  | IDrainageBoundaryExport
+  | IGeneralHeadBoundaryExport
+  | IRiverBoundaryExport
+  | IFlowAndHeadBoundaryExport
+  | IEvapotranspirationBoundaryExport
+  | IHeadObservationWellExport
+  | ILakeBoundaryExport
+  | IRechargeBoundaryExport
+  | IWellBoundaryExport;
 
 export type BoundarySelection = 'all' | BoundaryType;
 
 export type ISpValues = number[][];
 
 export interface IValueProperty {
-    name: string;
-    description: string;
-    unit: string;
-    decimals: number;
-    default: number;
-    canBeDisabled?: boolean;
+  name: string;
+  description: string;
+  unit: string;
+  decimals: number;
+  default: number;
+  canBeDisabled?: boolean;
 }
 
 export enum EBoundaryType {
-    CHD = 'chd',
-    DRN = 'drn',
-    EVT = 'evt',
-    FHB = 'fhb',
-    GHB = 'ghb',
-    HOB = 'hob',
-    RCH = 'rch',
-    RIV = 'riv',
-    WEL = 'wel'
+  CHD = 'chd',
+  DRN = 'drn',
+  EVT = 'evt',
+  FHB = 'fhb',
+  GHB = 'ghb',
+  HOB = 'hob',
+  LAK = 'lak',
+  RCH = 'rch',
+  RIV = 'riv',
+  WEL = 'wel'
 }

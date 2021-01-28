@@ -69,6 +69,7 @@ const BoundaryComparator = (props: IProps) => {
       {key: 'evt', value: 'evt', text: 'EVT'},
       {key: 'ghb', value: 'ghb', text: 'GHB'},
       {key: 'hob', value: 'hob', text: 'HOB'},
+      {key: 'lak', value: 'lak', text: 'LAK'},
       {key: 'rch', value: 'rch', text: 'RCH'},
       {key: 'riv', value: 'riv', text: 'RIV'},
       {key: 'wel', value: 'wel', text: 'WEL'},
