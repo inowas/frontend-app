@@ -56,7 +56,7 @@ const HeatTransportInput = (props: IProps) => {
             const processings = ProcessingCollection.fromObject(p.processings);
             const processedData = await processings.apply(mergedData);
             const uniqueData = processedData.filter((value, index, self) => self.findIndex((v) => v.timeStamp === value.timeStamp) === index);
-            const timeProcessedData = await makeTimeProcessingRequest(uniqueData, '1d', 'cubic');
+            const timeProcessedData = await makeTimeProcessingRequest(uniqueData, '1d', 'time');
             if (timeProcessedData.length > 0) {
                 const ts: number[] = timeProcessedData.map((t: IDateTimeValue) => t.timeStamp);
                 const tp: [number, number] = [ts[0], ts[ts.length - 1]];
