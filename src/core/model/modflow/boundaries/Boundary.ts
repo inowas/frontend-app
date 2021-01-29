@@ -9,6 +9,7 @@ import {Cells, Geometry} from '../index';
 import {dxCell, dyCell} from '../../../../services/geoTools/distance';
 import BoundingBox from '../../geometry/BoundingBox';
 import GridSize from '../../geometry/GridSize';
+import Stressperiod from '../Stressperiod';
 import Stressperiods from '../Stressperiods';
 import uuid from 'uuid';
 
@@ -67,6 +68,10 @@ export default abstract class Boundary {
         const cellHeight = dyCell(boundingBox, gridSize) * 10000 / 10;
         const cellWidth = dxCell(boundingBox, gridSize) * 10000 / 10;
         return cellHeight * cellWidth * this.cells.cells.length;
+    }
+
+    public spValueDisabled(key: number, stressPeriod: Stressperiod) {
+      return false;
     }
 
     public clone() {

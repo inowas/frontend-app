@@ -30,14 +30,7 @@ const BoundarySynchronizer = (props: IProps) => {
     const boundaryList: IBoundaryComparisonItem[] = props.currentBoundaries.compareWith(
       props.model.stressperiods, props.newBoundaries, props.removeExistingBoundaries
     );
-    setCommands(calculateCommands(boundaryList));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.currentBoundaries, props.model, props.newBoundaries, props.removeExistingBoundaries]);
-
-  console.log('SYNCHRONIZER');
-
-  const calculateCommands = (boundaryList: IBoundaryComparisonItem[]) => {
-    const commands: ModflowModelCommand[] = [];
+    const c: ModflowModelCommand[] = [];
     boundaryList.forEach((item) => {
       if (item.state === 'noUpdate') {
         return;
@@ -49,7 +42,7 @@ const BoundarySynchronizer = (props: IProps) => {
           return;
         }
 
-        commands.push(ModflowModelCommand.updateBoundary(props.model.id, newBoundary));
+        c.push(ModflowModelCommand.updateBoundary(props.model.id, newBoundary));
       }
 
       if (item.state === 'add') {
@@ -58,16 +51,15 @@ const BoundarySynchronizer = (props: IProps) => {
           return;
         }
 
-        commands.push(ModflowModelCommand.addBoundary(props.model.id, newBoundary));
+        c.push(ModflowModelCommand.addBoundary(props.model.id, newBoundary));
       }
 
       if (item.state === 'delete') {
-        commands.push(ModflowModelCommand.removeBoundary(props.model.id, item.id));
+        c.push(ModflowModelCommand.removeBoundary(props.model.id, item.id));
       }
     });
-
-    return commands;
-  };
+    setCommands(c);
+  }, [props.currentBoundaries, props.model, props.newBoundaries, props.removeExistingBoundaries]);
 
   const synchronize = () => {
     setShowProgress(true);

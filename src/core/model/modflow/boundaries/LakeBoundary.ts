@@ -1,4 +1,4 @@
-import {Cells, Geometry} from '../index';
+import {Cells, Geometry, Stressperiod} from '../index';
 import {ICells} from '../../geometry/Cells.type';
 import {ILakeBoundary, ILakeBoundaryExport} from './LakeBoundary.type';
 import {ISpValues, IValueProperty} from './Boundary.type';
@@ -184,5 +184,9 @@ export default class LakeBoundary extends Boundary {
 
   public get valueProperties(): IValueProperty[] {
     return LakeBoundary.valueProperties();
+  }
+
+  public spValueDisabled(key: number, stressPeriod: Stressperiod): boolean {
+    return key >= 4 && !stressPeriod.steady;
   }
 }
