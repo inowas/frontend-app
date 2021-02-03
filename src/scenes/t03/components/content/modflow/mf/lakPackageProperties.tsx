@@ -50,7 +50,7 @@ const LakPackageProperties = (props: IProps) => {
   }
   return (
     <Form>
-      <Header as={'h3'} dividing={true}>EVT: Evapotranspiration Package</Header>
+      <Header as={'h3'} dividing={true}>LAK: Lake Package</Header>
       <Grid divided={'vertically'}>
         <Grid.Row columns={2}>
           <Grid.Column>
@@ -120,41 +120,6 @@ const LakPackageProperties = (props: IProps) => {
           icon={<InfoPopup description={documentation.lak.theta} title={'THETA'}/>}
         />
       </Form.Field>
-
-
-      <Form.Group widths={'equal'}>
-        <Form.Field width={14}>
-          <label>Save cell-by-cell budget data (IPAKCB)</label>
-          <Checkbox
-            toggle={true}
-            disabled={readonly}
-            name={'ipakcb'}
-            value={mfPackage.ipakcb ? 1 : 0}
-          />
-        </Form.Field>
-        <Form.Field width={1}>
-          <InfoPopup
-            description={documentation.evt.ipakcb}
-            title={'IPAKCB'}
-            position={'top right'}
-            iconOutside={true}
-          />
-        </Form.Field>
-        <Form.Field>
-          <label>ET option (NEVTOP)</label>
-
-        </Form.Field>
-        <Form.Field width={1}>
-          <label>&nbsp;</label>
-          <InfoPopup
-            description={documentation.evt.nevtop}
-            title={'NEVTOP'}
-            position={'top right'}
-            iconOutside={true}
-          />
-        </Form.Field>
-      </Form.Group>
-
       <Form.Group widths={'equal'}>
         <Form.Field>
           <label>Filename extension (EXTENSION)</label>
