@@ -1,205 +1,222 @@
 import {Array3D} from '../../../geometry/Array2D.type';
 import {IPropertyValueObject} from '../../../types';
 import {IStressPeriodData} from './FlopyModflow.type';
+import { Soilmodel } from '../../../modflow';
+import {calculateLakeArray, calculateLakeSpData} from '../../helpers';
 import BoundaryCollection from '../../../modflow/boundaries/BoundaryCollection';
 import FlopyModflowBoundary from './FlopyModflowBoundary';
 import FlopyModflowPackage from './FlopyModflowPackage';
+import GridSize from '../../../geometry/GridSize';
+import LakeBoundary from '../../../modflow/boundaries/LakeBoundary';
 import Stressperiods from '../../../modflow/Stressperiods';
 
 export interface IFlopyModflowMflak {
-    nlakes: number;
-    ipakcb: number | null;
-    theta: number;
-    nssitr: number;
-    sscncr: number;
-    surfdep: number;
-    stages: number | number[];
-    stage_range: Array<[number, number]> | null;
-    lakarr: Array3D<number> | null;
-    bdlknc: Array3D<number> | null;
-    sill_data: IStressPeriodData<Array<[[number, number], number]>> | null;
-    flux_data: IStressPeriodData<[[number, number, number, number, number, number]]> | null;
-    extension: string;
-    unitnumber: number | null;
-    filenames: null | string | string[];
-    options: string[] | null;
+  nlakes: number;
+  ipakcb: number | null;
+  theta: number;
+  nssitr: number;
+  sscncr: number;
+  surfdep: number;
+  stages: number | number[];
+  stage_range: Array<[number, number]> | null;
+  lakarr: number[][][] | null;
+  bdlknc: Array3D<number> | null;
+  sill_data: IStressPeriodData<Array<[[number, number], number]>> | null;
+  flux_data: [[[number, number, number, number] | [number, number, number, number, number, number]]] | null;
+  extension: string;
+  unitnumber: number | null;
+  filenames: null | string | string[];
+  options: string[] | null;
 }
 
 export const defaults: IFlopyModflowMflak = {
-    nlakes: 1,
-    ipakcb: null,
-    theta: -1.0,
-    nssitr: 0,
-    sscncr: 0.0,
-    surfdep: 0.0,
-    stages: 1.0,
-    stage_range: null,
-    lakarr: null,
-    bdlknc: null,
-    sill_data: null,
-    flux_data: null,
-    extension: 'lak',
-    unitnumber: null,
-    filenames: null,
-    options: null
+  nlakes: 1,
+  ipakcb: null,
+  theta: -1.0,
+  nssitr: 0,
+  sscncr: 0.0,
+  surfdep: 0.0,
+  stages: 1.0,
+  stage_range: null,
+  lakarr: null,
+  bdlknc: null,
+  sill_data: null,
+  flux_data: null,
+  extension: 'lak',
+  unitnumber: null,
+  filenames: null,
+  options: null
 };
 
 export default class FlopyModflowMflak extends FlopyModflowBoundary<IFlopyModflowMflak> {
 
-    public static create(boundaries: BoundaryCollection, stressPeriods: Stressperiods) {
-        return this.fromDefault().update(boundaries, stressPeriods);
+  public static create(boundaries: BoundaryCollection, stressPeriods: Stressperiods, soilmodel: Soilmodel, gridSize: GridSize) {
+    return this.fromDefault().update(boundaries, stressPeriods, soilmodel.layersCollection.length, gridSize.nX, gridSize.nY);
+  }
+
+  public static fromDefault() {
+    return this.fromObject({});
+  }
+
+  public static fromObject(obj: IPropertyValueObject): FlopyModflowMflak {
+    const d: any = FlopyModflowPackage.cloneDeep(defaults);
+    for (const key in d) {
+      if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
+        d[key] = obj[key];
+      }
     }
 
-    public static fromDefault() {
-        return this.fromObject({});
+    return new this(d);
+  }
+
+  public update = (boundaries: BoundaryCollection, stressperiods: Stressperiods, nlay: number, ncol: number, nrow: number) => {
+    const bd = boundaries.all.filter((b) => b.type === 'lak');
+    if (bd.length === 0) {
+      return null;
+    }
+    this.nlakes = bd.length;
+    this.lakarr = calculateLakeArray(bd as LakeBoundary[], nlay, ncol, nrow);
+
+    const spData = calculateLakeSpData(bd as LakeBoundary[], stressperiods, stressperiods.count);
+    if (!spData) {
+      return null;
     }
 
-    public static fromObject(obj: IPropertyValueObject): FlopyModflowMflak {
-        const d: any = FlopyModflowPackage.cloneDeep(defaults);
-        for (const key in d) {
-            if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                d[key] = obj[key];
-            }
-        }
+    /*this.flux_data = stressperiods.stressperiods.map((sp, k) => {
+      if (sp.steady) {
+        return [spData.prcplk[k], spData.evaplk[k], spData.rnf[k], spData.wthdrw[k], spData.ssmn[k], spData.ssmx[k]];
+      }
+      return [spData.prcplk[k], spData.evaplk[k], spData.rnf[k], spData.wthdrw[k]];
+    });*/
 
-        return new this(d);
-    }
+    return this;
+  };
 
-    public update = (boundaries: BoundaryCollection, stressPeriods: Stressperiods) => {
-        const bd = boundaries.all.filter((b) => b.type === 'lak');
-        if (bd.length === 0) {
-            return null;
-        }
-        this.nlakes = bd.length;
+  get nlakes() {
+    return this._props.nlakes;
+  }
 
-        return this;
-    };
+  set nlakes(value) {
+    this._props.nlakes = value;
+  }
 
-    get nlakes() {
-        return this._props.nlakes;
-    }
+  get ipakcb() {
+    return this._props.ipakcb;
+  }
 
-    set nlakes(value) {
-        this._props.nlakes = value;
-    }
+  set ipakcb(value) {
+    this._props.ipakcb = value;
+  }
 
-    get ipakcb() {
-        return this._props.ipakcb;
-    }
+  get theta() {
+    return this._props.theta;
+  }
 
-    set ipakcb(value) {
-        this._props.ipakcb = value;
-    }
+  set theta(value) {
+    this._props.theta = value;
+  }
 
-    get theta() {
-        return this._props.theta;
-    }
+  get nssitr() {
+    return this._props.nssitr;
+  }
 
-    set theta(value) {
-        this._props.theta = value;
-    }
+  set nssitr(value) {
+    this._props.nssitr = value;
+  }
 
-    get nssitr() {
-        return this._props.nssitr;
-    }
+  get sscncr() {
+    return this._props.sscncr;
+  }
 
-    set nssitr(value) {
-        this._props.nssitr = value;
-    }
+  set sscncr(value) {
+    this._props.sscncr = value;
+  }
 
-    get sscncr() {
-        return this._props.sscncr;
-    }
+  get surfdep() {
+    return this._props.surfdep;
+  }
 
-    set sscncr(value) {
-        this._props.sscncr = value;
-    }
+  set surfdep(value) {
+    this._props.surfdep = value;
+  }
 
-    get surfdep() {
-        return this._props.surfdep;
-    }
+  get stages() {
+    return this._props.stages;
+  }
 
-    set surfdep(value) {
-        this._props.surfdep = value;
-    }
+  set stages(value) {
+    this._props.stages = value;
+  }
 
-    get stages() {
-        return this._props.stages;
-    }
+  get stage_range() {
+    return this._props.stage_range;
+  }
 
-    set stages(value) {
-        this._props.stages = value;
-    }
+  set stage_range(value) {
+    this._props.stage_range = value;
+  }
 
-    get stage_range() {
-        return this._props.stage_range;
-    }
+  get lakarr() {
+    return this._props.lakarr;
+  }
 
-    set stage_range(value) {
-        this._props.stage_range = value;
-    }
+  set lakarr(value) {
+    this._props.lakarr = value;
+  }
 
-    get lakarr() {
-        return this._props.lakarr;
-    }
+  get bdlknc() {
+    return this._props.bdlknc;
+  }
 
-    set lakarr(value) {
-        this._props.lakarr = value;
-    }
+  set bdlknc(value) {
+    this._props.bdlknc = value;
+  }
 
-    get bdlknc() {
-        return this._props.bdlknc;
-    }
+  get sill_data() {
+    return this._props.sill_data;
+  }
 
-    set bdlknc(value) {
-        this._props.bdlknc = value;
-    }
+  set sill_data(value) {
+    this._props.sill_data = value;
+  }
 
-    get sill_data() {
-        return this._props.sill_data;
-    }
+  get flux_data() {
+    return this._props.flux_data;
+  }
 
-    set sill_data(value) {
-        this._props.sill_data = value;
-    }
+  set flux_data(value) {
+    this._props.flux_data = value;
+  }
 
-    get flux_data() {
-        return this._props.flux_data;
-    }
+  get extension() {
+    return this._props.extension;
+  }
 
-    set flux_data(value) {
-        this._props.flux_data = value;
-    }
+  set extension(value) {
+    this._props.extension = value;
+  }
 
-    get extension() {
-        return this._props.extension;
-    }
+  get unitnumber() {
+    return this._props.unitnumber;
+  }
 
-    set extension(value) {
-        this._props.extension = value;
-    }
+  set unitnumber(value) {
+    this._props.unitnumber = value;
+  }
 
-    get unitnumber() {
-        return this._props.unitnumber;
-    }
+  get filenames() {
+    return this._props.filenames;
+  }
 
-    set unitnumber(value) {
-        this._props.unitnumber = value;
-    }
+  set filenames(value) {
+    this._props.filenames = value;
+  }
 
-    get filenames() {
-        return this._props.filenames;
-    }
+  get options() {
+    return this._props.options;
+  }
 
-    set filenames(value) {
-        this._props.filenames = value;
-    }
-
-    get options() {
-        return this._props.options;
-    }
-
-    set options(value) {
-        this._props.options = value;
-    }
+  set options(value) {
+    this._props.options = value;
+  }
 }
