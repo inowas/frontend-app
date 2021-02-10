@@ -40,6 +40,14 @@ export default class LakeBoundary extends Boundary {
     this._props.properties.name = value;
   }
 
+  get lakeId() {
+    return this._props.properties.lake_id;
+  }
+
+  set lakeId(value) {
+    this._props.properties.lake_id = value;
+  }
+
   get layers() {
     return this._props.properties.layers;
   }
@@ -69,7 +77,7 @@ export default class LakeBoundary extends Boundary {
   }
 
   public static create(id: string, geometry: Polygon, name: string, layers: number[],
-                       cells: ICells, spValues: ISpValues) {
+                       cells: ICells, spValues: ISpValues, lakeId = 1) {
 
     return new this({
       id,
@@ -80,7 +88,8 @@ export default class LakeBoundary extends Boundary {
         name,
         cells,
         layers,
-        sp_values: spValues
+        sp_values: spValues,
+        lake_id: lakeId
       }
     });
   }
@@ -92,7 +101,8 @@ export default class LakeBoundary extends Boundary {
       obj.name,
       obj.layers,
       Cells.fromGeometry(Geometry.fromGeoJson(obj.geometry), boundingBox, gridSize).toObject(),
-      obj.sp_values
+      obj.sp_values,
+      obj.lake_id
     );
   }
 
@@ -175,7 +185,8 @@ export default class LakeBoundary extends Boundary {
     name: this.name,
     geometry: this.geometry.toObject() as Polygon,
     layers: this.layers,
-    sp_values: this.getSpValues(stressperiods)
+    sp_values: this.getSpValues(stressperiods),
+    lake_id: this.lakeId
   });
 
   public toObject(): ILakeBoundary {

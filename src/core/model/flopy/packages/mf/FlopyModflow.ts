@@ -124,7 +124,7 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
         const hob = FlopyModflowMfhob.create(boundaries, model.stressperiods);
         hob ? obj.hob = hob.toObject() : delete obj.hob;
 
-        const lak = FlopyModflowMflak.create(boundaries, model.stressperiods);
+        const lak = FlopyModflowMflak.create(boundaries, model.stressperiods, soilmodel, model.gridSize);
         lak ? obj.lak = lak.toObject() : delete obj.lak;
 
         const rch = FlopyModflowMfrch.create(boundaries, model.stressperiods, model.gridSize);
@@ -356,8 +356,9 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
         if (pType === 'lak') {
             let lak;
             this._props.lak ?
-                lak = FlopyModflowMflak.fromObject(this._props.lak).update(boundaries, model.stressperiods) :
-                lak = FlopyModflowMflak.create(boundaries, model.stressperiods);
+                lak = FlopyModflowMflak.fromObject(this._props.lak)
+                  .update(boundaries, model.stressperiods, soilmodel.layersCollection.length, model.gridSize.nY, model.gridSize.nX) :
+                lak = FlopyModflowMflak.create(boundaries, model.stressperiods, soilmodel, model.gridSize);
             lak ? this._props.lak = lak.toObject() : delete this._props.lak;
         }
 

@@ -1,7 +1,7 @@
 import {Array3D} from '../../../geometry/Array2D.type';
 import {IPropertyValueObject} from '../../../types';
 import {IStressPeriodData} from './FlopyModflow.type';
-import { Soilmodel } from '../../../modflow';
+import {Soilmodel} from '../../../modflow';
 import {calculateLakeArray, calculateLakeSpData} from '../../helpers';
 import BoundaryCollection from '../../../modflow/boundaries/BoundaryCollection';
 import FlopyModflowBoundary from './FlopyModflowBoundary';
@@ -22,7 +22,7 @@ export interface IFlopyModflowMflak {
   lakarr: number[][][] | null;
   bdlknc: Array3D<number> | null;
   sill_data: IStressPeriodData<Array<[[number, number], number]>> | null;
-  flux_data: [[[number, number, number, number] | [number, number, number, number, number, number]]] | null;
+  flux_data: number[][][] | null;
   extension: string;
   unitnumber: number | null;
   filenames: null | string | string[];
@@ -82,12 +82,17 @@ export default class FlopyModflowMflak extends FlopyModflowBoundary<IFlopyModflo
       return null;
     }
 
-    /*this.flux_data = stressperiods.stressperiods.map((sp, k) => {
-      if (sp.steady) {
-        return [spData.prcplk[k], spData.evaplk[k], spData.rnf[k], spData.wthdrw[k], spData.ssmn[k], spData.ssmx[k]];
-      }
-      return [spData.prcplk[k], spData.evaplk[k], spData.rnf[k], spData.wthdrw[k]];
-    });*/
+    const c = stressperiods.stressperiods.map((sp, spx) => {
+      return bd.map((b, bx) => {
+        if (sp.steady) {
+          return [spData.prcplk[spx][bx], spData.evaplk[spx][bx], spData.rnf[spx][bx], spData.wthdrw[spx][bx], spData.ssmn[spx][bx], spData.ssmx[spx][bx]];
+        }
+        return [spData.prcplk[spx][bx], spData.evaplk[spx][bx], spData.rnf[spx][bx], spData.wthdrw[spx][bx]];
+      });
+    });
+    this.flux_data = c;
+
+    console.log({c});
 
     return this;
   };

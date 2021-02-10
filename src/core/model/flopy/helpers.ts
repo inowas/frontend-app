@@ -486,7 +486,7 @@ export const calculateLakeArray = (
     }
   }
 
-  boundaries.forEach((b, bKey) => {
+  boundaries.forEach((b) => {
     const cells = b.cells.toObject();
     const layers = b.layers;
 
@@ -494,7 +494,7 @@ export const calculateLakeArray = (
       const row = cell[1];
       const col = cell[0];
       layers.forEach((l: number) => {
-        lakeArray[l][row][col] = bKey;
+        lakeArray[l][row][col] = b.lakeId;
       })
     });
   });

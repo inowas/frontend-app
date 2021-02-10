@@ -18,9 +18,11 @@ import {messageError} from '../../../defaults/messages';
 import {sendCommand} from '../../../../../services/api';
 import {useDispatch, useSelector} from 'react-redux';
 import ContentToolBar from '../../../../shared/ContentToolbar';
+import LakeBoundary from '../../../../../core/model/modflow/boundaries/LakeBoundary';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
 import Uuid from 'uuid';
+import _ from 'lodash';
 
 const baseUrl = '/tools/T03';
 
@@ -138,6 +140,12 @@ const CreateBoundary = (props: Props) => {
             new Array(model.stressperiods.count).fill(values) as ISpValues,
             ['fhb', 'hob'].includes(type) ? [model.stressperiods.startDateTime.format('YYYY-MM-DD')] : undefined
         );
+
+        if (boundary instanceof LakeBoundary) {
+          const lakBoundaries = boundaries.filterBy('type', 'lak') as LakeBoundary[];
+          const ordered = _.orderBy(lakBoundaries, 'lakeId', 'desc');
+          boundary.lakeId = ordered.length > 0 ? ordered[0].lakeId + 1 : 1;
+        }
 
         return sendCommand(ModflowModelCommand.addBoundary(model.id, boundary),
             () => {

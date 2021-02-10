@@ -305,6 +305,7 @@ const Flow = (props: IProps) => {
             mfPackage={iMf.getPackage(type) as FlopyModflowMflak}
             mfPackages={iMf}
             onChange={handleChangePackage}
+            onClickEdit={handleClickEdit}
             readonly={readOnly}
           />
         );
