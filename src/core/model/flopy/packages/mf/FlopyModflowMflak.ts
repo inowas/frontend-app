@@ -92,8 +92,6 @@ export default class FlopyModflowMflak extends FlopyModflowBoundary<IFlopyModflo
     });
     this.flux_data = c;
 
-    console.log({c});
-
     return this;
   };
 

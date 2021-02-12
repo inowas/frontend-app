@@ -238,6 +238,7 @@ export const documentation = {
       for the simulation.</div>,
     nssitr: <div>Maximum number of iterations for Newton’s method of solution for equilibrium lake stages in each
       MODFLOW iteration for steady-state aquifer head solution.</div>,
+    stages: <div>The initial stage of each lake at the beginning of the run.</div>,
     theta: <div>{'Explicit (THETA = 0.0), semi-implicit (0.0 < THETA < 1.0), or implicit (THETA = 1.0) solution for lake stages.'}</div>
   },
 

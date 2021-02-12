@@ -1,13 +1,13 @@
 import {
   Accordion,
-  AccordionTitleProps,
+  AccordionTitleProps, Button,
   DropdownProps,
   Form,
   Grid,
   Header,
   Icon,
   Input,
-  Label
+  Label, Segment
 } from 'semantic-ui-react';
 import {Array2D} from '../../../../../../core/model/geometry/Array2D.type';
 import {FlopyModflowMflak} from '../../../../../../core/model/flopy/packages/mf';
@@ -48,6 +48,18 @@ const LakPackageProperties = (props: IProps) => {
     return null;
   }
 
+  const handleChangeStages = (e: SyntheticEvent<HTMLElement, Event>, {value}: DropdownProps) => {
+    const cMfPackage = mfPackage;
+    if (value === 1 && !Array.isArray(mfPackage.stages)) {
+      cMfPackage.stages = new Array(mfPackage.nlakes).fill(mfPackage.stages);
+    }
+    if (value === 0 && Array.isArray(mfPackage.stages)) {
+      cMfPackage.stages = mfPackage.stages[0];
+    }
+    setMfPackage(cMfPackage);
+    props.onChange(FlopyModflowMflak.fromObject(cMfPackage));
+  };
+
   const handleClickAccordion = (e: MouseEvent, titleProps: AccordionTitleProps) => {
     const {index} = titleProps;
     const newIndex = activeIndex === index ? -1 : index;
@@ -58,6 +70,10 @@ const LakPackageProperties = (props: IProps) => {
 
   const handleClickEdit = (layer: string, set: string, parameter: string) => () =>
     props.onClickEdit(layer, set, parameter);
+
+  const handleClickEnableBdlknc = () => {
+    console.log('ENABLE');
+  };
 
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     const {name, value} = e.target;
@@ -82,7 +98,37 @@ const LakPackageProperties = (props: IProps) => {
     props.onChange(FlopyModflowMflak.fromObject({...mfPackage, [name]: value}));
   };
 
-  const renderDataImage = (data: Array2D<number>, idx: number, continuous = false, editableParameter?: string) => {
+  const renderBdlknc = (data: Array2D<number>, idx: number) => {
+    const layers = soilmodel.layersCollection.all;
+    const lakes = boundaries.all.filter((b) => b instanceof LakeBoundary);
+
+    if (layers[idx]) {
+      return (
+        <Grid.Column key={idx} width={8}>
+          <div>
+            <Label>{layers[idx].number}: {layers[idx].name}</Label>
+            <React.Fragment>
+              <Icon
+                link={true}
+                style={{float: 'right', zIndex: 10000}}
+                name="edit"
+                onClick={handleClickEdit(layers[idx].id, 'lak', 'bdlknc')}
+              />
+              <div style={{clear: 'both'}}/>
+            </React.Fragment>
+          </div>
+          <RasterDataImage
+            data={data}
+            gridSize={Array.isArray(data) ? GridSize.fromData(data) : model.gridSize}
+            unit={''}
+          />
+        </Grid.Column>
+      );
+    }
+    return null;
+  };
+
+  const renderLakeArray = (data: Array2D<number>, idx: number) => {
     const layers = soilmodel.layersCollection.all;
     const lakes = boundaries.all.filter((b) => b instanceof LakeBoundary);
     const lakeIds: number[] = _.uniq(lakes.map((b) => b instanceof LakeBoundary ? b.lakeId : 0));
@@ -92,35 +138,17 @@ const LakPackageProperties = (props: IProps) => {
         <Grid.Column key={idx} width={8}>
           <div>
             <Label>{layers[idx].number}: {layers[idx].name}</Label>
-            {editableParameter &&
-            <React.Fragment>
-              <Icon
-                link={true}
-                style={{float: 'right', zIndex: 10000}}
-                name="edit"
-                onClick={handleClickEdit(layers[idx].id, 'lak', editableParameter)}
-              />
-              <div style={{clear: 'both'}}/>
-            </React.Fragment>
-            }
           </div>
-          {continuous ?
-            <RasterDataImage
-              data={data}
-              gridSize={Array.isArray(data) ? GridSize.fromData(data) : model.gridSize}
-              unit={''}
-            /> :
-            <RasterDataImage
-              data={data}
-              gridSize={GridSize.fromData(data)}
-              unit={''}
-              legend={
-                lakeIds.map((id, k) => {
-                  return {value: id, color: distinct.length > k ? distinct[k] : distinct[0], label: `Lake ${id}`};
-                }) as ILegendItemDiscrete[]}
-              border={'1px dotted black'}
-            />
-          }
+          <RasterDataImage
+            data={data}
+            gridSize={GridSize.fromData(data)}
+            unit={''}
+            legend={
+              lakeIds.map((id, k) => {
+                return {value: id, color: distinct.length > k ? distinct[k] : distinct[0], label: `Lake ${id}`};
+              }) as ILegendItemDiscrete[]}
+            border={'1px dotted black'}
+          />
         </Grid.Column>
       );
     }
@@ -141,7 +169,7 @@ const LakPackageProperties = (props: IProps) => {
           <Grid>
             {
               Array.isArray(props.mfPackage.lakarr) ?
-                props.mfPackage.lakarr.map((d, idx) => renderDataImage(d as Array2D<number>, idx)) :
+                props.mfPackage.lakarr.map((d, idx) => renderLakeArray(d as Array2D<number>, idx)) :
                 'NULL'
             }
           </Grid>
@@ -152,9 +180,9 @@ const LakPackageProperties = (props: IProps) => {
         <Accordion.Content active={activeIndex === 1}>
           <Grid>
             <Grid.Row columns={2}>
-              {
-                Array.isArray(props.mfPackage.bdlknc) ? props.mfPackage.bdlknc.map((d, idx) =>
-                    renderDataImage(d as Array2D<number>, idx, true, 'bdlknc')) : 'NO DATA'
+              {Array.isArray(props.mfPackage.bdlknc) ? props.mfPackage.bdlknc.map((d, idx) =>
+                  renderBdlknc(d as Array2D<number>, idx)) :
+                <Button fluid={true} onClick={handleClickEnableBdlknc}>Enable data</Button>
               }
             </Grid.Row>
           </Grid>
@@ -209,18 +237,53 @@ const LakPackageProperties = (props: IProps) => {
             />
           </Form.Field>
         </Form.Group>
-        <Form.Field>
-          <label>Solution for lake stages (THETA)</label>
-          <Input
-            readOnly={readonly}
-            type={'number'}
-            name={'theta'}
-            value={mfPackage.theta}
-            onChange={handleOnChange}
-            onBlur={handleOnBlur(parseFloat)}
-            icon={<InfoPopup description={documentation.lak.theta} title={'THETA'}/>}
-          />
-        </Form.Field>
+        <Segment>
+          <Form.Group>
+            <Form.Select
+              fluid={true}
+              label='Stages'
+              options={[
+                {key: 0, value: 0, text: 'Constant value for all lakes'},
+                {key: 1, value: 1, text: 'Seperate value for different lakes'}
+              ]}
+              onChange={handleChangeStages}
+              value={Array.isArray(mfPackage.stages) ? 1 : 0}
+            />
+            {!Array.isArray(mfPackage.stages) &&
+            <Form.Field>
+              <label>Initial stage</label>
+              <Input
+                readOnly={readonly}
+                type={'number'}
+                name={'stages'}
+                value={mfPackage.stages}
+                onChange={handleOnChange}
+                onBlur={handleOnBlur(parseFloat)}
+                icon={<InfoPopup description={documentation.lak.stages} title={'STAGES'}/>}
+              />
+            </Form.Field>
+            }
+            {Array.isArray(mfPackage.stages) &&
+              <Grid>
+                {mfPackage.stages.map((s, k) => (
+                  <Grid.Column width={4}>
+                    <Form.Field>
+                      <label>Lake {k + 1}</label>
+                      <Input
+                        readOnly={readonly}
+                        type={'number'}
+                        name={'stages'}
+                        value={s}
+                        onChange={handleOnChange}
+                        onBlur={handleOnBlur(parseFloat)}
+                      />
+                    </Form.Field>
+                  </Grid.Column>
+                ))}
+              </Grid>
+            }
+          </Form.Group>
+        </Segment>
         <Form.Group widths={'equal'}>
           <Form.Field>
             <label>Filename extension (EXTENSION)</label>
