@@ -10,6 +10,7 @@ import {
 } from '../../../../../../core/model/modflow/soilmodel';
 import React, {ChangeEvent, MouseEvent, useState} from 'react';
 import uuidv4 from 'uuid/v4';
+import { distinct } from '../../../../../modflow/defaults/colorScales';
 
 const styles = {
     input: {
@@ -233,7 +234,10 @@ const ZonesTable = (props: IProps) => {
                         return (
                             <Label
                                 as={'a'}
-                                color={relation ? 'blue' : undefined}
+                                style={ relation ? {
+                                  backgroundColor: key < distinct.length ? distinct[key] : distinct[0],
+                                  color: '#fff'
+                                } : undefined}
                                 value={zone.id}
                                 onClick={!props.readOnly ? handleToggleZone : undefined}
                                 key={key}
