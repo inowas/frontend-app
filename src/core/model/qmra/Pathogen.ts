@@ -1,7 +1,7 @@
-import {cloneDeep} from 'lodash';
+import {GenericObject} from '../genericObject/GenericObject';
 import IPathogen from './Pathogen.type';
 
-class Pathogen {
+class Pathogen extends GenericObject<IPathogen> {
   get id() {
     return this._props.id;
   }
@@ -32,16 +32,6 @@ class Pathogen {
 
   public static fromObject(obj: IPathogen) {
     return new Pathogen(obj);
-  }
-
-  protected _props: IPathogen;
-
-  constructor(obj: IPathogen) {
-    this._props = obj;
-  }
-
-  public toObject() {
-    return cloneDeep(this._props);
   }
 
   public toPayload() {

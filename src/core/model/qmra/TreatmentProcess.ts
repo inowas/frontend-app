@@ -1,7 +1,7 @@
-import {cloneDeep} from 'lodash';
+import {GenericObject} from '../genericObject/GenericObject';
 import ITreatmentProcess from './TreatmentProcess.type';
 
-class TreatmentProcess {
+class TreatmentProcess extends GenericObject<ITreatmentProcess> {
   get id() {
     return this._props.id;
   }
@@ -32,16 +32,6 @@ class TreatmentProcess {
 
   public static fromObject(obj: ITreatmentProcess) {
     return new TreatmentProcess(obj);
-  }
-
-  protected _props: ITreatmentProcess;
-
-  constructor(obj: ITreatmentProcess) {
-    this._props = obj;
-  }
-
-  public toObject() {
-    return cloneDeep(this._props);
   }
 
   public toPayload() {

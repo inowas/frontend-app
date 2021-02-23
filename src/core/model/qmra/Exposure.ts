@@ -1,7 +1,7 @@
+import {GenericObject} from '../genericObject/GenericObject';
 import {TExposure} from './Exposure.type';
-import {cloneDeep} from 'lodash';
 
-class Exposure {
+class Exposure extends GenericObject<TExposure> {
   get name() {
     return this._props.name;
   }
@@ -32,16 +32,6 @@ class Exposure {
 
   public static fromObject(obj: TExposure) {
     return new Exposure(obj);
-  }
-
-  protected _props: TExposure;
-
-  constructor(obj: TExposure) {
-    this._props = obj;
-  }
-
-  public toObject() {
-    return cloneDeep(this._props);
   }
 
   public toPayload() {

@@ -1,7 +1,7 @@
-import {cloneDeep} from 'lodash';
+import {GenericObject} from '../genericObject/GenericObject';
 import ITreatmentScheme from './TreatmentScheme.type';
 
-class TreatmentScheme {
+class TreatmentScheme extends GenericObject<ITreatmentScheme> {
   get id() {
     return this._props.id;
   }
@@ -20,16 +20,6 @@ class TreatmentScheme {
 
   public static fromObject(obj: ITreatmentScheme) {
     return new TreatmentScheme(obj);
-  }
-
-  protected _props: ITreatmentScheme;
-
-  constructor(obj: ITreatmentScheme) {
-    this._props = obj;
-  }
-
-  public toObject() {
-    return cloneDeep(this._props);
   }
 
   public toPayload() {
