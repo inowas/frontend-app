@@ -14,8 +14,8 @@ class Health {
     return this._props.infectionToIllness;
   }
 
-  get daysPerCase() {
-    return this._props.daysPerCase;
+  get dalysPerCase() {
+    return this._props.dalysPerCase;
   }
 
   public static fromObject(obj: IHealth) {
@@ -37,7 +37,7 @@ class Health {
       PathogenID: this.pathogenId,
       PathogenName: this.pathogenName,
       infection_to_illness: this.infectionToIllness,
-      days_per_case: this.daysPerCase
+      days_per_case: this.dalysPerCase
     };
   }
 }
