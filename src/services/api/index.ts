@@ -306,9 +306,14 @@ export const fetchUrl = (
         .catch(onError);
 };
 
+export const asyncFetchUrl = async (url: string) => {
+  const api = createApi(getToken());
+  return await api.get(url);
+};
+
+
 export const fetchApiWithToken = (url: string) => {
-    const api = createApi(getToken());
-    return api.get(url);
+    return asyncFetchUrl(url);
 };
 
 export const fetchUrlAndUpdate = (
