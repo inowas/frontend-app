@@ -1,4 +1,5 @@
 export default interface IDoseResponse {
+  id: string;
   pathogenId: number;
   pathogenName: string;
   pathogenGroup: string;

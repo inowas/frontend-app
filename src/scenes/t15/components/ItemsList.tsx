@@ -1,43 +1,38 @@
 import {Button, Icon, Menu, Popup} from 'semantic-ui-react';
-import {ISoilmodelLayer} from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
-import {LayersCollection} from '../../../../../core/model/modflow/soilmodel';
 import React from 'react';
-import SoilmodelLayer from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
 
 interface IProps {
-    layers: LayersCollection;
-    onClick: (layerId: string) => any;
-    onClone: (layer: SoilmodelLayer) => any;
-    onRemove: (layerId: string) => any;
+    items: Array<{id: number | string; name: string}>;
+    onClick: (key: number | string) => any;
+    onClone: (key: number | string) => any;
+    onRemove: (key: number | string) => any;
     readOnly: boolean;
-    selected?: string;
+    selected?: number | string;
 }
 
-const LayersList = ({layers, onClick, onClone, onRemove, readOnly, selected}: IProps) => {
+const ItemsList = ({items, onClick, onClone, onRemove, readOnly, selected}: IProps) => {
 
-    const handleClick = (id: string) => {
-        return () => onClick(id);
+    const handleClick = (key: number | string) => {
+        return () => onClick(key);
     };
 
-    const handleClone = (layer: SoilmodelLayer) => {
-        return () => onClone(layer);
+    const handleClone = (key: number | string) => {
+        return () => onClone(key);
     };
 
-    const handleRemove = (id: string) => {
-        return () => onRemove(id);
+    const handleRemove = (key: number | string) => {
+        return () => onRemove(key);
     };
-
-    const rLayers: ISoilmodelLayer[] = layers.reorder().all as ISoilmodelLayer[];
 
     return (
         <div>
             <Menu fluid={true} vertical={true} secondary={true}>
-                {rLayers.map((layer: ISoilmodelLayer) => (
+                {items.map((i, key) => (
                     <Menu.Item
-                        name={layer.name}
-                        key={layer.id}
-                        active={layer.id === selected}
-                        onClick={handleClick(layer.id)}
+                        name={i.name}
+                        key={key}
+                        active={i.id === selected}
+                        onClick={handleClick(i.id)}
                     >
                         {!readOnly &&
                         <Popup
@@ -49,24 +44,24 @@ const LayersList = ({layers, onClick, onClone, onRemove, readOnly, selected}: IP
                                             trigger={
                                                 <Button
                                                     icon={'clone'}
-                                                    onClick={handleClone(SoilmodelLayer.fromObject(layer))}
+                                                    onClick={handleClone(i.id)}
                                                 />
                                             }
                                             content="Clone"
                                             position="top center"
                                             size="mini"
                                         />
-                                        {layer.number !== 0 && <Popup
+                                        <Popup
                                             trigger={
                                                 <Button
                                                     icon={'trash'}
-                                                    onClick={handleRemove(layer.id)}
+                                                    onClick={handleRemove(i.id)}
                                                 />
                                             }
                                             content="Delete"
                                             position="top center"
                                             size="mini"
-                                        />}
+                                        />
                                     </Button.Group>
                                 </div>
                             }
@@ -74,7 +69,7 @@ const LayersList = ({layers, onClick, onClone, onRemove, readOnly, selected}: IP
                             position={'right center'}
                         />
                         }
-                        {layer.number}: {layer.name}
+                        {i.name}
                     </Menu.Item>
                 ))}
             </Menu>
@@ -82,4 +77,4 @@ const LayersList = ({layers, onClick, onClone, onRemove, readOnly, selected}: IP
     );
 };
 
-export default LayersList;
+export default ItemsList;

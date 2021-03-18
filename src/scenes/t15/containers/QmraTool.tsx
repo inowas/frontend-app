@@ -6,11 +6,13 @@ import {ToolMetaData} from '../../shared/simpleTools';
 import {clear, updateQmra} from '../actions/actions';
 import {createToolInstance} from '../../dashboard/commands';
 import {fetchUrl, sendCommand} from '../../../services/api';
+import {useCallback, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {useHistory, useParams} from 'react-router-dom';
+import ExposureEditor from '../components/Exposure/ExposureEditor';
 import IQmra from '../../../core/model/qmra/Qmra.type';
+import Navigation from './Navigation';
 import Qmra from '../../../core/model/qmra/Qmra';
-import React, {useEffect, useState} from 'react';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 import uuid from 'uuid';
 
@@ -34,17 +36,16 @@ export const QmraTool = () => {
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const {id} = useParams<{id: string}>();
+  const {id, property} = useParams<{ id: string, property: string }>();
 
   const T15 = useSelector((state: IRootReducer) => state.T15);
   const qmra = T15.qmra ? Qmra.fromObject(T15.qmra) : null;
 
   useEffect(() => {
-    return function() {
+    return function () {
       dispatch(clear());
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (id) {
@@ -69,8 +70,13 @@ export const QmraTool = () => {
         (e) => setErrors([{id: uuid.v4(), message: `Creating new instance failed: ${e}`}])
       );
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [dispatch, history, id]);
+
+  useEffect(() => {
+    if (id && !property) {
+      history.push(`/tools/${tool}/${id}/setup`);
+    }
+  }, [history, id, property]);
 
   const handleSaveMetaData = (tool: IToolMetaDataEdit) => {
     if (!qmra) {
@@ -85,6 +91,7 @@ export const QmraTool = () => {
   };
 
   const handleSave = (q: Qmra) => {
+    console.log({q});
     setIsFetching(true);
     sendCommand(
       SimpleToolsCommand.updateToolInstance(q.toObject()),
@@ -95,15 +102,23 @@ export const QmraTool = () => {
     );
   };
 
-  if (!qmra || isFetching) {
+  if (!qmra) {
     return (
-      <AppContainer navbarItems={navigation} loading={isFetching}>
+      <AppContainer navbarItems={navigation}>
         <Loader inverted={true}>Loading</Loader>
       </AppContainer>
     );
   }
 
   const handleDismissError = (id: string) => () => setErrors(errors.filter((e) => e.id !== id));
+
+  const renderContent = () => {
+    switch(property) {
+
+      default:
+        return <ExposureEditor onChange={handleSave} qmra={qmra}/>
+    }
+  };
 
   return (
     <AppContainer navbarItems={navigation}>
@@ -120,14 +135,15 @@ export const QmraTool = () => {
       />
       <Grid padded={true}>
         <Grid.Row>
-          <Grid.Column width={16}>
+          <Grid.Column width={3}><Navigation isFetching={isFetching} property={property}/></Grid.Column>
+          <Grid.Column width={13}>
             {errors.map((error, key) => (
               <Message key={key} negative={true} onDismiss={handleDismissError(error.id)}>
                 <Message.Header>Error</Message.Header>
                 <p>{error.message}</p>
               </Message>
             ))}
-            <p>QMRA</p>
+            {renderContent()}
           </Grid.Column>
         </Grid.Row>
       </Grid>

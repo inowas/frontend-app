@@ -1,7 +1,12 @@
 import {GenericObject} from '../genericObject/GenericObject';
-import {TExposure} from './Exposure.type';
+import IExposure from './Exposure.type';
+import uuid from 'uuid';
 
-class Exposure extends GenericObject<TExposure> {
+class Exposure extends GenericObject<IExposure> {
+  get id() {
+    return this._props.id;
+  }
+
   get name() {
     return this._props.name;
   }
@@ -11,31 +16,44 @@ class Exposure extends GenericObject<TExposure> {
   }
 
   get value() {
-    return 'value' in this._props ? this._props.value : null;
+    return this._props.value;
   }
 
   get min() {
-    return 'min' in this._props ? this._props.min : null;
+    return this._props.min;
   }
 
   get max() {
-    return 'max' in this._props ? this._props.max : null;
+    return this._props.max;
   }
 
   get mode() {
-    return 'mode' in this._props ? this._props.mode : null;
+    return this._props.mode;
   }
 
   get mean() {
-    return 'mean' in this._props ? this._props.mean : null;
+    return this._props.mean;
   }
 
-  public static fromObject(obj: TExposure) {
+  public static fromDefaults() {
+    return new Exposure({
+      id: uuid.v4(),
+      name: 'New Exposure',
+      type: 'value',
+      value: 0,
+      min: 0,
+      max: 0,
+      mode: 0,
+      mean: 0
+    });
+  }
+
+  public static fromObject(obj: IExposure) {
     return new Exposure(obj);
   }
 
   public toPayload() {
-    if (this.min && this.max && this.mode && this.mean) {
+    if (this.type === 'triangle') {
       return {
         name: this.name,
         type: this.type,

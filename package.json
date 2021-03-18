@@ -76,6 +76,7 @@
     "@types/scheduler": "^0.16.1",
     "@types/uuid": "^3.4.9",
     "babel-jest": "26.6.3",
+    "eslint-plugin-react": "^7.22.0",
     "eslint-plugin-sort-imports-es6-autofix": "^0.5.0",
     "prop-types": "^15.7.2",
     "redux-devtools-extension": "2.13.8",
@@ -97,7 +98,13 @@
       "plugin:react-hooks/recommended",
       "plugin:@typescript-eslint/recommended"
     ],
+    "parserOptions": {
+      "ecmaFeatures": {
+        "jsx": true
+      }
+    },
     "plugins": [
+      "react",
       "sort-imports-es6-autofix"
     ],
     "ignorePatterns": [
@@ -128,7 +135,27 @@
       "no-prototype-builtins": "off",
       "no-use-before-define": "off",
       "react/prop-types": "off",
+      "react/jsx-uses-react": "off",
+      "react/react-in-jsx-scope": "off",
       "sort-imports-es6-autofix/sort-imports-es6": "warn"
+    },
+    "settings": {
+      "react": {
+        "createClass": "createReactClass",
+        "pragma": "React",
+        "fragment": "Fragment",
+        "version": "detect",
+        "flowVersion": "0.53"
+      },
+      "propWrapperFunctions": [
+          "forbidExtraProps",
+          {"property": "freeze", "object": "Object"},
+          {"property": "myFavoriteWrapper"}
+      ],
+      "linkComponents": [
+        "Hyperlink",
+        {"name": "Link", "linkAttribute": "to"}
+      ]
     }
   },
   "browserslist": {

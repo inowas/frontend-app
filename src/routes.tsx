@@ -62,7 +62,7 @@ const getRoutes = () => {
         <Route exact={true} path="/tools/T14B/:id?" component={Scenes.T14B}/>
         <Route exact={true} path="/tools/T14C/:id?" component={Scenes.T14C}/>
         <Route exact={true} path="/tools/T14D/:id?" component={Scenes.T14D}/>
-        <Route exact={true} path="/tools/T15/:id?" component={Scenes.T15}/>
+        <Route exact={true} path="/tools/T15/:id?/:property?/:pid?" component={Scenes.T15}/>
         <Route exact={true} path="/tools/T18/:id?" component={Scenes.T18}/>
         <Route exact={true} path="/tools/T19/:id?" component={Scenes.T19}/>
         <Route exact={true} path="/tools/T20/:id/:property?/:pid?" component={Scenes.T20.EditRealTimeModelling}/>
@@ -149,7 +149,8 @@ const getRoutes = () => {
       <PrivateRoute exact={true} path="/tools/T14B/:id?" component={Scenes.T14B} forRoles={['ROLE_USER']}/>
       <PrivateRoute exact={true} path="/tools/T14C/:id?" component={Scenes.T14C} forRoles={['ROLE_USER']}/>
       <PrivateRoute exact={true} path="/tools/T14D/:id?" component={Scenes.T14D} forRoles={['ROLE_USER']}/>
-      <PrivateRoute exact={true} path="/tools/T15/:id?" component={Scenes.T15} forRoles={['ROLE_USER']}/>
+      <PrivateRoute exact={true} path="/tools/T15/:id?/:property?/:pid?"
+                    component={Scenes.T15} forRoles={['ROLE_USER']}/>
       <PrivateRoute exact={true} path="/tools/T18/:id?" component={Scenes.T18} forRoles={['ROLE_USER']}/>
       <PrivateRoute exact={true} path="/tools/T19/:id?" component={Scenes.T19} forRoles={['ROLE_USER']}/>
       <PrivateRoute exact={true} path="/tools/T20/" component={Scenes.T20.CreateRealTimeModelling}

@@ -2,6 +2,10 @@ import {GenericObject} from '../genericObject/GenericObject';
 import IHealth from './Health.type';
 
 class Health extends GenericObject<IHealth> {
+  get id() {
+    return this._props.id;
+  }
+
   get pathogenId() {
     return this._props.pathogenId;
   }
