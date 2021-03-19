@@ -6,6 +6,10 @@ class Pathogen extends GenericObject<IPathogen> {
     return this._props.id;
   }
 
+  set id(value: number) {
+    this._props.id = value;
+  }
+
   get name() {
     return this._props.name;
   }
@@ -28,6 +32,18 @@ class Pathogen extends GenericObject<IPathogen> {
 
   get max() {
     return this._props.max;
+  }
+
+  public static fromDefaults() {
+    return new Pathogen({
+      id: 0,
+      name: 'New Pathogen',
+      group: 'Bacteria',
+      simulate: 0,
+      type: 'log10_norm',
+      min: 10,
+      max: 10000
+    });
   }
 
   public static fromObject(obj: IPathogen) {

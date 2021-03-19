@@ -1,5 +1,4 @@
 import {Button, Icon, Menu, Popup} from 'semantic-ui-react';
-import React from 'react';
 
 interface IProps {
     items: Array<{id: number | string; name: string}>;
@@ -10,7 +9,7 @@ interface IProps {
     selected?: number | string;
 }
 
-const ItemsList = ({items, onClick, onClone, onRemove, readOnly, selected}: IProps) => {
+const ElementsList = ({items, onClick, onClone, onRemove, readOnly, selected}: IProps) => {
 
     const handleClick = (key: number | string) => {
         return () => onClick(key);
@@ -77,4 +76,4 @@ const ItemsList = ({items, onClick, onClone, onRemove, readOnly, selected}: IPro
     );
 };
 
-export default ItemsList;
+export default ElementsList;
