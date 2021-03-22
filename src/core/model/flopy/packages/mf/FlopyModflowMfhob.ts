@@ -50,7 +50,7 @@ export default class FlopyModflowMfhob extends FlopyModflowBoundary<IFlopyModflo
 
     public update = (boundaries: BoundaryCollection, stressperiods: Stressperiods) => {
         const bd = boundaries.all.filter((b) => (b instanceof HeadObservationWell)) as HeadObservationWell[];
-        if (boundaries.length === 0) {
+        if (bd.length === 0) {
             return null;
         }
 
