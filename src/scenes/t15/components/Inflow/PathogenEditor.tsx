@@ -6,6 +6,8 @@ import Pathogen from '../../../../core/model/qmra/Pathogen';
 import PathogenForm from './PathogenForm';
 import Qmra from '../../../../core/model/qmra/Qmra';
 import _ from 'lodash';
+import DoseResponse from '../../../../core/model/qmra/DoseResponse';
+import Health from '../../../../core/model/qmra/Health';
 
 interface IProps {
   onChange: (qmra: Qmra) => void;
@@ -53,7 +55,12 @@ const PathogenEditor = ({qmra, onChange}: IProps) => {
   const handleAddElement = () => {
     const newElement = Pathogen.fromDefaults();
     newElement.id = qmra.inflow.length > 0 ? 1 + Math.max(...qmra.inflow.map((p) => p.id)) : 1;
-    const cQmra = qmra.addElement(newElement);
+
+    const newDoseResponse = DoseResponse.fromDefaults(newElement.id);
+    const newHealth = Health.fromDefault(newElement.id);
+
+    const cQmra = qmra.addElement(newElement).addElement(newDoseResponse).addElement(newHealth);
+
     setSelectedElement(newElement.toObject());
     onChange(cQmra);
   };

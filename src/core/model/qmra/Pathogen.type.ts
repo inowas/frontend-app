@@ -6,6 +6,7 @@ interface IPathogen {
   type: string;
   min: number;
   max: number;
+  reference: string;
 }
 
 export default IPathogen;

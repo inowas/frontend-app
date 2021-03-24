@@ -4,7 +4,9 @@ export default interface IDoseResponse {
   pathogenName: string;
   pathogenGroup: string;
   bestFitModel: string;
-  k: number;
+  k?: number;
+  alpha?: number;
+  n50?: number;
   hostType: string;
   doseUnits: string;
   route: string;

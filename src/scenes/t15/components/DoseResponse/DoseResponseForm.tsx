@@ -1,9 +1,7 @@
 import { ChangeEvent, SyntheticEvent, useEffect, useState } from 'react';
 import { DropdownProps, Form, InputProps } from 'semantic-ui-react';
-import { doseResponseDefaults } from '../defaults/doseResponse';
 import IPathogen from '../../../../core/model/qmra/Pathogen.type';
 import Pathogen from '../../../../core/model/qmra/Pathogen';
-import _ from 'lodash';
 
 interface IProps {
   groups: string[];
@@ -18,12 +16,6 @@ const ExposureForm = ({ groups, onChange, readOnly, selectedPathogen }: IProps) 
   const [activeInput, setActiveInput] = useState<null | string>(null);
   const [activeValue, setActiveValue] = useState<string>('');
   const [element, setElement] = useState<IPathogen>(selectedPathogen.toObject());
-
-  const defaults = doseResponseDefaults.filter((e) => e.pathogenGroup === element.group).map((e) => e.pathogenName);
-
-  if (!defaults.includes(element.name)) {
-    defaults.push(element.name);
-  }
 
   useEffect(() => {
     setElement(selectedPathogen.toObject());
@@ -62,6 +54,16 @@ const ExposureForm = ({ groups, onChange, readOnly, selectedPathogen }: IProps) 
     <Form>
       <Form.Group widths="equal">
         <Form.Field>
+          <Form.Input
+            label="Name"
+            name="name"
+            onBlur={handleBlur()}
+            onChange={handleChange}
+            readOnly={readOnly}
+            value={activeInput === 'name' ? activeValue : element.name}
+          />
+        </Form.Field>
+        <Form.Field>
           <Form.Select
             allowAdditions
             label="Group"
@@ -72,19 +74,6 @@ const ExposureForm = ({ groups, onChange, readOnly, selectedPathogen }: IProps) 
             readOnly={readOnly}
             search
             value={element.group}
-          />
-        </Form.Field>
-        <Form.Field>
-          <Form.Select
-            allowAdditions
-            label="Name"
-            name="name"
-            onAddItem={handleSelect}
-            onChange={handleSelect}
-            options={_.orderBy(defaults, ['asc']).map((g) => ({ key: g, value: g, text: g }))}
-            readOnly={readOnly}
-            search
-            value={element.name}
           />
         </Form.Field>
       </Form.Group>

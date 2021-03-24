@@ -1,4 +1,4 @@
-import {GenericObject} from '../genericObject/GenericObject';
+import { GenericObject } from '../genericObject/GenericObject';
 import IPathogen from './Pathogen.type';
 
 class Pathogen extends GenericObject<IPathogen> {
@@ -34,6 +34,10 @@ class Pathogen extends GenericObject<IPathogen> {
     return this._props.max;
   }
 
+  get reference() {
+    return this._props.reference;
+  }
+
   public static fromDefaults() {
     return new Pathogen({
       id: 0,
@@ -42,7 +46,8 @@ class Pathogen extends GenericObject<IPathogen> {
       simulate: 0,
       type: 'log10_norm',
       min: 10,
-      max: 10000
+      max: 10000,
+      reference: '',
     });
   }
 
@@ -58,7 +63,7 @@ class Pathogen extends GenericObject<IPathogen> {
       simulate: this.simulate,
       type: this.type,
       min: this.min,
-      max: this.max
+      max: this.max,
     };
   }
 }

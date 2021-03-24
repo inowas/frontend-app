@@ -9,6 +9,7 @@ import {fetchUrl, sendCommand} from '../../../services/api';
 import {useDispatch, useSelector} from 'react-redux';
 import {useEffect, useState} from 'react';
 import {useHistory, useParams} from 'react-router-dom';
+import DoseResponseEditor from '../components/DoseResponse/DoseResponseEditor';
 import ExposureEditor from '../components/Exposure/ExposureEditor';
 import IQmra from '../../../core/model/qmra/Qmra.type';
 import Navigation from './Navigation';
@@ -115,6 +116,8 @@ export const QmraTool = () => {
 
   const renderContent = () => {
     switch(property) {
+      case 'doseResponse':
+        return <DoseResponseEditor onChange={handleSave} qmra={qmra}/>
       case 'inflow':
         return <PathogenEditor onChange={handleSave} qmra={qmra}/>
       default:
