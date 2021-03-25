@@ -1,13 +1,16 @@
-import {Button, Grid, Segment} from 'semantic-ui-react';
-import {useEffect, useState} from 'react';
+import { Button, Grid, Modal, Segment, Table } from 'semantic-ui-react';
+import { doseResponseDefaults } from '../defaults/doseResponse';
+import { useEffect, useState } from 'react';
+import DoseResponse from '../../../../core/model/qmra/DoseResponse';
+import DoseResponseForm from '../DoseResponse/DoseResponseForm';
 import ElementsList from '../ElementsList';
+import Health from '../../../../core/model/qmra/Health';
+import IDoseResponse from '../../../../core/model/qmra/DoseResponse.type';
 import IPathogen from '../../../../core/model/qmra/Pathogen.type';
 import Pathogen from '../../../../core/model/qmra/Pathogen';
 import PathogenForm from './PathogenForm';
 import Qmra from '../../../../core/model/qmra/Qmra';
 import _ from 'lodash';
-import DoseResponse from '../../../../core/model/qmra/DoseResponse';
-import Health from '../../../../core/model/qmra/Health';
 
 interface IProps {
   onChange: (qmra: Qmra) => void;
@@ -16,7 +19,9 @@ interface IProps {
 
 const defaultGroups = ['Bacteria', 'Protozoa', 'Virus'];
 
-const PathogenEditor = ({qmra, onChange}: IProps) => {
+const PathogenEditor = ({ qmra, onChange }: IProps) => {
+  const [defaultDoseResponse, setDefaultDoseResponse] = useState<IDoseResponse>();
+  const [selectedDoseResponse, setSelectedDoseResponse] = useState<IDoseResponse>();
   const [selectedElement, setSelectedElement] = useState<IPathogen>();
 
   useEffect(() => {
@@ -28,21 +33,32 @@ const PathogenEditor = ({qmra, onChange}: IProps) => {
     }
   }, [qmra, selectedElement]);
 
-  const handleDispatch = (e: IPathogen[]) => {
-    const cQmra = qmra.toObject();
-    cQmra.data.inflow = e;
-    onChange(Qmra.fromObject(cQmra));
-  };
-
   const handleChangeSelected = (p: Pathogen) => {
-    setSelectedElement(p.toObject());
-    const cInflow = qmra.inflow.map((e) => {
-      if (e.id === p.id) {
-        return p.toObject();
+    const cQmra = qmra.toObject();
+    const doseResponses = cQmra.data.doseResponse.filter((d) => d.pathogenId === p.id);
+    if (doseResponses.length < 1 || !selectedElement) {
+      return;
+    }
+    let cDoseResponse = doseResponses[0];
+    cDoseResponse.pathogenName = p.name;
+    cDoseResponse.pathogenGroup = p.group;
+
+    setSelectedDoseResponse(DoseResponse.fromObject(cDoseResponse).toObject());
+
+    if (p.name !== selectedElement.name) {
+      const filterFromDefaults = doseResponseDefaults.filter((d) => d.pathogenName === p.name);
+      if (filterFromDefaults.length > 0) {
+        cDoseResponse = {
+          ...filterFromDefaults[0],
+          id: cDoseResponse.id,
+          pathogenId: p.id,
+        };
+        setSelectedElement(p.toObject());
+        return setDefaultDoseResponse(cDoseResponse);
       }
-      return e.toObject();
-    });
-    handleDispatch(cInflow);
+    }
+
+    handleDispatch(p, DoseResponse.fromObject(cDoseResponse));
   };
 
   const handleSelectElement = (id: number | string) => {
@@ -57,9 +73,11 @@ const PathogenEditor = ({qmra, onChange}: IProps) => {
     newElement.id = qmra.inflow.length > 0 ? 1 + Math.max(...qmra.inflow.map((p) => p.id)) : 1;
 
     const newDoseResponse = DoseResponse.fromDefaults(newElement.id);
+    newDoseResponse.pathogenName = newElement.name;
+    newDoseResponse.pathogenGroup = newElement.group;
     const newHealth = Health.fromDefault(newElement.id);
 
-    const cQmra = qmra.addElement(newElement).addElement(newDoseResponse).addElement(newHealth);
+    const cQmra = Qmra.fromObject(qmra.toObject()).addElement(newElement).addElement(newDoseResponse).addElement(newHealth);
 
     setSelectedElement(newElement.toObject());
     onChange(cQmra);
@@ -70,7 +88,11 @@ const PathogenEditor = ({qmra, onChange}: IProps) => {
     if (elementToClone.length > 0) {
       const newElement = _.cloneDeep(elementToClone[0]);
       newElement.id = qmra.inflow.length > 0 ? 1 + Math.max(...qmra.inflow.map((p) => p.id)) : 1;
-      const cQmra = qmra.addElement(Pathogen.fromObject(newElement));
+      const newDoseResponse = DoseResponse.fromDefaults(newElement.id);
+      newDoseResponse.pathogenName = newElement.name;
+      newDoseResponse.pathogenGroup = newElement.group;
+      const newHealth = Health.fromDefault(newElement.id);
+      const cQmra = Qmra.fromObject(qmra.toObject()).addElement(Pathogen.fromObject(newElement)).addElement(newDoseResponse).addElement(newHealth);
       setSelectedElement(newElement);
       onChange(cQmra);
     }
@@ -84,8 +106,31 @@ const PathogenEditor = ({qmra, onChange}: IProps) => {
     }
   };
 
+  const handleDispatch = (p: Pathogen, dr: DoseResponse) => {
+    setSelectedElement(p.toObject());
+    onChange(qmra.updateElement(p).updateElement(dr));
+    setSelectedDoseResponse(undefined);
+    setDefaultDoseResponse(undefined);
+  };
+
+  const handleAcceptModal = () => {
+    setDefaultDoseResponse(undefined);
+    if (!selectedElement || !defaultDoseResponse) {
+      return;
+    }
+    handleDispatch(Pathogen.fromObject(selectedElement), DoseResponse.fromObject(defaultDoseResponse));
+  };
+
+  const handleCloseModal = () => {
+    setDefaultDoseResponse(undefined);
+    if (!selectedElement || !selectedDoseResponse) {
+      return;
+    }
+    handleDispatch(Pathogen.fromObject(selectedElement), DoseResponse.fromObject(selectedDoseResponse));
+  };
+
   return (
-    <Segment color={'grey'}>  
+    <Segment color={'grey'}>
       <Grid>
         <Grid.Row>
           <Grid.Column width={4}>
@@ -104,7 +149,7 @@ const PathogenEditor = ({qmra, onChange}: IProps) => {
         <Grid.Row>
           <Grid.Column width={4}>
             <ElementsList
-              items={qmra.inflow.map((e) => ({id: e.id, name: e.name}))}
+              items={qmra.inflow.map((e) => ({ id: e.id, name: e.name }))}
               onClick={handleSelectElement}
               onClone={handleCloneElement}
               onRemove={handleRemoveElement}
@@ -113,21 +158,31 @@ const PathogenEditor = ({qmra, onChange}: IProps) => {
             />
           </Grid.Column>
           <Grid.Column width={12}>
-            {selectedElement &&
-            <PathogenForm
-              groups={
-                _.uniq(defaultGroups.concat(
-                  qmra.inflow.filter((p) => !defaultGroups.includes(p.group)).map((p) => p.group)
-                ))
-              }
-              onChange={handleChangeSelected}
-              readOnly={qmra.readOnly}
-              selectedPathogen={Pathogen.fromObject(selectedElement)}
-            />
-            }
+            {selectedElement && (
+              <PathogenForm
+                groups={_.uniq(
+                  defaultGroups.concat(qmra.inflow.filter((p) => !defaultGroups.includes(p.group)).map((p) => p.group))
+                )}
+                onChange={handleChangeSelected}
+                readOnly={qmra.readOnly}
+                selectedPathogen={Pathogen.fromObject(selectedElement)}
+              />
+            )}
           </Grid.Column>
         </Grid.Row>
       </Grid>
+      {defaultDoseResponse && (
+        <Modal onClose={handleCloseModal} open={true}>
+          <Modal.Header>Do you want to import the default dose response for this pathogen?</Modal.Header>
+          <Modal.Content>
+            <DoseResponseForm readOnly={true} selectedDoseResponse={DoseResponse.fromObject(defaultDoseResponse)} />
+          </Modal.Content>
+          <Modal.Actions>
+            <Button onClick={handleCloseModal}>No</Button>
+            <Button content="Yes" icon="checkmark" labelPosition="right" primary onClick={handleAcceptModal} />
+          </Modal.Actions>
+        </Modal>
+      )}
     </Segment>
   );
 };

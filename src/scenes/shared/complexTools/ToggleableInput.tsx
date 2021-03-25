@@ -30,7 +30,12 @@ const ToggleableInput = (props: IProps) => {
     const handleLocalChange = (e: ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => setLocalValue(data.value);
 
     const handleToggle = () => {
-        setLocalValue(props.value === null ? props.placeholder : null);
+        if (props.type === 'number') {
+            setLocalValue(props.value === null ? 0 : null);
+        }
+        if (props.type === 'string') {
+            setLocalValue(props.value === null ? props.placeholder : null);
+        }
         return props.onChange(props.name, props.value === null ? props.placeholder : null);
     };
 

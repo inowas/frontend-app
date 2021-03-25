@@ -94,22 +94,23 @@ class Qmra extends GenericObject<IQmra> {
 
   public updateElement(element: Exposure | Pathogen | TreatmentProcess | TreatmentScheme | DoseResponse | Health) {
     if (element instanceof Exposure) {
-      this._props.data.exposure = this._props.data.exposure.map((e) => e.id === element.id ? element : e);
+      this._props.data.exposure = this._props.data.exposure.map((e) => e.id === element.id ? element.toObject() : e);
     }
     if (element instanceof Pathogen) {
-      this._props.data.inflow = this._props.data.inflow.map((e) => e.id === element.id ? element : e);
+      this._props.data.inflow = this._props.data.inflow.map((e) => e.id === element.id ? element.toObject() : e);
     }
     if (element instanceof TreatmentProcess) {
-      this._props.data.treatment.processes = this._props.data.treatment.processes.map((e) => e.id === element.id ? element : e);
+      this._props.data.treatment.processes = this._props.data.treatment.processes.map((e) => e.id === element.id ? element.toObject() : e);
     }
     if (element instanceof TreatmentScheme) {
-      this._props.data.treatment.schemes = this._props.data.treatment.schemes.map((e) => e.id === element.id ? element : e);
+      this._props.data.treatment.schemes = this._props.data.treatment.schemes.map((e) => e.id === element.id ? element.toObject() : e);
     }
     if (element instanceof DoseResponse) {
-      this._props.data.doseResponse = this._props.data.doseResponse.map((e) => e.id === element.id ? element : e);
+      console.log(element.id, this._props.data.doseResponse);
+      this._props.data.doseResponse = this._props.data.doseResponse.map((e) => e.id === element.id ? element.toObject() : e);
     }
     if (element instanceof Health) {
-      this._props.data.health = this._props.data.health.map((e) => e.id === element.id ? element : e);
+      this._props.data.health = this._props.data.health.map((e) => e.id === element.id ? element.toObject() : e);
     }
     return this;
   }
@@ -120,6 +121,8 @@ class Qmra extends GenericObject<IQmra> {
     }
     if (element instanceof Pathogen) {
       this._props.data.inflow = this._props.data.inflow.filter((e) => e.id !== element.id);
+      this._props.data.doseResponse = this._props.data.doseResponse.filter((e) => e.pathogenId !== element.id);
+      this._props.data.health = this._props.data.health.filter((e) => e.pathogenId !== element.id);
     }
     if (element instanceof TreatmentProcess) {
       this._props.data.treatment.processes = this._props.data.treatment.processes.filter((e) => e.id !== element.id);

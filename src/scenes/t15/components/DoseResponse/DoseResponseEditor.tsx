@@ -1,6 +1,7 @@
 import { Grid, Segment } from 'semantic-ui-react';
 import { useEffect, useState } from 'react';
 import DoseResponse from '../../../../core/model/qmra/DoseResponse';
+import DoseResponseForm from './DoseResponseForm';
 import ElementsList from '../ElementsList';
 import IDoseResponse from '../../../../core/model/qmra/DoseResponse.type';
 import Qmra from '../../../../core/model/qmra/Qmra';
@@ -52,19 +53,26 @@ const DoseResponseEditor = ({ qmra, onChange }: IProps) => {
       <Grid>
         <Grid.Row>
           <Grid.Column width={16}>
-
           </Grid.Column>
         </Grid.Row>
         <Grid.Row>
           <Grid.Column width={4}>
             <ElementsList
-              items={qmra.inflow.map((e) => ({ id: e.id, name: e.name }))}
+              items={qmra.doseResponse.map((e) => ({ id: e.id, name: e.pathogenName }))}
               onClick={handleSelectElement}
               readOnly={qmra.readOnly}
               selected={selectedElement ? selectedElement.id : undefined}
             />
           </Grid.Column>
-          <Grid.Column width={12}></Grid.Column>
+          <Grid.Column width={12}>
+          {selectedElement && (
+              <DoseResponseForm
+                onChange={handleChangeSelected}
+                readOnly={qmra.readOnly}
+                selectedDoseResponse={DoseResponse.fromObject(selectedElement)}
+              />
+            )}
+          </Grid.Column>
         </Grid.Row>
       </Grid>
     </Segment>

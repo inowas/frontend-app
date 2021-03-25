@@ -15,8 +15,16 @@ class DoseResponse extends GenericObject<IDoseResponse> {
     return this._props.pathogenName;
   }
 
+  set pathogenName(value: string) {
+    this._props.pathogenName = value;
+  }
+
   get pathogenGroup() {
     return this._props.pathogenGroup;
+  }
+
+  set pathogenGroup(value: string) {
+    this._props.pathogenGroup = value;
   }
 
   get bestFitModel() {
