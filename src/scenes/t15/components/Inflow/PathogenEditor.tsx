@@ -1,10 +1,9 @@
-import { Button, Grid, Modal, Segment, Table } from 'semantic-ui-react';
+import { Button, Grid, Modal, Segment} from 'semantic-ui-react';
 import { doseResponseDefaults } from '../defaults/doseResponse';
 import { useEffect, useState } from 'react';
 import DoseResponse from '../../../../core/model/qmra/DoseResponse';
 import DoseResponseForm from '../DoseResponse/DoseResponseForm';
 import ElementsList from '../ElementsList';
-import Health from '../../../../core/model/qmra/Health';
 import IDoseResponse from '../../../../core/model/qmra/DoseResponse.type';
 import IPathogen from '../../../../core/model/qmra/Pathogen.type';
 import Pathogen from '../../../../core/model/qmra/Pathogen';
@@ -75,9 +74,8 @@ const PathogenEditor = ({ qmra, onChange }: IProps) => {
     const newDoseResponse = DoseResponse.fromDefaults(newElement.id);
     newDoseResponse.pathogenName = newElement.name;
     newDoseResponse.pathogenGroup = newElement.group;
-    const newHealth = Health.fromDefault(newElement.id);
 
-    const cQmra = Qmra.fromObject(qmra.toObject()).addElement(newElement).addElement(newDoseResponse).addElement(newHealth);
+    const cQmra = Qmra.fromObject(qmra.toObject()).addElement(newElement).addElement(newDoseResponse);
 
     setSelectedElement(newElement.toObject());
     onChange(cQmra);
@@ -91,8 +89,7 @@ const PathogenEditor = ({ qmra, onChange }: IProps) => {
       const newDoseResponse = DoseResponse.fromDefaults(newElement.id);
       newDoseResponse.pathogenName = newElement.name;
       newDoseResponse.pathogenGroup = newElement.group;
-      const newHealth = Health.fromDefault(newElement.id);
-      const cQmra = Qmra.fromObject(qmra.toObject()).addElement(Pathogen.fromObject(newElement)).addElement(newDoseResponse).addElement(newHealth);
+      const cQmra = Qmra.fromObject(qmra.toObject()).addElement(Pathogen.fromObject(newElement)).addElement(newDoseResponse);
       setSelectedElement(newElement);
       onChange(cQmra);
     }

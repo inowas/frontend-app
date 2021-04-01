@@ -1,6 +1,7 @@
 import { GenericObject } from '../genericObject/GenericObject';
 import IHealth from './Health.type';
 import uuid from 'uuid';
+import Pathogen from './Pathogen';
 
 class Health extends GenericObject<IHealth> {
   get id() {
@@ -23,11 +24,21 @@ class Health extends GenericObject<IHealth> {
     return this._props.dalysPerCase;
   }
 
-  public static fromDefault(pathogenId: number) {
+  get reference1() {
+    return this._props.reference1;
+  }
+
+  get reference2() {
+    return this._props.reference2;
+  }
+
+  public static fromPathogen(pathogen: Pathogen) {
     return new Health({
       id: uuid.v4(),
-      pathogenId: pathogenId,
-      pathogenName: ''
+      pathogenId: pathogen.id,
+      pathogenName: pathogen.name,
+      reference1: '',
+      reference2: ''
     });
   }
 

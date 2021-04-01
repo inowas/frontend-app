@@ -84,7 +84,10 @@ class Qmra extends GenericObject<IQmra> {
 
   public addElement(element: Exposure | Pathogen | TreatmentProcess | TreatmentScheme | DoseResponse | Health) {
     if (element instanceof Exposure) {this._props.data.exposure.push(element.toObject())}
-    if (element instanceof Pathogen) {this._props.data.inflow.push(element.toObject())}
+    if (element instanceof Pathogen) {
+      this._props.data.inflow.push(element.toObject())
+      this._props.data.health.push(Health.fromPathogen(element).toObject());
+    }
     if (element instanceof TreatmentProcess) {this._props.data.treatment.processes.push(element.toObject())}
     if (element instanceof TreatmentScheme) {this._props.data.treatment.schemes.push(element.toObject())}
     if (element instanceof DoseResponse) {this._props.data.doseResponse.push(element.toObject())}
@@ -98,6 +101,12 @@ class Qmra extends GenericObject<IQmra> {
     }
     if (element instanceof Pathogen) {
       this._props.data.inflow = this._props.data.inflow.map((e) => e.id === element.id ? element.toObject() : e);
+      this._props.data.health = this._props.data.health.map((e) => {
+        if (e.pathogenId === element.id) {
+          e.pathogenName = element.name;
+        }
+        return e;
+      });
     }
     if (element instanceof TreatmentProcess) {
       this._props.data.treatment.processes = this._props.data.treatment.processes.map((e) => e.id === element.id ? element.toObject() : e);

@@ -17,6 +17,7 @@ import PathogenEditor from '../components/Inflow/PathogenEditor';
 import Qmra from '../../../core/model/qmra/Qmra';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 import uuid from 'uuid';
+import HealthEditor from '../components/Health/HealthEditor';
 
 const navigation = [{
   name: 'Documentation',
@@ -118,6 +119,8 @@ export const QmraTool = () => {
     switch(property) {
       case 'doseResponse':
         return <DoseResponseEditor onChange={handleSave} qmra={qmra}/>
+      case 'health':
+        return <HealthEditor onChange={handleSave} qmra={qmra}/>
       case 'inflow':
         return <PathogenEditor onChange={handleSave} qmra={qmra}/>
       default:

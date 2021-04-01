@@ -4,4 +4,6 @@ export default interface IHealth {
   pathogenName: string;
   infectionToIllness?: number;
   dalysPerCase?: number;
+  reference1: string;
+  reference2: string;
 }
