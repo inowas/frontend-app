@@ -1,9 +1,9 @@
 import {ISimpleTool} from '../types';
+import {ITreatmentProcess} from './TreatmentProcess.type';
 import IDoseResponse from './DoseResponse.type';
 import IExposure from './Exposure.type';
 import IHealth from './Health.type';
 import IPathogen from './Pathogen.type';
-import ITreatmentProcess from './TreatmentProcess.type';
 import ITreatmentScheme from './TreatmentScheme.type';
 
 interface IQmra extends ISimpleTool<IQmraData> {

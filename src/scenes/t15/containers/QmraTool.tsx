@@ -11,13 +11,14 @@ import {useEffect, useState} from 'react';
 import {useHistory, useParams} from 'react-router-dom';
 import DoseResponseEditor from '../components/DoseResponse/DoseResponseEditor';
 import ExposureEditor from '../components/Exposure/ExposureEditor';
+import HealthEditor from '../components/Health/HealthEditor';
 import IQmra from '../../../core/model/qmra/Qmra.type';
 import Navigation from './Navigation';
 import PathogenEditor from '../components/Inflow/PathogenEditor';
+import ProcessEditor from '../components/Processes/ProcessEditor';
 import Qmra from '../../../core/model/qmra/Qmra';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 import uuid from 'uuid';
-import HealthEditor from '../components/Health/HealthEditor';
 
 const navigation = [{
   name: 'Documentation',
@@ -123,6 +124,8 @@ export const QmraTool = () => {
         return <HealthEditor onChange={handleSave} qmra={qmra}/>
       case 'inflow':
         return <PathogenEditor onChange={handleSave} qmra={qmra}/>
+      case 'processes':
+        return <ProcessEditor onChange={handleSave} qmra={qmra}/>
       default:
         return <ExposureEditor onChange={handleSave} qmra={qmra}/>
     }

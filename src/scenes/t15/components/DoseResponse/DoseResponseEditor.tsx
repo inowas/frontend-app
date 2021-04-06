@@ -5,7 +5,6 @@ import DoseResponseForm from './DoseResponseForm';
 import ElementsList from '../ElementsList';
 import IDoseResponse from '../../../../core/model/qmra/DoseResponse.type';
 import Qmra from '../../../../core/model/qmra/Qmra';
-import _ from 'lodash';
 
 interface IProps {
   onChange: (qmra: Qmra) => void;
