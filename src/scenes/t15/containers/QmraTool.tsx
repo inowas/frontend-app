@@ -17,6 +17,7 @@ import Navigation from './Navigation';
 import PathogenEditor from '../components/Inflow/PathogenEditor';
 import ProcessEditor from '../components/Processes/ProcessEditor';
 import Qmra from '../../../core/model/qmra/Qmra';
+import SchemeEditor from '../components/TreatmentSchemes/SchemeEditor';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 import uuid from 'uuid';
 
@@ -126,6 +127,8 @@ export const QmraTool = () => {
         return <PathogenEditor onChange={handleSave} qmra={qmra}/>
       case 'processes':
         return <ProcessEditor onChange={handleSave} qmra={qmra}/>
+      case 'schemes':
+        return <SchemeEditor onChange={handleSave} qmra={qmra}/>
       default:
         return <ExposureEditor onChange={handleSave} qmra={qmra}/>
     }
@@ -146,7 +149,7 @@ export const QmraTool = () => {
       />
       <Grid padded={true}>
         <Grid.Row>
-          <Grid.Column width={3}><Navigation isFetching={isFetching} property={property}/></Grid.Column>
+          <Grid.Column width={3}><Navigation isFetching={isFetching} property={property} qmra={qmra}/></Grid.Column>
           <Grid.Column width={13}>
             {errors.map((error, key) => (
               <Message key={key} negative={true} onDismiss={handleDismissError(error.id)}>

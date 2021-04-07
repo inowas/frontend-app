@@ -1,11 +1,12 @@
 import {Icon} from 'semantic-ui-react';
 import {SemanticICONS} from 'semantic-ui-react/dist/commonjs/generic';
 import {ToolNavigation} from '../../shared/complexTools';
-import React from 'react';
+import Qmra from '../../../core/model/qmra/Qmra';
 
 interface IProps {
   isFetching: boolean;
   property: string;
+  qmra: Qmra;
 }
 
 const Navigation = (props: IProps) => {
@@ -24,7 +25,7 @@ const Navigation = (props: IProps) => {
           header: 'Input',
           items: [
             {
-              name: 'Setup',
+              name: 'Exposure',
               property: 'setup',
               icon: renderIcon('map', 'setup')
             },
@@ -36,12 +37,14 @@ const Navigation = (props: IProps) => {
             {
               name: 'Dose response',
               property: 'doseResponse',
-              icon: renderIcon('map', 'doseResponse')
+              icon: renderIcon('map', 'doseResponse'),
+              disabled: props.qmra.inflow.length < 1
             },
             {
               name: 'Health',
               property: 'health',
-              icon: renderIcon('map', 'health')
+              icon: renderIcon('map', 'health'),
+              disabled: props.qmra.inflow.length < 1
             }
           ]
         },
@@ -51,12 +54,14 @@ const Navigation = (props: IProps) => {
             {
               name: 'Processes',
               property: 'processes',
-              icon: renderIcon('map', 'processes')
+              icon: renderIcon('map', 'processes'),
+              disabled: props.qmra.inflow.length < 1
             },
             {
               name: 'Schemes',
               property: 'schemes',
-              icon: renderIcon('map', 'schemes')
+              icon: renderIcon('map', 'schemes'),
+              disabled: props.qmra.inflow.length < 1
             }
           ]
         },

@@ -88,6 +88,14 @@ const ProcessGroupForm = ({ onChange, onRemove, readOnly, process }: IProps) => 
             type="number"
           />
         </Form.Group>
+        <Form.Input
+          label="Reference"
+          name="reference"
+          onBlur={handleBlur()}
+          onChange={handleChange}
+          readOnly={readOnly}
+          value={activeInput === 'reference' ? activeValue : element.reference}
+        />
       </Form>
     </Segment>
   );

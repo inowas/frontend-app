@@ -55,15 +55,8 @@ const ProcessEditor = ({ qmra, onChange }: IProps) => {
   };
 
   const handleChangeSelected = (tp: TreatmentProcess) => {
-    const cTreatmentProcesses = qmra.treatmentProcesses.map((t) => {
-      if (t.processId === tp.processId) {
-        t.name = tp.name;
-        t.group = tp.group;
-      }
-      return t.toObject();
-    });
     setSelectedElement(tp.toObject());
-    handleDispatch(cTreatmentProcesses);
+    onChange(qmra.updateElement(tp));
   };
 
   const handleSelectElement = (id: number | string) => {

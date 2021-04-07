@@ -47,6 +47,10 @@ class TreatmentProcess extends GenericObject<ITreatmentProcess> {
     return this._props.max;
   }
 
+  get reference() {
+    return this._props.reference;
+  }
+
   public static fromPathogenGroup(pathogenGroup: string) {
     return new TreatmentProcess({
       id: uuid.v4(),
@@ -56,7 +60,8 @@ class TreatmentProcess extends GenericObject<ITreatmentProcess> {
       pathogenGroup,
       type: 'uniform',
       min: 0,
-      max: 2
+      max: 2,
+      reference: ''
     });
   }
 

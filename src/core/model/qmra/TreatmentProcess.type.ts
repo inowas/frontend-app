@@ -10,6 +10,7 @@ export interface ITeatmentProcessElement {
   type: string;
   min: number;
   max: number;
+  reference: string;
 }
 
 export type ITreatmentProcess = ITreatmentProcessGroup & ITeatmentProcessElement;

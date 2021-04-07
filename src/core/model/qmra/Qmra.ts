@@ -109,7 +109,19 @@ class Qmra extends GenericObject<IQmra> {
       });
     }
     if (element instanceof TreatmentProcess) {
-      this._props.data.treatment.processes = this._props.data.treatment.processes.map((e) => e.id === element.id ? element.toObject() : e);
+      this._props.data.treatment.processes = this._props.data.treatment.processes.map((tp) => {
+        if (tp.processId === element.processId) {
+          tp.name = element.name;
+          tp.group = element.group;
+        }
+        return tp;
+      });
+      this._props.data.treatment.schemes = this._props.data.treatment.schemes.map((ts) => {
+        if (ts.treatmentId === element.processId) {
+          ts.treatmentName = element.name;
+        }
+        return ts;
+      });
     }
     if (element instanceof TreatmentScheme) {
       this._props.data.treatment.schemes = this._props.data.treatment.schemes.map((e) => e.id === element.id ? element.toObject() : e);
@@ -135,6 +147,9 @@ class Qmra extends GenericObject<IQmra> {
     }
     if (element instanceof TreatmentProcess) {
       this._props.data.treatment.processes = this._props.data.treatment.processes.filter((e) => e.id !== element.id);
+      if (this.treatmentProcesses.filter((tp) => tp.processId === element.processId).length === 0) {
+        this._props.data.treatment.schemes = this._props.data.treatment.schemes.filter((ts) => ts.treatmentId !== element.processId);
+      }
     }
     if (element instanceof TreatmentScheme) {
       this._props.data.treatment.schemes = this._props.data.treatment.schemes.filter((e) => e.id !== element.id);
