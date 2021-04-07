@@ -1,6 +1,7 @@
 import {GenericObject} from '../genericObject/GenericObject';
 import IExposure from './Exposure.type';
 import uuid from 'uuid';
+import { IPropertyValueObject } from '../types';
 
 class Exposure extends GenericObject<IExposure> {
   get id() {
@@ -33,6 +34,18 @@ class Exposure extends GenericObject<IExposure> {
 
   get mean() {
     return this._props.mean;
+  }
+
+  public static fromCsv(obj2: {[key: string]: number | string}) {
+    const obj1 = this.fromDefaults().toObject();
+
+    for (const key of Object.keys(obj2)) {
+      if (key in obj1) {
+        obj1[key] = obj2[key];
+      }
+    }
+
+    return new Exposure(obj1);
   }
 
   public static fromDefaults() {

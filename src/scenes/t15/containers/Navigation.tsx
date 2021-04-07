@@ -27,23 +27,23 @@ const Navigation = (props: IProps) => {
             {
               name: 'Exposure',
               property: 'setup',
-              icon: renderIcon('map', 'setup')
+              icon: renderIcon('bolt', 'setup')
             },
             {
               name: 'Inflow',
               property: 'inflow',
-              icon: renderIcon('map', 'inflow')
+              icon: renderIcon('certificate', 'inflow')
             },
             {
               name: 'Dose response',
               property: 'doseResponse',
-              icon: renderIcon('map', 'doseResponse'),
+              icon: renderIcon('syringe', 'doseResponse'),
               disabled: props.qmra.inflow.length < 1
             },
             {
               name: 'Health',
               property: 'health',
-              icon: renderIcon('map', 'health'),
+              icon: renderIcon('heartbeat', 'health'),
               disabled: props.qmra.inflow.length < 1
             }
           ]
@@ -54,13 +54,24 @@ const Navigation = (props: IProps) => {
             {
               name: 'Processes',
               property: 'processes',
-              icon: renderIcon('map', 'processes'),
+              icon: renderIcon('cogs', 'processes'),
               disabled: props.qmra.inflow.length < 1
             },
             {
               name: 'Schemes',
               property: 'schemes',
-              icon: renderIcon('map', 'schemes'),
+              icon: renderIcon('boxes', 'schemes'),
+              disabled: props.qmra.inflow.length < 1
+            }
+          ]
+        },
+        {
+          header: 'Calculation',
+          items: [
+            {
+              name: 'Calculation',
+              property: 'calculation',
+              icon: renderIcon('calculator', 'calculation'),
               disabled: props.qmra.inflow.length < 1
             }
           ]
@@ -71,12 +82,12 @@ const Navigation = (props: IProps) => {
             {
               name: 'Events',
               property: 'events',
-              icon: renderIcon('map', 'events'),
+              icon: renderIcon('bullhorn', 'events'),
             },
             {
               name: 'Total',
               property: 'total',
-              icon: renderIcon('map', 'total')
+              icon: renderIcon('flag', 'total')
             }
           ]
         }

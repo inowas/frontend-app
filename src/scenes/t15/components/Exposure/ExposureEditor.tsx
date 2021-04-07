@@ -1,5 +1,8 @@
-import {Button, Grid, Segment} from 'semantic-ui-react';
-import {useEffect, useState} from 'react';
+import { Button, Grid, Segment } from 'semantic-ui-react';
+import { IPropertyValueObject } from '../../../../core/model/types';
+import { exposureColumns } from '../defaults/columns';
+import { useEffect, useState } from 'react';
+import CsvUpload from '../shared/CsvUpload';
 import ElementsList from '../ElementsList';
 import Exposure from '../../../../core/model/qmra/Exposure';
 import ExposureForm from './ExposureForm';
@@ -13,7 +16,7 @@ interface IProps {
   qmra: Qmra;
 }
 
-const ExposureEditor = ({qmra, onChange}: IProps) => {
+const ExposureEditor = ({ qmra, onChange }: IProps) => {
   const [selectedElement, setSelectedElement] = useState<IExposure>();
 
   useEffect(() => {
@@ -75,27 +78,37 @@ const ExposureEditor = ({qmra, onChange}: IProps) => {
     }
   };
 
+  const handleUpload = (results: IPropertyValueObject[]) => {
+    const cQmra = Qmra.fromObject(qmra.toObject());
+    results.forEach((row) => {
+      cQmra.addElement(Exposure.fromCsv(row));
+    });
+    onChange(cQmra);
+  };
+
   return (
-    <Segment color={'grey'}>  
+    <Segment color={'grey'}>
       <Grid>
         <Grid.Row>
           <Grid.Column width={4}>
-            <Button
-              fluid={true}
-              positive={true}
-              icon="plus"
-              labelPosition="left"
-              onClick={handleAddElement}
-              content="Add Exposure"
-              disabled={qmra.readOnly}
-            />
+            <Button.Group fluid>
+              <Button
+                positive={true}
+                icon="plus"
+                labelPosition="left"
+                onClick={handleAddElement}
+                content="Add Exposure"
+                disabled={qmra.readOnly}
+              />
+              <CsvUpload columns={exposureColumns} onChange={handleUpload} />
+            </Button.Group>
           </Grid.Column>
           <Grid.Column width={12} />
         </Grid.Row>
         <Grid.Row>
           <Grid.Column width={4}>
             <ElementsList
-              items={qmra.exposure.map((e) => ({id: e.id, name: e.name}))}
+              items={qmra.exposure.map((e) => ({ id: e.id, name: e.name }))}
               onClick={handleSelectElement}
               onClone={handleCloneElement}
               onRemove={handleRemoveElement}
@@ -104,13 +117,13 @@ const ExposureEditor = ({qmra, onChange}: IProps) => {
             />
           </Grid.Column>
           <Grid.Column width={12}>
-            {selectedElement &&
-            <ExposureForm
-              onChange={handleChangeSelected}
-              readOnly={qmra.readOnly}
-              selectedExposure={Exposure.fromObject(selectedElement)}
-            />
-            }
+            {selectedElement && (
+              <ExposureForm
+                onChange={handleChangeSelected}
+                readOnly={qmra.readOnly}
+                selectedExposure={Exposure.fromObject(selectedElement)}
+              />
+            )}
           </Grid.Column>
         </Grid.Row>
       </Grid>

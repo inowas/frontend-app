@@ -1,14 +1,15 @@
 import {AppContainer} from '../../shared';
-import {Grid, Icon, Loader, Message} from 'semantic-ui-react';
+import {Dropdown, DropdownProps, Grid, Icon, Loader, Message} from 'semantic-ui-react';
 import {IRootReducer} from '../../../reducers';
 import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
+import {SyntheticEvent, useEffect, useState} from 'react';
 import {ToolMetaData} from '../../shared/simpleTools';
 import {clear, updateQmra} from '../actions/actions';
 import {createToolInstance} from '../../dashboard/commands';
 import {fetchUrl, sendCommand} from '../../../services/api';
 import {useDispatch, useSelector} from 'react-redux';
-import {useEffect, useState} from 'react';
 import {useHistory, useParams} from 'react-router-dom';
+import Calculation from '../components/Calculation/Calculation';
 import DoseResponseEditor from '../components/DoseResponse/DoseResponseEditor';
 import ExposureEditor from '../components/Exposure/ExposureEditor';
 import HealthEditor from '../components/Health/HealthEditor';
@@ -83,6 +84,28 @@ export const QmraTool = () => {
     }
   }, [history, id, property]);
 
+  const handleExport = (e: SyntheticEvent<HTMLElement>, {value}: DropdownProps) => {
+    if (!qmra) {
+      return;
+    }
+    const filename = 'qmra.json';
+    let text = '';
+    if (value === 'inowas') {
+      text = JSON.stringify(qmra.toObject(), null, 2);
+    }
+    if (value === 'kwb') {
+      text = JSON.stringify(qmra.toPayload(), null, 2);
+    }
+  
+    const element: HTMLAnchorElement = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
+
   const handleSaveMetaData = (tool: IToolMetaDataEdit) => {
     if (!qmra) {
       return;
@@ -119,6 +142,8 @@ export const QmraTool = () => {
 
   const renderContent = () => {
     switch(property) {
+      case 'calculation':
+        return <Calculation qmra={qmra}/>
       case 'doseResponse':
         return <DoseResponseEditor onChange={handleSave} qmra={qmra}/>
       case 'health':
@@ -149,7 +174,24 @@ export const QmraTool = () => {
       />
       <Grid padded={true}>
         <Grid.Row>
-          <Grid.Column width={3}><Navigation isFetching={isFetching} property={property} qmra={qmra}/></Grid.Column>
+          <Grid.Column width={3}>
+            <Navigation isFetching={isFetching} property={property} qmra={qmra}/>
+            <Dropdown
+              button
+              className="icon positive"
+              disabled={!qmra}
+              floating
+              fluid
+              labeled
+              icon="download"
+              options={[
+                {key: 0, value: 'inowas', text: 'JSON complete'},
+                {key: 1, value: 'kwb', text: 'JSON config'}
+              ]}
+              onChange={handleExport}
+              text="Export"
+            />
+          </Grid.Column>
           <Grid.Column width={13}>
             {errors.map((error, key) => (
               <Message key={key} negative={true} onDismiss={handleDismissError(error.id)}>

@@ -1,4 +1,6 @@
-export default interface IExposure {
+import { IPropertyValueObject } from "../types";
+
+export default interface IExposure extends IPropertyValueObject {
   id: string;
   name: string;
   type: string;
