@@ -40,25 +40,16 @@ const SchemeForm = ({ onChange, readOnly, selectedScheme }: IProps) => {
 
   return (
     <Form>
-      <Form.Group widths="equal">
-        <Form.Field>
-          <Form.Input
-            label="Treatment Process"
-            readOnly={true}
-            value={element.treatmentName}
-          />
-        </Form.Field>
-        <Form.Field>
-          <Form.Input
-            label="Treatment scheme name"
-            name="name"
-            onBlur={handleBlur()}
-            onChange={handleChange}
-            readOnly={readOnly}
-            value={activeInput === 'name' ? activeValue : element.name}
-          />
-        </Form.Field>
-      </Form.Group>
+      <Form.Field>
+        <Form.Input
+          label="Treatment scheme name"
+          name="name"
+          onBlur={handleBlur()}
+          onChange={handleChange}
+          readOnly={readOnly}
+          value={activeInput === 'name' ? activeValue : element.name}
+        />
+      </Form.Field>
     </Form>
   );
 };

@@ -148,7 +148,12 @@ class Qmra extends GenericObject<IQmra> {
       });
     }
     if (element instanceof TreatmentScheme) {
-      this._props.data.treatment.schemes = this._props.data.treatment.schemes.map((e) => e.id === element.id ? element.toObject() : e);
+      this._props.data.treatment.schemes = this._props.data.treatment.schemes.map((ts) => {
+        if (ts.schemeId === element.schemeId) {
+          ts.name = element.name;
+        }
+        return ts;
+      });
     }
     if (element instanceof DoseResponse) {
       console.log(element.id, this._props.data.doseResponse);

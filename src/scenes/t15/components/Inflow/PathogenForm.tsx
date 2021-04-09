@@ -12,7 +12,7 @@ interface IProps {
   selectedPathogen: Pathogen;
 }
 
-const types = ['log10_norm'];
+const types = ['log10_norm', 'uniform'];
 
 const ExposureForm = ({ groups, onChange, readOnly, selectedPathogen }: IProps) => {
   const [activeInput, setActiveInput] = useState<null | string>(null);
