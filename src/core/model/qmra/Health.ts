@@ -1,7 +1,7 @@
 import { GenericObject } from '../genericObject/GenericObject';
-import IHealth from './Health.type';
-import uuid from 'uuid';
+import IHealth, { IHealthPayload } from './Health.type';
 import Pathogen from './Pathogen';
+import uuid from 'uuid';
 
 class Health extends GenericObject<IHealth> {
   get id() {
@@ -44,6 +44,18 @@ class Health extends GenericObject<IHealth> {
 
   public static fromObject(obj: IHealth) {
     return new Health(obj);
+  }
+
+  public static fromPayload(obj: IHealthPayload) {
+    return new Health({
+      id: uuid.v4(),
+      pathogenId: obj.PathogenID,
+      pathogenName: obj.PathogenName,
+      infectionToIllness: obj['infection_to_illness'],
+      dalysPerCase: obj['dalys_per_case'],
+      reference1: '',
+      reference2: ''
+    });
   }
 
   public toPayload() {

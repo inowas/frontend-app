@@ -14,6 +14,7 @@ import DoseResponseEditor from '../components/DoseResponse/DoseResponseEditor';
 import ExposureEditor from '../components/Exposure/ExposureEditor';
 import HealthEditor from '../components/Health/HealthEditor';
 import IQmra from '../../../core/model/qmra/Qmra.type';
+import JsonUpload from '../components/JsonUpload';
 import Navigation from './Navigation';
 import PathogenEditor from '../components/Inflow/PathogenEditor';
 import ProcessEditor from '../components/Processes/ProcessEditor';
@@ -119,7 +120,6 @@ export const QmraTool = () => {
   };
 
   const handleSave = (q: Qmra) => {
-    console.log({q});
     setIsFetching(true);
     sendCommand(
       SimpleToolsCommand.updateToolInstance(q.toObject()),
@@ -139,6 +139,8 @@ export const QmraTool = () => {
   }
 
   const handleDismissError = (id: string) => () => setErrors(errors.filter((e) => e.id !== id));
+
+  const handleUploadJson = (r: Qmra) => handleSave(r);
 
   const renderContent = () => {
     switch(property) {
@@ -189,7 +191,12 @@ export const QmraTool = () => {
                 {key: 1, value: 'kwb', text: 'JSON config'}
               ]}
               onChange={handleExport}
-              text="Export"
+              text="Export Json"
+            />
+            <br />
+            <JsonUpload
+              onChange={handleUploadJson}
+              qmra={qmra}
             />
           </Grid.Column>
           <Grid.Column width={13}>

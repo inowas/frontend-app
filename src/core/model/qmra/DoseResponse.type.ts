@@ -14,3 +14,19 @@ export default interface IDoseResponse {
   reference: string;
   link: string;
 }
+
+export interface IDoseResponsePayload {
+  PathogenID: number;
+  PathogenName: string;
+  PathogenGroup: string;
+  "Best fit model*": string;
+  alpha?: number;
+  k?: number;
+  N50?: number;
+  "Host type": string;
+  "Dose units": string;
+  Route: string;
+  Response: string;
+  Reference: string;
+  Link: string;
+}

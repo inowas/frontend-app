@@ -1,10 +1,10 @@
 import {ISimpleTool} from '../types';
-import {ITreatmentProcess} from './TreatmentProcess.type';
-import IDoseResponse from './DoseResponse.type';
-import IExposure from './Exposure.type';
-import IHealth from './Health.type';
-import IPathogen from './Pathogen.type';
-import ITreatmentScheme from './TreatmentScheme.type';
+import {ITreatmentProcess, ITreatmentProcessPayload} from './TreatmentProcess.type';
+import IDoseResponse, { IDoseResponsePayload } from './DoseResponse.type';
+import IExposure, { IExposurePayload } from './Exposure.type';
+import IHealth, { IHealthPayload } from './Health.type';
+import IPathogen, { IPathogenPayload } from './Pathogen.type';
+import ITreatmentScheme, { ITreatmentSchemePayload } from './TreatmentScheme.type';
 
 interface IQmra extends ISimpleTool<IQmraData> {
   data: IQmraData;
@@ -19,6 +19,17 @@ interface IQmraData {
   };
   doseResponse: IDoseResponse[];
   health: IHealth[];
+}
+
+export interface IQmraRequest {
+    exposure: IExposurePayload[];
+    inflow: IPathogenPayload[];
+    treatment: {
+      processes: ITreatmentProcessPayload[];
+      schemes: ITreatmentSchemePayload[];
+    },
+    doseresponse: IDoseResponsePayload[];
+    health: IHealthPayload[];
 }
 
 export default IQmra;

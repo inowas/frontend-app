@@ -3,7 +3,7 @@ import {includes} from 'lodash';
 import DoseResponse from './DoseResponse';
 import Exposure from './Exposure';
 import Health from './Health';
-import IQmra from './Qmra.type';
+import IQmra, { IQmraRequest } from './Qmra.type';
 import Pathogen from './Pathogen';
 import TreatmentProcess from './TreatmentProcess';
 import TreatmentScheme from './TreatmentScheme';
@@ -14,24 +14,48 @@ class Qmra extends GenericObject<IQmra> {
     return this._props.data.exposure.map((e) => Exposure.fromObject(e));
   }
 
+  set exposure(value: Exposure[]) {
+    this._props.data.exposure = value.map((e) => e.toObject());
+  }
+
   get inflow() {
     return this._props.data.inflow.map((i) => Pathogen.fromObject(i));
+  }
+
+  set inflow(value: Pathogen[]) {
+    this._props.data.inflow = value.map((i) => i.toObject());
   }
 
   get treatmentProcesses() {
     return this._props.data.treatment.processes.map((p) => TreatmentProcess.fromObject(p));
   }
 
+  set treatmentProcesses(value: TreatmentProcess[]) {
+    this._props.data.treatment.processes = value.map((tp) => tp.toObject());
+  }
+
   get treatmentSchemes() {
     return this._props.data.treatment.schemes.map((s) => TreatmentScheme.fromObject(s));
+  }
+
+  set treatmentSchemes(value: TreatmentScheme[]) {
+    this._props.data.treatment.schemes = value.map((ts) => ts.toObject());
   }
 
   get doseResponse() {
     return this._props.data.doseResponse.map((r) => DoseResponse.fromObject(r));
   }
 
+  set doseResponse(value: DoseResponse[]) {
+    this._props.data.doseResponse = value.map((dr) => dr.toObject());
+  }
+
   get health() {
     return this._props.data.health.map((h) => Health.fromObject(h));
+  }
+
+  set health(value: Health[]) {
+    this._props.data.health = value.map((h) => h.toObject());
   }
 
   get id(): string {
@@ -217,6 +241,16 @@ class Qmra extends GenericObject<IQmra> {
 
   public static fromObject(obj: IQmra) {
     return new Qmra(obj);
+  }
+
+  public fromPayload(obj: IQmraRequest) {
+    this.exposure = obj.exposure.map((e) => Exposure.fromPayload(e));
+    this.inflow = obj.inflow.map((p) => Pathogen.fromPayload(p));
+    this.treatmentProcesses = obj.treatment.processes.map((tp) => TreatmentProcess.fromPayload(tp));
+    this.treatmentSchemes = obj.treatment.schemes.map((ts) => TreatmentScheme.fromPayload(ts));
+    this.health = obj.health.map((h) => Health.fromPayload(h));
+    this.doseResponse = obj.doseresponse.map((dr) => DoseResponse.fromPayload(dr));
+    return this;
   }
 
   public toPayload() {

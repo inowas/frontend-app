@@ -1,5 +1,5 @@
 import { GenericObject } from '../genericObject/GenericObject';
-import IPathogen from './Pathogen.type';
+import IPathogen, { IPathogenPayload } from './Pathogen.type';
 
 class Pathogen extends GenericObject<IPathogen> {
   get id() {
@@ -53,6 +53,19 @@ class Pathogen extends GenericObject<IPathogen> {
 
   public static fromObject(obj: IPathogen) {
     return new Pathogen(obj);
+  }
+
+  public static fromPayload(obj: IPathogenPayload) {
+    return new Pathogen({
+      id: obj.PathogenID,
+      name: obj.PathogenName,
+      group: obj.PathogenGroup,
+      type: obj.type,
+      simulate: obj.simulate,
+      min: obj.min,
+      max: obj.max,
+      reference: ''
+    });
   }
 
   public toPayload() {

@@ -14,3 +14,13 @@ export interface ITeatmentProcessElement {
 }
 
 export type ITreatmentProcess = ITreatmentProcessGroup & ITeatmentProcessElement;
+
+export interface ITreatmentProcessPayload {
+  TreatmentID: number;
+  TreatmentName: string;
+  TreatmentGroup: string;
+  PathogenGroup: string;
+  type: string;
+  min: number;
+  max: number;
+}

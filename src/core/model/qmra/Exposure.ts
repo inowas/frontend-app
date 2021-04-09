@@ -1,5 +1,5 @@
 import {GenericObject} from '../genericObject/GenericObject';
-import IExposure from './Exposure.type';
+import IExposure, { IExposurePayload } from './Exposure.type';
 import uuid from 'uuid';
 import { IPropertyValueObject } from '../types';
 
@@ -63,6 +63,18 @@ class Exposure extends GenericObject<IExposure> {
 
   public static fromObject(obj: IExposure) {
     return new Exposure(obj);
+  }
+
+  public static fromPayload(obj: IExposurePayload) {
+    return new Exposure({
+      id: uuid.v4(),
+      value: obj.value || 0,
+      min: obj.min || 0,
+      max: obj.max || 0,
+      mode: obj.mode || 0,
+      mean: obj.mean || 0,
+      ...obj
+    });
   }
 
   public toPayload() {

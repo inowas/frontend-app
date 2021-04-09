@@ -10,3 +10,13 @@ export default interface IExposure extends IPropertyValueObject {
   mode: number;
   mean: number;
 }
+
+export interface IExposurePayload {
+  name: string;
+  type: string;
+  value?: number;
+  min?: number;
+  max?: number;
+  mode?: number;
+  mean?: number;
+}

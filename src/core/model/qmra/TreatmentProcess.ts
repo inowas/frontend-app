@@ -1,5 +1,5 @@
 import {GenericObject} from '../genericObject/GenericObject';
-import {ITreatmentProcess} from './TreatmentProcess.type';
+import {ITreatmentProcess, ITreatmentProcessPayload} from './TreatmentProcess.type';
 import uuid from 'uuid';
 
 class TreatmentProcess extends GenericObject<ITreatmentProcess> {
@@ -67,6 +67,20 @@ class TreatmentProcess extends GenericObject<ITreatmentProcess> {
 
   public static fromObject(obj: ITreatmentProcess) {
     return new TreatmentProcess(obj);
+  }
+
+  public static fromPayload(obj: ITreatmentProcessPayload) {
+    return new TreatmentProcess({
+      id: uuid.v4(),
+      processId: obj.TreatmentID,
+      name: obj.TreatmentName,
+      group: obj.TreatmentGroup,
+      pathogenGroup: obj.PathogenGroup,
+      type: obj.type,
+      min: obj.min,
+      max: obj.max,
+      reference: ''
+    });
   }
 
   public toPayload() {

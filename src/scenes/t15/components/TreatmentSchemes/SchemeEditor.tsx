@@ -44,9 +44,11 @@ const SchemeEditor = ({ qmra, onChange }: IProps) => {
       return;
     }
 
+    // TODO: Schemes are grouped by scheme name (add treatment process to treatment scheme)
+
     const cQmra = Qmra.fromObject(qmra.toObject());
     const newElement = TreatmentScheme.fromProcess(processes[0]);
-    newElement.id = qmra.treatmentSchemes.length > 0 ? 1 + Math.max(...qmra.treatmentSchemes.map((p) => p.id)) : 1;
+    newElement.schemeId = qmra.treatmentSchemes.length > 0 ? 1 + Math.max(...qmra.treatmentSchemes.map((p) => p.schemeId)) : 1;
     cQmra.addElement(newElement);
 
     onChange(cQmra);
@@ -57,7 +59,7 @@ const SchemeEditor = ({ qmra, onChange }: IProps) => {
     const elementToClone = qmra.toObject().data.treatment.schemes.filter((tp) => tp.id === key);
     if (elementToClone.length > 0) {
       const newElement = _.cloneDeep(elementToClone[0]);
-      newElement.id = qmra.treatmentSchemes.length > 0 ? 1 + Math.max(...qmra.treatmentSchemes.map((p) => p.id)) : 1;
+      newElement.schemeId = qmra.treatmentSchemes.length > 0 ? 1 + Math.max(...qmra.treatmentSchemes.map((p) => p.schemeId)) : 1;
       const cQmra = Qmra.fromObject(qmra.toObject()).addElement(TreatmentScheme.fromObject(newElement));
       onChange(cQmra);
     }
