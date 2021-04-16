@@ -4,6 +4,7 @@ import {ToolNavigation} from '../../shared/complexTools';
 import Qmra from '../../../core/model/qmra/Qmra';
 
 interface IProps {
+  hasResults: boolean;
   isFetching: boolean;
   property: string;
   qmra: Qmra;
@@ -83,11 +84,13 @@ const Navigation = (props: IProps) => {
               name: 'Events',
               property: 'events',
               icon: renderIcon('bullhorn', 'events'),
+              disabled: !props.hasResults
             },
             {
               name: 'Total',
               property: 'total',
-              icon: renderIcon('flag', 'total')
+              icon: renderIcon('flag', 'total'),
+              disabled: !props.hasResults
             }
           ]
         }

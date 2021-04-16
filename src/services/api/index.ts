@@ -172,7 +172,7 @@ export const makeQmraRequest = (data: IQmraRequest) => {
     const json = JSON.stringify(data);
     return axios.request({
         method: 'POST',
-        url: 'https://opencpu.inowas.com/ocpu/library/kwb.qmra/R/opencpu_simulate_risk',
+        url: 'https://opencpu.inowas.com/ocpu/library/kwb.qmra/R/opencpu_simulate_risk/json',
         headers: {
             'Content-Type': 'application/json'
         },

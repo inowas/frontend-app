@@ -1,4 +1,6 @@
 import { Button, Icon, Message, Modal } from 'semantic-ui-react';
+import { JSON_SCHEMA_URL } from '../../../services/api';
+import {validate as jsonSchemaValidate} from '../../../services/jsonSchemaValidator';
 import Qmra from '../../../core/model/qmra/Qmra';
 import React, { ChangeEvent, useState } from 'react';
 
@@ -23,7 +25,7 @@ const JsonUpload = ({ onChange, qmra }: IProps) => {
   const handleConfirm = () => {
     let q = Qmra.fromDefaults();
     if ('config' in data) {
-      q = qmra.fromPayload(data.config);
+      q = qmra.fromPayload(data);
     }
     if ('data' in data) {
       q = Qmra.fromObject(data);
@@ -31,6 +33,7 @@ const JsonUpload = ({ onChange, qmra }: IProps) => {
     if ('inflow' in data) {
       q = qmra.fromPayload(data);
     }
+    setShowModal(false);
     onChange(q);
   };
 
@@ -57,6 +60,13 @@ const JsonUpload = ({ onChange, qmra }: IProps) => {
     const d = JSON.parse(text);
 
     // TODO: JSON SCHEME VALIDATION
+
+    jsonSchemaValidate(
+      d,
+      JSON_SCHEMA_URL + '/qmra/qmra.payload.json'
+    ).then((r) => {
+      console.log(r);
+    });
 
     if (checkPassed && e.length === 0) {
       setData(d);

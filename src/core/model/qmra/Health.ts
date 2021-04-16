@@ -63,7 +63,7 @@ class Health extends GenericObject<IHealth> {
       PathogenID: this.pathogenId,
       PathogenName: this.pathogenName,
       infection_to_illness: this.infectionToIllness,
-      days_per_case: this.dalysPerCase,
+      dalys_per_case: this.dalysPerCase,
     };
   }
 }

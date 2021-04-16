@@ -1,8 +1,8 @@
-export default interface IEvent {
-  repeatId: number,
-  eventId: number,
-  logReduction: number,
-  treatmentId: number,
-  pathogenGroup: string,
-  treatmentSchemeId: number
+export interface IEvent {
+  PathogenGroup: string;
+  TreatmentID: number;
+  TreatmentSchemeID: number;
+  eventID: number;
+  logreduction: number;
+  repeatID: number;
 }

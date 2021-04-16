@@ -1,5 +1,5 @@
-import {ISimpleTool} from '../types';
-import {ITreatmentProcess, ITreatmentProcessPayload} from './TreatmentProcess.type';
+import { ISimpleTool } from '../types';
+import { ITreatmentProcess, ITreatmentProcessPayload } from './TreatmentProcess.type';
 import IDoseResponse, { IDoseResponsePayload } from './DoseResponse.type';
 import IExposure, { IExposurePayload } from './Exposure.type';
 import IHealth, { IHealthPayload } from './Health.type';
@@ -22,14 +22,16 @@ interface IQmraData {
 }
 
 export interface IQmraRequest {
+  config: {
     exposure: IExposurePayload[];
     inflow: IPathogenPayload[];
     treatment: {
       processes: ITreatmentProcessPayload[];
       schemes: ITreatmentSchemePayload[];
-    },
+    };
     doseresponse: IDoseResponsePayload[];
     health: IHealthPayload[];
+  };
 }
 
 export default IQmra;

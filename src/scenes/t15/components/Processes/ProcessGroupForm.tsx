@@ -10,7 +10,7 @@ interface IProps {
   process: TreatmentProcess;
 }
 
-const types = ['uniform'];
+const types = ['log10_norm', 'uniform'];
 
 const ProcessGroupForm = ({ onChange, onRemove, readOnly, process }: IProps) => {
   const [activeInput, setActiveInput] = useState<null | string>(null);

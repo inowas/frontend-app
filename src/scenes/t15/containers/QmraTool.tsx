@@ -14,6 +14,7 @@ import DoseResponseEditor from '../components/DoseResponse/DoseResponseEditor';
 import ExposureEditor from '../components/Exposure/ExposureEditor';
 import HealthEditor from '../components/Health/HealthEditor';
 import IQmra from '../../../core/model/qmra/Qmra.type';
+import IResults from '../../../core/model/qmra/result/Results.type';
 import JsonUpload from '../components/JsonUpload';
 import Navigation from './Navigation';
 import PathogenEditor from '../components/Inflow/PathogenEditor';
@@ -40,6 +41,7 @@ export const QmraTool = () => {
   const [errors, setErrors] = useState<IError[]>([]);
   const [isDirty, setDirty] = useState<boolean>(false);
   const [isFetching, setIsFetching] = useState<boolean>(false);
+  const [results, setResults] = useState<IResults>();
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -107,6 +109,8 @@ export const QmraTool = () => {
     document.body.removeChild(element);
   };
 
+  const handleResults = (r: IResults) => setResults(r);
+
   const handleSaveMetaData = (tool: IToolMetaDataEdit) => {
     if (!qmra) {
       return;
@@ -145,7 +149,7 @@ export const QmraTool = () => {
   const renderContent = () => {
     switch(property) {
       case 'calculation':
-        return <Calculation qmra={qmra}/>
+        return <Calculation onChange={handleResults} qmra={qmra}/>
       case 'doseResponse':
         return <DoseResponseEditor onChange={handleSave} qmra={qmra}/>
       case 'health':
@@ -177,7 +181,7 @@ export const QmraTool = () => {
       <Grid padded={true}>
         <Grid.Row>
           <Grid.Column width={3}>
-            <Navigation isFetching={isFetching} property={property} qmra={qmra}/>
+            <Navigation hasResults={!!results} isFetching={isFetching} property={property} qmra={qmra}/>
             <Dropdown
               button
               className="icon positive"

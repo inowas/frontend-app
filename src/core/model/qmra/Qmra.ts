@@ -249,12 +249,12 @@ class Qmra extends GenericObject<IQmra> {
   }
 
   public fromPayload(obj: IQmraRequest) {
-    this.exposure = obj.exposure.map((e) => Exposure.fromPayload(e));
-    this.inflow = obj.inflow.map((p) => Pathogen.fromPayload(p));
-    this.treatmentProcesses = obj.treatment.processes.map((tp) => TreatmentProcess.fromPayload(tp));
-    this.treatmentSchemes = obj.treatment.schemes.map((ts) => TreatmentScheme.fromPayload(ts));
-    this.health = obj.health.map((h) => Health.fromPayload(h));
-    this.doseResponse = obj.doseresponse.map((dr) => DoseResponse.fromPayload(dr));
+    this.exposure = obj.config.exposure.map((e) => Exposure.fromPayload(e));
+    this.inflow = obj.config.inflow.map((p) => Pathogen.fromPayload(p));
+    this.treatmentProcesses = obj.config.treatment.processes.map((tp) => TreatmentProcess.fromPayload(tp));
+    this.treatmentSchemes = obj.config.treatment.schemes.map((ts) => TreatmentScheme.fromPayload(ts));
+    this.health = obj.config.health.map((h) => Health.fromPayload(h));
+    this.doseResponse = obj.config.doseresponse.map((dr) => DoseResponse.fromPayload(dr));
     return this;
   }
 
