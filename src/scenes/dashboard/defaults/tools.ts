@@ -123,6 +123,13 @@ const availableTools: IToolMenuItem[] = [
         role: ROLE_USER,
         instances: []
     }, {
+        slug: 'T15',
+        name: 'Quantitative microbial risk assessment',
+        path: '/tools/',
+        subPath: '',
+        role: ROLE_USER,
+        instances: []
+    }, {
         slug: 'T17',
         name: 'Global MAR portal',
         path: '/tools/',
