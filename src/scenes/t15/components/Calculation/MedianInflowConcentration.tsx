@@ -1,5 +1,5 @@
-import { Table } from "semantic-ui-react";
-import IStatsTotal from "../../../../core/model/qmra/result/StatsTotal.type";
+import { Table } from 'semantic-ui-react';
+import IStatsTotal from '../../../../core/model/qmra/result/StatsTotal.type';
 
 interface IProps {
   data: IStatsTotal[];

@@ -1,7 +1,6 @@
 import {GenericObject} from '../genericObject/GenericObject';
 import IExposure, { IExposurePayload } from './Exposure.type';
 import uuid from 'uuid';
-import { IPropertyValueObject } from '../types';
 
 class Exposure extends GenericObject<IExposure> {
   get id() {
