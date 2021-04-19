@@ -64,8 +64,6 @@ build:smart-control:
       - build/
   only:
     - tags
-  except:
-    - master
 
 deploy:smart-control:
   stage: deploy
@@ -89,8 +87,6 @@ deploy:smart-control:
     url: https://dss.smart-control.inowas.com
   only:
     - tags
-  except:
-    - master
 
 build:training:
   image: node:12
@@ -104,8 +100,6 @@ build:training:
       - build/
   only:
     - tags
-  except:
-    - master
 
 deploy:training:
   stage: deploy
@@ -129,8 +123,6 @@ deploy:training:
     url: https://training.inowas.com
   only:
     - tags
-  except:
-    - master
 
 build:prod:
   image: node:12
@@ -144,8 +136,6 @@ build:prod:
       - build/
   only:
     - tags
-  except:
-    - master
 
 deploy:prod:staging:
   stage: deploy
@@ -169,8 +159,6 @@ deploy:prod:staging:
     url: https://staging.inowas.com
   only:
     - tags
-  except:
-    - master
 
 deploy:prod:production:
   stage: deploy
@@ -195,5 +183,3 @@ deploy:prod:production:
   when: manual
   only:
     - tags
-  except:
-    - master
