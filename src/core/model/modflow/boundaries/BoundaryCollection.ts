@@ -67,7 +67,7 @@ class BoundaryCollection extends Collection<Boundary> {
     return this.all.map((b) => b.toExport(stressPeriods));
   };
 
-  public filter = (callable: (b: any) => boolean) => {
+  public filter = (callable: (b: Boundary) => boolean) => {
     return BoundaryCollection.fromObject(this.all.filter(callable).map((b) => b.toObject()));
   };
 
