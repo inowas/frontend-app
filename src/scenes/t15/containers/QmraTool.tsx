@@ -99,7 +99,7 @@ export const QmraTool = () => {
     if (value === 'kwb') {
       text = JSON.stringify(qmra.toPayload(), null, 2);
     }
-  
+
     const element: HTMLAnchorElement = document.createElement('a');
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
     element.setAttribute('download', filename);
@@ -147,7 +147,7 @@ export const QmraTool = () => {
   const handleUploadJson = (r: Qmra) => handleSave(r);
 
   const renderContent = () => {
-    switch(property) {
+    switch (property) {
       case 'calculation':
         return <Calculation onChange={handleResults} qmra={qmra}/>
       case 'doseResponse':
@@ -197,7 +197,7 @@ export const QmraTool = () => {
               onChange={handleExport}
               text="Export Json"
             />
-            <br />
+            <br/>
             <JsonUpload
               onChange={handleUploadJson}
               qmra={qmra}

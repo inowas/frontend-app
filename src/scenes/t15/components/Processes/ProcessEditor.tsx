@@ -1,12 +1,14 @@
 import { Button, Dropdown, DropdownProps, Grid, Segment } from 'semantic-ui-react';
 import { ITreatmentProcess } from '../../../../core/model/qmra/TreatmentProcess.type';
 import ElementsList from '../ElementsList';
+import InfoBox from '../InfoBox';
 import ProcessForm from './ProcessForm';
 import ProcessGroupForm from './ProcessGroupForm';
 import Qmra from '../../../../core/model/qmra/Qmra';
 import React, { useEffect, useState } from 'react';
 import TreatmentProcess from '../../../../core/model/qmra/TreatmentProcess';
 import _ from 'lodash';
+import descriptions from '../defaults/descriptions';
 import uuid from 'uuid';
 
 interface IProps {
@@ -192,6 +194,7 @@ const ProcessEditor = ({ qmra, onChange }: IProps) => {
           </Grid.Column>
         </Grid.Row>
       </Grid>
+      <InfoBox header="Treatment Train" description={descriptions.processes} />
     </Segment>
   );
 };

@@ -6,10 +6,12 @@ import DoseResponseForm from '../DoseResponse/DoseResponseForm';
 import ElementsList from '../ElementsList';
 import IDoseResponse from '../../../../core/model/qmra/DoseResponse.type';
 import IPathogen from '../../../../core/model/qmra/Pathogen.type';
+import InfoBox from '../InfoBox';
 import Pathogen from '../../../../core/model/qmra/Pathogen';
 import PathogenForm from './PathogenForm';
 import Qmra from '../../../../core/model/qmra/Qmra';
 import _ from 'lodash';
+import descriptions from '../defaults/descriptions';
 
 interface IProps {
   onChange: (qmra: Qmra) => void;
@@ -168,6 +170,7 @@ const PathogenEditor = ({ qmra, onChange }: IProps) => {
           </Grid.Column>
         </Grid.Row>
       </Grid>
+      <InfoBox header="Inflow concentration of pathogens" description={descriptions.inflow} />
       {defaultDoseResponse && (
         <Modal onClose={handleCloseModal} open={true}>
           <Modal.Header>Do you want to import the default dose response for this pathogen?</Modal.Header>

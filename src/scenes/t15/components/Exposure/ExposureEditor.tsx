@@ -1,4 +1,4 @@
-import { Button, Grid, Segment } from 'semantic-ui-react';
+import {Button, Grid, Segment} from 'semantic-ui-react';
 import { IPropertyValueObject } from '../../../../core/model/types';
 import { exposureColumns } from '../defaults/columns';
 import { useEffect, useState } from 'react';
@@ -7,8 +7,10 @@ import ElementsList from '../ElementsList';
 import Exposure from '../../../../core/model/qmra/Exposure';
 import ExposureForm from './ExposureForm';
 import IExposure from '../../../../core/model/qmra/Exposure.type';
+import InfoBox from '../InfoBox';
 import Qmra from '../../../../core/model/qmra/Qmra';
 import _ from 'lodash';
+import descriptions from '../defaults/descriptions';
 import uuid from 'uuid';
 
 interface IProps {
@@ -127,6 +129,7 @@ const ExposureEditor = ({ qmra, onChange }: IProps) => {
           </Grid.Column>
         </Grid.Row>
       </Grid>
+      <InfoBox header="Exposure Scenario" description={descriptions.exposure} />
     </Segment>
   );
 };

@@ -1,8 +1,8 @@
 import { Dropdown, DropdownProps, Grid, Icon, Label, Segment } from 'semantic-ui-react';
-import { SyntheticEvent, useEffect, useState } from 'react';
 import ElementsList from '../ElementsList';
 import ITreatmentScheme from '../../../../core/model/qmra/TreatmentScheme.type';
 import Qmra from '../../../../core/model/qmra/Qmra';
+import React, { SyntheticEvent, useEffect, useState } from 'react';
 import SchemeForm from './SchemeForm';
 import TreatmentScheme from '../../../../core/model/qmra/TreatmentScheme';
 import _ from 'lodash';
@@ -158,7 +158,7 @@ const SchemeEditor = ({ qmra, onChange }: IProps) => {
                 <Label.Group>
                   {addedProcesses.map((tp) => (
                     <Label color="blue" key={tp.id}>
-                      {tp.treatmentName} <Icon name="delete" onClick={handleRemoveProcess(tp.treatmentId)}></Icon>
+                      {tp.treatmentName} <Icon name="delete" onClick={handleRemoveProcess(tp.treatmentId)}/>
                     </Label>
                   ))}
                 </Label.Group>
