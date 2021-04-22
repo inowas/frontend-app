@@ -1,63 +1,71 @@
-import {BoundingBox, Cells, Geometry, GridSize} from '../index';
-import {ISpValues} from './Boundary.type';
+import { BoundingBox, Cells, Geometry, GridSize } from '../index';
+import { ISpValues } from './Boundary.type';
 import Boundary from './Boundary';
 import Stressperiods from '../Stressperiods';
 
 export default abstract class PointBoundary extends Boundary {
 
-    get type() {
-        return this._props.properties.type;
-    }
+  get type() {
+    return this._props.properties.type;
+  }
 
-    get id() {
-        return this._props.id;
-    }
+  get id() {
+    return this._props.id;
+  }
 
-    set id(value) {
-        this._props.id = value;
-    }
+  set id(value) {
+    this._props.id = value;
+  }
 
-    get geometry() {
-        return Geometry.fromObject(this._props.geometry);
-    }
+  get geometry() {
+    return Geometry.fromObject(this._props.geometry);
+  }
 
-    set geometry(value) {
-        this._props.geometry = value.toObject();
-    }
+  set geometry(value) {
+    this._props.geometry = value.toObject();
+  }
 
-    get name() {
-        return this._props.properties.name;
-    }
+  get name() {
+    return this._props.properties.name;
+  }
 
-    set name(value) {
-        this._props.properties.name = value;
-    }
+  set name(value) {
+    this._props.properties.name = value;
+  }
 
-    get layers() {
-        return this._props.properties.layers;
-    }
+  get layers() {
+    return this._props.properties.layers;
+  }
 
-    set layers(value) {
-        this._props.properties.layers = value;
-    }
+  set layers(value) {
+    this._props.properties.layers = value;
+  }
 
-    get cells() {
-        return Cells.fromObject(this._props.properties.cells);
-    }
+  get cells() {
+    return Cells.fromObject(this._props.properties.cells);
+  }
 
-    set cells(value) {
-        this._props.properties.cells = value.toObject();
-    }
+  set cells(value) {
+    this._props.properties.cells = value.toObject();
+  }
 
-    public getSpValues(stressperiods: Stressperiods): ISpValues {
-        return Boundary.mergeStressperiodsWithSpValues(stressperiods, this._props.properties.sp_values);
-    }
+  get isExcludedFromCalculation(): boolean {
+    return this._props.properties.isExcludedFromCalculation ?? false;
+  }
 
-    public recalculateCells(boundingBox: BoundingBox, gridSize: GridSize): void {
-        this.cells = Cells.fromGeometry(this.geometry, boundingBox, gridSize);
-    }
+  set isExcludedFromCalculation(isExcluded) {
+    this._props.properties.isExcludedFromCalculation = isExcluded;
+  }
 
-    public setSpValues(spValues: ISpValues) {
-        this._props.properties.sp_values = spValues;
-    }
+  public getSpValues(stressperiods: Stressperiods): ISpValues {
+    return Boundary.mergeStressperiodsWithSpValues(stressperiods, this._props.properties.sp_values);
+  }
+
+  public recalculateCells(boundingBox: BoundingBox, gridSize: GridSize): void {
+    this.cells = Cells.fromGeometry(this.geometry, boundingBox, gridSize);
+  }
+
+  public setSpValues(spValues: ISpValues) {
+    this._props.properties.sp_values = spValues;
+  }
 }
