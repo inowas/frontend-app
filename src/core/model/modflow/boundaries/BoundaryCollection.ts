@@ -1,7 +1,7 @@
-import { Boundary, BoundaryFactory } from './index';
-import { BoundaryType, IBoundary, IBoundaryExport } from './Boundary.type';
-import { Collection } from '../../collection/Collection';
-import { cloneDeep, isEqual, sortBy } from 'lodash';
+import {Boundary, BoundaryFactory} from './index';
+import {BoundaryType, IBoundary, IBoundaryExport} from './Boundary.type';
+import {Collection} from '../../collection/Collection';
+import {cloneDeep, isEqual, sortBy} from 'lodash';
 import BoundingBox from '../../geometry/BoundingBox';
 import GridSize from '../../geometry/GridSize';
 import Stressperiods from '../Stressperiods';
@@ -59,6 +59,16 @@ class BoundaryCollection extends Collection<Boundary> {
     return this;
   }
 
+  public toggleById(id: string) {
+    this.items = this.items.map((i) => {
+      if (i.id === id) {
+        i.isExcludedFromCalculation = !i.isExcludedFromCalculation;
+      }
+      return i;
+    });
+    return this;
+  }
+
   public toObject = (): IBoundary[] => {
     return this.all.map((b) => b.toObject());
   };
@@ -78,14 +88,14 @@ class BoundaryCollection extends Collection<Boundary> {
     const newBoundaries = nbc;
 
     let items: IBoundaryComparisonItem[] = currentBoundaries.all.map((b) => (
-      { id: b.id, state: null, type: b.type, diff: null, name: b.name })
+      {id: b.id, state: null, type: b.type, diff: null, name: b.name})
     );
 
     // DELETE
     if (removeExistingBoundaries) {
       items = items.map((i) => {
         if (newBoundaries.filter((b) => b.id === i.id).length === 0) {
-          return { ...i, state: 'delete', diff: {} };
+          return {...i, state: 'delete', diff: {}};
         }
         return i;
       });
@@ -95,7 +105,7 @@ class BoundaryCollection extends Collection<Boundary> {
     // UPDATE
     newBoundaries.all.forEach((b) => {
       if (items.filter((i) => i.id === b.id).length === 0) {
-        items.push({ id: b.id, state: 'add', type: b.type, diff: {}, name: b.name });
+        items.push({id: b.id, state: 'add', type: b.type, diff: {}, name: b.name});
         return;
       }
 
@@ -111,7 +121,7 @@ class BoundaryCollection extends Collection<Boundary> {
 
       items = items.map((i) => {
         if (i.id === b.id) {
-          return { ...i, state, diff, name: b.name };
+          return {...i, state, diff, name: b.name};
         }
         return i;
       });
