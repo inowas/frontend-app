@@ -3,12 +3,11 @@ import { TColumns } from '../../../shared/simpleTools/upload/AdvancedCsvUpload';
 
 export const exposureColumns: TColumns = [
   { key: 1, value: 'name', text: 'Name' },
-  { key: 2, value: 'type', text: 'Type' },
-  { key: 3, value: 'value', text: 'Value' },
-  { key: 4, value: 'min', text: 'Min', type: ECsvColumnType.NUMBER },
-  { key: 5, value: 'max', text: 'Max', type: ECsvColumnType.NUMBER },
-  { key: 6, value: 'mode', text: 'Mode', type: ECsvColumnType.NUMBER },
-  { key: 7, value: 'mean', text: 'Mean', type: ECsvColumnType.NUMBER },
+  { key: 2, value: 'description', text: 'Description' },
+  { key: 3, value: 'eventsPerYear', text: 'Events per year', type: ECsvColumnType.NUMBER },
+  { key: 4, value: 'litresPerEvent', text: 'Litres per event', type: ECsvColumnType.NUMBER },
+  { key: 5, value: 'link', text: 'Link'},
+  { key: 6, value: 'reference', text: 'Reference'}
 ];
 
 export const pathogenColumns: TColumns = [

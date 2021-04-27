@@ -1,21 +1,23 @@
 import {GenericObject} from '../genericObject/GenericObject';
+import {IValue} from './ExposureScenario.type';
 import {includes} from 'lodash';
 import DoseResponse from './DoseResponse';
-import Exposure from './Exposure';
+import ExposureScenario from './ExposureScenario';
 import Health from './Health';
-import IQmra, { IQmraRequest } from './Qmra.type';
+import IExposure from './Exposure.type';
+import IQmra, {IQmraRequest} from './Qmra.type';
 import Pathogen from './Pathogen';
 import TreatmentProcess from './TreatmentProcess';
 import TreatmentScheme from './TreatmentScheme';
 import uuid from 'uuid';
 
 class Qmra extends GenericObject<IQmra> {
-  get exposure() {
-    return this._props.data.exposure.map((e) => Exposure.fromObject(e));
+  get exposureScenarios() {
+    return this._props.data.exposureScenarios.map((e) => ExposureScenario.fromObject(e));
   }
 
-  set exposure(value: Exposure[]) {
-    this._props.data.exposure = value.map((e) => e.toObject());
+  set exposureScenarios(value: ExposureScenario[]) {
+    this._props.data.exposureScenarios = value.map((e) => e.toObject());
   }
 
   get inflow() {
@@ -56,6 +58,14 @@ class Qmra extends GenericObject<IQmra> {
 
   set health(value: Health[]) {
     this._props.data.health = value.map((h) => h.toObject());
+  }
+
+  get numberOfRepeatings() {
+    return this._props.data.numberOfRepeatings;
+  }
+
+  set numberOfRepeatings(value: number) {
+    this._props.data.numberOfRepeatings = value;
   }
 
   get id(): string {
@@ -106,22 +116,32 @@ class Qmra extends GenericObject<IQmra> {
     return !includes(this.permissions, 'w');
   }
 
-  public addElement(element: Exposure | Pathogen | TreatmentProcess | TreatmentScheme | DoseResponse | Health) {
-    if (element instanceof Exposure) {this._props.data.exposure.push(element.toObject())}
+  public addElement(element: ExposureScenario | Pathogen | TreatmentProcess | TreatmentScheme | DoseResponse | Health) {
+    if (element instanceof ExposureScenario) {
+      this._props.data.exposureScenarios.push(element.toObject())
+    }
     if (element instanceof Pathogen) {
       this._props.data.inflow.push(element.toObject())
       this._props.data.health.push(Health.fromPathogen(element).toObject());
     }
-    if (element instanceof TreatmentProcess) {this._props.data.treatment.processes.push(element.toObject())}
-    if (element instanceof TreatmentScheme) {this._props.data.treatment.schemes.push(element.toObject())}
-    if (element instanceof DoseResponse) {this._props.data.doseResponse.push(element.toObject())}
-    if (element instanceof Health) {this._props.data.health.push(element.toObject())}
+    if (element instanceof TreatmentProcess) {
+      this._props.data.treatment.processes.push(element.toObject())
+    }
+    if (element instanceof TreatmentScheme) {
+      this._props.data.treatment.schemes.push(element.toObject())
+    }
+    if (element instanceof DoseResponse) {
+      this._props.data.doseResponse.push(element.toObject())
+    }
+    if (element instanceof Health) {
+      this._props.data.health.push(element.toObject())
+    }
     return this;
   }
 
-  public updateElement(element: Exposure | Pathogen | TreatmentProcess | TreatmentScheme | DoseResponse | Health) {
-    if (element instanceof Exposure) {
-      this._props.data.exposure = this._props.data.exposure.map((e) => e.id === element.id ? element.toObject() : e);
+  public updateElement(element: ExposureScenario | Pathogen | TreatmentProcess | TreatmentScheme | DoseResponse | Health) {
+    if (element instanceof ExposureScenario) {
+      this._props.data.exposureScenarios = this._props.data.exposureScenarios.map((e) => e.id === element.id ? element.toObject() : e);
     }
     if (element instanceof Pathogen) {
       this._props.data.inflow = this._props.data.inflow.map((e) => e.id === element.id ? element.toObject() : e);
@@ -165,9 +185,9 @@ class Qmra extends GenericObject<IQmra> {
     return this;
   }
 
-  public removeElement(element: Exposure | Pathogen | TreatmentProcess | TreatmentScheme | DoseResponse | Health) {
-    if (element instanceof Exposure) {
-      this._props.data.exposure = this._props.data.exposure.filter((e) => e.id !== element.id);
+  public removeElement(element: ExposureScenario | Pathogen | TreatmentProcess | TreatmentScheme | DoseResponse | Health) {
+    if (element instanceof ExposureScenario) {
+      this._props.data.exposureScenarios = this._props.data.exposureScenarios.filter((e) => e.id !== element.id);
     }
     if (element instanceof Pathogen) {
       this._props.data.inflow = this._props.data.inflow.filter((e) => e.id !== element.id);
@@ -197,45 +217,15 @@ class Qmra extends GenericObject<IQmra> {
       id: uuid.v4(),
       name: 'New quantitative microbial risk assessment',
       data: {
-        exposure: [
-          {
-            id: uuid.v4(),
-            name: 'number_of_repeatings',
-            type: 'value',
-            value: 10,
-            min: 0,
-            max: 0,
-            mode: 0,
-            mean: 0
-          },
-          {
-            id: uuid.v4(),
-            name: 'number_of_exposures',
-            type: 'value',
-            value: 365,
-            min: 0,
-            max: 0,
-            mode: 0,
-            mean: 0
-          },
-          {
-            id: uuid.v4(),
-            name: 'volume_perEvent',
-            type: 'triangle',
-            value: 0,
-            min: 0.5,
-            max: 3,
-            mode: 1.5,
-            mean: 2
-          }
-        ],
+        exposureScenarios: [],
         inflow: [],
         treatment: {
           processes: [],
           schemes: []
         },
         doseResponse: [],
-        health: []
+        health: [],
+        numberOfRepeatings: 100
       },
       description: '',
       permissions: 'rwx',
@@ -249,7 +239,44 @@ class Qmra extends GenericObject<IQmra> {
   }
 
   public fromPayload(obj: IQmraRequest) {
-    this.exposure = obj.config.exposure.map((e) => Exposure.fromPayload(e));
+    const eventsPerYear = obj.config.exposure.filter((e) => e.name === 'number_of_exposures');
+    const litresPerEvent = obj.config.exposure.filter((e) => e.name === 'volume_perEvent');
+    const numberOfRepeatings = obj.config.exposure.filter((e) => e.name === 'number_of_repeatings')
+
+    let litresPerEventValue: IValue = {type: 'value', min: 0, max: 1, mode: 1, value: 365};
+
+    if (litresPerEvent.length > 0) {
+      if (litresPerEvent[0].mode && litresPerEvent[0].min && litresPerEvent[0].max) {
+        litresPerEventValue =
+          {
+            type: 'triangle',
+            value: 0,
+            min: litresPerEvent[0].min,
+            max: litresPerEvent[0].max,
+            mode: litresPerEvent[0].mode
+          };
+      }
+      if (litresPerEvent[0].value) {
+        litresPerEventValue = {type: 'value', min: 0, max: 1, mode: 1, value: litresPerEvent[0].value};
+      }
+    }
+
+    this.numberOfRepeatings = numberOfRepeatings.length > 0 && numberOfRepeatings[0].value ?
+      numberOfRepeatings[0].value : 100;
+    this.exposureScenarios = [
+      ExposureScenario.fromObject({
+        id: uuid.v4(),
+        isActive: true,
+        name: 'Exposure Scenario',
+        description: '',
+        link: '',
+        reference: '',
+        eventsPerYear: eventsPerYear.length > 0 && eventsPerYear[0].value ?
+          {type: 'value', min: 0, max: 1, mode: 1, value: eventsPerYear[0].value} :
+          {type: 'value', min: 0, max: 1, mode: 1, value: 365},
+        litresPerEvent: litresPerEventValue
+      })
+    ];
     this.inflow = obj.config.inflow.map((p) => Pathogen.fromPayload(p));
     this.treatmentProcesses = obj.config.treatment.processes.map((tp) => TreatmentProcess.fromPayload(tp));
     this.treatmentSchemes = obj.config.treatment.schemes.map((ts) => TreatmentScheme.fromPayload(ts));
@@ -261,7 +288,7 @@ class Qmra extends GenericObject<IQmra> {
   public toPayload() {
     return {
       config: {
-        exposure: this.exposure.map((e) => e.toPayload()),
+        exposure: this.generateExposure(),
         inflow: this.inflow.map((p) => p.toPayload()),
         treatment: {
           processes: this.treatmentProcesses.map((p) => p.toPayload()),
@@ -271,6 +298,24 @@ class Qmra extends GenericObject<IQmra> {
         health: this.health.map((h) => h.toPayload())
       }
     };
+  }
+
+  private generateExposure(): IExposure[] {
+    const activeScenarios = this.exposureScenarios.filter((e) => e.isActive);
+    if (activeScenarios.length > 0) {
+      const activeScenario = activeScenarios[0];
+
+      return [
+        {name: 'volume_perEvent', ...activeScenario.litresPerEvent},
+        {name: 'number_of_exposures', ...activeScenario.eventsPerYear},
+        {name: 'number_of_repeatings', type: 'value', value: this.numberOfRepeatings}
+      ];
+    }
+    return [
+      {name: 'volume_perEvent', type: 'value', value: 100},
+      {name: 'number_of_exposures', type: 'value', value: 365},
+      {name: 'number_of_repeatings', type: 'value', value: this.numberOfRepeatings}
+    ];
   }
 }
 

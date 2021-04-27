@@ -1,36 +1,56 @@
-import {DropdownProps, Form, InputProps} from 'semantic-ui-react';
-import Exposure from '../../../../core/model/qmra/Exposure';
-import IExposure from '../../../../core/model/qmra/Exposure.type';
+import {DropdownProps, Form, InputProps, Segment} from 'semantic-ui-react';
+import ExposureScenario from '../../../../core/model/qmra/ExposureScenario';
+import IExposureScenario from '../../../../core/model/qmra/ExposureScenario.type';
 import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 
 interface IProps {
-  onChange: (e: Exposure) => void;
+  onChange: (e: ExposureScenario) => void;
   readOnly: boolean;
-  selectedExposure: Exposure;
+  selectedExposure: ExposureScenario;
 }
 
 const ExposureForm = ({onChange, readOnly, selectedExposure}: IProps) => {
   const [activeInput, setActiveInput] = useState<null | string>(null);
   const [activeValue, setActiveValue] = useState<string>('');
-  const [element, setElement] = useState<IExposure>(selectedExposure.toObject());
+  const [element, setElement] = useState<IExposureScenario>(selectedExposure.toObject());
 
   useEffect(() => {
     setElement(selectedExposure.toObject());
   }, [selectedExposure]);
 
   const handleBlur = (type?: string) => () => {
-    if (!activeInput) {
+    if (!activeInput || (type === 'number' && activeValue === '')) {
+      setActiveInput(null);
       return null;
     }
 
-    const cItem = {
-      ...element,
-      [activeInput]: type === 'number' ? parseFloat(activeValue) : activeValue
-    };
+    let cItem;
+    if (activeInput === 'min' || activeInput === 'max' || activeInput === 'mode' || activeInput === 'value') {
+      cItem = {
+        ...element,
+        litresPerEvent: {
+          ...element.litresPerEvent,
+          [activeInput]: parseFloat(activeValue)
+        }
+      };
+    } else if (activeInput === 'eventsPerYear') {
+      cItem = {
+        ...element,
+        eventsPerYear: {
+          ...element.eventsPerYear,
+          value: parseFloat(activeValue)
+        }
+      }
+    } else {
+      cItem = {
+        ...element,
+        [activeInput]: type === 'number' ? parseFloat(activeValue) : activeValue
+      };
+    }
 
     setElement(cItem);
     setActiveInput(null);
-    onChange(Exposure.fromObject(cItem));
+    onChange(ExposureScenario.fromObject(cItem));
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>, {name, value}: InputProps) => {
@@ -38,93 +58,109 @@ const ExposureForm = ({onChange, readOnly, selectedExposure}: IProps) => {
     setActiveValue(value);
   };
 
-  const handleSelect = (e: SyntheticEvent, {name, value}: DropdownProps) => {
+  const handleSelect = (e: SyntheticEvent, {value}: DropdownProps) => {
+    if (typeof value !== 'string') {
+      return;
+    }
     const cItem = {
       ...element,
-      [name]: value
+      litresPerEvent: {
+        ...element.litresPerEvent,
+        type: value
+      }
     };
     setElement(cItem);
-    onChange(Exposure.fromObject(cItem));
+    onChange(ExposureScenario.fromObject(cItem));
   };
 
   return (
     <Form>
-      <Form.Group widths='equal'>
-        <Form.Field>
-          <Form.Input
-            label="Name"
-            name="name"
-            onBlur={handleBlur()}
-            onChange={handleChange}
-            readOnly={readOnly}
-            value={activeInput === 'name' ? activeValue : element.name}
-          />
-        </Form.Field>
-        <Form.Field>
-          <Form.Select
-            label="Type"
-            name="type"
-            onChange={handleSelect}
-            options={[
-              {key: 'value', value: 'value', text: 'Value'},
-              {key: 'triangle', value: 'triangle', text: 'Triangle'}
-            ]}
-            readOnly={readOnly}
-            value={element.type}
-          />
-        </Form.Field>
-      </Form.Group>
-      {element.type === 'value' &&
       <Form.Field>
         <Form.Input
-          label="Value"
-          name="value"
+          label="Name"
+          name="name"
+          onBlur={handleBlur()}
+          onChange={handleChange}
+          readOnly={readOnly}
+          value={activeInput === 'name' ? activeValue : element.name}
+        />
+      </Form.Field>
+      <Form.Field>
+        <Form.Input
+          label="Description"
+          name="description"
+          onBlur={handleBlur()}
+          onChange={handleChange}
+          readOnly={readOnly}
+          value={activeInput === 'description' ? activeValue : element.description}
+        />
+      </Form.Field>
+      <Form.Field>
+        <Form.Input
+          label="Events per year"
+          name="eventsPerYear"
           onBlur={handleBlur('number')}
           onChange={handleChange}
           readOnly={readOnly}
           type="number"
-          value={activeInput === 'value' ? activeValue : element.value}
+          value={activeInput === 'eventsPerYear' ? activeValue : element.eventsPerYear.value}
         />
       </Form.Field>
-      }
-      {element.type === 'triangle' &&
-      <React.Fragment>
-        <Form.Group widths='equal'>
+      <Segment>
+        <Form.Group widths="equal">
           <Form.Field>
-            <Form.Input
-              label="Min"
-              name="min"
-              onBlur={handleBlur('number')}
-              onChange={handleChange}
+            <Form.Select
+              label="Litres per Event"
+              name="type"
+              onChange={handleSelect}
+              options={[
+                {key: 'value', value: 'value', text: 'Value'},
+                {key: 'triangle', value: 'triangle', text: 'Triangle'}
+              ]}
               readOnly={readOnly}
-              type="number"
-              value={activeInput === 'min' ? activeValue : element.min}
-            />
-          </Form.Field>
-          <Form.Field>
-            <Form.Input
-              label="Max"
-              name="max"
-              onBlur={handleBlur('number')}
-              onChange={handleChange}
-              readOnly={readOnly}
-              type="number"
-              value={activeInput === 'max' ? activeValue : element.max}
+              value={element.litresPerEvent.type}
             />
           </Form.Field>
         </Form.Group>
-        <Form.Group widths='equal'>
-          <Form.Field>
-            <Form.Input
-              label="Mean"
-              name="mean"
-              onBlur={handleBlur('number')}
-              onChange={handleChange}
-              readOnly={readOnly}
-              type="number"
-              value={activeInput === 'mean' ? activeValue : element.mean}
-            />
-          </Form.Field>
+        {element.litresPerEvent.type === 'value' &&
+        <Form.Field>
+          <Form.Input
+            label="Value"
+            name="value"
+            onBlur={handleBlur('number')}
+            onChange={handleChange}
+            readOnly={readOnly}
+            type="number"
+            value={activeInput === 'value' ? activeValue : element.litresPerEvent.value}
+          />
+        </Form.Field>
+        }
+        {element.litresPerEvent.type === 'triangle' &&
+        <React.Fragment>
+          <Form.Group widths="equal">
+            <Form.Field>
+              <Form.Input
+                label="Min"
+                name="min"
+                onBlur={handleBlur('number')}
+                onChange={handleChange}
+                readOnly={readOnly}
+                type="number"
+                value={activeInput === 'min' ? activeValue : element.litresPerEvent.min}
+              />
+            </Form.Field>
+            <Form.Field>
+              <Form.Input
+                label="Max"
+                name="max"
+                onBlur={handleBlur('number')}
+                onChange={handleChange}
+                readOnly={readOnly}
+                type="number"
+                value={activeInput === 'max' ? activeValue : element.litresPerEvent.max}
+              />
+            </Form.Field>
+          </Form.Group>
           <Form.Field>
             <Form.Input
               label="Mode"
@@ -133,12 +169,34 @@ const ExposureForm = ({onChange, readOnly, selectedExposure}: IProps) => {
               onChange={handleChange}
               readOnly={readOnly}
               type="number"
-              value={activeInput === 'mode' ? activeValue : element.mode}
+              value={activeInput === 'mode' ? activeValue : element.litresPerEvent.mode}
             />
           </Form.Field>
-        </Form.Group>
-      </React.Fragment>
-      }
+        </React.Fragment>
+        }
+      </Segment>
+      <Form.Group widths="equal">
+        <Form.Field>
+          <Form.Input
+            label="Reference"
+            name="reference"
+            onBlur={handleBlur()}
+            onChange={handleChange}
+            readOnly={readOnly}
+            value={activeInput === 'reference' ? activeValue : element.reference}
+          />
+        </Form.Field>
+        <Form.Field>
+          <Form.Input
+            label="Link"
+            name="link"
+            onBlur={handleBlur()}
+            onChange={handleChange}
+            readOnly={readOnly}
+            value={activeInput === 'link' ? activeValue : element.link}
+          />
+        </Form.Field>
+      </Form.Group>
     </Form>
   );
 };
