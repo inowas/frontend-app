@@ -20,7 +20,9 @@ import Navigation from './Navigation';
 import PathogenEditor from '../components/Inflow/PathogenEditor';
 import ProcessEditor from '../components/Processes/ProcessEditor';
 import Qmra from '../../../core/model/qmra/Qmra';
+import React from 'react';
 import SchemeEditor from '../components/TreatmentSchemes/SchemeEditor';
+import Setup from '../components/Setup';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 import uuid from 'uuid';
 
@@ -152,6 +154,8 @@ export const QmraTool = () => {
         return <Calculation onChange={handleResults} qmra={qmra}/>
       case 'doseResponse':
         return <DoseResponseEditor onChange={handleSave} qmra={qmra}/>
+      case 'exposure':
+        return <ExposureEditor onChange={handleSave} qmra={qmra}/>
       case 'health':
         return <HealthEditor onChange={handleSave} qmra={qmra}/>
       case 'inflow':
@@ -161,7 +165,7 @@ export const QmraTool = () => {
       case 'schemes':
         return <SchemeEditor onChange={handleSave} qmra={qmra}/>
       default:
-        return <ExposureEditor onChange={handleSave} qmra={qmra}/>
+        return <Setup onChange={handleSave} qmra={qmra}/>
     }
   };
 

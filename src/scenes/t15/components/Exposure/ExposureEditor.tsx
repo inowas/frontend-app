@@ -108,7 +108,7 @@ const ExposureEditor = ({qmra, onChange}: IProps) => {
     })
     const cQmra = qmra.toObject();
     cQmra.data.exposureScenarios = cScenarios;
-    onChange(qmra);
+    onChange(Qmra.fromObject(cQmra));
   };
 
   const handleUpload = (results: IPropertyValueObject[]) => {
@@ -126,7 +126,7 @@ const ExposureEditor = ({qmra, onChange}: IProps) => {
           <Grid.Column width={4}>
             <Button.Group fluid>
               <Dropdown
-                text="Add Exposure"
+                text="Add Scenario"
                 icon="plus"
                 button
                 floating

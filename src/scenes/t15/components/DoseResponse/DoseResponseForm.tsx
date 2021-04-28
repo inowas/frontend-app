@@ -1,8 +1,7 @@
-import { ChangeEvent, SyntheticEvent, useEffect, useState } from 'react';
-import { DropdownProps, Form, InputProps } from 'semantic-ui-react';
+import {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
+import {DropdownProps, Form, InputProps} from 'semantic-ui-react';
 import DoseResponse from '../../../../core/model/qmra/DoseResponse';
 import IDoseResponse from '../../../../core/model/qmra/DoseResponse.type';
-import ToggleableInput from '../../../shared/complexTools/ToggleableInput';
 
 interface IProps {
   onChange?: (e: DoseResponse) => void;
@@ -12,7 +11,7 @@ interface IProps {
 
 const bestFitModels = ['beta-Poisson', 'exponential'];
 
-const DoseResponseForm = ({ onChange, readOnly, selectedDoseResponse }: IProps) => {
+const DoseResponseForm = ({onChange, readOnly, selectedDoseResponse}: IProps) => {
   const [activeInput, setActiveInput] = useState<null | string>(null);
   const [activeValue, setActiveValue] = useState<string>('');
   const [element, setElement] = useState<IDoseResponse>(selectedDoseResponse.toObject());
@@ -36,32 +35,34 @@ const DoseResponseForm = ({ onChange, readOnly, selectedDoseResponse }: IProps) 
     onChange(DoseResponse.fromObject(cItem));
   };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>, { name, value }: InputProps) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>, {name, value}: InputProps) => {
     setActiveInput(name);
     setActiveValue(value);
   };
 
-  const handleChangeToggleable = (name: string, value: number | string | null) => {
-    if (!onChange) {
-      return null;
-    }
-
-    const cItem = {
-      ...element,
-      [name]: value === null ? undefined : value,
-    };
-    setElement(cItem);
-    onChange(DoseResponse.fromObject(cItem));
-  };
-
-  const handleSelect = (e: SyntheticEvent, { name, value }: DropdownProps) => {
+  const handleSelectBestFitModel = (e: SyntheticEvent, {value}: DropdownProps) => {
     if (!onChange) {
       return;
     }
+
     const cItem = {
-      ...element,
-      [name]: value,
+      ...element
     };
+
+    if (value === 'beta-Poisson') {
+      cItem.bestFitModel = 'beta-Poisson';
+      cItem.k = undefined;
+      cItem.n50 = 0;
+      cItem.alpha = 0;
+    }
+
+    if (value === 'exponential') {
+      cItem.bestFitModel = 'exponential';
+      cItem.k = 0;
+      cItem.n50 = undefined;
+      cItem.alpha = undefined;
+    }
+
     setElement(cItem);
     onChange(DoseResponse.fromObject(cItem));
   };
@@ -70,58 +71,64 @@ const DoseResponseForm = ({ onChange, readOnly, selectedDoseResponse }: IProps) 
     <Form>
       <Form.Group widths="equal">
         <Form.Field>
-          <Form.Input label="Pathogen group" readOnly={true} value={element.pathogenGroup} />
+          <Form.Input label="Pathogen group" readOnly={true} value={element.pathogenGroup}/>
         </Form.Field>
         <Form.Field>
-          <Form.Input label="Pathogen name" readOnly={true} value={element.pathogenName} />
+          <Form.Input label="Pathogen name" readOnly={true} value={element.pathogenName}/>
         </Form.Field>
       </Form.Group>
       <Form.Field>
         <Form.Select
           label="Best-fit model"
           name="bestFitModel"
-          onAddItem={handleSelect}
-          onChange={handleSelect}
-          options={bestFitModels.map((t) => ({ key: t, value: t, text: t }))}
+          onChange={handleSelectBestFitModel}
+          options={bestFitModels.map((t) => ({key: t, value: t, text: t}))}
           readOnly={readOnly}
           value={element.bestFitModel}
         />
       </Form.Field>
+      {element.bestFitModel === 'beta-Poisson' &&
       <Form.Group widths="equal">
         <Form.Field>
-          <label>k</label>
-          <ToggleableInput
-            name="k"
-            onChange={handleChangeToggleable}
-            placeholder="k"
-            readOnly={readOnly}
-            type="number"
-            value={element.k === undefined ? null : element.k}
-          />
-        </Form.Field>
-        <Form.Field>
           <label>alpha</label>
-          <ToggleableInput
+          <Form.Input
             name="alpha"
-            onChange={handleChangeToggleable}
+            onBlur={handleBlur('number')}
+            onChange={handleChange}
             placeholder="alpha"
             readOnly={readOnly}
             type="number"
-            value={element.alpha === undefined ? null : element.alpha}
+            value={activeInput === 'alpha' ? activeValue : element.alpha}
           />
         </Form.Field>
         <Form.Field>
           <label>N50</label>
-          <ToggleableInput
+          <Form.Input
             name="n50"
-            onChange={handleChangeToggleable}
-            placeholder="n50"
+            onBlur={handleBlur('number')}
+            onChange={handleChange}
+            placeholder="N50"
             readOnly={readOnly}
             type="number"
-            value={element.n50 === undefined ? null : element.n50}
+            value={activeInput === 'n50' ? activeValue : element.n50}
           />
         </Form.Field>
       </Form.Group>
+      }
+      {element.bestFitModel === 'exponential' &&
+      <Form.Field>
+        <label>k</label>
+        <Form.Input
+          name="k"
+          onBlur={handleBlur('number')}
+          onChange={handleChange}
+          placeholder="k"
+          readOnly={readOnly}
+          type="number"
+          value={activeInput === 'k' ? activeValue : element.k}
+        />
+      </Form.Field>
+      }
       <Form.Field>
         <Form.Input
           label="Reference"

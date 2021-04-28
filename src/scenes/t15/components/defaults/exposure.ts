@@ -20,9 +20,9 @@ const scenarios: IExposureScenario[] = [
     link: ''
   },
   {
-    description: 'Frequencies moderate as most people use municipal areas sparingly (estimate 1/2 - 3 weeks). People are' +
-      'unlikely to be directly exposed to large amounts of spray and therefore exposure is from indirect ingestion via' +
-      'contact with lawns, etc. Likely to be higher when used to irrigate facilities such as sports grounds or golf' +
+    description: 'Frequencies moderate as most people use municipal areas sparingly (estimate 1/2 - 3 weeks). People are ' +
+      'unlikely to be directly exposed to large amounts of spray and therefore exposure is from indirect ingestion via ' +
+      'contact with lawns, etc. Likely to be higher when used to irrigate facilities such as sports grounds or golf ' +
       'courses (estimate 1/week) grounds and golf courses (estimate 1/week)',
     eventsPerYear: {type: 'value', value: 50, min: 0, max: 1, mode: 1},
     litresPerEvent: {type: 'value', value: 0.001, min: 0, max: 1, mode: 1},
@@ -31,8 +31,8 @@ const scenarios: IExposureScenario[] = [
     link: 'https://www.susana.org/en/knowledge-hub/resources-and-publications/library/details/1533'
   },
   {
-    description: 'Garden watering estimated to typically occur every second day during dry months (half year). Routine' +
-      'exposure results from indirect ingestion via contact with plants, lawns, etc.',
+    description: 'Garden watering estimated to typically occur every second day during dry months (half year). Routine ' +
+      ' exposure results from indirect ingestion via contact with plants, lawns, etc.',
     eventsPerYear: {type: 'value', value: 90, min: 0, max: 1, mode: 1},
     litresPerEvent: {type: 'value', value: 0.001, min: 0, max: 1, mode: 1},
     name: 'Irrigation, garden',
@@ -49,7 +49,7 @@ const scenarios: IExposureScenario[] = [
     link: ''
   },
   {
-    description: 'Frequency based on three uses of home toilet per day. Aerosol volumes are less than those produced by' +
+    description: 'Frequency based on three uses of home toilet per day. Aerosol volumes are less than those produced by ' +
       'garden irrigation.',
     eventsPerYear: {type: 'value', value: 1100, min: 0, max: 1, mode: 1},
     litresPerEvent: {type: 'value', value: 1e-05, min: 0, max: 1, mode: 1},
@@ -58,8 +58,8 @@ const scenarios: IExposureScenario[] = [
     link: 'https://www.susana.org/en/knowledge-hub/resources-and-publications/library/details/1533'
   },
   {
-    description: 'Assumes one member of household exposed. Calculated frequency based on Australian Bureau of Statistics' +
-      '(ABS) data. Aerosol volumes are less than those produced by garden irrigation (machines usually closed during' +
+    description: 'Assumes one member of household exposed. Calculated frequency based on Australian Bureau of Statistics ' +
+      '(ABS) data. Aerosol volumes are less than those produced by garden irrigation (machines usually closed during ' +
       'operation).',
     eventsPerYear: {type: 'value', value: 100, min: 0, max: 1, mode: 1},
     litresPerEvent: {type: 'value', value: 1e-05, min: 0, max: 1, mode: 1},

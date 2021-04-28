@@ -38,6 +38,16 @@ const ElementsList = ({ items, onClick, onClone, onRemove, onToggle, readOnly, s
     return () => onToggle(key);
   };
 
+  const renderName = (name: string, isActive?: boolean) => {
+    if (type === 'radio') {
+      return isActive ? <u>{name}</u> : name;
+    }
+    if (type === 'checkbox') {
+      return isActive ? name : <s>{name}</s>;
+    }
+    return name;
+  };
+
   return (
     <div>
       <Menu fluid={true} vertical={true} secondary={true}>
@@ -72,11 +82,13 @@ const ElementsList = ({ items, onClick, onClone, onRemove, onToggle, readOnly, s
                   position={'right center'}
                 />
               )}
-            {type === 'radio' && i.isActive ? <u>{i.name}</u> : i.name}
-            {!readOnly && type === 'radio' &&
+            {renderName(i.name, i.isActive)}
+            {!readOnly && (type === 'radio' || type === 'checkbox') &&
             <Popup
               trigger={
-                <Icon name={i.isActive ? 'dot circle outline' : 'circle outline'} onClick={handleToggle(i.id)}/>
+                type === 'radio' ?
+                <Icon name={i.isActive ? 'dot circle outline' : 'circle outline'} onClick={handleToggle(i.id)}/> :
+                  <Icon name={i.isActive ? 'toggle on' : 'toggle off'} onClick={handleToggle(i.id)}/>
               }
               content="Toggle"
               position="top center"

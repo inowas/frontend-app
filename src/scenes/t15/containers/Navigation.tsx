@@ -26,9 +26,14 @@ const Navigation = (props: IProps) => {
           header: 'Input',
           items: [
             {
-              name: 'Exposure',
+              name: 'Setup',
               property: 'setup',
-              icon: renderIcon('bolt', 'setup')
+              icon: renderIcon('wrench', 'setup')
+            },
+            {
+              name: 'Exposure',
+              property: 'exposure',
+              icon: renderIcon('bolt', 'exposure')
             },
             {
               name: 'Inflow',

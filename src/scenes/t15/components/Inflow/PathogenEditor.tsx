@@ -105,6 +105,19 @@ const PathogenEditor = ({ qmra, onChange }: IProps) => {
     }
   };
 
+  const handleToggleElement = (key: string | number) => {
+    const cPathogens = qmra.inflow.map((p) => {
+      if (p.id === key) {
+        p.simulate = p.simulate === 1 ? 0 : 1;
+      }
+      return p.toObject();
+    })
+
+    const cQmra = qmra.toObject();
+    cQmra.data.inflow = cPathogens;
+    onChange(Qmra.fromObject(cQmra));
+  };
+
   const handleDispatch = (p: Pathogen, dr: DoseResponse) => {
     setSelectedElement(p.toObject());
     onChange(qmra.updateElement(p).updateElement(dr));
@@ -148,12 +161,14 @@ const PathogenEditor = ({ qmra, onChange }: IProps) => {
         <Grid.Row>
           <Grid.Column width={4}>
             <ElementsList
-              items={qmra.inflow.map((e) => ({ id: e.id, name: e.name }))}
+              items={qmra.inflow.map((e) => ({ id: e.id, name: e.name, isActive: e.simulate === 1 }))}
               onClick={handleSelectElement}
               onClone={handleCloneElement}
               onRemove={handleRemoveElement}
+              onToggle={handleToggleElement}
               readOnly={qmra.readOnly}
               selected={selectedElement ? selectedElement.id : undefined}
+              type="checkbox"
             />
           </Grid.Column>
           <Grid.Column width={12}>
