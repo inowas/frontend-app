@@ -1,5 +1,8 @@
 import { Button, Segment, Tab} from 'semantic-ui-react';
+import {IRootReducer} from '../../../../reducers';
 import { makeQmraRequest } from '../../../../services/api';
+import {updateResults} from '../../actions/actions';
+import {useDispatch, useSelector} from 'react-redux';
 import IResults from '../../../../core/model/qmra/result/Results.type';
 import MeanLogReductionOfTreatmentSteps from './MeanLogReductionOfTreatmentSteps';
 import MedianInflowConcentration from './MedianInflowConcentration';
@@ -13,7 +16,11 @@ interface IProps {
 
 const Calculation = ({ onChange, qmra }: IProps) => {
   const [isCalcilating, setIsCalculating] = useState<boolean>(false);
-  const [results, setResults] = useState<IResults>();
+
+  const dispatch = useDispatch();
+
+  const T15 = useSelector((state: IRootReducer) => state.T15);
+  const results = T15.results;
 
   const handleClickCalculate = () => {
     const config = qmra.toPayload();
@@ -21,8 +28,7 @@ const Calculation = ({ onChange, qmra }: IProps) => {
     setIsCalculating(true);
     makeQmraRequest(config).then((response: IResults) => {
       setIsCalculating(false);
-      setResults(response);
-      console.log({response});
+      dispatch(updateResults(response));
     });
   };
 
