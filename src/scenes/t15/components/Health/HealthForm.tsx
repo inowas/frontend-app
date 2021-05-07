@@ -5,7 +5,7 @@ import IHealth from '../../../../core/model/qmra/Health.type';
 import ToggleableInput from '../../../shared/complexTools/ToggleableInput';
 
 interface IProps {
-  onChange: (e: Health) => void;
+  onChange?: (e: Health) => void;
   readOnly: boolean;
   selectedHealth: Health;
 }
@@ -20,7 +20,7 @@ const HealthForm = ({ onChange, readOnly, selectedHealth }: IProps) => {
   }, [selectedHealth]);
 
   const handleBlur = (type?: string) => () => {
-    if (!activeInput) {
+    if (!activeInput || !onChange) {
       return null;
     }
 

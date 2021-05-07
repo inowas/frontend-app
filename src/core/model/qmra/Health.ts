@@ -1,6 +1,7 @@
 import { GenericObject } from '../genericObject/GenericObject';
 import IHealth, { IHealthPayload } from './Health.type';
 import Pathogen from './Pathogen';
+import healthDefaults from '../../../scenes/t15/components/defaults/health';
 import uuid from 'uuid';
 
 class Health extends GenericObject<IHealth> {
@@ -33,6 +34,20 @@ class Health extends GenericObject<IHealth> {
   }
 
   public static fromPathogen(pathogen: Pathogen) {
+    const defaultHealth = healthDefaults.filter((h) => h.pathogenName === pathogen.name);
+
+    if (defaultHealth.length > 0) {
+      return new Health({
+        id: uuid.v4(),
+        pathogenId: pathogen.id,
+        pathogenName: pathogen.name,
+        dalysPerCase: defaultHealth[0].dalysPerCase,
+        infectionToIllness: defaultHealth[0].infectionToIllness,
+        reference1: defaultHealth[0].reference1,
+        reference2: defaultHealth[0].reference2
+      });
+    }
+
     return new Health({
       id: uuid.v4(),
       pathogenId: pathogen.id,

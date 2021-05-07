@@ -1,5 +1,6 @@
 import { GenericObject } from '../genericObject/GenericObject';
 import IDoseResponse, { IDoseResponsePayload } from './DoseResponse.type';
+import Pathogen from './Pathogen';
 import uuid from 'uuid';
 
 class DoseResponse extends GenericObject<IDoseResponse> {
@@ -65,6 +66,22 @@ class DoseResponse extends GenericObject<IDoseResponse> {
 
   get link() {
     return this._props.link;
+  }
+
+  public static fromPathogen(pathogen: Pathogen) {
+    return new DoseResponse({
+      id: uuid.v4(),
+      pathogenId: pathogen.id,
+      pathogenName: pathogen.name,
+      pathogenGroup: pathogen.group,
+      bestFitModel: '',
+      hostType: '',
+      doseUnits: '',
+      route: '',
+      response: '',
+      reference: '',
+      link: '',
+    });
   }
 
   public static fromDefaults(pathogenId: number) {
