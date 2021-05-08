@@ -16,7 +16,7 @@
     "json-schema-ref-parser": "^6.1.0",
     "leaflet": "^1.7.1",
     "leaflet-draw": "^1.0.4",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "mathjs": "^5.10.3",
     "md5": "^2.3.0",
     "moment": "^2.29.1",
