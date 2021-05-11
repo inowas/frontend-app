@@ -22,7 +22,7 @@ interface IProps {
   qmra: Qmra;
 }
 
-const defaultGroups = ['Bacteria', 'Protozoa', 'Virus'];
+const defaultGroups = ['Bacteria', 'Protozoa', 'Viruses'];
 
 const PathogenEditor = ({qmra, onChange}: IProps) => {
   const [defaultDoseResponse, setDefaultDoseResponse] = useState<IDoseResponse>();

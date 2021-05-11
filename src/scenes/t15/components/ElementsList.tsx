@@ -49,7 +49,7 @@ const ElementsList = ({ items, onClick, onClone, onRemove, onToggle, readOnly, s
   };
 
   return (
-    <div>
+    <div style={{maxHeight: '600px', overflow: 'auto'}}>
       <Menu fluid={true} vertical={true} secondary={true}>
         {items.map((i, key) => (
           <Menu.Item name={i.name} key={key} active={i.id === selected} onClick={handleClick(i.id)}>

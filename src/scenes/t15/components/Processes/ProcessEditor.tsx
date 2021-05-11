@@ -1,5 +1,6 @@
 import {Button, Dropdown, DropdownProps, Grid, Segment} from 'semantic-ui-react';
 import {ITreatmentProcess} from '../../../../core/model/qmra/TreatmentProcess.type';
+import {treatmentRemovals} from '../defaults/treatmentRemovals';
 import ElementsList from '../ElementsList';
 import InfoBox from '../InfoBox';
 import ProcessForm from './ProcessForm';
@@ -88,6 +89,13 @@ const ProcessEditor = ({qmra, onChange}: IProps) => {
       if (name && group) {
         newElement.name = name;
         newElement.group = group;
+        const defaults = treatmentRemovals.filter((tr) =>
+          tr.TreatmentName === name && tr.TreatmentGroup === group && tr.PathogenGroup === g);
+        if (defaults.length > 0) {
+          newElement.min = defaults[0].Min;
+          newElement.max = defaults[0].Max;
+          newElement.reference = defaults[0].ReferenceName;
+        }
       }
       newElements.push(newElement);
       cQmra.addElement(newElement);

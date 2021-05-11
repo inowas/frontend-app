@@ -1,7 +1,7 @@
+import {ChangeEvent, useState} from 'react';
 import {Form, Grid, InputProps, Segment} from 'semantic-ui-react';
 import InfoBox from './InfoBox';
 import Qmra from '../../../core/model/qmra/Qmra';
-import React, {ChangeEvent, useState} from 'react';
 import descriptions from './defaults/descriptions';
 
 interface IProps {

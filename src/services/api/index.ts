@@ -168,7 +168,8 @@ export const makeHeatTransportRequest = (data: IHeatTransportRequest) => {
     }).then((r) => r.data);
 };
 
-export const makeQmraRequest = (data: IQmraRequest) => {
+export const makeQmraRequest = (data: IQmraRequest, onSuccess: (r: any) => any,
+                                onError: (e: AxiosError) => any) => {
     const json = JSON.stringify(data);
     return axios.request({
         method: 'POST',
@@ -177,7 +178,7 @@ export const makeQmraRequest = (data: IQmraRequest) => {
             'Content-Type': 'application/json'
         },
         data: json
-    }).then((r) => r.data);
+    }).then(onSuccess).catch(onError);
 };
 
 export const fetchCalculationObservations = (calculationId: string) => (

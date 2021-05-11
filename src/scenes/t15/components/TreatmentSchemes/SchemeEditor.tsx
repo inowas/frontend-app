@@ -1,8 +1,8 @@
-import { Dropdown, DropdownProps, Grid, Icon, Label, Segment } from 'semantic-ui-react';
+import {Dropdown, DropdownProps, Grid, Icon, Label, Segment} from 'semantic-ui-react';
 import ElementsList from '../ElementsList';
 import ITreatmentScheme from '../../../../core/model/qmra/TreatmentScheme.type';
 import Qmra from '../../../../core/model/qmra/Qmra';
-import React, { SyntheticEvent, useEffect, useState } from 'react';
+import React, {SyntheticEvent, useEffect, useState} from 'react';
 import SchemeForm from './SchemeForm';
 import TreatmentScheme from '../../../../core/model/qmra/TreatmentScheme';
 import _ from 'lodash';
@@ -12,11 +12,11 @@ interface IProps {
   qmra: Qmra;
 }
 
-const SchemeEditor = ({ qmra, onChange }: IProps) => {
+const SchemeEditor = ({qmra, onChange}: IProps) => {
   const [selectedElement, setSelectedElement] = useState<ITreatmentScheme>();
 
   const filteredSchemes = _.uniqBy(
-    qmra.treatmentSchemes.map((ts) => ({ id: ts.schemeId, name: ts.name })),
+    qmra.treatmentSchemes.map((ts) => ({id: ts.schemeId, name: ts.name})),
     'id'
   );
   const addedProcesses = selectedElement
@@ -58,7 +58,7 @@ const SchemeEditor = ({ qmra, onChange }: IProps) => {
     }
   };
 
-  const handleAddElement = (e: SyntheticEvent<HTMLElement>, { value }: DropdownProps) => {
+  const handleAddElement = (e: SyntheticEvent<HTMLElement>, {value}: DropdownProps) => {
     const processes = qmra.treatmentProcesses.filter((p) => p.id === value);
     if (processes.length < 1) {
       return;
@@ -74,7 +74,7 @@ const SchemeEditor = ({ qmra, onChange }: IProps) => {
     setSelectedElement(newElement.toObject());
   };
 
-  const handleAddProcess = (e: SyntheticEvent<HTMLElement>, { value }: DropdownProps) => {
+  const handleAddProcess = (e: SyntheticEvent<HTMLElement>, {value}: DropdownProps) => {
     const processes = qmra.treatmentProcesses.filter((p) => p.id === value);
     if (processes.length < 1 || !selectedElement) {
       return;
@@ -90,11 +90,9 @@ const SchemeEditor = ({ qmra, onChange }: IProps) => {
   };
 
   const handleRemoveElement = (key: string | number) => {
-    const elementToRemove = qmra.toObject().data.treatment.schemes.filter((e) => e.schemeId === key);
-    if (elementToRemove.length > 0) {
-      const cQmra = qmra.removeElement(TreatmentScheme.fromObject(elementToRemove[0]));
-      onChange(cQmra);
-    }
+    const cQmra = qmra.toObject();
+    cQmra.data.treatment.schemes = cQmra.data.treatment.schemes.filter((e) => e.schemeId !== key);
+    onChange(Qmra.fromObject(cQmra));
   };
 
   const handleRemoveProcess = (id: number) => () => {
@@ -104,7 +102,6 @@ const SchemeEditor = ({ qmra, onChange }: IProps) => {
     const elementToRemove = qmra
       .toObject()
       .data.treatment.schemes.filter((e) => e.treatmentId === id && e.schemeId === selectedElement.schemeId);
-    console.log(elementToRemove);
     if (elementToRemove.length > 0) {
       const cQmra = qmra.removeElement(TreatmentScheme.fromObject(elementToRemove[0]));
       onChange(cQmra);
@@ -133,7 +130,7 @@ const SchemeEditor = ({ qmra, onChange }: IProps) => {
               text="Add Scheme"
             />
           </Grid.Column>
-          <Grid.Column width={12} />
+          <Grid.Column width={12}/>
         </Grid.Row>
         <Grid.Row>
           <Grid.Column width={4}>
@@ -172,7 +169,7 @@ const SchemeEditor = ({ qmra, onChange }: IProps) => {
               fluid
               labeled
               icon="add"
-              options={remainingProcesses.map((p) => ({ key: p.id, text: p.name, value: p.id }))}
+              options={remainingProcesses.map((p) => ({key: p.id, text: p.name, value: p.id}))}
               onChange={handleAddProcess}
               text="Add treatment process"
             />

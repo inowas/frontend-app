@@ -86,8 +86,8 @@ const Navigation = (props: IProps) => {
           header: 'Results',
           items: [
             {
-              name: 'Events',
-              property: 'events',
+              name: 'Stats_Total',
+              property: 'stats_total',
               icon: renderIcon('bullhorn', 'events'),
               disabled: !props.hasResults
             },

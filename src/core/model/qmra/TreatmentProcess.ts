@@ -43,12 +43,24 @@ class TreatmentProcess extends GenericObject<ITreatmentProcess> {
     return this._props.min;
   }
 
+  set min(value) {
+    this._props.min = value;
+  }
+
   get max() {
     return this._props.max;
   }
 
+  set max(value) {
+    this._props.max = value;
+  }
+
   get reference() {
     return this._props.reference;
+  }
+
+  set reference(value) {
+    this._props.reference = value;
   }
 
   public static fromPathogenGroup(pathogenGroup: string) {
