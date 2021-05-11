@@ -14,14 +14,16 @@ import DoseResponseEditor from '../components/DoseResponse/DoseResponseEditor';
 import ExposureEditor from '../components/Exposure/ExposureEditor';
 import HealthEditor from '../components/Health/HealthEditor';
 import IQmra from '../../../core/model/qmra/Qmra.type';
-import IResults from '../../../core/model/qmra/result/Results.type';
 import JsonUpload from '../components/JsonUpload';
 import Navigation from './Navigation';
 import PathogenEditor from '../components/Inflow/PathogenEditor';
 import ProcessEditor from '../components/Processes/ProcessEditor';
 import Qmra from '../../../core/model/qmra/Qmra';
+import React from 'react';
 import SchemeEditor from '../components/TreatmentSchemes/SchemeEditor';
+import Setup from '../components/Setup';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
+import StatsTotal from '../components/Results/StatsTotal';
 import uuid from 'uuid';
 
 const navigation = [{
@@ -41,7 +43,6 @@ export const QmraTool = () => {
   const [errors, setErrors] = useState<IError[]>([]);
   const [isDirty, setDirty] = useState<boolean>(false);
   const [isFetching, setIsFetching] = useState<boolean>(false);
-  const [results, setResults] = useState<IResults>();
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -49,6 +50,7 @@ export const QmraTool = () => {
 
   const T15 = useSelector((state: IRootReducer) => state.T15);
   const qmra = T15.qmra ? Qmra.fromObject(T15.qmra) : null;
+  const results = T15.results;
 
   useEffect(() => {
     return function () {
@@ -99,7 +101,10 @@ export const QmraTool = () => {
     if (value === 'kwb') {
       text = JSON.stringify(qmra.toPayload(), null, 2);
     }
-  
+    if (value === 'results' && results) {
+      text = JSON.stringify(results, null, 2);
+    }
+
     const element: HTMLAnchorElement = document.createElement('a');
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
     element.setAttribute('download', filename);
@@ -108,8 +113,6 @@ export const QmraTool = () => {
     element.click();
     document.body.removeChild(element);
   };
-
-  const handleResults = (r: IResults) => setResults(r);
 
   const handleSaveMetaData = (tool: IToolMetaDataEdit) => {
     if (!qmra) {
@@ -147,11 +150,13 @@ export const QmraTool = () => {
   const handleUploadJson = (r: Qmra) => handleSave(r);
 
   const renderContent = () => {
-    switch(property) {
+    switch (property) {
       case 'calculation':
-        return <Calculation onChange={handleResults} qmra={qmra}/>
+        return <Calculation qmra={qmra}/>
       case 'doseResponse':
         return <DoseResponseEditor onChange={handleSave} qmra={qmra}/>
+      case 'exposure':
+        return <ExposureEditor onChange={handleSave} qmra={qmra}/>
       case 'health':
         return <HealthEditor onChange={handleSave} qmra={qmra}/>
       case 'inflow':
@@ -160,8 +165,10 @@ export const QmraTool = () => {
         return <ProcessEditor onChange={handleSave} qmra={qmra}/>
       case 'schemes':
         return <SchemeEditor onChange={handleSave} qmra={qmra}/>
+      case 'stats_total':
+        return <StatsTotal />
       default:
-        return <ExposureEditor onChange={handleSave} qmra={qmra}/>
+        return <Setup onChange={handleSave} qmra={qmra}/>
     }
   };
 
@@ -191,13 +198,14 @@ export const QmraTool = () => {
               labeled
               icon="download"
               options={[
-                {key: 0, value: 'inowas', text: 'JSON complete'},
-                {key: 1, value: 'kwb', text: 'JSON config'}
+                {key: 0, value: 'inowas', text: 'Config (Inowas)'},
+                {key: 1, value: 'kwb', text: 'Config (KWB)'},
+                {key: 2, value: 'results', text: 'Results', disabled: !results}
               ]}
               onChange={handleExport}
               text="Export Json"
             />
-            <br />
+            <br/>
             <JsonUpload
               onChange={handleUploadJson}
               qmra={qmra}

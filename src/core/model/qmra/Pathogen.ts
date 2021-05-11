@@ -22,6 +22,10 @@ class Pathogen extends GenericObject<IPathogen> {
     return this._props.simulate;
   }
 
+  set simulate(value) {
+    this._props.simulate = value;
+  }
+
   get type() {
     return this._props.type;
   }

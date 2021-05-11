@@ -4,7 +4,9 @@ import DoseResponse from '../../../../core/model/qmra/DoseResponse';
 import DoseResponseForm from './DoseResponseForm';
 import ElementsList from '../ElementsList';
 import IDoseResponse from '../../../../core/model/qmra/DoseResponse.type';
+import InfoBox from '../InfoBox';
 import Qmra from '../../../../core/model/qmra/Qmra';
+import descriptions from '../defaults/descriptions';
 
 interface IProps {
   onChange: (qmra: Qmra) => void;
@@ -74,6 +76,7 @@ const DoseResponseEditor = ({ qmra, onChange }: IProps) => {
           </Grid.Column>
         </Grid.Row>
       </Grid>
+      <InfoBox header="Dose-Response" description={descriptions.dose_response} />
     </Segment>
   );
 };

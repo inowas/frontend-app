@@ -1,5 +1,5 @@
 import {GenericObject} from '../genericObject/GenericObject';
-import IExposure, { IExposurePayload } from './Exposure.type';
+import IExposure  from './Exposure.type';
 import uuid from 'uuid';
 
 class Exposure extends GenericObject<IExposure> {
@@ -31,10 +31,6 @@ class Exposure extends GenericObject<IExposure> {
     return this._props.mode;
   }
 
-  get mean() {
-    return this._props.mean;
-  }
-
   public static fromCsv(obj2: {[key: string]: number | string}) {
     const obj1 = this.fromDefaults().toObject();
 
@@ -55,25 +51,12 @@ class Exposure extends GenericObject<IExposure> {
       value: 0,
       min: 0,
       max: 0,
-      mode: 0,
-      mean: 0
+      mode: 0
     });
   }
 
   public static fromObject(obj: IExposure) {
     return new Exposure(obj);
-  }
-
-  public static fromPayload(obj: IExposurePayload) {
-    return new Exposure({
-      id: uuid.v4(),
-      value: obj.value || 0,
-      min: obj.min || 0,
-      max: obj.max || 0,
-      mode: obj.mode || 0,
-      mean: obj.mean || 0,
-      ...obj
-    });
   }
 
   public toPayload() {
@@ -83,8 +66,7 @@ class Exposure extends GenericObject<IExposure> {
         type: this.type,
         min: this.min,
         max: this.max,
-        mode: this.mode,
-        mean: this.mean
+        mode: this.mode
       };
     }
     return {

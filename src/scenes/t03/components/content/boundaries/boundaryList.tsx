@@ -96,6 +96,7 @@ const BoundaryList = (props: IProps) => {
             />
             }
             {b.isExcludedFromCalculation ? <s>{b.name}</s> : b.name}
+            {!props.readOnly &&
             <Popup
               trigger={
                 <Icon name={b.isExcludedFromCalculation ? 'toggle off' : 'toggle on'} onClick={handleToggle(b.id)}/>
@@ -104,6 +105,7 @@ const BoundaryList = (props: IProps) => {
               position="top center"
               size="mini"
             />
+            }
           </Menu.Item>
         ))}
       </Menu>

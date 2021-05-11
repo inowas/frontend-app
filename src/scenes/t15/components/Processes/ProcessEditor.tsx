@@ -1,12 +1,16 @@
-import { Button, Dropdown, DropdownProps, Grid, Segment } from 'semantic-ui-react';
-import { ITreatmentProcess } from '../../../../core/model/qmra/TreatmentProcess.type';
+import {Button, Dropdown, DropdownProps, Grid, Segment} from 'semantic-ui-react';
+import {ITreatmentProcess} from '../../../../core/model/qmra/TreatmentProcess.type';
+import {treatmentRemovals} from '../defaults/treatmentRemovals';
 import ElementsList from '../ElementsList';
+import InfoBox from '../InfoBox';
 import ProcessForm from './ProcessForm';
 import ProcessGroupForm from './ProcessGroupForm';
+import ProcessSelection from './ProcessSelection';
 import Qmra from '../../../../core/model/qmra/Qmra';
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import TreatmentProcess from '../../../../core/model/qmra/TreatmentProcess';
 import _ from 'lodash';
+import descriptions from '../defaults/descriptions';
 import uuid from 'uuid';
 
 interface IProps {
@@ -14,19 +18,20 @@ interface IProps {
   qmra: Qmra;
 }
 
-const ProcessEditor = ({ qmra, onChange }: IProps) => {
+const ProcessEditor = ({qmra, onChange}: IProps) => {
   const [selectedElement, setSelectedElement] = useState<ITreatmentProcess>();
+  const [showDefaultSelection, setShowDefaultSelection] = useState<boolean>(false);
 
   const groups = _.uniq(qmra.inflow.map((i) => i.group));
 
   const filteredGroups = selectedElement
     ? groups.filter(
-        (g) =>
-          !qmra.treatmentProcesses
-            .filter((t) => t.processId === selectedElement.processId)
-            .map((t) => t.pathogenGroup)
-            .includes(g)
-      )
+      (g) =>
+        !qmra.treatmentProcesses
+          .filter((t) => t.processId === selectedElement.processId)
+          .map((t) => t.pathogenGroup)
+          .includes(g)
+    )
     : [];
 
   useEffect(() => {
@@ -66,7 +71,9 @@ const ProcessEditor = ({ qmra, onChange }: IProps) => {
     }
   };
 
-  const handleAddElement = () => {
+  const handleAddNewElement = () => handleAddElement();
+
+  const handleAddElement = (name?: string, group?: string) => {
     if (qmra.inflow.length < 1) {
       return;
     }
@@ -79,12 +86,24 @@ const ProcessEditor = ({ qmra, onChange }: IProps) => {
     groups.forEach((g) => {
       const newElement = TreatmentProcess.fromPathogenGroup(g);
       newElement.processId = processId;
+      if (name && group) {
+        newElement.name = name;
+        newElement.group = group;
+        const defaults = treatmentRemovals.filter((tr) =>
+          tr.TreatmentName === name && tr.TreatmentGroup === group && tr.PathogenGroup === g);
+        if (defaults.length > 0) {
+          newElement.min = defaults[0].Min;
+          newElement.max = defaults[0].Max;
+          newElement.reference = defaults[0].ReferenceName;
+        }
+      }
       newElements.push(newElement);
       cQmra.addElement(newElement);
     });
 
     onChange(cQmra);
     setSelectedElement(newElements[0].toObject());
+    setShowDefaultSelection(false);
   };
 
   const handleAddPathogenGroup = (e: React.SyntheticEvent, {value}: DropdownProps) => {
@@ -124,27 +143,31 @@ const ProcessEditor = ({ qmra, onChange }: IProps) => {
     onChange(cQmra);
   };
 
+  const handleToggleSelection = () => setShowDefaultSelection(!showDefaultSelection);
+
   return (
     <Segment color={'grey'}>
       <Grid>
         <Grid.Row>
           <Grid.Column width={4}>
-            <Button
-              fluid={true}
-              positive={true}
-              icon="plus"
-              labelPosition="left"
-              onClick={handleAddElement}
-              content="Add Process"
-              disabled={qmra.readOnly}
-            />
+            <Button.Group fluid>
+              <Button
+                positive={true}
+                icon="plus"
+                labelPosition="left"
+                onClick={handleAddNewElement}
+                content="Add Process"
+                disabled={qmra.readOnly}
+              />
+              <Button icon="list" onClick={handleToggleSelection} primary/>
+            </Button.Group>
           </Grid.Column>
-          <Grid.Column width={12} />
+          <Grid.Column width={12}/>
         </Grid.Row>
         <Grid.Row>
           <Grid.Column width={4}>
             <ElementsList
-              items={_.uniqBy(qmra.treatmentProcesses, 'processId').map((e) => ({ id: e.processId, name: e.name }))}
+              items={_.uniqBy(qmra.treatmentProcesses, 'processId').map((e) => ({id: e.processId, name: e.name}))}
               onClick={handleSelectElement}
               onClone={handleCloneElement}
               onRemove={handleRemoveElement}
@@ -173,7 +196,7 @@ const ProcessEditor = ({ qmra, onChange }: IProps) => {
                       />
                     ))
                 ) : (
-                  <div />
+                  <div/>
                 )}
                 <Dropdown
                   button
@@ -183,7 +206,7 @@ const ProcessEditor = ({ qmra, onChange }: IProps) => {
                   fluid
                   labeled
                   icon="add"
-                  options={filteredGroups.map((g) => ({ key: g, text: g, value: g }))}
+                  options={filteredGroups.map((g) => ({key: g, text: g, value: g}))}
                   onChange={handleAddPathogenGroup}
                   text="Add Pathogen Group"
                 />
@@ -192,6 +215,8 @@ const ProcessEditor = ({ qmra, onChange }: IProps) => {
           </Grid.Column>
         </Grid.Row>
       </Grid>
+      <InfoBox header="Treatment Train" description={descriptions.processes}/>
+      {showDefaultSelection && <ProcessSelection onAdd={handleAddElement} onClose={handleToggleSelection}/>}
     </Segment>
   );
 };

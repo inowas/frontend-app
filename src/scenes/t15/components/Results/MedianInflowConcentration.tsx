@@ -12,6 +12,7 @@ const MedianInflowConcentration = ({ data }: IProps) => {
         <Table.Row>
           <Table.HeaderCell>Pathogen Group</Table.HeaderCell>
           <Table.HeaderCell>Pathogen Name</Table.HeaderCell>
+          <Table.HeaderCell>Key</Table.HeaderCell>
           <Table.HeaderCell>min</Table.HeaderCell>
           <Table.HeaderCell>5 Percentile</Table.HeaderCell>
           <Table.HeaderCell>mean</Table.HeaderCell>
@@ -25,6 +26,7 @@ const MedianInflowConcentration = ({ data }: IProps) => {
           <Table.Row key={key}>
             <Table.Cell>{r.PathogenGroup}</Table.Cell>
             <Table.Cell>{r.PathogenName}</Table.Cell>
+            <Table.Cell>{r.key}</Table.Cell>
             <Table.Cell>{r.min}</Table.Cell>
             <Table.Cell>{r.p05}</Table.Cell>
             <Table.Cell>{r.mean}</Table.Cell>

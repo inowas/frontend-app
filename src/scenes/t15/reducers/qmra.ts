@@ -2,7 +2,7 @@ import {LOGOUT, UNAUTHORIZED} from '../../user/actions/actions';
 import IQmra from '../../../core/model/qmra/Qmra.type';
 
 export const CLEAR = 'T15_CLEAR';
-export const UPDATE_QMRA= 'T15_UPDATE_QMRA';
+export const UPDATE_QMRA = 'T15_UPDATE_QMRA';
 
 const initialState = () => null;
 

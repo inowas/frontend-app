@@ -4,7 +4,9 @@ import ElementsList from '../ElementsList';
 import Health from '../../../../core/model/qmra/Health';
 import HealthForm from './HealthForm';
 import IHealth from '../../../../core/model/qmra/Health.type';
+import InfoBox from '../InfoBox';
 import Qmra from '../../../../core/model/qmra/Qmra';
+import descriptions from '../defaults/descriptions';
 
 interface IProps {
   onChange: (qmra: Qmra) => void;
@@ -73,6 +75,7 @@ const HealthEditor = ({qmra, onChange}: IProps) => {
           </Grid.Column>
         </Grid.Row>
       </Grid>
+      <InfoBox header="Health" description={descriptions.health} />
     </Segment>
   );
 };
