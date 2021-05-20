@@ -17,8 +17,6 @@ const Export = ({results}: IProps) => {
       return null;
     }
 
-    console.log({activeInput, activeValue});
-
     if (filenames.length > activeInput) {
       filenames[activeInput] = activeValue;
       setFilenames(filenames);
