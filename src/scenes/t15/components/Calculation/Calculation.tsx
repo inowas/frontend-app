@@ -4,6 +4,7 @@ import {IRootReducer} from '../../../../reducers';
 import {makeQmraRequest} from '../../../../services/api';
 import {updateResults} from '../../actions/actions';
 import {useDispatch, useSelector} from 'react-redux';
+import Export from './Export';
 import Qmra from '../../../../core/model/qmra/Qmra';
 import React, {useState} from 'react';
 
@@ -52,6 +53,11 @@ const Calculation = ({qmra}: IProps) => {
         </Message>
         }
       </Segment>
+      {results &&
+      <Export
+        results={results}
+      />
+      }
     </React.Fragment>
   );
 };

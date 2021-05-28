@@ -1,5 +1,5 @@
 import {Bar, BarChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis} from 'recharts';
-import {Dropdown, DropdownProps, Segment, Tab} from 'semantic-ui-react';
+import {Divider, DropdownProps, Form, Segment, Tab} from 'semantic-ui-react';
 import {IRootReducer} from '../../../../reducers';
 import {useSelector} from 'react-redux';
 import MedianInflowConcentration from './MedianInflowConcentration';
@@ -8,19 +8,27 @@ import _ from 'lodash';
 
 const StatsTotal = () => {
   const [selectedKey, setSelectedKey] = useState<string>();
+  const [selectedScheme, setSelectedScheme] = useState<number>();
 
   const T15 = useSelector((state: IRootReducer) => state.T15);
+  const config = T15.qmra ? T15.qmra.data : null;
   const results = T15.results;
 
-  const handleChangeSelect = (e: SyntheticEvent<HTMLElement>, {value}: DropdownProps) => {
+  if (!config || !results) {
+    return null;
+  }
+
+  const handleChangeKey = (e: SyntheticEvent<HTMLElement>, {value}: DropdownProps) => {
     if (typeof value === 'string') {
         setSelectedKey(value);
     }
   };
 
-  if (!results) {
-    return null;
-  }
+  const handleChangeScheme = (e: SyntheticEvent<HTMLElement>, {value}: DropdownProps) => {
+    if (typeof value === 'number') {
+      setSelectedScheme(value);
+    }
+  };
 
   const renderChart = () => {
     if (!selectedKey) {
@@ -57,28 +65,43 @@ const StatsTotal = () => {
   const renderDropdown = () => {
     const keys = _.uniq(results.stats_total.map((s) => s.key));
 
+    const schemes = _.uniqBy(config.treatment.schemes, 'schemeId');
+
     return (
-      <Dropdown
-        placeholder="Select Key"
+      <Form>
+      <Form.Select
+        placeholder="Select Scheme"
+        label="Selected Scheme"
         fluid
         selection
-        options={keys.map((k) => ({key: k, text: k, value: k}))}
-        onChange={handleChangeSelect}
-        value={selectedKey}
+        options={schemes.map((s) => ({key: s.schemeId, text: s.name, value: s.schemeId}))}
+        onChange={handleChangeScheme}
+        value={selectedScheme}
       />
+        <Form.Select
+          placeholder="Select Key"
+          label="Selected Key"
+          fluid
+          selection
+          options={keys.map((k) => ({key: k, text: k, value: k}))}
+          onChange={handleChangeKey}
+          value={selectedKey}
+        />
+      </Form>
     );
   };
 
   const renderGraph = () => {
     return (
       <React.Fragment>
-        {renderDropdown()}
         {renderChart()}
       </React.Fragment>
     );
   }
 
-  const renderTable = () => <MedianInflowConcentration data={results.stats_total}/>;
+  const renderTable = () => <MedianInflowConcentration data={results.stats_total.filter((r) => {
+    return !((selectedKey && r.key !== selectedKey) || (selectedScheme && r.TreatmentSchemeID !== selectedScheme));
+  })}/>;
 
   const panes = [
     {
@@ -93,6 +116,8 @@ const StatsTotal = () => {
 
   return (
     <Segment color={'grey'}>
+      {renderDropdown()}
+      <Divider />
       <Tab panes={panes} secondary={true} pointing={true}/>
     </Segment>
   );

@@ -51,20 +51,15 @@ const Navigation = (props: IProps) => {
               property: 'health',
               icon: renderIcon('heartbeat', 'health'),
               disabled: props.qmra.inflow.length < 1
-            }
-          ]
-        },
-        {
-          header: 'Treatment',
-          items: [
+            },
             {
-              name: 'Processes',
+              name: 'Treatment Train',
               property: 'processes',
               icon: renderIcon('cogs', 'processes'),
               disabled: props.qmra.inflow.length < 1
             },
             {
-              name: 'Schemes',
+              name: 'Treatment Schemes',
               property: 'schemes',
               icon: renderIcon('boxes', 'schemes'),
               disabled: props.qmra.inflow.length < 1

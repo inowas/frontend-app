@@ -1,13 +1,13 @@
 import {AppContainer} from '../../shared';
-import {Dropdown, DropdownProps, Grid, Icon, Loader, Message} from 'semantic-ui-react';
+import {Button, Grid, Icon, Loader, Message} from 'semantic-ui-react';
 import {IRootReducer} from '../../../reducers';
 import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
-import {SyntheticEvent, useEffect, useState} from 'react';
 import {ToolMetaData} from '../../shared/simpleTools';
 import {clear, updateQmra} from '../actions/actions';
 import {createToolInstance} from '../../dashboard/commands';
 import {fetchUrl, sendCommand} from '../../../services/api';
 import {useDispatch, useSelector} from 'react-redux';
+import {useEffect, useState} from 'react';
 import {useHistory, useParams} from 'react-router-dom';
 import Calculation from '../components/Calculation/Calculation';
 import DoseResponseEditor from '../components/DoseResponse/DoseResponseEditor';
@@ -89,21 +89,12 @@ export const QmraTool = () => {
     }
   }, [history, id, property]);
 
-  const handleExport = (e: SyntheticEvent<HTMLElement>, {value}: DropdownProps) => {
+  const handleExport = () => {
     if (!qmra) {
       return;
     }
-    const filename = 'qmra.json';
-    let text = '';
-    if (value === 'inowas') {
-      text = JSON.stringify(qmra.toObject(), null, 2);
-    }
-    if (value === 'kwb') {
-      text = JSON.stringify(qmra.toPayload(), null, 2);
-    }
-    if (value === 'results' && results) {
-      text = JSON.stringify(results, null, 2);
-    }
+    const filename = 'qmra_config.json';
+    const text = JSON.stringify(qmra.toPayload(), null, 2);
 
     const element: HTMLAnchorElement = document.createElement('a');
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
@@ -189,21 +180,13 @@ export const QmraTool = () => {
         <Grid.Row>
           <Grid.Column width={3}>
             <Navigation hasResults={!!results} isFetching={isFetching} property={property} qmra={qmra}/>
-            <Dropdown
-              button
-              className="icon positive"
-              disabled={!qmra}
-              floating
-              fluid
-              labeled
+            <Button
+              primary={true}
+              fluid={true}
               icon="download"
-              options={[
-                {key: 0, value: 'inowas', text: 'Config (Inowas)'},
-                {key: 1, value: 'kwb', text: 'Config (KWB)'},
-                {key: 2, value: 'results', text: 'Results', disabled: !results}
-              ]}
-              onChange={handleExport}
-              text="Export Json"
+              content="Export Json"
+              labelPosition="left"
+              onClick={handleExport}
             />
             <br/>
             <JsonUpload
