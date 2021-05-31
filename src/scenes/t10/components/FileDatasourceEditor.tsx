@@ -258,7 +258,7 @@ const FileDatasourceEditor = (props: IProps) => {
         const downSampledDataLTOB: DataPoint[] = LTOB(data.map((ds: IDateTimeValue) => ({
             x: ds.timeStamp,
             y: ds.value
-        })), 200);
+        })), 200) as DataPoint[];
 
         return (
             <ResponsiveContainer height={300}>
