@@ -4,7 +4,7 @@ stages:
   - deploy
 
 test:
-  image: node:12
+  image: node:16
   stage: test
 
   script:
@@ -12,7 +12,7 @@ test:
     - CI=true yarn test --all --colors
 
 build:dev:
-  image: node:12
+  image: node:16
   stage: build
 
   script:
@@ -53,7 +53,7 @@ deploy:dev:
     - dev
 
 build:smart-control:
-  image: node:12
+  image: node:16
   stage: build
   script:
     - yarn install
@@ -89,7 +89,7 @@ deploy:smart-control:
     - tags
 
 build:training:
-  image: node:12
+  image: node:16
   stage: build
   script:
     - yarn install
@@ -125,7 +125,7 @@ deploy:training:
     - tags
 
 build:prod:
-  image: node:12
+  image: node:16
   stage: build
   script:
     - yarn install

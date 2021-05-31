@@ -387,7 +387,7 @@ const SensorDatasourceEditor = (props: IProps) => {
         const downSampledDataLTOB: DataPoint[] = LTOB(data.map((d: IDateTimeValue) => ({
             x: d.timeStamp,
             y: d.value
-        })), 200);
+        })), 200) as DataPoint[];
 
         return (
             <ResponsiveContainer height={300}>

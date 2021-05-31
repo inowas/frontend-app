@@ -46,7 +46,7 @@ const TinyLineChart = (props: IProps) => {
     const downSampledDataLTOB: DataPoint[] = LTOB(data.map((ds: IDateTimeValue) => ({
         x: ds.timeStamp,
         y: ds.value
-    })), 50);
+    })), 50) as DataPoint[];
 
     return (
         <LineChart width={100} height={30} data={downSampledDataLTOB} key={Math.random()}>

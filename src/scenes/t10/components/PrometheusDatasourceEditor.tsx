@@ -175,7 +175,7 @@ const PrometheusDatasourceEditor = (props: IProps) => {
         const downSampledDataLTOB: DataPoint[] = LTOB(data.map((d) => ({
             x: d.timeStamp,
             y: d.value
-        })), 200);
+        })), 200) as DataPoint[];
 
         return (
             <ResponsiveContainer height={300}>
