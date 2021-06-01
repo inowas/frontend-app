@@ -34,7 +34,6 @@ const styles = {
 interface IProps {
   col?: number;
   data?: Array2D<number>;
-  globalMinMax?: [number, number];
   row?: number;
   selectedModels?: Array<{
     id: string, name: string, data: Array2D<number>
@@ -79,7 +78,7 @@ const getYAxisLabel = (type: string): LabelProps => {
   return {};
 };
 
-const resultsChart = ({data, selectedModels, globalMinMax, row, col, show, yLabel = ''}: IProps) => {
+const resultsChart = ({data, selectedModels, row, col, show, yLabel = ''}: IProps) => {
   if (data) {
     let processedData: Array<{ name: number, value: number }> = [];
     let referenceTo;
@@ -121,10 +120,6 @@ const resultsChart = ({data, selectedModels, globalMinMax, row, col, show, yLabe
   }
 
   if (selectedModels) {
-    if (!globalMinMax) {
-      throw new Error('If more then one model in selectedModels, please provide a globalMinMax-Prop');
-    }
-
     let isValid = true;
     selectedModels.forEach((m) => {
       isValid = isValid && Array.isArray(m.data);
@@ -134,7 +129,6 @@ const resultsChart = ({data, selectedModels, globalMinMax, row, col, show, yLabe
       return null;
     }
 
-    const [minV, maxV] = globalMinMax;
     const gridSize = GridSize.fromData(selectedModels[0].data);
     const {nX, nY} = gridSize;
 
@@ -166,11 +160,14 @@ const resultsChart = ({data, selectedModels, globalMinMax, row, col, show, yLabe
       referenceTo = row;
     }
 
+    const localMin = Math.floor(min(processedData.map((d) => d.value)) || 0);
+    const localMax = Math.ceil(max(processedData.map((d) => d.value)) || 0);
+
     return (
       <ResponsiveContainer aspect={1.5}>
         <LineChart data={processedData}>
           <XAxis dataKey="name" domain={['dataMin', 'dataMax']}/>
-          <YAxis domain={[minV, maxV]}/>
+          <YAxis domain={[localMin, localMax]}/>
           <CartesianGrid strokeDasharray="3 3"/>
           <Tooltip/>
           <ReferenceLine x={referenceTo} stroke="#000" strokeDasharray="3 3"/>
