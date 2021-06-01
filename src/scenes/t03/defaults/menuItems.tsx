@@ -111,22 +111,6 @@ export const menuItems: IMenu = [
             }
         ]
     }, {
-        header: 'Computation',
-        items: [
-            {
-                name: 'Modpath',
-                property: 'modpath',
-                icon: <Icon name="code branch"/>,
-                disabled: true
-            },
-            {
-                name: 'Optimization',
-                property: 'optimization',
-                icon: <Icon name="sliders horizontal"/>,
-                disabled: true
-            }
-        ]
-    }, {
         header: '',
         items: [
             {
