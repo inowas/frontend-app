@@ -1,6 +1,7 @@
 import { Button, DropdownProps, Form, InputProps, Label, Segment } from 'semantic-ui-react';
 import { ChangeEvent, SyntheticEvent, useEffect, useState } from 'react';
 import { ITreatmentProcess } from '../../../../core/model/qmra/TreatmentProcess.type';
+import {randomDistributions} from '../defaults/distribution';
 import TreatmentProcess from '../../../../core/model/qmra/TreatmentProcess';
 
 interface IProps {
@@ -9,8 +10,6 @@ interface IProps {
   readOnly: boolean;
   process: TreatmentProcess;
 }
-
-const types = ['log10_removal', 'log10_uniform', 'uniform', 'normal'];
 
 const ProcessGroupForm = ({ onChange, onRemove, readOnly, process }: IProps) => {
   const [activeInput, setActiveInput] = useState<null | string>(null);
@@ -64,7 +63,7 @@ const ProcessGroupForm = ({ onChange, onRemove, readOnly, process }: IProps) => 
           name="type"
           onAddItem={handleSelect}
           onChange={handleSelect}
-          options={types.map((t) => ({ key: t, value: t, text: t }))}
+          options={randomDistributions.map((t) => ({ key: t, value: t, text: t }))}
           readOnly={readOnly}
           value={element.type}
         />

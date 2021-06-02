@@ -1,6 +1,7 @@
 import { ChangeEvent, SyntheticEvent, useEffect, useState } from 'react';
 import { DropdownProps, Form, InputProps } from 'semantic-ui-react';
 import { doseResponseDefaults } from '../defaults/doseResponse';
+import {randomDistributions} from '../defaults/distribution';
 import IPathogen from '../../../../core/model/qmra/Pathogen.type';
 import Pathogen from '../../../../core/model/qmra/Pathogen';
 import _ from 'lodash';
@@ -11,8 +12,6 @@ interface IProps {
   readOnly: boolean;
   selectedPathogen: Pathogen;
 }
-
-const types = ['log10_removal', 'log10_uniform', 'uniform', 'normal'];
 
 const ExposureForm = ({ groups, onChange, readOnly, selectedPathogen }: IProps) => {
   const [activeInput, setActiveInput] = useState<null | string>(null);
@@ -94,7 +93,7 @@ const ExposureForm = ({ groups, onChange, readOnly, selectedPathogen }: IProps) 
           name="type"
           onAddItem={handleSelect}
           onChange={handleSelect}
-          options={types.map((t) => ({ key: t, value: t, text: t }))}
+          options={randomDistributions.map((t) => ({ key: t, value: t, text: t }))}
           readOnly={readOnly}
           value={element.type}
         />

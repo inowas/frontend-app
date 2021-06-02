@@ -85,12 +85,6 @@ const Navigation = (props: IProps) => {
               property: 'stats_total',
               icon: renderIcon('bullhorn', 'events'),
               disabled: !props.hasResults
-            },
-            {
-              name: 'Total',
-              property: 'total',
-              icon: renderIcon('flag', 'total'),
-              disabled: !props.hasResults
             }
           ]
         }
