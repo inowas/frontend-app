@@ -110,11 +110,11 @@ const ExposureForm = ({onChange, readOnly, selectedExposure}: IProps) => {
         <Form.Group widths="equal">
           <Form.Field>
             <Form.Select
-              label="Litres per Event"
+              label="Ingested volume per event (L/event)"
               name="type"
               onChange={handleSelect}
               options={[
-                {key: 'value', value: 'value', text: 'Value'},
+                {key: 'value', value: 'value', text: 'Constant'},
                 {key: 'triangle', value: 'triangle', text: 'Triangle'}
               ]}
               readOnly={readOnly}

@@ -108,7 +108,7 @@ const processes: IProcessDefault[] = [
   {
     'TreatmentName': 'Reverse osmosis',
     'TreatmentGroup': 'Filtration',
-    'TreatmentDescription': 'A reverse osmosis membrane is a thin sheet with small openings that removes solids and most soluble molecules, including salts (< 0,004 �m depending on selected membrane) from the water when this is led through the membrane. It can take the form of spiral wound membranes, hollow fibers or sheets. Actual log reduction depends on the selected membrane and is determined by challenge testing.'
+    'TreatmentDescription': 'A reverse osmosis membrane is a thin sheet with small openings that removes solids and most soluble molecules, including salts (< 0,004 µm depending on selected membrane) from the water when this is led through the membrane. It can take the form of spiral wound membranes, hollow fibers or sheets. Actual log reduction depends on the selected membrane and is determined by challenge testing.'
   },
   {
     'TreatmentName': 'Ozonation, wastewater',
@@ -133,17 +133,17 @@ const processes: IProcessDefault[] = [
   {
     'TreatmentName': 'Microfiltration',
     'TreatmentGroup': 'Filtration',
-    'TreatmentDescription': 'A microfiltration membrane is a thin sheet with small openings that removes solids (0.1-10 �m depending on selected membrane) from the water when this is led through the membrane. It can take the form of capilary tubes, hollow fibers or sheet membranes. Actual log reduction depends on the selected membrane and is determined by challenge testing.'
+    'TreatmentDescription': 'A microfiltration membrane is a thin sheet with small openings that removes solids (0.1-10 µm depending on selected membrane) from the water when this is led through the membrane. It can take the form of capilary tubes, hollow fibers or sheet membranes. Actual log reduction depends on the selected membrane and is determined by challenge testing.'
   },
   {
     'TreatmentName': 'Ultrafiltration',
     'TreatmentGroup': 'Filtration',
-    'TreatmentDescription': 'An ultrafiltration membrane is a thin sheet with small openings that removes solids (0.005-0,2 �m depending on selected membrane) from the water when this is led through the membrane. It can take the form of capilary tubes, hollow fibers, spiral wound or sheet membranes. Actual log reduction depends on the selected membrane and is determined by challenge testing.'
+    'TreatmentDescription': 'An ultrafiltration membrane is a thin sheet with small openings that removes solids (0.005-0,2 µm depending on selected membrane) from the water when this is led through the membrane. It can take the form of capilary tubes, hollow fibers, spiral wound or sheet membranes. Actual log reduction depends on the selected membrane and is determined by challenge testing.'
   },
   {
     'TreatmentName': 'Nanofiltration',
     'TreatmentGroup': 'Filtration',
-    'TreatmentDescription': 'An nanofiltration membrane is a thin sheet with small openings that removes solids and larger soluble molecules (0.001-0,03 �m depending on selected membrane) from the water when this is led through the membrane. It can take the form of spiral wound or hollow fiber membranes. Actual log reduction depends on the selected membrane and is determined by challenge testing.'
+    'TreatmentDescription': 'An nanofiltration membrane is a thin sheet with small openings that removes solids and larger soluble molecules (0.001-0,03 µm depending on selected membrane) from the water when this is led through the membrane. It can take the form of spiral wound or hollow fiber membranes. Actual log reduction depends on the selected membrane and is determined by challenge testing.'
   }
 ];
 

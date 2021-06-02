@@ -313,7 +313,7 @@ export const doseResponseDefaults = [
     response: 'infection',
     reference: 'Couch, Cate et al. 1966',
     link: 'http://qmrawiki.canr.msu.edu/kwb.defaultindex.php/Adenovirus:_Dose_response_Models',
-    pathogenGroup: 'Virus',
+    pathogenGroup: 'Viruses',
     pathogenName: 'Adenovirus',
     k: 0.607
   },
@@ -325,7 +325,7 @@ export const doseResponseDefaults = [
     response: 'infection',
     reference: 'Schiff et al.,1984',
     link: 'http://qmrawiki.canr.msu.edu/kwb.defaultindex.php/Echovirus:_Dose_response_Models',
-    pathogenGroup: 'Virus',
+    pathogenGroup: 'Viruses',
     pathogenName: 'Echovirus',
     alpha: 1.06,
     n50: 922
@@ -338,7 +338,7 @@ export const doseResponseDefaults = [
     response: 'infection',
     reference: 'Cliver, 1981',
     link: 'http://qmrawiki.canr.msu.edu/kwb.defaultindex.php/Enteroviruses:_Dose_response_Models',
-    pathogenGroup: 'Virus',
+    pathogenGroup: 'Viruses',
     pathogenName: 'Enteroviruses',
     k: 0.00374
   },
@@ -350,7 +350,7 @@ export const doseResponseDefaults = [
     response: 'infection',
     reference: 'Murphy et al., 1984 & Murphy et al., 1985',
     link: 'http://qmrawiki.canr.msu.edu/kwb.defaultindex.php/Influenza:_Dose_response_Models',
-    pathogenGroup: 'Virus',
+    pathogenGroup: 'Viruses',
     pathogenName: 'Influenza',
     alpha: 0.581,
     n50: 945000
@@ -363,7 +363,7 @@ export const doseResponseDefaults = [
     response: 'death',
     reference: 'Jahrling et al., 1982',
     link: 'http://qmrawiki.canr.msu.edu/kwb.defaultindex.php/Lassa_virus:_Dose_response_Models',
-    pathogenGroup: 'Virus',
+    pathogenGroup: 'Viruses',
     pathogenName: 'Lassa virus',
     k: 2.95
   },
@@ -375,7 +375,7 @@ export const doseResponseDefaults = [
     response: 'alimentary infection',
     reference: 'Koprowski',
     link: 'http://qmrawiki.canr.msu.edu/kwb.defaultindex.php/Poliovirus:_Dose_response_Models',
-    pathogenGroup: 'Virus',
+    pathogenGroup: 'Viruses',
     pathogenName: 'Poliovirus',
     k: 0.491
   },
@@ -387,7 +387,7 @@ export const doseResponseDefaults = [
     response: 'infection',
     reference: 'Hendley et al., 1972',
     link: 'http://qmrawiki.canr.msu.edu/kwb.defaultindex.php/Rhinovirus:_Dose_response_Models',
-    pathogenGroup: 'Virus',
+    pathogenGroup: 'Viruses',
     pathogenName: 'Rhinovirus',
     alpha: 0.221,
     n50: 1.81
@@ -400,7 +400,7 @@ export const doseResponseDefaults = [
     response: 'infection',
     reference: 'Ward et al, 1986',
     link: 'http://qmrawiki.canr.msu.edu/kwb.defaultindex.php/Rotavirus:_Dose_response_Models',
-    pathogenGroup: 'Virus',
+    pathogenGroup: 'Viruses',
     pathogenName: 'Rotavirus',
     alpha: 0.253,
     n50: 6.17,
@@ -413,7 +413,7 @@ export const doseResponseDefaults = [
     response: 'death',
     reference: 'DeDiego et al., 2008 &  De Albuquerque et al., 2006',
     link: 'http://qmrawiki.canr.msu.edu/kwb.defaultindex.php/SARS:_Dose_response_Models',
-    pathogenGroup: 'Virus',
+    pathogenGroup: 'Viruses',
     pathogenName: 'SARS',
     k: 0.00246
   },

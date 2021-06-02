@@ -46,7 +46,9 @@ const DoseResponseForm = ({onChange, readOnly, selectedDoseResponse}: IProps) =>
     }
 
     const cItem = {
-      ...element
+      ...element,
+      reference: '',
+      link: ''
     };
 
     if (value === 'beta-Poisson') {
