@@ -1,12 +1,12 @@
-import {Array2D} from '../../../geometry/Array2D.type';
-import {FileData, dropData} from '../../../../../services/dataDropper';
-import {IModflowModel} from '../../ModflowModel.type';
-import {ISoilmodel} from '../Soilmodel.type';
-import {ISoilmodelLayer} from '../SoilmodelLayer.type';
-import {Soilmodel} from '../index';
+import {Array2D} from '../../geometry/Array2D.type';
+import {FileData, dropData} from '../../../../services/dataDropper';
+import {IModflowModel} from '../ModflowModel.type';
+import {ISoilmodel} from './Soilmodel.type';
+import {ISoilmodelLayer} from './SoilmodelLayer.type';
+import {Soilmodel} from './index';
 import {cloneDeep, uniq} from 'lodash';
-import {sendCommand} from '../../../../../services/api';
-import ModflowModelCommand from '../../../../../scenes/t03/commands/modflowModelCommand';
+import {sendCommand} from '../../../../services/api';
+import ModflowModelCommand from '../../../../scenes/t03/commands/modflowModelCommand';
 
 export const saveLayer = (
     layer: ISoilmodelLayer,
@@ -294,7 +294,7 @@ export const saveSoilmodel = (
     return onSuccess(cSoilmodel.toObject(), true);
 };
 
-export const fetchSoilmodel = (
+export const loadSoilmodel = (
     soilmodel: ISoilmodel,
     onEachTask: (result: { message: string, fetching: boolean }) => any,
     onFinished: (soilmodel: ISoilmodel) => any
@@ -331,7 +331,7 @@ export const fetchSoilmodel = (
                         }
                         return l;
                     });
-                    return fetchSoilmodel(soilmodel, onEachTask, onFinished);
+                    return loadSoilmodel(soilmodel, onEachTask, onFinished);
                 });
             }
             return;
@@ -362,7 +362,7 @@ export const fetchSoilmodel = (
                         }
                         return l;
                     });
-                    return fetchSoilmodel(soilmodel, onEachTask, onFinished);
+                    return loadSoilmodel(soilmodel, onEachTask, onFinished);
                 });
             }
             return;

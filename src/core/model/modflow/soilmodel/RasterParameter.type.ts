@@ -5,12 +5,3 @@ export interface IRasterParameter {
     unit: string;
     title: string;
 }
-
-export interface IRasterParameterLegacy {
-    defaultValue: number;
-    isActive: boolean;
-    label: string;
-    name: string;
-    unit: string;
-    value: number;
-}

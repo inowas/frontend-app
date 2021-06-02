@@ -18,7 +18,6 @@ import {ValidationError} from 'ajv';
 import {dxGeometry, dyGeometry} from '../../../services/geoTools/distance';
 import {validate} from '../../../services/jsonSchemaValidator';
 import ModelImportMap from './ModelImportMap';
-import ModflowModel from '../../../core/model/modflow/ModflowModel';
 import ModflowModelCommand from '../../t03/commands/modflowModelCommand';
 import React, {ChangeEvent, useState} from 'react';
 import Uuid from 'uuid';
@@ -80,17 +79,7 @@ const ModflowModelImport = (props: RouteComponentProps) => {
                 boundaries: BoundaryCollection.fromExport(data.boundaries, boundingBox, gridSize).toObject()
             };
 
-            const model = ModflowModel.fromObject({
-                id: nPayload.id,
-                name: nPayload.name,
-                description: nPayload.description,
-                public: nPayload.public,
-                discretization: nPayload.discretization,
-                permissions: 'rwx',
-                calculation_id: ''
-            });
-
-            nPayload.soilmodel = Soilmodel.fromExport(data.soilmodel, model).toObject();
+            nPayload.soilmodel = Soilmodel.fromExport(data.soilmodel).toObject();
 
             setPayload(nPayload);
             setIsLoading(false);

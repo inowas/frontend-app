@@ -6,8 +6,3 @@ export interface ILayerParameter {
     data: RasterDataDropperData;
     value?: number | Array2D<number>;
 }
-
-export interface ILayerParameter2v0 {
-    id: string;
-    value: number | Array2D<number>;
-}
