@@ -51,7 +51,7 @@ const DoseResponseForm = ({onChange, readOnly, selectedDoseResponse}: IProps) =>
 
     if (value === 'beta-Poisson') {
       cItem.bestFitModel = 'beta-Poisson';
-      cItem.k = undefined;
+      cItem.k = NaN;
       cItem.n50 = 0;
       cItem.alpha = 0;
     }
@@ -59,8 +59,8 @@ const DoseResponseForm = ({onChange, readOnly, selectedDoseResponse}: IProps) =>
     if (value === 'exponential') {
       cItem.bestFitModel = 'exponential';
       cItem.k = 0;
-      cItem.n50 = undefined;
-      cItem.alpha = undefined;
+      cItem.n50 = NaN;
+      cItem.alpha = NaN;
     }
 
     setElement(cItem);

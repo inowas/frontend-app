@@ -7,9 +7,10 @@ interface IProps {
 
 const MedianInflowConcentration = ({ data }: IProps) => {
   return (
-    <Table celled>
+    <Table celled size="small" style={{overflow: 'auto'}}>
       <Table.Header>
         <Table.Row>
+          <Table.HeaderCell>Scheme</Table.HeaderCell>
           <Table.HeaderCell>Pathogen Group</Table.HeaderCell>
           <Table.HeaderCell>Pathogen Name</Table.HeaderCell>
           <Table.HeaderCell>Key</Table.HeaderCell>
@@ -24,15 +25,16 @@ const MedianInflowConcentration = ({ data }: IProps) => {
       <Table.Body>
         {data.map((r, key) => (
           <Table.Row key={key}>
+            <Table.Cell>{r.TreatmentSchemeName}</Table.Cell>
             <Table.Cell>{r.PathogenGroup}</Table.Cell>
             <Table.Cell>{r.PathogenName}</Table.Cell>
             <Table.Cell>{r.key}</Table.Cell>
-            <Table.Cell>{r.min}</Table.Cell>
-            <Table.Cell>{r.p05}</Table.Cell>
-            <Table.Cell>{r.mean}</Table.Cell>
-            <Table.Cell>{r.median}</Table.Cell>
-            <Table.Cell>{r.p95}</Table.Cell>
-            <Table.Cell>{r.max}</Table.Cell>
+            <Table.Cell textAlign="right">{r.min}</Table.Cell>
+            <Table.Cell textAlign="right">{r.p05}</Table.Cell>
+            <Table.Cell textAlign="right">{r.mean}</Table.Cell>
+            <Table.Cell textAlign="right">{r.median}</Table.Cell>
+            <Table.Cell textAlign="right">{r.p95}</Table.Cell>
+            <Table.Cell textAlign="right">{r.max}</Table.Cell>
           </Table.Row>
         ))}
       </Table.Body>

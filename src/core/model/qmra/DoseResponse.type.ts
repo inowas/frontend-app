@@ -4,9 +4,9 @@ export default interface IDoseResponse {
   pathogenName: string;
   pathogenGroup: string;
   bestFitModel: string;
-  k?: number;
-  alpha?: number;
-  n50?: number;
+  k: number;
+  alpha: number;
+  n50: number;
   hostType: string;
   doseUnits: string;
   route: string;
@@ -20,9 +20,9 @@ export interface IDoseResponsePayload {
   PathogenName: string;
   PathogenGroup: string;
   'Best fit model*': string;
-  alpha?: number;
-  k?: number;
-  N50?: number;
+  alpha: number;
+  k: number;
+  N50: number;
   'Host type': string;
   'Dose units': string;
   Route: string;
