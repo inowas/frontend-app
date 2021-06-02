@@ -69,7 +69,7 @@ const ProcessGroupForm = ({ onChange, onRemove, readOnly, process }: IProps) => 
         />
         <Form.Group widths="equal">
           <Form.Input
-            label="Min"
+            label="Minimum log reduction value"
             name="min"
             onBlur={handleBlur()}
             onChange={handleChange}
@@ -78,7 +78,7 @@ const ProcessGroupForm = ({ onChange, onRemove, readOnly, process }: IProps) => 
             type="number"
           />
           <Form.Input
-            label="Max"
+            label="Maximum log reduction value"
             name="max"
             onBlur={handleBlur()}
             onChange={handleChange}

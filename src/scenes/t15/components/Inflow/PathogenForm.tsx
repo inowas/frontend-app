@@ -13,7 +13,7 @@ interface IProps {
   selectedPathogen: Pathogen;
 }
 
-const ExposureForm = ({ groups, onChange, readOnly, selectedPathogen }: IProps) => {
+const PathogenForm = ({ groups, onChange, readOnly, selectedPathogen }: IProps) => {
   const [activeInput, setActiveInput] = useState<null | string>(null);
   const [activeValue, setActiveValue] = useState<string>('');
   const [element, setElement] = useState<IPathogen>(selectedPathogen.toObject());
@@ -136,4 +136,4 @@ const ExposureForm = ({ groups, onChange, readOnly, selectedPathogen }: IProps) 
   );
 };
 
-export default ExposureForm;
+export default PathogenForm;

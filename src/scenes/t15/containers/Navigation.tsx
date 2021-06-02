@@ -26,22 +26,30 @@ const Navigation = (props: IProps) => {
           header: 'Input',
           items: [
             {
-              name: 'Setup',
-              property: 'setup',
-              icon: renderIcon('wrench', 'setup')
-            },
-            {
-              name: 'Exposure',
-              property: 'exposure',
-              icon: renderIcon('bolt', 'exposure')
-            },
-            {
-              name: 'Inflow',
+              name: 'Inflow concentration of pathogens',
               property: 'inflow',
               icon: renderIcon('certificate', 'inflow')
             },
             {
-              name: 'Dose response',
+              name: 'Treatment Train',
+              property: 'processes',
+              icon: renderIcon('cogs', 'processes'),
+              disabled: props.qmra.inflow.length < 1
+            },
+            {
+              name: 'Treatment steps',
+              property: 'schemes',
+              icon: renderIcon('boxes', 'schemes'),
+              disabled: props.qmra.inflow.length < 1
+            },
+            {
+              name: 'Exposure Scenario',
+              property: 'exposure',
+              icon: renderIcon('bolt', 'exposure')
+            },
+
+            {
+              name: 'Dose-Response',
               property: 'doseResponse',
               icon: renderIcon('syringe', 'doseResponse'),
               disabled: props.qmra.inflow.length < 1
@@ -53,16 +61,9 @@ const Navigation = (props: IProps) => {
               disabled: props.qmra.inflow.length < 1
             },
             {
-              name: 'Treatment Train',
-              property: 'processes',
-              icon: renderIcon('cogs', 'processes'),
-              disabled: props.qmra.inflow.length < 1
-            },
-            {
-              name: 'Treatment Schemes',
-              property: 'schemes',
-              icon: renderIcon('boxes', 'schemes'),
-              disabled: props.qmra.inflow.length < 1
+              name: 'Stochastic runs',
+              property: 'setup',
+              icon: renderIcon('wrench', 'setup')
             }
           ]
         },
@@ -81,7 +82,7 @@ const Navigation = (props: IProps) => {
           header: 'Results',
           items: [
             {
-              name: 'Stats_Total',
+              name: 'Summary',
               property: 'stats_total',
               icon: renderIcon('bullhorn', 'events'),
               disabled: !props.hasResults

@@ -1,8 +1,7 @@
-import { ChangeEvent, useEffect, useState } from 'react';
-import { Form, InputProps } from 'semantic-ui-react';
+import {ChangeEvent, useEffect, useState} from 'react';
+import {Form, InputProps} from 'semantic-ui-react';
 import Health from '../../../../core/model/qmra/Health';
 import IHealth from '../../../../core/model/qmra/Health.type';
-import ToggleableInput from '../../../shared/complexTools/ToggleableInput';
 
 interface IProps {
   onChange?: (e: Health) => void;
@@ -10,7 +9,7 @@ interface IProps {
   selectedHealth: Health;
 }
 
-const HealthForm = ({ onChange, readOnly, selectedHealth }: IProps) => {
+const HealthForm = ({onChange, readOnly, selectedHealth}: IProps) => {
   const [activeInput, setActiveInput] = useState<null | string>(null);
   const [activeValue, setActiveValue] = useState<string>('');
   const [element, setElement] = useState<IHealth>(selectedHealth.toObject());
@@ -34,67 +33,56 @@ const HealthForm = ({ onChange, readOnly, selectedHealth }: IProps) => {
     onChange(Health.fromObject(cItem));
   };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>, { name, value }: InputProps) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>, {name, value}: InputProps) => {
     setActiveInput(name);
     setActiveValue(value);
-  };
-
-  const handleChangeToggleable = (name: string, value: number | string | null) => {
-    if (!onChange) {
-      return null;
-    }
-
-    const cItem = {
-      ...element,
-      [name]: value === null ? undefined : value,
-    };
-    setElement(cItem);
-    onChange(Health.fromObject(cItem));
   };
 
   return (
     <Form>
       <Form.Group widths="equal">
         <Form.Field>
-          <Form.Input label="Pathogen name" readOnly={true} value={element.pathogenName} />
+          <Form.Input label="Pathogen name" readOnly={true} value={element.pathogenName}/>
         </Form.Field>
       </Form.Group>
       <Form.Group widths="equal">
         <Form.Field>
           <label>Infection to illness</label>
-          <ToggleableInput
+          <Form.Input
             name="infectionToIllness"
-            onChange={handleChangeToggleable}
+            onBlur={handleBlur('number')}
+            onChange={handleChange}
             placeholder="infectionToIllness"
             readOnly={readOnly}
             type="number"
-            value={element.infectionToIllness === undefined ? null : element.infectionToIllness}
+            value={activeInput === 'infectionToIllness' ? activeValue : element.infectionToIllness}
           />
         </Form.Field>
         <Form.Field>
-        <Form.Input
-          label="Reference"
-          name="reference1"
-          onBlur={handleBlur()}
-          onChange={handleChange}
-          readOnly={readOnly}
-          value={activeInput === 'reference1' ? activeValue : element.reference1}
-        />
+          <Form.Input
+            label="Reference"
+            name="reference1"
+            onBlur={handleBlur()}
+            onChange={handleChange}
+            readOnly={readOnly}
+            value={activeInput === 'reference1' ? activeValue : element.reference1}
+          />
         </Form.Field>
       </Form.Group>
       <Form.Group widths="equal">
         <Form.Field>
           <label>DALYS per case</label>
-          <ToggleableInput
+          <Form.Input
             name="dalysPerCase"
-            onChange={handleChangeToggleable}
+            onBlur={handleBlur('number')}
+            onChange={handleChange}
             placeholder="dalysPerCase"
             readOnly={readOnly}
             type="number"
-            value={element.dalysPerCase === undefined ? null : element.dalysPerCase}
+            value={activeInput === 'dalysPerCase' ? activeValue : element.dalysPerCase}
           />
-          </Form.Field>
-          <Form.Field>
+        </Form.Field>
+        <Form.Field>
           <Form.Input
             label="Reference"
             name="reference2"

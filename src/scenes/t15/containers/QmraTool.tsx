@@ -85,7 +85,7 @@ export const QmraTool = () => {
 
   useEffect(() => {
     if (id && !property) {
-      history.push(`/tools/${tool}/${id}/setup`);
+      history.push(`/tools/${tool}/${id}/inflow`);
     }
   }, [history, id, property]);
 
@@ -158,8 +158,10 @@ export const QmraTool = () => {
         return <SchemeEditor onChange={handleSave} qmra={qmra}/>
       case 'stats_total':
         return <StatsTotal />
-      default:
+      case 'setup':
         return <Setup onChange={handleSave} qmra={qmra}/>
+      default:
+        return <PathogenEditor onChange={handleSave} qmra={qmra}/>
     }
   };
 

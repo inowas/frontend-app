@@ -1,8 +1,5 @@
 import {Button, Dropdown, DropdownProps, Grid, Segment} from 'semantic-ui-react';
-import {IPropertyValueObject} from '../../../../core/model/types';
 import {SyntheticEvent, useEffect, useState} from 'react';
-import {exposureColumns} from '../defaults/columns';
-import CsvUpload from '../shared/CsvUpload';
 import ElementsList from '../ElementsList';
 import ExposureForm from './ExposureForm';
 import ExposureScenario from '../../../../core/model/qmra/ExposureScenario';
@@ -111,14 +108,6 @@ const ExposureEditor = ({qmra, onChange}: IProps) => {
     onChange(Qmra.fromObject(cQmra));
   };
 
-  const handleUpload = (results: IPropertyValueObject[]) => {
-    const cQmra = Qmra.fromObject(qmra.toObject());
-    results.forEach((row) => {
-      cQmra.addElement(ExposureScenario.fromCsv(row));
-    });
-    onChange(cQmra);
-  };
-
   return (
     <Segment color={'grey'}>
       <Grid>
@@ -142,7 +131,6 @@ const ExposureEditor = ({qmra, onChange}: IProps) => {
                 }
                 onChange={handleAddElement}
               />
-              <CsvUpload columns={exposureColumns} onChange={handleUpload}/>
             </Button.Group>
           </Grid.Column>
           <Grid.Column width={12}/>
