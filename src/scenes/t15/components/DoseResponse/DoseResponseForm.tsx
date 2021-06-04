@@ -53,7 +53,7 @@ const DoseResponseForm = ({onChange, readOnly, selectedDoseResponse}: IProps) =>
 
     if (value === 'beta-Poisson') {
       cItem.bestFitModel = 'beta-Poisson';
-      cItem.k = NaN;
+      cItem.k = null;
       cItem.n50 = 0;
       cItem.alpha = 0;
     }
@@ -61,8 +61,8 @@ const DoseResponseForm = ({onChange, readOnly, selectedDoseResponse}: IProps) =>
     if (value === 'exponential') {
       cItem.bestFitModel = 'exponential';
       cItem.k = 0;
-      cItem.n50 = NaN;
-      cItem.alpha = NaN;
+      cItem.n50 = null;
+      cItem.alpha = null;
     }
 
     setElement(cItem);
@@ -100,7 +100,7 @@ const DoseResponseForm = ({onChange, readOnly, selectedDoseResponse}: IProps) =>
             placeholder="alpha"
             readOnly={readOnly}
             type="number"
-            value={activeInput === 'alpha' ? activeValue : element.alpha}
+            value={activeInput === 'alpha' ? activeValue : element.alpha || 0}
           />
         </Form.Field>
         <Form.Field>
@@ -112,7 +112,7 @@ const DoseResponseForm = ({onChange, readOnly, selectedDoseResponse}: IProps) =>
             placeholder="N50"
             readOnly={readOnly}
             type="number"
-            value={activeInput === 'n50' ? activeValue : element.n50}
+            value={activeInput === 'n50' ? activeValue : element.n50 || 0}
           />
         </Form.Field>
       </Form.Group>
@@ -127,7 +127,7 @@ const DoseResponseForm = ({onChange, readOnly, selectedDoseResponse}: IProps) =>
           placeholder="k"
           readOnly={readOnly}
           type="number"
-          value={activeInput === 'k' ? activeValue : element.k}
+          value={activeInput === 'k' ? activeValue : element.k || 0}
         />
       </Form.Field>
       }

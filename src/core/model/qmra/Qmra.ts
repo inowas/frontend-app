@@ -237,9 +237,9 @@ class Qmra extends GenericObject<IQmra> {
   }
 
   public fromPayload(obj: IQmraRequest) {
-    const eventsPerYear = obj.config.exposure.filter((e) => e.name === 'number_of_exposures');
-    const litresPerEvent = obj.config.exposure.filter((e) => e.name === 'volume_perEvent');
-    const numberOfRepeatings = obj.config.exposure.filter((e) => e.name === 'number_of_repeatings')
+    const eventsPerYear = obj.exposure.filter((e) => e.name === 'number_of_exposures');
+    const litresPerEvent = obj.exposure.filter((e) => e.name === 'volume_perEvent');
+    const numberOfRepeatings = obj.exposure.filter((e) => e.name === 'number_of_repeatings')
 
     let litresPerEventValue: IValue = {type: 'value', min: 0, max: 1, mode: 1, value: 365};
 
@@ -275,26 +275,24 @@ class Qmra extends GenericObject<IQmra> {
         litresPerEvent: litresPerEventValue
       })
     ];
-    this.inflow = obj.config.inflow.map((p) => Pathogen.fromPayload(p));
-    this.treatmentProcesses = obj.config.treatment.processes.map((tp) => TreatmentProcess.fromPayload(tp));
-    this.treatmentSchemes = obj.config.treatment.schemes.map((ts) => TreatmentScheme.fromPayload(ts));
-    this.health = obj.config.health.map((h) => Health.fromPayload(h));
-    this.doseResponse = obj.config.doseresponse.map((dr) => DoseResponse.fromPayload(dr));
+    this.inflow = obj.inflow.map((p) => Pathogen.fromPayload(p));
+    this.treatmentProcesses = obj.treatment.processes.map((tp) => TreatmentProcess.fromPayload(tp));
+    this.treatmentSchemes = obj.treatment.schemes.map((ts) => TreatmentScheme.fromPayload(ts));
+    this.health = obj.health.map((h) => Health.fromPayload(h));
+    this.doseResponse = obj.doseresponse.map((dr) => DoseResponse.fromPayload(dr));
     return this;
   }
 
   public toPayload() {
     return {
-      config: {
-        exposure: this.generateExposure(),
-        inflow: this.inflow.map((p) => p.toPayload()),
-        treatment: {
-          processes: this.treatmentProcesses.map((p) => p.toPayload()),
-          schemes: this.treatmentSchemes.map((s) => s.toPayload())
-        },
-        doseresponse: this.doseResponse.map((r) => r.toPayload()),
-        health: this.health.map((h) => h.toPayload())
-      }
+      exposure: this.generateExposure(),
+      inflow: this.inflow.map((p) => p.toPayload()),
+      treatment: {
+        processes: this.treatmentProcesses.map((p) => p.toPayload()),
+        schemes: this.treatmentSchemes.map((s) => s.toPayload())
+      },
+      doseresponse: this.doseResponse.map((r) => r.toPayload()),
+      health: this.health.map((h) => h.toPayload())
     };
   }
 
