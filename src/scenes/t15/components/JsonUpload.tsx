@@ -1,15 +1,15 @@
-import { Button, Icon, Message, Modal } from 'semantic-ui-react';
-import { JSON_SCHEMA_URL } from '../../../services/api';
+import {Button, Icon, Message, Modal} from 'semantic-ui-react';
+import {JSON_SCHEMA_URL} from '../../../services/api';
 import {validate as jsonSchemaValidate} from '../../../services/jsonSchemaValidator';
 import Qmra from '../../../core/model/qmra/Qmra';
-import React, { ChangeEvent, useState } from 'react';
+import React, {ChangeEvent, useState} from 'react';
 
 interface IProps {
   onChange: (response: Qmra) => void;
   qmra: Qmra;
 }
 
-const JsonUpload = ({ onChange, qmra }: IProps) => {
+const JsonUpload = ({onChange, qmra}: IProps) => {
   const [data, setData] = useState<any>();
   const [errors, setErrors] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -22,17 +22,23 @@ const JsonUpload = ({ onChange, qmra }: IProps) => {
     }
   };
 
+  const checkFile = (data: any) => Array.isArray(data.inflow) && Array.isArray(data.exposure) &&
+    Array.isArray(data.doseresponse) && Array.isArray(data.health) && data.treatment &&
+    Array.isArray(data.treatment.processes) && Array.isArray(data.treatment.schemes);
+
   const handleConfirm = () => {
     let q = Qmra.fromDefaults();
-    if ('config' in data) {
-      q = qmra.fromPayload(data);
+
+    if ('config' in data && checkFile(data.config)) {
+      q = qmra.fromPayload(data.config);
     }
-    if ('data' in data) {
+    if ('data' in data && checkFile(data.data)) {
       q = Qmra.fromObject(data);
     }
-    if ('inflow' in data) {
+    if ('inflow' in data && checkFile(data)) {
       q = qmra.fromPayload(data);
     }
+
     setShowModal(false);
     onChange(q);
   };
@@ -54,27 +60,30 @@ const JsonUpload = ({ onChange, qmra }: IProps) => {
 
     if (!checkPassed) {
       setData(undefined);
+      setShowModal(true);
       e.push('Invalid JSON');
+      setErrors(e);
     }
 
     const d = JSON.parse(text);
-
-    // TODO: JSON SCHEME VALIDATION
 
     jsonSchemaValidate(
       d,
       JSON_SCHEMA_URL + '/qmra/qmra.payload.json'
     ).then((r) => {
-      console.log(r);
+      if (r[0]) {
+        setErrors([]);
+        setIsLoading(false);
+        setShowModal(true);
+        setData(d);
+      } else {
+        if (Array.isArray(r[1]) && 'message' in r[1][0]) {
+          setErrors(r[1].map((e) => e.message));
+        }
+        setIsLoading(false);
+        setShowModal(true);
+      }
     });
-
-    if (checkPassed && e.length === 0) {
-      setData(d);
-    }
-
-    setErrors(e);
-    setIsLoading(false);
-    setShowModal(true);
   };
 
   const handleUploadFile = (e: ChangeEvent<HTMLInputElement>) => {
@@ -97,7 +106,7 @@ const JsonUpload = ({ onChange, qmra }: IProps) => {
         labelPosition="left"
         loading={isLoading}
       />
-      <input hidden={true} type="file" id="inputField" onChange={handleUploadFile} />
+      <input hidden={true} type="file" id="inputField" onChange={handleUploadFile}/>
       <Modal onClose={handleTriggerModal} open={showModal} size="small">
         <Modal.Header>Upload Json</Modal.Header>
         <Modal.Content>
@@ -111,17 +120,17 @@ const JsonUpload = ({ onChange, qmra }: IProps) => {
         {errors.length > 0 && (
           <Modal.Actions>
             <Button color="grey" onClick={handleTriggerModal}>
-              <Icon name="remove" /> Close
+              <Icon name="remove"/> Close
             </Button>
           </Modal.Actions>
         )}
         {errors.length < 1 && (
           <Modal.Actions>
             <Button color="red" onClick={handleTriggerModal}>
-              <Icon name="remove" /> No
+              <Icon name="remove"/> No
             </Button>
             <Button color="green" onClick={handleConfirm}>
-              <Icon name="checkmark" /> Yes
+              <Icon name="checkmark"/> Yes
             </Button>
           </Modal.Actions>
         )}

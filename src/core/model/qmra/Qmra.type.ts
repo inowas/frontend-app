@@ -24,16 +24,14 @@ interface IQmraData {
 }
 
 export interface IQmraRequest {
-  config: {
-    exposure: IExposure[];
-    inflow: IPathogenPayload[];
-    treatment: {
-      processes: ITreatmentProcessPayload[];
-      schemes: ITreatmentSchemePayload[];
-    };
-    doseresponse: IDoseResponsePayload[];
-    health: IHealthPayload[];
+  exposure: IExposure[];
+  inflow: IPathogenPayload[];
+  treatment: {
+    processes: ITreatmentProcessPayload[];
+    schemes: ITreatmentSchemePayload[];
   };
+  doseresponse: IDoseResponsePayload[];
+  health: IHealthPayload[];
 }
 
 export default IQmra;

@@ -87,25 +87,6 @@ class DoseResponse extends GenericObject<IDoseResponse> {
     });
   }
 
-  public static fromDefaults(pathogenId: number) {
-    return new DoseResponse({
-      id: uuid.v4(),
-      pathogenId: pathogenId,
-      pathogenName: '',
-      pathogenGroup: '',
-      bestFitModel: '',
-      hostType: '',
-      doseUnits: '',
-      k: null,
-      alpha: null,
-      n50: null,
-      route: '',
-      response: '',
-      reference: '',
-      link: '',
-    });
-  }
-
   public static fromObject(obj: IDoseResponse) {
     return new DoseResponse(obj);
   }
