@@ -13,7 +13,7 @@ import {
   updateTransport,
   updateVariableDensity
 } from '../actions/actions';
-import {fetchCalculationDetails, fetchUrl} from '../../../services/api';
+import {fetchApiWithToken, fetchCalculationDetails} from '../../../services/api';
 import {loadSoilmodel} from '../../../core/model/modflow/soilmodel/services';
 import {useDispatch, useSelector} from 'react-redux';
 import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
@@ -79,130 +79,119 @@ const DataFetcherWrapper = (props: IProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modelId]);
 
-  const fetchModel = (id: string) => {
+  const fetchModel = async (id: string) => {
     if (!fetchingModel) {
       setFetchingModel(true);
-      fetchUrl(
-        `modflowmodels/${id}`,
-        (data) => {
-          const mfModel = ModflowModel.fromQuery(data);
-          dispatch(updateModel(mfModel));
-          setFetchingModel(false);
-          setFetchingModelSuccess(true);
+      try {
+        const m = (await fetchApiWithToken(`modflowmodels/${id}`)).data;
+        const mfModel = ModflowModel.fromObject(m);
+        dispatch(updateModel(mfModel));
+        setFetchingModel(false);
+        setFetchingModelSuccess(true);
 
-          fetchBoundaries(id);
-          fetchPackages(id);
-          fetchSoilmodel(mfModel);
-          fetchTransport(id);
-          fetchVariableDensity(id);
+        setFetchingVariableDensity(true);
+        setFetchingTransport(true);
+        setFetchingBoundaries(true);
+        setFetchingPackages(true);
+        setFetchingSoilmodel(true);
 
-          if (mfModel.calculationId) {
-            fetchCalculationDetails(mfModel.calculationId)
-              .then((cData) => dispatch(updateCalculation(Calculation.fromQuery(cData))))
-              // tslint:disable-next-line:no-console
-              .catch((cError) => console.log(cError));
-          }
-        },
-        (cError) => {
-          setFetchingModel(false);
-          setFetchingModelSuccess(false);
-          return handleError(cError);
-        });
+        await fetchBoundaries(m.id);
+        await fetchSoilmodel(m.id);
+        await fetchTransport(m.id);
+        await fetchVariableDensity(m.id);
+        await fetchPackages(m.id);
+
+        if (mfModel.calculationId) {
+          fetchCalculationDetails(mfModel.calculationId)
+            .then((cData) => dispatch(updateCalculation(Calculation.fromQuery(cData))))
+            .catch((cError) => handleError(cError));
+        }
+
+        setFetchingModelSuccess(true);
+      } catch (err) {
+        setFetchingModelSuccess(false);
+        handleError(err);
+      } finally {
+        setFetchingModel(false);
+      }
     }
   };
 
-  const fetchBoundaries = (id: string) => {
-    setFetchingBoundaries(true);
-    fetchUrl(`modflowmodels/${id}/boundaries`,
-      (data) => {
-        dispatch(updateBoundaries(BoundaryCollection.fromQuery(data)));
-        setFetchingBoundaries(false);
-        setFetchingBoundariesSuccess(true);
-      },
-      (cError) => {
-        setFetchingBoundaries(false);
-        setFetchingBoundariesSuccess(false);
-        return handleError(cError);
-      });
+  const fetchBoundaries = async (id: string) => {
+    try {
+      const b = (await fetchApiWithToken(`modflowmodels/${id}/boundaries`)).data;
+      const bc = BoundaryCollection.fromQuery(b);
+      dispatch(updateBoundaries(bc));
+      setFetchingBoundariesSuccess(true);
+    } catch (err) {
+      setFetchingBoundariesSuccess(false);
+      handleError(err);
+    } finally {
+      setFetchingBoundaries(false);
+    }
   };
 
-  const fetchSoilmodel = (mfModel: ModflowModel) => {
-    const id = mfModel.id;
-    setFetchingSoilmodel(true);
-    fetchUrl(`modflowmodels/${id}/soilmodel`,
-      (data) => {
-        setFetchingSoilmodel(false);
-        setFetchingSoilmodelSuccess(true);
-        setSoilmodelFetcher({
-          message: 'Start fetching soilmodel...',
-          fetching: true
-        });
+  const fetchSoilmodel = async (mId: string) => {
+    try {
+      const s = (await fetchApiWithToken(`modflowmodels/${mId}/soilmodel`)).data
 
-        return loadSoilmodel(
-          data,
-          (r) => setSoilmodelFetcher(r),
-          (r) => {
-            setSoilmodelFetcher({
-              message: 'Finished fetching soilmodel.',
-              fetching: false
-            });
-            return dispatch(updateSoilmodel(Soilmodel.fromObject(r)));
-          }
-        );
-      },
-      (cError) => {
-        setFetchingSoilmodel(false);
-        setFetchingSoilmodelSuccess(false);
-        return handleError(cError);
-      });
-  };
-
-  const fetchPackages = (id: string) => {
-    setFetchingPackages(true);
-    fetchUrl(`modflowmodels/${id}/packages`,
-      (data) => {
-        setFetchingPackages(false);
-        setFetchingPackagesSuccess(true);
-        const p = FlopyPackages.fromQuery(data);
-        if (p) {
-          return dispatch(updatePackages(p));
+      return loadSoilmodel(
+        s,
+        (r) => setSoilmodelFetcher(r),
+        (r) => {
+          setSoilmodelFetcher({
+            message: 'Finished fetching soilmodel.',
+            fetching: false
+          });
+          setFetchingSoilmodelSuccess(true);
+          return dispatch(updateSoilmodel(Soilmodel.fromObject(r)));
         }
-      },
-      (cError) => {
-        setFetchingPackages(false);
-        setFetchingPackagesSuccess(false);
-        return handleError(cError);
-      });
+      );
+    } catch (err) {
+      setFetchingSoilmodelSuccess(false);
+      handleError(err);
+    } finally {
+      setFetchingSoilmodel(false);
+    }
   };
 
-  const fetchTransport = (id: string) => {
-    setFetchingTransport(true);
-    fetchUrl(`modflowmodels/${id}/transport`,
-      (data) => {
-        dispatch(updateTransport(Transport.fromQuery(data)));
-        setFetchingTransport(false);
-        setFetchingTransportSuccess(true);
-      },
-      (cError) => {
-        setFetchingTransport(false);
-        setFetchingTransportSuccess(false);
-        return handleError(cError);
-      });
+  const fetchPackages = async (mId: string) => {
+    try {
+      const p = (await fetchApiWithToken(`modflowmodels/${mId}/packages`)).data
+      dispatch(updatePackages(FlopyPackages.fromObject(p)));
+      setFetchingPackagesSuccess(true);
+    } catch (err) {
+      handleError(err)
+      setFetchingPackagesSuccess(false);
+    } finally {
+      setFetchingPackages(false);
+    }
   };
 
-  const fetchVariableDensity = (id: string) => {
-    setFetchingVariableDensity(true);
-    fetchUrl(`modflowmodels/${id}/variableDensity`,
-      (data) => {
-        dispatch(updateVariableDensity(VariableDensity.fromQuery(data)));
-        setFetchingVariableDensity(false);
-        setFetchingVariableDensitySuccess(true);
-      },
-      (cError) => {
-        setFetchingVariableDensity(true);
-        setFetchingVariableDensitySuccess(false);
-        return handleError(cError);
-      });
+  const fetchTransport = async (mId: string) => {
+    try {
+      const t = (await fetchApiWithToken(`modflowmodels/${mId}/transport`)).data
+      dispatch(updateTransport(Transport.fromObject(t)));
+      setFetchingTransportSuccess(true);
+    } catch (err) {
+      setFetchingTransportSuccess(false);
+      handleError(err);
+    } finally {
+      setFetchingTransport(false);
+    }
+  };
+
+  const fetchVariableDensity = async (mId: string) => {
+    try {
+      const v = (await fetchApiWithToken(`modflowmodels/${mId}/variableDensity`)).data
+      dispatch(updateVariableDensity(VariableDensity.fromObject(v)));
+      setFetchingVariableDensitySuccess(true);
+    } catch (err) {
+      setFetchingVariableDensitySuccess(false);
+      handleError(err);
+    } finally {
+      setFetchingVariableDensity(false);
+    }
   };
 
   const handleError = (dError: any) => {
@@ -251,7 +240,10 @@ const DataFetcherWrapper = (props: IProps) => {
             {renderList([
               {name: 'Main model', loading: fetchingModel, success: fetchingModelSuccess},
               {name: 'Boundaries', loading: fetchingBoundaries, success: fetchingBoundariesSuccess},
-              {name: renderSoilmodel(), loading: fetchingSoilmodel, success: fetchingSoilmodelSuccess},
+              {
+                name: renderSoilmodel(), loading: fetchingSoilmodel || soilmodelFetcher.fetching,
+                success: fetchingSoilmodelSuccess
+              },
               {name: 'Transport', loading: fetchingTransport, success: fetchingTransportSuccess},
               {
                 name: 'Variable Density',
