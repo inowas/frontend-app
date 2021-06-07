@@ -20,8 +20,6 @@ interface IProps {
 }
 
 const Calculate = (props: IProps) => {
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [canBeCalculated, setCanBeCalculated] = useState<boolean>(true);
     const [isCalculating, setIsCalculating] = useState<boolean>(false);
     const [showProgress, setShowProgress] = useState<boolean>(false);
@@ -29,20 +27,25 @@ const Calculate = (props: IProps) => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-
         const {calculation, model, packages} = props;
 
-        /*if (model.readOnly) {
+        if (model.readOnly) {
             setCanBeCalculated(false);
             setShowProgress(false);
             return;
-        }*/
+        }
 
         if (!calculation || !packages) {
             setCanBeCalculated(true);
             setShowProgress(false);
             return;
         }
+
+        console.log({
+          state: calculation.state,
+          model: model.calculationId,
+          packages: packages.calculation_id
+        })
 
         if (calculation.state >= CALCULATION_STARTED && calculation.state < CALCULATION_STATE_CALCULATING) {
             setCanBeCalculated(false);
@@ -58,12 +61,17 @@ const Calculate = (props: IProps) => {
         }
 
         if (model.calculationId === packages.calculation_id) {
-            setCanBeCalculated(false);
+            //setCanBeCalculated(false);
             setShowProgress(true);
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.calculation, props.model, props.packages]);
+
+    const handleClickButton = () => {
+      setIsCalculating(true);
+      dispatch(props.startCalculation());
+    };
 
     const renderMapOrLog = () => {
 
@@ -99,9 +107,9 @@ const Calculate = (props: IProps) => {
                 <Grid.Column width={6}>
                     <Header as={'h3'}>Calculation</Header>
                     <CalculationButton
-                        disabled={false}
+                        disabled={!canBeCalculated}
                         loading={isCalculating}
-                        onClick={() => dispatch(props.startCalculation())}
+                        onClick={handleClickButton}
                         visible={true}
                     />
 

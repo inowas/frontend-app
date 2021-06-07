@@ -5,8 +5,8 @@ import {IT03Reducer} from '../../../../t03/reducers';
 import {IT20Reducer} from '../../../../t20/reducers';
 import {Message} from 'semantic-ui-react';
 import {
-    fetchCalculationDetails,
-    sendModflowCalculationRequest
+  fetchCalculationDetails, sendCommand,
+  sendModflowCalculationRequest
 } from '../../../../../services/api';
 import {useDispatch} from 'react-redux';
 import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
@@ -23,6 +23,7 @@ import FlopyModpath from '../../../../../core/model/flopy/packages/mp/FlopyModpa
 import FlopyMt3d from '../../../../../core/model/flopy/packages/mt/FlopyMt3d';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import FlopySeawat from '../../../../../core/model/flopy/packages/swt/FlopySeawat';
+import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import React, {useEffect, useRef, useState} from 'react';
 import Soilmodel from '../../../../../core/model/modflow/soilmodel/Soilmodel';
 import Transport from '../../../../../core/model/modflow/transport/Transport';
@@ -109,11 +110,7 @@ const CalculationProcess = (props: IProps) => {
                 try {
                     dispatch(props.updateProcessedPackages(p));
 
-
-                    // TODO: Save calc_id in 
-                    // await sendCommand(ModflowModelCommand.updateModflowModelCalculationId(model.id, hash));
-
-
+                    await sendCommand(ModflowModelCommand.updateModflowModelCalculationId(model.id, hash));
 
                     dispatch(props.updateCalculation(
                         Calculation.fromCalculationIdAndState(hash, CALCULATION_STATE_SENDING_DATA)
