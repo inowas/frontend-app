@@ -5,7 +5,7 @@ import DoseResponse from './DoseResponse';
 import ExposureScenario from './ExposureScenario';
 import Health from './Health';
 import IExposure from './Exposure.type';
-import IQmra, {IQmraRequest} from './Qmra.type';
+import IQmra, {IQmraRequest, IQmraRequestConfig} from './Qmra.type';
 import Pathogen from './Pathogen';
 import TreatmentProcess from './TreatmentProcess';
 import TreatmentScheme from './TreatmentScheme';
@@ -283,16 +283,18 @@ class Qmra extends GenericObject<IQmra> {
     return this;
   }
 
-  public toPayload() {
+  public toPayload(): IQmraRequestConfig {
     return {
-      exposure: this.generateExposure(),
-      inflow: this.inflow.map((p) => p.toPayload()),
-      treatment: {
-        processes: this.treatmentProcesses.map((p) => p.toPayload()),
-        schemes: this.treatmentSchemes.map((s) => s.toPayload())
-      },
-      doseresponse: this.doseResponse.map((r) => r.toPayload()),
-      health: this.health.map((h) => h.toPayload())
+      config: {
+        exposure: this.generateExposure(),
+        inflow: this.inflow.map((p) => p.toPayload()),
+        treatment: {
+          processes: this.treatmentProcesses.map((p) => p.toPayload()),
+          schemes: this.treatmentSchemes.map((s) => s.toPayload())
+        },
+        doseresponse: this.doseResponse.map((r) => r.toPayload()),
+        health: this.health.map((h) => h.toPayload())
+      }
     };
   }
 

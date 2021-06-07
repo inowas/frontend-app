@@ -65,9 +65,9 @@ const PathogenEditor = ({qmra, onChange}: IProps) => {
           ...defaultDoseResponses[0],
           id: cDoseResponse.id,
           pathogenId: p.id,
-          k: defaultDoseResponses[0].k || 0,
-          alpha: defaultDoseResponses[0].alpha || 0,
-          n50: defaultDoseResponses[0].n50 || 0
+          k: defaultDoseResponses[0].k || null,
+          alpha: defaultDoseResponses[0].alpha || null,
+          n50: defaultDoseResponses[0].n50 || null
         };
         setDefaultDoseResponse(cDoseResponse);
       }

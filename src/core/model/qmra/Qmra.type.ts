@@ -34,4 +34,8 @@ export interface IQmraRequest {
   health: IHealthPayload[];
 }
 
+export interface IQmraRequestConfig {
+  config: IQmraRequest;
+}
+
 export default IQmra;

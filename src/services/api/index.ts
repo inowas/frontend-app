@@ -3,7 +3,7 @@ import {CallbackFunction, ErrorCallbackFunction} from '../../scenes/types';
 import {IBudgetData, IModflowFile, IRasterFileMetadata} from './types';
 import {IDateTimeValue} from '../../core/model/rtm/monitoring/Sensor.type';
 import {IHeatTransportRequest} from '../../core/model/htm/Htm.type';
-import { IQmraRequest } from '../../core/model/qmra/Qmra.type';
+import {IQmraRequestConfig} from '../../core/model/qmra/Qmra.type';
 import {ISimpleTool} from '../../core/model/types';
 import {InterpolationType} from '../../scenes/shared/rasterData/types';
 import AbstractCommand from '../../core/model/command/AbstractCommand';
@@ -168,7 +168,7 @@ export const makeHeatTransportRequest = (data: IHeatTransportRequest) => {
     }).then((r) => r.data);
 };
 
-export const makeQmraRequest = (data: IQmraRequest, onSuccess: (r: any) => any,
+export const makeQmraRequest = (data: IQmraRequestConfig, onSuccess: (r: any) => any,
                                 onError: (e: AxiosError) => any) => {
     const json = JSON.stringify(data);
     return axios.request({
