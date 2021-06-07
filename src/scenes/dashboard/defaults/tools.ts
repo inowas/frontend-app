@@ -1,6 +1,6 @@
 export const ROLE_USER = 'ROLE_USER';
 
-export interface ITool {
+export interface IToolMenuItem {
     slug: string;
     name: string;
     path: string;
@@ -9,15 +9,18 @@ export interface ITool {
     instances: any[];
 }
 
-export interface IToolInstance {
-    id: string;
-    tool: string;
-    created_at: string;
-    name: string;
-    user_name: string;
-}
+export const myTools: IToolMenuItem[] = [
+    {
+        slug: 'myTools',
+        name: 'My tools',
+        path: '/my/tools',
+        subPath: '',
+        role: ROLE_USER,
+        instances: []
+    }
+];
 
-const availableTools: ITool[] = [
+const availableTools: IToolMenuItem[] = [
     {
         slug: 'T01',
         name: 'SAT basin infiltration capacity reduction database',
@@ -120,6 +123,13 @@ const availableTools: ITool[] = [
         role: ROLE_USER,
         instances: []
     }, {
+        slug: 'T15',
+        name: 'Quantitative microbial risk assessment',
+        path: '/tools/',
+        subPath: '',
+        role: ROLE_USER,
+        instances: []
+    }, {
         slug: 'T17',
         name: 'Global MAR portal',
         path: '/tools/',
@@ -136,6 +146,13 @@ const availableTools: ITool[] = [
     }, {
         slug: 'T19',
         name: 'Heat transport',
+        path: '/tools/',
+        subPath: '',
+        role: ROLE_USER,
+        instances: []
+    }, {
+        slug: 'T20',
+        name: 'Real time modelling',
         path: '/tools/',
         subPath: '',
         role: ROLE_USER,

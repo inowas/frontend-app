@@ -1,16 +1,16 @@
-import React from 'react';
+import {calculateTravelTimeT13C, calculateXwd} from '../calculations';
+
 import PropTypes from 'prop-types';
-import {pure} from 'recompose';
-import {calculateXwd, calculateTravelTimeT13C} from '../calculations';
+import React from 'react';
 
 import {
-    ResponsiveContainer,
+    CartesianGrid,
     Label,
-    LineChart,
     Line,
+    LineChart,
+    ResponsiveContainer,
     XAxis,
-    YAxis,
-    CartesianGrid
+    YAxis
 } from 'recharts';
 
 import {Button, Grid, Icon, Segment} from 'semantic-ui-react';
@@ -45,14 +45,14 @@ const renderLabels = (xe, xi, L, data, xwd) => {
     if (xe > L + Math.abs(xwd)) {
         return (
             <Segment inverted color='orange' secondary style={styles.diagramErrorLabel}>
-                <p>Arrival location, x<sub>e</sub>, can not be bigger than L<sup>'</sup>+|xwd|.</p>
+                <p>Arrival location, x<sub>e</sub>, can not be bigger than L<sup>&apos;</sup>+|xwd|.</p>
             </Segment>
         );
     }
     if (xi > L) {
         return (
             <Segment inverted color='orange' secondary style={styles.diagramErrorLabel}>
-                <p>Initial location, x<sub>i</sub>, can not be bigger than the Aquifer length, L<sup>'</sup>.</p>
+                <p>Initial location, x<sub>i</sub>, can not be bigger than the Aquifer length, L<sup>&apos;</sup>.</p>
             </Segment>
         );
     }
@@ -146,4 +146,4 @@ Chart.propTypes = {
     parameters: PropTypes.array.isRequired,
 };
 
-export default pure(Chart);
+export default Chart;

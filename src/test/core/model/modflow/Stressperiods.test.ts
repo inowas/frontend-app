@@ -1,6 +1,6 @@
-import moment from 'moment';
-import {Stressperiod, Stressperiods, TimeUnit} from '../../../../core/model/modflow';
 import {ITimeUnit} from '../../../../core/model/modflow/TimeUnit.type';
+import {Stressperiod, Stressperiods, TimeUnit} from '../../../../core/model/modflow';
+import moment from 'moment';
 
 test('Stressperiods create with no sps', () => {
 

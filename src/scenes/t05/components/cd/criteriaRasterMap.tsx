@@ -1,20 +1,20 @@
-import {DrawEvents, LeafletMouseEvent} from 'leaflet';
-import React, {useEffect, useState} from 'react';
-import {FeatureGroup, Map, Rectangle} from 'react-leaflet';
-import {EditControl} from 'react-leaflet-draw';
-import {Button, Icon} from 'semantic-ui-react';
-import {BoundingBox} from '../../../../core/model/geometry';
-import GridSize from '../../../../core/model/geometry/GridSize';
-import {RasterLayer} from '../../../../core/model/mcda/gis';
-import {getActiveCellFromCoordinate} from '../../../../services/geoTools';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
-import Rainbow from '../../../../services/rainbowvis/Rainbowvis';
-import {ILegendItemDiscrete, RainbowOrLegend} from '../../../../services/rainbowvis/types';
+import {BoundingBox} from '../../../../core/model/geometry';
+import {Button, Icon} from 'semantic-ui-react';
 import {ColorLegend, ColorLegendDiscrete} from '../../../shared/rasterData';
+import {DrawEvents, LeafletMouseEvent} from 'leaflet';
+import {EditControl} from 'react-leaflet-draw';
+import {FeatureGroup, Map, Rectangle} from 'react-leaflet';
+import {ILegendItemDiscrete, RainbowOrLegend} from '../../../../services/rainbowvis/types';
+import {RasterLayer} from '../../../../core/model/mcda/gis';
 import {createGridData} from '../../../shared/rasterData/helpers';
-import RasterDataImage from '../../../shared/rasterData/rasterDataImage';
-import CanvasHeatMapOverlay from '../../../shared/rasterData/ReactLeafletHeatMapCanvasOverlay';
+import {getActiveCellFromCoordinate} from '../../../../services/geoTools';
 import {getStyle} from '../../../t03/components/maps';
+import CanvasHeatMapOverlay from '../../../shared/rasterData/ReactLeafletHeatMapCanvasOverlay';
+import GridSize from '../../../../core/model/geometry/GridSize';
+import Rainbow from '../../../../services/rainbowvis/Rainbowvis';
+import RasterDataImage from '../../../shared/rasterData/rasterDataImage';
+import React, {useEffect, useState} from 'react';
 
 const options = {
     edit: {

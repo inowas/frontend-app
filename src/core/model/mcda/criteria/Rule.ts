@@ -1,6 +1,6 @@
+import {IRule} from './Rule.type';
 import {cloneDeep} from 'lodash';
 import uuidv4 from 'uuid/v4';
-import {IRule} from './Rule.type';
 
 class Rule {
     public get id() {

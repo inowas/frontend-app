@@ -1,10 +1,10 @@
-import {WellBoundary} from '../../../modflow/boundaries';
-import BoundaryCollection from '../../../modflow/boundaries/BoundaryCollection';
-import Stressperiods from '../../../modflow/Stressperiods';
 import {IPropertyValueObject} from '../../../types';
-import {calculatePointBoundarySpData} from '../../helpers';
 import {IStressPeriodData} from './FlopyModflow.type';
+import {WellBoundary} from '../../../modflow/boundaries';
+import {calculatePointBoundarySpData} from '../../helpers';
+import BoundaryCollection from '../../../modflow/boundaries/BoundaryCollection';
 import FlopyModflowBoundary from './FlopyModflowBoundary';
+import Stressperiods from '../../../modflow/Stressperiods';
 
 /*
 https://modflowpy.github.io/flopydoc/mfwel.html

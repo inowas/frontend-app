@@ -1,9 +1,9 @@
 import uuid from 'uuid';
-import PrometheusDataSource from '../../../core/model/rtm/PrometheusDataSource';
 
-import {IPrometheusDataSource} from '../../../core/model/rtm/Sensor.type';
+import {IPrometheusDataSource} from '../../../core/model/rtm/monitoring/Sensor.type';
+import {PrometheusDataSource} from '../../../core/model/rtm/monitoring';
 
-test('Test PrometheusDataSource, create from params', () => {
+test('PrometheusDataSource, create from params', () => {
     const obj: IPrometheusDataSource = {
         id: uuid.v4(),
         protocol: 'https',
@@ -24,7 +24,7 @@ test('Test PrometheusDataSource, create from params', () => {
         );
 });
 
-test('Test PrometheusDataSource, loading pre-loaded data', async () => {
+test('PrometheusDataSource, loading pre-loaded data', async () => {
     const obj: IPrometheusDataSource = {
         id: uuid.v4(),
         protocol: 'https',

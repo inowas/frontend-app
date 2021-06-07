@@ -1,5 +1,5 @@
-import React from 'react';
 import {Icon} from 'semantic-ui-react';
+import React from 'react';
 
 export interface IMenuItem {
     name: string;
@@ -107,22 +107,6 @@ export const menuItems: IMenu = [
                 name: 'Calibration',
                 property: 'calibration',
                 icon: <Icon name="calculator"/>,
-                disabled: true
-            }
-        ]
-    }, {
-        header: 'Computation',
-        items: [
-            {
-                name: 'Modpath',
-                property: 'modpath',
-                icon: <Icon name="code branch"/>,
-                disabled: true
-            },
-            {
-                name: 'Optimization',
-                property: 'optimization',
-                icon: <Icon name="sliders horizontal"/>,
                 disabled: true
             }
         ]

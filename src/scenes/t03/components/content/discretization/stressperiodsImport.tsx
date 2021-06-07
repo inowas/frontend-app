@@ -1,10 +1,10 @@
-import React, {useState} from 'react';
+import {AdvancedCsvUpload} from '../../../../shared/simpleTools/upload';
 import {Button, Divider, Grid, Header, Icon, List, Modal, Segment} from 'semantic-ui-react';
-import Stressperiods from '../../../../../core/model/modflow/Stressperiods';
+import {ECsvColumnType} from '../../../../shared/simpleTools/upload/types';
 import {IStressPeriods} from '../../../../../core/model/modflow/Stressperiods.type';
 import {ITimeUnit} from '../../../../../core/model/modflow/TimeUnit.type';
-import {AdvancedCsvUpload} from '../../../../shared/simpleTools/upload';
-import {ECsvColumnType} from '../../../../shared/simpleTools/upload/types';
+import React, {useState} from 'react';
+import Stressperiods from '../../../../../core/model/modflow/Stressperiods';
 
 interface IProps {
     onChange: (sp: Stressperiods) => any;

@@ -1,5 +1,5 @@
-import {cloneDeep} from 'lodash';
 import {ISoilmodel1v0, ISoilmodel2v0} from './Soilmodel.type';
+import {cloneDeep} from 'lodash';
 
 class SoilmodelLegacy {
     public static fromObject(obj: ISoilmodel1v0 | ISoilmodel2v0) {

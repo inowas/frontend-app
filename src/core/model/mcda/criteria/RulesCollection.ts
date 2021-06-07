@@ -1,6 +1,6 @@
-import {cloneDeep} from 'lodash';
 import {Collection} from '../../collection/Collection';
 import {IRule} from './Rule.type';
+import {cloneDeep} from 'lodash';
 
 class RulesCollection extends Collection<IRule> {
     public static fromObject(obj: IRule[]) {

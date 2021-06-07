@@ -1,27 +1,27 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {useHistory, useRouteMatch} from 'react-router-dom';
-import {Grid, Menu, Segment} from 'semantic-ui-react';
-import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
+import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
+import {EMessageState, IMessage} from '../../../../../core/model/messages/Message.type';
+import {FlopySeawat} from '../../../../../core/model/flopy';
 import {
-    FlopySeawat,
     FlopySeawatPackage,
     FlopySeawatSwtvdf,
     FlopySeawatSwtvsc
 } from '../../../../../core/model/flopy/packages/swt';
+import {Grid, Menu, Segment} from 'semantic-ui-react';
 import {IFlopySeawat} from '../../../../../core/model/flopy/packages/swt/FlopySeawat';
-import FlopySeawatSwt from '../../../../../core/model/flopy/packages/swt/FlopySeawatSwt';
-import {EMessageState, IMessage} from '../../../../../core/model/messages/Message.type';
-import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
-import {ModflowModel, Transport, VariableDensity} from '../../../../../core/model/modflow';
-import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {IRootReducer} from '../../../../../reducers';
-import {sendCommand} from '../../../../../services/api';
-import ContentToolBar from '../../../../shared/ContentToolbar2';
-import {addMessage, removeMessage, updateMessage, updatePackages} from '../../../actions/actions';
-import ModflowModelCommand from '../../../commands/modflowModelCommand';
-import {messageDirty, messageError, messageSaving} from '../../../defaults/messages';
+import {ModflowModel, Transport, VariableDensity} from '../../../../../core/model/modflow';
 import {SeawatPackageProperties, VdfPackageProperties, VscPackageProperties} from './packages';
+import {addMessage, removeMessage, updateMessage, updatePackages} from '../../../actions/actions';
+import {messageDirty, messageError, messageSaving} from '../../../defaults/messages';
+import {sendCommand} from '../../../../../services/api';
+import {useDispatch, useSelector} from 'react-redux';
+import {useHistory, useRouteMatch} from 'react-router-dom';
+import ContentToolBar from '../../../../shared/ContentToolbar2';
+import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
+import FlopySeawatSwt from '../../../../../core/model/flopy/packages/swt/FlopySeawatSwt';
+import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
+import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import React, {useEffect, useRef, useState} from 'react';
 
 interface IProps {
     boundaries: BoundaryCollection;

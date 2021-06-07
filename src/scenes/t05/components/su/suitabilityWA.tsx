@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
 import {Button, Dimmer, Header, Progress} from 'semantic-ui-react';
+import {IMCDA} from '../../../../core/model/mcda/MCDA.type';
 import {MCDA} from '../../../../core/model/mcda';
 import {WeightAssignmentsCollection} from '../../../../core/model/mcda/criteria';
-import {IMCDA} from '../../../../core/model/mcda/MCDA.type';
 import {dropData, retrieveDroppedData} from '../../../../services/api';
+import React, {useState} from 'react';
 import WeightAssignmentTable from './weightAssignmentTable';
 
 interface IProps {

@@ -1,10 +1,11 @@
-import {LTOB} from 'downsample';
-// @ts-ignore todo
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import {DataPoint} from 'downsample/dist/types';
-import React, {useEffect, useState} from 'react';
+import {DataSource, IDateTimeValue} from '../../../core/model/rtm/monitoring/Sensor.type';
+import {LTOB} from 'downsample';
 import {Line, LineChart, YAxis} from 'recharts';
 import {Loader} from 'semantic-ui-react';
-import {DataSource, IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
+import React, {useEffect, useState} from 'react';
 
 interface IProps {
     datasource: DataSource | null;
@@ -45,7 +46,7 @@ const TinyLineChart = (props: IProps) => {
     const downSampledDataLTOB: DataPoint[] = LTOB(data.map((ds: IDateTimeValue) => ({
         x: ds.timeStamp,
         y: ds.value
-    })), 50);
+    })), 50) as DataPoint[];
 
     return (
         <LineChart width={100} height={30} data={downSampledDataLTOB} key={Math.random()}>

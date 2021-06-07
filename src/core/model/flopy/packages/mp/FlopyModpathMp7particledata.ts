@@ -1,10 +1,10 @@
 import FlopyModpathPackage from './FlopyModpathPackage';
 
 export default class FlopyModpathMp7particledata extends FlopyModpathPackage {
-    private _drape: number = 0;
-    private _columncelldivisions: number = 3;
-    private _rowcelldivisions: number = 3;
-    private _layercelldivisions: number = 3;
+    private _drape = 0;
+    private _columncelldivisions = 3;
+    private _rowcelldivisions = 3;
+    private _layercelldivisions = 3;
 
     get drape(): number {
         return this._drape;

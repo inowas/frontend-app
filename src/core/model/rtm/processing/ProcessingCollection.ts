@@ -1,7 +1,7 @@
-import {cloneDeep} from 'lodash';
 import {Collection} from '../../collection/Collection';
-import {IDateTimeValue} from '../Sensor.type';
+import {IDateTimeValue} from '../monitoring/Sensor.type';
 import {IProcessing} from './Processing.type';
+import {cloneDeep} from 'lodash';
 import ProcessingFactory from './ProcessingFactory';
 
 export class ProcessingCollection extends Collection<IProcessing> {

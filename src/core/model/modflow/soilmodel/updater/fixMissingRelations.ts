@@ -1,8 +1,8 @@
-import uuidv4 from 'uuid/v4';
-import {defaultSoilmodelParameters} from '../../../../../scenes/t03/defaults/soilmodel';
 import {ISoilmodel} from '../Soilmodel.type';
 import {ISoilmodelLayer} from '../SoilmodelLayer.type';
 import {IZone} from '../Zone.type';
+import {defaultSoilmodelParameters} from '../../../../../scenes/t03/defaults/soilmodel';
+import uuidv4 from 'uuid/v4';
 
 const fixMissingRelations = (soilmodel: ISoilmodel) => {
     const defaultZone = soilmodel.properties.zones.filter((z) => z.isDefault);

@@ -1,8 +1,4 @@
 import * as turf from '@turf/turf';
-import geojson from 'geojson';
-import {DrawEvents} from 'leaflet';
-import React, {ChangeEvent, useEffect, useState} from 'react';
-import {useDispatch} from 'react-redux';
 import {
     Button,
     Checkbox,
@@ -17,20 +13,24 @@ import {
     Modal,
     Segment
 } from 'semantic-ui-react';
-import {Geometry} from '../../../../../../core/model/geometry';
-import {ICells} from '../../../../../../core/model/geometry/Cells.type';
+import {CALCULATE_CELLS_INPUT} from '../../../../../modflow/worker/t03.worker';
 import {Cells, ModflowModel} from '../../../../../../core/model/modflow';
-import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
-import {Zone, ZonesCollection} from '../../../../../../core/model/modflow/soilmodel';
-import LayersCollection from '../../../../../../core/model/modflow/soilmodel/LayersCollection';
+import {DrawEvents} from 'leaflet';
+import {Geometry} from '../../../../../../core/model/geometry';
+import {ICalculateCellsInputData} from '../../../../../modflow/worker/t03.worker.type';
+import {ICells} from '../../../../../../core/model/geometry/Cells.type';
 import {IZone} from '../../../../../../core/model/modflow/soilmodel/Zone.type';
-import {addMessage} from '../../../../actions/actions';
-import {messageError} from '../../../../defaults/messages';
-import {CALCULATE_CELLS_INPUT} from '../../../../worker/t03.worker';
-import {ICalculateCellsInputData} from '../../../../worker/t03.worker.type';
-import {asyncWorker} from '../../../../worker/worker';
 import {UploadGeoJSONModal} from '../../create';
+import {Zone, ZonesCollection} from '../../../../../../core/model/modflow/soilmodel';
 import {ZonesMap} from './index';
+import {addMessage} from '../../../../actions/actions';
+import {asyncWorker} from '../../../../../modflow/worker/worker';
+import {messageError} from '../../../../defaults/messages';
+import {useDispatch} from 'react-redux';
+import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
+import LayersCollection from '../../../../../../core/model/modflow/soilmodel/LayersCollection';
+import React, {ChangeEvent, useEffect, useState} from 'react';
+import geojson from 'geojson';
 
 interface IProps {
     boundaries: BoundaryCollection;

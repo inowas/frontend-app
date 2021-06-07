@@ -1,23 +1,24 @@
-import Uuid from 'uuid';
-import FileDataSource from '../../../core/model/rtm/FileDataSource';
-import {IFileDataSource} from '../../../core/model/rtm/Sensor.type';
 import {DATADROPPER_URL} from '../../../services/api';
+import {FileDataSource} from '../../../core/model/rtm/monitoring';
+import {IFileDataSource} from '../../../core/model/rtm/monitoring/Sensor.type';
+import Uuid from 'uuid';
 
-test('Test FileDataSource, loading pre-loaded data', async () => {
+test('FileDataSource, loading pre-loaded data', async () => {
     const obj: IFileDataSource = {
         id: Uuid.v4(),
         file: {filename: '', server: DATADROPPER_URL}
     };
 
     const ds = new FileDataSource(obj);
-
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     ds._props.data = [{timeStamp: 1, value: 1.2}];
-    await ds.loadData();
+    const data = await ds.loadData();
+    expect(data).toEqual([{timeStamp: 1, value: 1.2}]);
     expect(ds.data).toEqual([{timeStamp: 1, value: 1.2}]);
 });
 
-test('Test FileDataSource, loading from http-resource', async () => {
+test('FileDataSource, loading from http-resource', async () => {
     const obj: IFileDataSource = {
         id: Uuid.v4(),
         file: {
@@ -27,12 +28,13 @@ test('Test FileDataSource, loading from http-resource', async () => {
     };
 
     const ds = new FileDataSource(obj);
-    await ds.loadData();
+    const data = await ds.loadData();
+    expect(data && data.length).toEqual(15305);
     expect(ds.data && ds.data.length).toEqual(15305);
 });
 
 // async/await can be used.
-test('Test FileDataSource from data', async () => {
+test('FileDataSource from data', async () => {
     const data = [{
         timeStamp: 123444,
         value: 1
@@ -40,8 +42,9 @@ test('Test FileDataSource from data', async () => {
 
     const ds = await FileDataSource.fromData(data);
     expect(ds).toBeInstanceOf(FileDataSource);
-    await ds.loadData();
-    expect(ds.data).toEqual(data);
+    const expectedData = await ds.loadData();
+    expect(data).toEqual(expectedData);
+    expect(data).toEqual(ds.data);
     expect(ds.file).toEqual({
         filename: 'fb6da03381069eec2492185b9ab2879f03a962af.json',
         server: DATADROPPER_URL
@@ -49,12 +52,150 @@ test('Test FileDataSource from data', async () => {
 });
 
 // async/await can be used.
-test('Test FileDataSource from filename', async () => {
+test('FileDataSource from filename', async () => {
     const ds = await FileDataSource.fromFile({
         filename: 'fb6da03381069eec2492185b9ab2879f03a962af.json',
         server: DATADROPPER_URL
     });
     expect(ds).toBeInstanceOf(FileDataSource);
-    await ds.loadData();
     expect(ds.data).toEqual([{timeStamp: 123444, value: 1}]);
+
+    const data = await ds.loadData();
+    expect(data).toEqual([{timeStamp: 123444, value: 1}]);
 });
+
+test('FileDataSource setBegin', async () => {
+    const obj: IFileDataSource = {
+        id: Uuid.v4(),
+        file: {filename: '', server: DATADROPPER_URL}
+    };
+
+    const ds = new FileDataSource(obj);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    ds._props.data = [
+        {timeStamp: 1606760000, value: 1.0},
+        {timeStamp: 1606761000, value: 1.0},
+        {timeStamp: 1606762000, value: 1.0},
+        {timeStamp: 1606763000, value: 1.0},
+        {timeStamp: 1606764000, value: 1.0},
+    ];
+    const data = await ds.loadData();
+    expect(data).toEqual([
+        {timeStamp: 1606760000, value: 1.0},
+        {timeStamp: 1606761000, value: 1.0},
+        {timeStamp: 1606762000, value: 1.0},
+        {timeStamp: 1606763000, value: 1.0},
+        {timeStamp: 1606764000, value: 1.0},
+    ]);
+
+    ds.begin = 1606761050;
+    const d = await ds.loadData();
+    expect(d).toEqual([
+        {timeStamp: 1606762000, value: 1.0},
+        {timeStamp: 1606763000, value: 1.0},
+        {timeStamp: 1606764000, value: 1.0},
+    ]);
+});
+
+test('FileDataSource setEnd', async () => {
+    const obj: IFileDataSource = {
+        id: Uuid.v4(),
+        file: {filename: '', server: DATADROPPER_URL}
+    };
+
+    const ds = new FileDataSource(obj);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    ds._props.data = [
+        {timeStamp: 1606760000, value: 1.0},
+        {timeStamp: 1606761000, value: 1.0},
+        {timeStamp: 1606762000, value: 1.0},
+        {timeStamp: 1606763000, value: 1.0},
+        {timeStamp: 1606764000, value: 1.0},
+    ];
+    const data = await ds.loadData();
+    expect(data).toEqual([
+        {timeStamp: 1606760000, value: 1.0},
+        {timeStamp: 1606761000, value: 1.0},
+        {timeStamp: 1606762000, value: 1.0},
+        {timeStamp: 1606763000, value: 1.0},
+        {timeStamp: 1606764000, value: 1.0},
+    ]);
+
+    ds.end = 1606762050;
+    const d = await ds.loadData();
+    expect(d).toEqual([
+        {timeStamp: 1606760000, value: 1.0},
+        {timeStamp: 1606761000, value: 1.0},
+        {timeStamp: 1606762000, value: 1.0},
+    ]);
+});
+
+test('FileDataSource setGte', async () => {
+    const obj: IFileDataSource = {
+        id: Uuid.v4(),
+        file: {filename: '', server: DATADROPPER_URL}
+    };
+
+    const ds = new FileDataSource(obj);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    ds._props.data = [
+        {timeStamp: 1606760000, value: 1.1},
+        {timeStamp: 1606761000, value: 1.1},
+        {timeStamp: 1606762000, value: 1.2},
+        {timeStamp: 1606763000, value: 1.2},
+        {timeStamp: 1606764000, value: 1.1},
+    ];
+    const data = await ds.loadData();
+    expect(data).toEqual([
+        {timeStamp: 1606760000, value: 1.1},
+        {timeStamp: 1606761000, value: 1.1},
+        {timeStamp: 1606762000, value: 1.2},
+        {timeStamp: 1606763000, value: 1.2},
+        {timeStamp: 1606764000, value: 1.1},
+    ]);
+
+    ds.gte = 1.2;
+    const d = await ds.loadData();
+    expect(d).toEqual([
+        {timeStamp: 1606762000, value: 1.2},
+        {timeStamp: 1606763000, value: 1.2},
+    ]);
+});
+
+test('FileDataSource setLte', async () => {
+    const obj: IFileDataSource = {
+        id: Uuid.v4(),
+        file: {filename: '', server: DATADROPPER_URL}
+    };
+
+    const ds = new FileDataSource(obj);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    ds._props.data = [
+        {timeStamp: 1606760000, value: 1.0},
+        {timeStamp: 1606761000, value: 1.1},
+        {timeStamp: 1606762000, value: 1.2},
+        {timeStamp: 1606763000, value: 1.2},
+        {timeStamp: 1606764000, value: 1.1},
+    ];
+    const data = await ds.loadData();
+    expect(data).toEqual([
+        {timeStamp: 1606760000, value: 1.0},
+        {timeStamp: 1606761000, value: 1.1},
+        {timeStamp: 1606762000, value: 1.2},
+        {timeStamp: 1606763000, value: 1.2},
+        {timeStamp: 1606764000, value: 1.1},
+    ]);
+
+    ds.lte = 1.1;
+    const d = await ds.loadData();
+    expect(d).toEqual([
+        {timeStamp: 1606760000, value: 1.0},
+        {timeStamp: 1606761000, value: 1.1},
+        {timeStamp: 1606764000, value: 1.1},
+    ]);
+});
+

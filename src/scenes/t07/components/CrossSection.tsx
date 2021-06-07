@@ -1,7 +1,7 @@
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
 import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 import {Calculation, ModflowModel, Soilmodel} from '../../../core/model/modflow';
-import {EResultType} from '../../t03/components/content/results/flowResults';
+import {EResultType} from '../../modflow/components/content/results/flowResults';
 import {Grid, Header, Segment} from 'semantic-ui-react';
 import {IBoundary} from '../../../core/model/modflow/boundaries/Boundary.type';
 import {ICalculation} from '../../../core/model/modflow/Calculation.type';
@@ -250,7 +250,6 @@ const CrossSection = (props: IProps) => {
                                     col={selectedCol}
                                     row={selectedRow}
                                     show={'row'}
-                                    globalMinMax={globalMinMax}
                                 />
                             </Segment>
                         </Grid.Column>
@@ -262,7 +261,6 @@ const CrossSection = (props: IProps) => {
                                     col={selectedCol}
                                     row={selectedRow}
                                     show={'col'}
-                                    globalMinMax={globalMinMax}
                                 />
                             </Segment>
                         </Grid.Column>

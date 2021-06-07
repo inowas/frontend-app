@@ -1,5 +1,5 @@
-import {booleanCrosses} from '@turf/turf';
 import {BoundingBox, Geometry, GridSize} from '../../../../core/model/geometry';
+import {booleanCrosses} from '@turf/turf';
 import Cells from '../../../../core/model/geometry/Cells';
 export default {};
 

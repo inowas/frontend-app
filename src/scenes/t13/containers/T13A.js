@@ -99,7 +99,7 @@ class T13A extends React.Component {
     render() {
         if (this.state.isLoading) {
             return (
-                <AppContainer navbarItems={navigation} loader/>
+                <AppContainer navbarItems={navigation} loader>Loading</AppContainer>
             );
         }
 
@@ -111,7 +111,7 @@ class T13A extends React.Component {
         return (
             <AppContainer navbarItems={navigation}>
                 <ToolMetaData
-                    tool={data}
+                    tool={tool}
                     readOnly={readOnly}
                     onSave={this.save}
                     saveButton={true}

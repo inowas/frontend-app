@@ -285,143 +285,142 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
         soilmodel: Soilmodel,
         boundaries: BoundaryCollection
     ) => {
-        switch (pType) {
-            case 'bas':
-                this._props.bas = FlopyModflowMfbas.fromObject(this._props.bas).update(model, soilmodel).toObject();
-                break;
+        if (pType === 'bas') {
+            this._props.bas = FlopyModflowMfbas.fromObject(this._props.bas).update(model, soilmodel).toObject();
+        }
 
-            case 'dis':
-                this._props.dis = FlopyModflowMfdis.fromObject(this._props.dis).update(model, soilmodel).toObject();
-                break;
+        if (pType === 'dis') {
+            this._props.dis = FlopyModflowMfdis.fromObject(this._props.dis).update(model, soilmodel).toObject();
+        }
 
-            case 'oc':
-                let oc;
-                this._props.oc ?
-                    oc = FlopyModflowMfoc.fromObject(this._props.oc).update(model, this._props.oc.stress_period_data) :
-                    oc = FlopyModflowMfoc.create(model);
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                oc ? this._props.oc = oc.toObject() : delete this._props.oc;
-                break;
+        if (pType === 'oc') {
+            let oc;
+            this._props.oc ?
+                oc = FlopyModflowMfoc.fromObject(this._props.oc).update(model, this._props.oc.stress_period_data) :
+                oc = FlopyModflowMfoc.create(model);
 
-            case 'chd':
-                let chd;
-                this._props.chd ?
-                    chd = FlopyModflowMfchd.fromObject(this._props.chd).update(boundaries, model.stressperiods) :
-                    chd = FlopyModflowMfchd.create(boundaries, model.stressperiods);
-                chd ? this._props.chd = chd.toObject() : delete this._props.chd;
-                break;
+            if (oc) {
+                this._props.oc = oc.toObject()
+            }
+        }
 
-            case 'ghb':
-                let ghb;
-                this._props.ghb ?
-                    ghb = FlopyModflowMfghb.fromObject(this._props.ghb).update(boundaries, model.stressperiods) :
-                    ghb = FlopyModflowMfghb.create(boundaries, model.stressperiods);
-                ghb ? this._props.ghb = ghb.toObject() : delete this._props.ghb;
-                break;
+        if (pType === 'chd') {
+            let chd;
+            this._props.chd ?
+                chd = FlopyModflowMfchd.fromObject(this._props.chd).update(boundaries, model.stressperiods) :
+                chd = FlopyModflowMfchd.create(boundaries, model.stressperiods);
+            chd ? this._props.chd = chd.toObject() : delete this._props.chd;
+        }
 
-            case 'drn':
-                let drn;
-                this._props.drn ?
-                    drn = FlopyModflowMfdrn.fromObject(this._props.drn).update(boundaries, model.stressperiods) :
-                    drn = FlopyModflowMfdrn.create(boundaries, model.stressperiods);
-                drn ? this._props.drn = drn.toObject() : delete this._props.drn;
-                break;
+        if (pType === 'ghb') {
+            let ghb;
+            this._props.ghb ?
+                ghb = FlopyModflowMfghb.fromObject(this._props.ghb).update(boundaries, model.stressperiods) :
+                ghb = FlopyModflowMfghb.create(boundaries, model.stressperiods);
+            ghb ? this._props.ghb = ghb.toObject() : delete this._props.ghb;
+        }
 
-            case 'evt':
-                let evt;
-                this._props.evt ?
-                    evt = FlopyModflowMfevt.fromObject(this._props.evt)
-                        .update(boundaries, model.stressperiods, model.gridSize.nY, model.gridSize.nX) :
-                    evt = FlopyModflowMfevt.create(boundaries, model.stressperiods, model.gridSize);
-                evt ? this._props.evt = evt.toObject() : delete this._props.evt;
-                break;
+        if (pType === 'drn') {
+            let drn;
+            this._props.drn ?
+                drn = FlopyModflowMfdrn.fromObject(this._props.drn).update(boundaries, model.stressperiods) :
+                drn = FlopyModflowMfdrn.create(boundaries, model.stressperiods);
+            drn ? this._props.drn = drn.toObject() : delete this._props.drn;
+        }
 
-            case 'fhb':
-                let fhb;
-                this._props.fhb ?
-                    fhb = FlopyModflowMffhb.fromObject(this._props.fhb).update(boundaries, model.stressperiods) :
-                    fhb = FlopyModflowMffhb.create(boundaries, model.stressperiods);
-                fhb ? this._props.fhb = fhb.toObject() : delete this._props.fhb;
-                break;
+        if (pType === 'evt') {
+            let evt;
+            this._props.evt ?
+                evt = FlopyModflowMfevt.fromObject(this._props.evt)
+                    .update(boundaries, model.stressperiods, model.gridSize.nY, model.gridSize.nX) :
+                evt = FlopyModflowMfevt.create(boundaries, model.stressperiods, model.gridSize);
+            evt ? this._props.evt = evt.toObject() : delete this._props.evt;
+        }
 
-            case 'hfb':
-                let hfb;
-                this._props.hfb ?
-                    hfb = FlopyModflowMfhfb.fromObject(this._props.hfb).update(boundaries, model.stressperiods.count) :
-                    hfb = FlopyModflowMfhfb.create(boundaries, model.stressperiods);
-                hfb ? this._props.hfb = hfb.toObject() : delete this._props.hfb;
-                break;
+        if (pType === 'fhb') {
+            let fhb;
+            this._props.fhb ?
+                fhb = FlopyModflowMffhb.fromObject(this._props.fhb).update(boundaries, model.stressperiods) :
+                fhb = FlopyModflowMffhb.create(boundaries, model.stressperiods);
+            fhb ? this._props.fhb = fhb.toObject() : delete this._props.fhb;
+        }
 
-            case 'lak':
-                let lak;
-                this._props.lak ?
-                    lak = FlopyModflowMflak.fromObject(this._props.lak).update(boundaries, model.stressperiods) :
-                    lak = FlopyModflowMflak.create(boundaries, model.stressperiods);
-                lak ? this._props.lak = lak.toObject() : delete this._props.lak;
-                break;
+        if (pType === 'hfb') {
+            let hfb;
+            this._props.hfb ?
+                hfb = FlopyModflowMfhfb.fromObject(this._props.hfb).update(boundaries, model.stressperiods.count) :
+                hfb = FlopyModflowMfhfb.create(boundaries, model.stressperiods);
+            hfb ? this._props.hfb = hfb.toObject() : delete this._props.hfb;
+        }
 
-            case 'rch':
-                let rch;
-                this._props.rch ?
-                    rch = FlopyModflowMfrch.fromObject(this._props.rch)
-                        .update(boundaries, model.stressperiods, model.gridSize.nY, model.gridSize.nX) :
-                    rch = FlopyModflowMfrch.create(boundaries, model.stressperiods, model.gridSize);
-                rch ? this._props.rch = rch.toObject() : delete this._props.rch;
-                break;
+        if (pType === 'lak') {
+            let lak;
+            this._props.lak ?
+                lak = FlopyModflowMflak.fromObject(this._props.lak).update(boundaries, model.stressperiods) :
+                lak = FlopyModflowMflak.create(boundaries, model.stressperiods);
+            lak ? this._props.lak = lak.toObject() : delete this._props.lak;
+        }
 
-            case 'riv':
-                let riv;
-                this._props.riv ?
-                    riv = FlopyModflowMfriv.fromObject(this._props.riv).update(boundaries, model.stressperiods) :
-                    riv = FlopyModflowMfriv.create(boundaries, model.stressperiods);
-                riv ? this._props.riv = riv.toObject() : delete this._props.riv;
-                break;
+        if (pType === 'rch') {
+            let rch;
+            this._props.rch ?
+                rch = FlopyModflowMfrch.fromObject(this._props.rch)
+                    .update(boundaries, model.stressperiods, model.gridSize.nY, model.gridSize.nX) :
+                rch = FlopyModflowMfrch.create(boundaries, model.stressperiods, model.gridSize);
+            rch ? this._props.rch = rch.toObject() : delete this._props.rch;
+        }
 
-            case 'str':
-                let str;
-                this._props.str ?
-                    str = FlopyModflowMfstr.fromObject(this._props.str).update(boundaries, model.stressperiods) :
-                    str = FlopyModflowMfstr.create(boundaries, model.stressperiods);
-                str ? this._props.str = str.toObject() : delete this._props.str;
-                break;
+        if (pType === 'riv') {
+            let riv;
+            this._props.riv ?
+                riv = FlopyModflowMfriv.fromObject(this._props.riv).update(boundaries, model.stressperiods) :
+                riv = FlopyModflowMfriv.create(boundaries, model.stressperiods);
+            riv ? this._props.riv = riv.toObject() : delete this._props.riv;
+        }
 
-            case 'wel':
-                let wel;
-                this._props.wel ?
-                    wel = FlopyModflowMfwel.fromObject(this._props.wel).update(boundaries, model.stressperiods) :
-                    wel = FlopyModflowMfwel.create(boundaries, model.stressperiods);
-                wel ? this._props.wel = wel.toObject() : delete this._props.wel;
-                break;
+        if (pType === 'str') {
+            let str;
+            this._props.str ?
+                str = FlopyModflowMfstr.fromObject(this._props.str).update(boundaries, model.stressperiods) :
+                str = FlopyModflowMfstr.create(boundaries, model.stressperiods);
+            str ? this._props.str = str.toObject() : delete this._props.str;
+        }
 
-            case 'hob':
-                let hob;
-                this._props.hob ?
-                    hob = FlopyModflowMfhob.fromObject(this._props.hob).update(boundaries, model.stressperiods) :
-                    hob = FlopyModflowMfhob.create(boundaries, model.stressperiods);
-                hob ? this._props.hob = hob.toObject() : delete this._props.hob;
-                break;
+        if (pType === 'wel') {
+            let wel;
+            this._props.wel ?
+                wel = FlopyModflowMfwel.fromObject(this._props.wel).update(boundaries, model.stressperiods) :
+                wel = FlopyModflowMfwel.create(boundaries, model.stressperiods);
+            wel ? this._props.wel = wel.toObject() : delete this._props.wel;
+        }
 
-            case 'lpf':
-                if (this._props.lpf) {
-                    this._props.lpf = FlopyModflowMflpf.fromObject(this._props.lpf).update(soilmodel).toObject();
-                }
-                break;
+        if (pType === 'hob') {
+            let hob;
+            this._props.hob ?
+                hob = FlopyModflowMfhob.fromObject(this._props.hob).update(boundaries, model.stressperiods) :
+                hob = FlopyModflowMfhob.create(boundaries, model.stressperiods);
+            hob ? this._props.hob = hob.toObject() : delete this._props.hob;
+        }
 
-            case 'bcf':
-                if (this._props.bcf) {
-                    this._props.bcf = FlopyModflowMfbcf.fromObject(this._props.bcf).update(soilmodel).toObject();
-                }
-                break;
+        if (pType === 'lpf') {
+            if (this._props.lpf) {
+                this._props.lpf = FlopyModflowMflpf.fromObject(this._props.lpf).update(soilmodel).toObject();
+            }
+        }
 
-            case 'flow':
-                if (this._props.lpf) {
-                    this._props.lpf = FlopyModflowMflpf.fromObject(this._props.lpf).update(soilmodel).toObject();
-                }
-                if (this._props.bcf) {
-                    this._props.bcf = FlopyModflowMfbcf.fromObject(this._props.bcf).update(soilmodel).toObject();
-                }
-                break;
+        if (pType === 'bcf') {
+            if (this._props.bcf) {
+                this._props.bcf = FlopyModflowMfbcf.fromObject(this._props.bcf).update(soilmodel).toObject();
+            }
+        }
+
+        if (pType === 'flow') {
+            if (this._props.lpf) {
+                this._props.lpf = FlopyModflowMflpf.fromObject(this._props.lpf).update(soilmodel).toObject();
+            }
+            if (this._props.bcf) {
+                this._props.bcf = FlopyModflowMfbcf.fromObject(this._props.bcf).update(soilmodel).toObject();
+            }
         }
 
         return this;

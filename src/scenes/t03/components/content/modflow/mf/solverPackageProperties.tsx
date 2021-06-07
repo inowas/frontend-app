@@ -1,6 +1,17 @@
-import React, {SyntheticEvent} from 'react';
 import {DropdownProps, Form} from 'semantic-ui-react';
+import React, {SyntheticEvent} from 'react';
 
+import {
+    De4PackageProperties,
+    GmgPackageProperties,
+    NwtPackageProperties,
+    PcgPackageProperties,
+    PcgnPackageProperties,
+    SipPackageProperties,
+    SmsPackageProperties,
+    SorPackageProperties
+} from './index';
+import {documentation} from '../../../../defaults/flow';
 import FlopyModflow, {packagesMap, solverPackages} from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
 import FlopyModflowMfde4 from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfde4';
 import FlopyModflowMfgmg from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfgmg';
@@ -12,17 +23,6 @@ import FlopyModflowMfsms from '../../../../../../core/model/flopy/packages/mf/Fl
 import FlopyModflowMfsor from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfsor';
 import FlopyModflowSolverPackage from '../../../../../../core/model/flopy/packages/mf/FlopyModflowSolverPackage';
 import InfoPopup from '../../../../../shared/InfoPopup';
-import {documentation} from '../../../../defaults/flow';
-import {
-    De4PackageProperties,
-    GmgPackageProperties,
-    NwtPackageProperties,
-    PcgnPackageProperties,
-    PcgPackageProperties,
-    SipPackageProperties,
-    SmsPackageProperties,
-    SorPackageProperties
-} from './index';
 
 interface IProps {
     mfPackages: FlopyModflow;

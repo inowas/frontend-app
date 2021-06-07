@@ -1,9 +1,9 @@
-import React, {ChangeEvent, useEffect, useState} from 'react';
-import {Form, Grid, InputOnChangeData} from 'semantic-ui-react';
 import {FlopyModpathMp7bas} from '../../../../../../core/model/flopy/packages/mp';
+import {Form, Grid, InputOnChangeData} from 'semantic-ui-react';
 import {IPropertyValueObject} from '../../../../../../core/model/types';
-import renderInfoPopup from '../../../../../shared/complexTools/InfoPopup';
 import {documentation} from '../../../../defaults/modpath';
+import React, {ChangeEvent, useEffect, useState} from 'react';
+import renderInfoPopup from '../../../../../shared/complexTools/InfoPopup';
 
 interface IProps {
     mpPackage: FlopyModpathMp7bas;

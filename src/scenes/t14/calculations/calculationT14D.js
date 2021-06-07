@@ -95,7 +95,7 @@ const GTerm = (dk, deps, alpha, dt) => {
     const b = dk * dt * alpha * alpha;
     let Term1 = 0;
 
-    if (dk < 1e-10) return 0;
+    if (dk < 1e-10) {return 0;}
     if ((a + b) < 80) {
         Term1 = Math.exp(-(a + b)) * I0(2 * Math.sqrt(a * b));
     } else {

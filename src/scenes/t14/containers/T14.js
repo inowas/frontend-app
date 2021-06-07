@@ -1,8 +1,7 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import {Button, Dimmer, Grid, Header, Icon, Image, Segment} from 'semantic-ui-react';
 import {withRouter} from 'react-router-dom';
-import {Grid, Header, Icon, Image, Segment, Dimmer, Button} from 'semantic-ui-react';
-
+import PropTypes from 'prop-types';
+import React from 'react';
 import image14A from '../images/T14A.png';
 import image14B from '../images/T14B.png';
 import image14C from '../images/T14C.png';

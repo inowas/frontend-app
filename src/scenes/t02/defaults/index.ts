@@ -2,7 +2,7 @@ import {IRootReducer} from '../../../reducers';
 import {ISimpleTool} from '../../../core/model/types';
 import uuidv4 from 'uuid';
 
-export const defaultsWithSession = (session: IRootReducer['session']): IT02 => {
+export const defaultsWithSession = (session?: IRootReducer['session']): IT02 => {
     if (session && !session.token) {
         return {...defaults, permissions: 'r--'};
     }

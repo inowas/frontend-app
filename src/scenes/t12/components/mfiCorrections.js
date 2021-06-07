@@ -1,6 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import {Form, Header, Input, Table} from 'semantic-ui-react';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 class MfiCorrections extends React.Component {
     constructor(props) {
@@ -10,7 +10,7 @@ class MfiCorrections extends React.Component {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         this.setState({
             corrections: nextProps.corrections
         })

@@ -1,15 +1,15 @@
-import {cloneDeep} from 'lodash';
-import moment, {DurationInputArg1, DurationInputArg2} from 'moment';
-import React, {ChangeEvent, useState} from 'react';
-import {Button, Checkbox, Icon, Input, InputOnChangeData, Table} from 'semantic-ui-react';
-import {Stressperiods} from '../../../../../core/model/modflow';
+import {AdvancedCsvUpload} from '../../../../shared/simpleTools/upload';
 import {
     Boundary,
     FlowAndHeadBoundary,
     HeadObservationWell
 } from '../../../../../core/model/modflow/boundaries';
+import {Button, Checkbox, Icon, Input, InputOnChangeData, Table} from 'semantic-ui-react';
 import {ISpValues} from '../../../../../core/model/modflow/boundaries/Boundary.type';
-import {AdvancedCsvUpload} from '../../../../shared/simpleTools/upload';
+import {Stressperiods} from '../../../../../core/model/modflow';
+import {cloneDeep} from 'lodash';
+import React, {ChangeEvent, useState} from 'react';
+import moment, {DurationInputArg1, DurationInputArg2} from 'moment';
 
 interface IActiveInput {
     col: number;
@@ -233,23 +233,25 @@ const BoundaryDateTimeValuesDataTable = (props: IProps) => {
                 useDateTimes={true}
             />
             }
-            <p style={{marginTop: '10px'}}>
-                <b>
-                    Time dependent boundary
-                    values{boundary instanceof FlowAndHeadBoundary ? ' observation point' : ''}
-                </b>
-                <Button
-                    icon={true}
-                    labelPosition="left"
-                    onClick={handleToggleUploadModal}
-                    primary={true}
-                    floated="right"
-                    size="mini"
-                >
-                    <Icon name="upload"/>
-                    Upload csv
-                </Button>
-            </p>
+            {!props.readOnly &&
+                <p style={{marginTop: '10px'}}>
+                    <b>
+                        Time dependent boundary
+                        values{boundary instanceof FlowAndHeadBoundary ? ' observation point' : ''}
+                    </b>
+                    <Button
+                        icon={true}
+                        labelPosition="left"
+                        onClick={handleToggleUploadModal}
+                        primary={true}
+                        floated="right"
+                        size="mini"
+                    >
+                        <Icon name="upload"/>
+                        Upload csv
+                    </Button>
+                </p>
+            }
             <Table size={'small'} singleLine={true}>
                 <Table.Header>
                     <Table.Row>

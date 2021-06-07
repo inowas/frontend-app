@@ -1,7 +1,7 @@
-import React, {MouseEvent} from 'react';
-import {RouteComponentProps, withRouter} from 'react-router-dom';
-import {Icon, Menu, MenuItemProps, Popup, Segment} from 'semantic-ui-react';
 import {IMenuItem} from '../defaults/menuItems';
+import {Icon, Menu, MenuItemProps, Popup, Segment} from 'semantic-ui-react';
+import {RouteComponentProps, withRouter} from 'react-router-dom';
+import React, {MouseEvent} from 'react';
 
 interface IProps extends RouteComponentProps<any> {
     navigationItems: IMenuItem[];

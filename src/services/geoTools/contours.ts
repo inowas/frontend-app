@@ -1,10 +1,10 @@
-import * as turf from '@turf/turf';
 import * as d3 from 'd3';
-import {ContourMultiPolygon} from 'd3';
-import _ from 'lodash';
+import * as turf from '@turf/turf';
 import {Array2D} from '../../core/model/geometry/Array2D.type';
 import {BoundingBox, Geometry, GridSize} from '../../core/model/modflow';
+import {ContourMultiPolygon} from 'd3';
 import {max, min} from '../../scenes/shared/rasterData/helpers';
+import _ from 'lodash';
 
 export const getThresholds = (data: Array2D<number>, unique: number[], maxSteps = 100, fixedSteps?: number) => {
     let mSteps = fixedSteps || maxSteps;

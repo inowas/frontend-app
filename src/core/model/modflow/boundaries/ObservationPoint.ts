@@ -1,10 +1,10 @@
+import {IObservationPoint} from './ObservationPoint.type';
+import {ISpValues} from './Boundary.type';
 import {Point} from 'geojson';
 import {cloneDeep} from 'lodash';
-import moment, {Moment} from 'moment';
-import Stressperiods from '../Stressperiods';
 import Boundary from './Boundary';
-import {ISpValues} from './Boundary.type';
-import {IObservationPoint} from './ObservationPoint.type';
+import Stressperiods from '../Stressperiods';
+import moment, {Moment} from 'moment';
 
 export default class ObservationPoint {
     get type() {

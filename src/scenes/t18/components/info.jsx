@@ -1,21 +1,19 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import {Grid, Header, Icon, Message} from 'semantic-ui-react';
 import {
-    calcAN,
     calcAH,
+    calcAN,
     calcAO,
     isCtoHigh
 } from '../calculations/calculationT18';
-
 import {getParameterValues} from '../../shared/simpleTools/helpers';
-import {Grid, Header, Icon, Message} from 'semantic-ui-react';
-
+import PropTypes from 'prop-types';
+import React from 'react';
 
 const renderCoWarning = (CoToHigh) => {
     if (CoToHigh) {
         return (
             <Message icon warning>
-                <Icon name='exclamation triangle' color='orange' />
+                <Icon name='exclamation triangle' color='orange'/>
                 <Message.Content>
                     <p>
                         C<sub>o</sub> is too high and a better pre-treatment is necessary.
@@ -27,7 +25,7 @@ const renderCoWarning = (CoToHigh) => {
 
     return (
         <Message icon info>
-            <Icon name='info circle' color='blue' />
+            <Icon name='info circle' color='blue'/>
             <Message.Content>
                 <p>
                     C<sub>o</sub> is within acceptable loading.
@@ -40,7 +38,7 @@ const renderCnWarning = (CnToHigh) => {
     if (CnToHigh) {
         return (
             <Message icon warning>
-                <Icon name='exclamation triangle' color='orange' />
+                <Icon name='exclamation triangle' color='orange'/>
                 <Message.Content>
                     <p>
                         C<sub>n</sub> is too high and a better pre-treatment is necessary.
@@ -52,7 +50,7 @@ const renderCnWarning = (CnToHigh) => {
 
     return (
         <Message icon info>
-            <Icon name='info circle' color='blue' />
+            <Icon name='info circle' color='blue'/>
             <Message.Content>
                 <p>
                     C<sub>n</sub> is within acceptable loading.
@@ -67,7 +65,7 @@ const renderText = (AH, AN, AO) => {
     if (maxA === AH) {
         return (
             <Message icon info>
-                <Icon name='info circle' color='blue' />
+                <Icon name='info circle' color='blue'/>
                 <Message.Content>
                     <p>
                         <b>Infiltration rate</b> is defining the estimated field area. <br/>
@@ -81,11 +79,12 @@ const renderText = (AH, AN, AO) => {
     if (maxA === AN) {
         return (
             <Message icon info>
-                <Icon name='info circle' color='blue' />
+                <Icon name='info circle' color='blue'/>
                 <Message.Content>
                     <p>
                         <b>Nitrogen loading</b> is defining the estimated field area. <br/>
-                        The area can be reduced by lowering the flow rate (Q) or by the pre-treatment of infiltration water for the reduction of nitrogen concentration.
+                        The area can be reduced by lowering the flow rate (Q) or by the pre-treatment of infiltration
+                        water for the reduction of nitrogen concentration.
                     </p>
                 </Message.Content>
             </Message>
@@ -95,7 +94,7 @@ const renderText = (AH, AN, AO) => {
 
     return (
         <Message icon info>
-            <Icon name='info circle' color='blue' />
+            <Icon name='info circle' color='blue'/>
             <Message.Content>
                 <p>
                     <b>BOD loading</b> is defining the estimated field area. <br/>
@@ -120,12 +119,12 @@ const Info = ({parameters, settings}) => {
         <Grid>
             <Grid.Row centered>
                 <Header as='h4'>The required area calculated based on:</Header>
-            <p>
-                Infiltration rate, A<sub>H</sub> = <strong>{AH.toFixed(2)} m<sup>2</sup></strong><br/>
-                BOD loading, A<sub>O</sub> = <strong>{AO.toFixed(2)} m<sup>2</sup></strong><br/>
-                Nitrogen loading, A<sub>N</sub> = <strong>{AN.toFixed(2)} m<sup>2</sup></strong>
-            </p>
-            {renderText(AH, AN, AO)}
+                <p>
+                    Infiltration rate, A<sub>H</sub> = <strong>{AH.toFixed(2)} m<sup>2</sup></strong><br/>
+                    BOD loading, A<sub>O</sub> = <strong>{AO.toFixed(2)} m<sup>2</sup></strong><br/>
+                    Nitrogen loading, A<sub>N</sub> = <strong>{AN.toFixed(2)} m<sup>2</sup></strong>
+                </p>
+                {renderText(AH, AN, AO)}
             </Grid.Row>
             <Grid.Row centered>
                 {renderCoWarning(CoToHigh)}

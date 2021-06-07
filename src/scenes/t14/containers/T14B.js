@@ -95,7 +95,7 @@ class T14B extends React.Component {
         const {tool, isLoading} = this.state;
         if (isLoading) {
             return (
-                <AppContainer navbarItems={navigation} loader/>
+                <AppContainer navbarItems={navigation} loader>Loading</AppContainer>
             );
         }
 
@@ -106,7 +106,7 @@ class T14B extends React.Component {
         return (
             <AppContainer navbarItems={navigation}>
                 <ToolMetaData
-                    tool={data}
+                    tool={tool}
                     readOnly={readOnly}
                     onSave={this.save}
                     saveButton={true}

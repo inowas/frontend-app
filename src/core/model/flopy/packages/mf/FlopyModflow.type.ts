@@ -1,4 +1,3 @@
-import {IPropertyValueObject} from '../../../types';
 import {IFlopyModflowMf} from './FlopyModflowMf';
 import {IFlopyModflowMfbas} from './FlopyModflowMfbas';
 import {IFlopyModflowMfbcf} from './FlopyModflowMfbcf';
@@ -29,6 +28,7 @@ import {IFlopyModflowMfswi2} from './FlopyModflowMfswi2';
 import {IFlopyModflowMfupw} from './FlopyModflowMfupw';
 import {IFlopyModflowMfuzf1} from './FlopyModflowMfuzf1';
 import {IFlopyModflowMfwel} from './FlopyModflowMfwel';
+import {IPropertyValueObject} from '../../../types';
 
 export interface IStressPeriodData<T> {
     [key: number]: T;

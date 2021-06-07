@@ -1,18 +1,18 @@
 import * as turf from '@turf/turf';
-import {default as geojson, Polygon} from 'geojson';
-import { DrawEvents } from 'leaflet';
-import React, {ChangeEvent, useState} from 'react';
 import {Button, Form, InputOnChangeData, Modal} from 'semantic-ui-react';
-import uuidv4 from 'uuid/v4';
-import {Geometry} from '../../../../../../core/model/geometry';
-import {ICells} from '../../../../../../core/model/geometry/Cells.type';
+import {CALCULATE_CELLS_INPUT} from '../../../../../modflow/worker/t03.worker';
 import {Cells, ModflowModel} from '../../../../../../core/model/modflow';
-import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
+import { DrawEvents } from 'leaflet';
+import {Geometry} from '../../../../../../core/model/geometry';
+import {ICalculateCellsInputData} from '../../../../../modflow/worker/t03.worker.type';
+import {ICells} from '../../../../../../core/model/geometry/Cells.type';
+import {Polygon, default as geojson} from 'geojson';
 import {Zone, ZonesCollection} from '../../../../../../core/model/modflow/soilmodel';
-import {CALCULATE_CELLS_INPUT} from '../../../../worker/t03.worker';
-import {ICalculateCellsInputData} from '../../../../worker/t03.worker.type';
-import {asyncWorker} from '../../../../worker/worker';
 import {ZonesMap} from './index';
+import {asyncWorker} from '../../../../../modflow/worker/worker';
+import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
+import React, {ChangeEvent, useState} from 'react';
+import uuidv4 from 'uuid/v4';
 
 interface IProps {
     onCancel: () => any;

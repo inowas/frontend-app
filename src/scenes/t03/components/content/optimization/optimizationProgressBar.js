@@ -1,13 +1,13 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
-import {ModflowModel, Calculation} from '../../../../../core/model/modflow';
-import {updateCalculation} from '../../../actions/actions';
-import {fetchUrl} from '../../../../../services/api';
+import {Calculation, ModflowModel} from '../../../../../core/model/modflow';
 import {Message} from 'semantic-ui-react';
-import {Optimization} from '../../../../../core/model/modflow/optimization';
 import {OPTIMIZATION_STATE_FINISHED, OPTIMIZATION_STATE_STARTED} from '../../../defaults/optimization';
+import {Optimization} from '../../../../../core/model/modflow/optimization';
+import {connect} from 'react-redux';
+import {fetchUrl} from '../../../../../services/api';
+import {updateCalculation} from '../../../actions/actions';
 import OptimizationStatus from './optimizationStatus';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 class OptimizationProgressBar extends React.Component {
 
@@ -18,7 +18,8 @@ class OptimizationProgressBar extends React.Component {
         error: null
     };
 
-    componentWillReceiveProps(nextProps) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    UNSAFE_componentWillReceiveProps(nextProps, nextContext) {
         const optimization = nextProps.optimization;
         if (!(optimization instanceof Optimization)) {
             return this.setState({visible: false});
@@ -87,7 +88,7 @@ class OptimizationProgressBar extends React.Component {
                 () => this.handleError(error)
             )
         );
-    };
+    }
 
     render() {
         if (this.state.visible) {

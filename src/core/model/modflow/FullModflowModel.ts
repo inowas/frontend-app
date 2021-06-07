@@ -10,11 +10,12 @@ import {IVariableDensity} from './variableDensity/VariableDensity.type';
 import FlopyModflow from '../flopy/packages/mf/FlopyModflow';
 import FlopyModpath from '../flopy/packages/mp/FlopyModpath';
 import FlopyMt3d from '../flopy/packages/mt/FlopyMt3d';
-import FlopyPackages from '../flopy/packages/FlopyPackages';
-import FlopySeawat from '../flopy/packages/swt/FlopySeawat';
+
 import Soilmodel from './soilmodel/Soilmodel';
 import Transport from './transport/Transport';
 import VariableDensity from './variableDensity';
+
+import {FlopyPackages, FlopySeawat} from '../flopy';
 
 export interface IFullModflowModel extends IModflowModel {
     boundaries: IBoundary[];

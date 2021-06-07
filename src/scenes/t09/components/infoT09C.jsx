@@ -1,8 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {getParameterValues} from '../../shared/simpleTools/helpers';
 import {Icon, Message} from 'semantic-ui-react';
-import {pure} from 'recompose';
+import {getParameterValues} from '../../shared/simpleTools/helpers';
+
+import PropTypes from 'prop-types';
+import React from 'react';
 
 export function calculateQ(k, d, df, ds) {
     return (0.6 * Math.PI * d * d * k * dRo(df, ds));
@@ -52,7 +52,7 @@ const Info = ({parameters}) => {
                 <p>
                     The calculated upconing level of <strong>{z.toFixed(2)} m </strong>
                     is lower than the critical elevation of <strong>{zCrit.toFixed(1)} m </strong>
-                    so saltwater shouldn't enter the well. However, we recommend a maximum
+                    so saltwater shouldn&apos;t enter the well. However, we recommend a maximum
                     pumping rate of <strong>{qmax.toFixed(2)} m<sup>3</sup>/d</strong>.
                 </p>
             </Message.Content>
@@ -64,4 +64,4 @@ Info.propTypes = {
     parameters: PropTypes.array.isRequired
 };
 
-export default pure(Info);
+export default Info;

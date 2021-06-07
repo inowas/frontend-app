@@ -1,7 +1,7 @@
+import {CLEAR} from './model';
+import {IMessage} from '../../../core/model/messages/Message.type';
 import _ from 'lodash';
 import moment from 'moment';
-import {IMessage} from '../../../core/model/messages/Message.type';
-import {CLEAR} from './model';
 
 export const ADD_MESSAGE = 'T03_ADD_MESSAGE';
 export const REMOVE_MESSAGE = 'T03_REMOVE_MESSAGE';
@@ -15,6 +15,7 @@ const messages = (state: IMessage[] = [], action: { type: string, payload?: IMes
             return initialState();
 
         case ADD_MESSAGE:
+            // eslint-disable-next-line no-case-declarations
             const cMessages = _.cloneDeep(state);
             if (action.payload) {
                 cMessages.push({

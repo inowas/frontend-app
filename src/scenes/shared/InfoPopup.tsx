@@ -1,5 +1,5 @@
-import React from 'react';
 import {Icon, Popup, PopupProps} from 'semantic-ui-react';
+import React from 'react';
 
 const styles = {
     iconFix: {

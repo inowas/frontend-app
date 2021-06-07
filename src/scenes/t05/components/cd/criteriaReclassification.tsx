@@ -1,14 +1,14 @@
 import * as math from 'mathjs';
-import React, {useState} from 'react';
-import {CartesianGrid, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import {Button, Grid, Icon, Message, Segment, Table} from 'semantic-ui-react';
-import {Criterion, Rule} from '../../../../core/model/mcda/criteria';
+import {CartesianGrid, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import {CriteriaType} from '../../../../core/model/mcda/criteria/Criterion.type';
+import {Criterion, Rule} from '../../../../core/model/mcda/criteria';
 import {IRule} from '../../../../core/model/mcda/criteria/Rule.type';
-import {dropData} from '../../../../services/api';
 import {criterionStep} from '../../defaults/defaults';
+import {dropData} from '../../../../services/api';
 import CriteriaReclassificationDiscrete from './criteriaReclassificationDiscrete';
 import CriteriaReclassificationModal from './criteriaReclassificationModal';
+import React, {useState} from 'react';
 
 interface IProps {
     criterion: Criterion;

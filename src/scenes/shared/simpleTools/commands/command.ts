@@ -1,6 +1,6 @@
-import uuid from 'uuid';
-import AbstractCommand from '../../../../core/model/command/AbstractCommand';
 import {ICommand} from './command.type';
+import AbstractCommand from '../../../../core/model/command/AbstractCommand';
+import uuid from 'uuid';
 
 class Command extends AbstractCommand {
     public static createToolInstance = (payload: any) => {

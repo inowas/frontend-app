@@ -1,9 +1,8 @@
-import React from 'react';
-import {pure} from 'recompose';
 import {Button, Icon, Menu, Popup} from 'semantic-ui-react';
-import {LayersCollection} from '../../../../../core/model/modflow/soilmodel';
-import SoilmodelLayer from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
 import {ISoilmodelLayer} from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
+import {LayersCollection} from '../../../../../core/model/modflow/soilmodel';
+import React from 'react';
+import SoilmodelLayer from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
 
 interface IProps {
     layers: LayersCollection;
@@ -33,54 +32,54 @@ const LayersList = ({layers, onClick, onClone, onRemove, readOnly, selected}: IP
     return (
         <div>
             <Menu fluid={true} vertical={true} secondary={true}>
-            {rLayers.map((layer: ISoilmodelLayer) => (
-                <Menu.Item
-                    name={layer.name}
-                    key={layer.id}
-                    active={layer.id === selected}
-                    onClick={handleClick(layer.id)}
-                >
-                    {!readOnly &&
-                    <Popup
-                        trigger={<Icon name="ellipsis horizontal"/>}
-                        content={
-                            <div>
-                                <Button.Group size="small">
-                                    <Popup
-                                        trigger={
-                                            <Button
-                                                icon={'clone'}
-                                                onClick={handleClone(SoilmodelLayer.fromObject(layer))}
-                                            />
-                                        }
-                                        content="Clone"
-                                        position="top center"
-                                        size="mini"
-                                    />
-                                    {layer.number !== 0 && <Popup
-                                        trigger={
-                                            <Button
-                                                icon={'trash'}
-                                                onClick={handleRemove(layer.id)}
-                                            />
-                                        }
-                                        content="Delete"
-                                        position="top center"
-                                        size="mini"
-                                    />}
-                                </Button.Group>
-                            </div>
+                {rLayers.map((layer: ISoilmodelLayer) => (
+                    <Menu.Item
+                        name={layer.name}
+                        key={layer.id}
+                        active={layer.id === selected}
+                        onClick={handleClick(layer.id)}
+                    >
+                        {!readOnly &&
+                        <Popup
+                            trigger={<Icon name="ellipsis horizontal"/>}
+                            content={
+                                <div>
+                                    <Button.Group size="small">
+                                        <Popup
+                                            trigger={
+                                                <Button
+                                                    icon={'clone'}
+                                                    onClick={handleClone(SoilmodelLayer.fromObject(layer))}
+                                                />
+                                            }
+                                            content="Clone"
+                                            position="top center"
+                                            size="mini"
+                                        />
+                                        {layer.number !== 0 && <Popup
+                                            trigger={
+                                                <Button
+                                                    icon={'trash'}
+                                                    onClick={handleRemove(layer.id)}
+                                                />
+                                            }
+                                            content="Delete"
+                                            position="top center"
+                                            size="mini"
+                                        />}
+                                    </Button.Group>
+                                </div>
+                            }
+                            on={'click'}
+                            position={'right center'}
+                        />
                         }
-                        on={'click'}
-                        position={'right center'}
-                    />
-                    }
-                    {layer.number}: {layer.name}
-                </Menu.Item>
-            ))}
+                        {layer.number}: {layer.name}
+                    </Menu.Item>
+                ))}
             </Menu>
         </div>
     );
 };
 
-export default pure(LayersList);
+export default LayersList;

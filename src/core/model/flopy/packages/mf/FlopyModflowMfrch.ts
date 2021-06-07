@@ -1,13 +1,13 @@
 import {Array2D} from '../../../geometry/Array2D.type';
-import GridSize from '../../../geometry/GridSize';
-import {RechargeBoundary} from '../../../modflow/boundaries';
-import BoundaryCollection from '../../../modflow/boundaries/BoundaryCollection';
-import Stressperiods from '../../../modflow/Stressperiods';
 import {IPropertyValueObject} from '../../../types';
-import {calculateRechargeSpData} from '../../helpers';
 import {IStressPeriodData} from './FlopyModflow.type';
+import {RechargeBoundary} from '../../../modflow/boundaries';
+import {calculateRechargeSpData} from '../../helpers';
+import BoundaryCollection from '../../../modflow/boundaries/BoundaryCollection';
 import FlopyModflowBoundary from './FlopyModflowBoundary';
 import FlopyModflowPackage from './FlopyModflowPackage';
+import GridSize from '../../../geometry/GridSize';
+import Stressperiods from '../../../modflow/Stressperiods';
 
 /*
 https://modflowpy.github.io/flopydoc/mfrch.html

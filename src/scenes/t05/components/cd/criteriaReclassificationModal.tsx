@@ -1,8 +1,8 @@
-import React, {ChangeEvent, CSSProperties, SyntheticEvent, useState} from 'react';
-import {ColorResult, SketchPicker} from 'react-color';
 import {Button, DropdownProps, Form, InputOnChangeData, List, Message, Modal} from 'semantic-ui-react';
-import {Rule} from '../../../../core/model/mcda/criteria';
+import {ColorResult, SketchPicker} from 'react-color';
 import {IRule} from '../../../../core/model/mcda/criteria/Rule.type';
+import {Rule} from '../../../../core/model/mcda/criteria';
+import React, {CSSProperties, ChangeEvent, SyntheticEvent, useState} from 'react';
 
 const styles = {
     popover: {

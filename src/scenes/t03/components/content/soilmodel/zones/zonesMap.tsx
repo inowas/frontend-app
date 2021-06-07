@@ -1,14 +1,14 @@
+import {BasicTileLayer} from '../../../../../../services/geoTools/tileLayers';
 import {DrawEvents, LatLngExpression} from 'leaflet';
-import {uniqueId} from 'lodash';
-import React from 'react';
-import {FeatureGroup, LayersControl, Map, Polygon} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
+import {FeatureGroup, LayersControl, Map, Polygon} from 'react-leaflet';
 import {Geometry} from '../../../../../../core/model/geometry';
 import {ModflowModel} from '../../../../../../core/model/modflow';
-import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import {Zone, ZonesCollection} from '../../../../../../core/model/modflow/soilmodel';
-import {BasicTileLayer} from '../../../../../../services/geoTools/tileLayers';
 import {renderAreaLayer, renderBoundaryOverlays, renderBoundingBoxLayer} from '../../../maps/mapLayers';
+import {uniqueId} from 'lodash';
+import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
+import React from 'react';
 
 const styles = {
     map: {

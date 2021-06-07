@@ -1,9 +1,8 @@
-import React, {useState} from 'react';
-import {useSelector} from 'react-redux';
-
 import {Grid, Header, Icon, Popup, Segment} from 'semantic-ui-react';
-import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import {IRootReducer} from '../../../../../reducers';
+import {useSelector} from 'react-redux';
+import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
+import React, {useState} from 'react';
 import Terminal from '../../../../shared/complexTools/Terminal';
 
 // tslint:disable-next-line:variable-name

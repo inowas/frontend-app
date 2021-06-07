@@ -1,16 +1,15 @@
-import {Feature} from 'geojson';
-import {LatLng, LatLngBoundsExpression} from 'leaflet';
-import md5 from 'md5';
-import React from 'react';
-import {FeatureGroup, GeoJSON, Map} from 'react-leaflet';
-import {EditControl} from 'react-leaflet-draw';
-import {pure} from 'recompose';
-import {Icon, Message} from 'semantic-ui-react';
-import {BoundingBox, Cells, Geometry, GridSize} from '../../../../core/model/geometry';
-import {GeoJson} from '../../../../core/model/geometry/Geometry.type';
-import {calculateActiveCells} from '../../../../services/geoTools';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
+import {BoundingBox, Cells, Geometry, GridSize} from '../../../../core/model/geometry';
+import {EditControl} from 'react-leaflet-draw';
+import {Feature} from 'geojson';
+import {FeatureGroup, GeoJSON, Map} from 'react-leaflet';
+import {GeoJson} from '../../../../core/model/geometry/Geometry.type';
+import {Icon, Message} from 'semantic-ui-react';
+import {LatLng, LatLngBoundsExpression} from 'leaflet';
+import {calculateActiveCells} from '../../../../services/geoTools';
 import {getStyle} from './index';
+import React from 'react';
+import md5 from 'md5';
 
 const style = {
     map: {
@@ -44,7 +43,7 @@ class CreateModelMap extends React.Component<ICreateModelMapProps, ICreateModelM
         };
     }
 
-    public componentWillReceiveProps(nextProps: ICreateModelMapProps) {
+    public UNSAFE_componentWillReceiveProps(nextProps: ICreateModelMapProps) {
         const {gridSize} = nextProps;
         if (!nextProps.gridSize.sameAs(GridSize.fromObject(this.state.gridSize))) {
             this.setState(() => ({gridSize: gridSize.toObject()}), () => this.recalculate());
@@ -125,17 +124,25 @@ class CreateModelMap extends React.Component<ICreateModelMapProps, ICreateModelM
     );
 
     public areaLayer = () => {
+        if (!this.state.geometry) {
+            return;
+        }
+
         return (
             <GeoJSON
                 key={md5(JSON.stringify(this.state.geometry))}
-                data={this.state.geometry!}
+                data={this.state.geometry}
                 style={getStyle('area')}
             />
         );
     };
 
     public boundingBoxLayer = () => {
-        const boundingBox = BoundingBox.fromObject(this.state.boundingBox!);
+        if (!this.state.boundingBox) {
+            return;
+        }
+
+        const boundingBox = BoundingBox.fromObject(this.state.boundingBox);
         return (
             <GeoJSON
                 key={md5(JSON.stringify(boundingBox.toObject()))}
@@ -213,4 +220,4 @@ class CreateModelMap extends React.Component<ICreateModelMapProps, ICreateModelM
     }
 }
 
-export default pure(CreateModelMap);
+export default CreateModelMap;

@@ -1,10 +1,10 @@
-import {Transport} from '../../../modflow';
 import {Boundary, BoundaryCollection} from '../../../modflow/boundaries';
-import SubstanceCollection from '../../../modflow/transport/SubstanceCollection';
 import {IPropertyValueObject} from '../../../types';
+import {Transport} from '../../../modflow';
 import FlopyMt3dPackage from './FlopyMt3dPackage';
+import SubstanceCollection from '../../../modflow/transport/SubstanceCollection';
 
-const itypes = {
+const itypes: any = {
     CHD: 1,
     BAS6: 1,
     PBC: 1,
@@ -111,6 +111,7 @@ class FlopyMt3dMtssm extends FlopyMt3dPackage<IFlopyMt3dMtssm> {
     public static fromObject(obj: IPropertyValueObject): FlopyMt3dMtssm {
         const d: any = FlopyMt3dPackage.cloneDeep(defaults);
         for (const key in d) {
+            // eslint-disable-next-line no-prototype-builtins
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
                 d[key] = obj[key];
             }
@@ -160,8 +161,7 @@ class FlopyMt3dMtssm extends FlopyMt3dPackage<IFlopyMt3dMtssm> {
 
                 const layers = boundary.layers;
                 const cells = boundary.cells;
-                // @ts-ignore
-                const iType = itypes[boundary.type.toUpperCase()];
+                const iType: any = itypes[boundary.type.toUpperCase()];
 
                 if (null === iType) {
                     return;

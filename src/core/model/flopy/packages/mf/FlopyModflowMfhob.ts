@@ -1,9 +1,9 @@
 import {BoundaryCollection, HeadObservationWell} from '../../../modflow/boundaries';
-import Stressperiods from '../../../modflow/Stressperiods';
 import {IPropertyValueObject} from '../../../types';
 import {calculateHeadObservationData} from '../../helpers';
 import FlopyModflowBoundary from './FlopyModflowBoundary';
 import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
+import Stressperiods from '../../../modflow/Stressperiods';
 
 export interface IFlopyModflowMfhob {
     iuhobsv: number;
@@ -50,7 +50,7 @@ export default class FlopyModflowMfhob extends FlopyModflowBoundary<IFlopyModflo
 
     public update = (boundaries: BoundaryCollection, stressperiods: Stressperiods) => {
         const bd = boundaries.all.filter((b) => (b instanceof HeadObservationWell)) as HeadObservationWell[];
-        if (boundaries.length === 0) {
+        if (bd.length === 0) {
             return null;
         }
 

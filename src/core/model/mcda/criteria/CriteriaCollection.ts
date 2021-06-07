@@ -1,7 +1,7 @@
-import {cloneDeep} from 'lodash';
 import {Collection} from '../../collection/Collection';
-import BoundingBox from '../../geometry/BoundingBox';
 import {ICriterion} from './Criterion.type';
+import {cloneDeep} from 'lodash';
+import BoundingBox from '../../geometry/BoundingBox';
 
 class CriteriaCollection extends Collection<ICriterion> {
     public static fromObject(obj: ICriterion[]) {

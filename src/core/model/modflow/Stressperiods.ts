@@ -1,10 +1,10 @@
-import {orderBy} from 'lodash';
-import moment, {Moment} from 'moment/moment';
-import {TimeUnit} from './index';
-import Stressperiod from './Stressperiod';
 import {IStressPeriod, IStressPeriodWithTotim} from './Stressperiod.type';
 import {IStressPeriods} from './Stressperiods.type';
 import {ITimeUnit} from './TimeUnit.type';
+import {TimeUnit} from './index';
+import {orderBy} from 'lodash';
+import Stressperiod from './Stressperiod';
+import moment, {Moment} from 'moment/moment';
 
 class Stressperiods {
 
@@ -184,6 +184,22 @@ class Stressperiods {
         const stressperiods = this.stressperiods;
         stressperiods.push(stressperiod);
         this.stressperiods = Stressperiods.orderStressperiods(stressperiods);
+    }
+
+    public addStressPeriodsByNumberOfDays(days: number[]) {
+        console.log({days});
+        const stressperiods = this.stressperiods;
+        const lastSp = stressperiods[stressperiods.length - 1];
+        const newStressperiods = days.map((d) => {
+            return new Stressperiod({
+                start_date_time: lastSp.startDateTime.add(d, 'days').toISOString(),
+                nstp: lastSp.nstp,
+                tsmult: lastSp.tsmult,
+                steady: lastSp.steady
+            });
+        });
+        const s = stressperiods.concat(newStressperiods);
+        this.stressperiods = Stressperiods.orderStressperiods(s);
     }
 
     public removeStressPeriod(id: number) {

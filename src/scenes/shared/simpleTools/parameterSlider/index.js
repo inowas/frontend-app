@@ -1,9 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {Grid} from 'semantic-ui-react';
-
-import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
+import {Grid} from 'semantic-ui-react';
+import PropTypes from 'prop-types';
+import React from 'react';
+import Slider from 'rc-slider';
 import SliderParameter from './SliderParameter';
 
 const styles = {
@@ -34,7 +33,7 @@ class ParameterSlider extends React.Component {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         this.setState({
             ...this.state,
             param: nextProps.param.toObject

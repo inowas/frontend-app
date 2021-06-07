@@ -4,7 +4,7 @@ import {DatePicker} from '../../shared/uiComponents';
 import {LTOB} from 'downsample';
 import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import {usePrevious} from '../../shared/simpleTools/helpers/customHooks';
-import PrometheusDataSource from '../../../core/model/rtm/PrometheusDataSource';
+import PrometheusDataSource from '../../../core/model/rtm/monitoring/PrometheusDataSource';
 import React, {useEffect, useState} from 'react';
 import moment from 'moment';
 import uuid from 'uuid';
@@ -175,7 +175,7 @@ const PrometheusDatasourceEditor = (props: IProps) => {
         const downSampledDataLTOB: DataPoint[] = LTOB(data.map((d) => ({
             x: d.timeStamp,
             y: d.value
-        })), 200);
+        })), 200) as DataPoint[];
 
         return (
             <ResponsiveContainer height={300}>

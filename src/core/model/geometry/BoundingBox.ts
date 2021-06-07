@@ -1,11 +1,11 @@
-import {AllGeoJSON, Feature} from '@turf/helpers';
 import * as turf from '@turf/turf';
-import {envelope} from '@turf/turf';
+import {AllGeoJSON, Feature} from '@turf/helpers';
 import {GeoJSON, Point} from 'geojson';
-import {isEqual} from 'lodash';
-import md5 from 'md5';
 import {Geometry} from '../modflow';
 import {IBoundingBox} from './BoundingBox.type';
+import {envelope} from '@turf/turf';
+import {isEqual} from 'lodash';
+import md5 from 'md5';
 
 class BoundingBox {
 

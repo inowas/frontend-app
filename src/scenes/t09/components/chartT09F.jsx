@@ -1,20 +1,20 @@
-import React from 'react';
+
 import PropTypes from 'prop-types';
-import {pure} from 'recompose';
+import React from 'react';
 
 import {
-    ResponsiveContainer,
-    LineChart,
-    Line,
-    XAxis,
-    YAxis,
     CartesianGrid,
-    ReferenceLine, Label
+    Label,
+    Line,
+    LineChart,
+    ReferenceLine,
+    ResponsiveContainer,
+    XAxis, YAxis
 } from 'recharts';
 
 import * as calc from '../calculations/calculationT09F';
-import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
 import {Button, Grid, Icon, Segment} from 'semantic-ui-react';
+import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
 
 const styles = {
     chart: {
@@ -139,7 +139,7 @@ const Chart = ({parameters}) => {
 
                     <Segment raised style={styles.diagramLabel}>
                         <p>x<sub>t</sub>&nbsp;=&nbsp;<strong>{xt.toFixed(1)}</strong>&nbsp;m</p>
-                        <p>x<sub>t</sub>'&nbsp;=&nbsp;<strong>{newXt.toFixed(1)}</strong>&nbsp;m</p>
+                        <p>x<sub>t</sub>&apos;&nbsp;=&nbsp;<strong>{newXt.toFixed(1)}</strong>&nbsp;m</p>
                         <p>dx<sub>t</sub>&nbsp;=&nbsp;<strong>{dxt.toFixed(1)}</strong>&nbsp;m</p>
                     </Segment>
 
@@ -167,4 +167,4 @@ Chart.propTypes = {
     parameters: PropTypes.array.isRequired
 };
 
-export default pure(Chart);
+export default Chart;

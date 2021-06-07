@@ -1,21 +1,20 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {pure} from 'recompose';
-
 import {
-    ResponsiveContainer,
-    LineChart,
-    Line,
-    XAxis,
-    YAxis,
     CartesianGrid,
-    Label
+    Label,
+    Line,
+    LineChart,
+    ResponsiveContainer,
+    XAxis,
+    YAxis
 } from 'recharts';
+
+import PropTypes from 'prop-types';
+import React from 'react';
 
 import {calculateTravelTimeT13E} from '../calculations';
 
-import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
 import {Button, Grid, Icon, Segment} from 'semantic-ui-react';
+import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
 
 const calculateDiagramData = (Qw, ne, hL, h0, x, xi) => {
     const data = [];
@@ -144,4 +143,4 @@ Chart.propTypes = {
     parameters: PropTypes.array.isRequired,
 };
 
-export default pure(Chart);
+export default Chart;

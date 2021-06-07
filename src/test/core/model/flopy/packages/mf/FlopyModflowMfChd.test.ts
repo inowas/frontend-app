@@ -1,12 +1,12 @@
-import {LineString} from 'geojson';
-import moment from 'moment';
-import Uuid from 'uuid';
-import {FlopyModflowMfchd} from '../../../../../../core/model/flopy/packages/mf';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../../core/model/geometry';
-import {Stressperiod} from '../../../../../../core/model/modflow';
 import {ConstantHeadBoundary} from '../../../../../../core/model/modflow/boundaries';
+import {FlopyModflowMfchd} from '../../../../../../core/model/flopy/packages/mf';
+import {LineString} from 'geojson';
+import {Stressperiod} from '../../../../../../core/model/modflow';
 import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import Stressperiods from '../../../../../../core/model/modflow/Stressperiods';
+import Uuid from 'uuid';
+import moment from 'moment';
 
 const createBoundaries = () => {
     const id = Uuid.v4();

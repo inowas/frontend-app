@@ -1,12 +1,12 @@
-import {LatLngBoundsExpression} from 'leaflet';
-import md5 from 'md5';
-import React, {useState} from 'react';
-import {FeatureGroup, GeoJSON, Map} from 'react-leaflet';
-import {EditControl} from 'react-leaflet-draw';
-import {Button, Modal} from 'semantic-ui-react';
-import {Geometry} from '../../../../../core/model/modflow';
-import {getStyle} from '../../../../../services/geoTools/mapHelpers';
 import {BasicTileLayer} from '../../../../../services/geoTools/tileLayers';
+import {Button, Modal} from 'semantic-ui-react';
+import {EditControl} from 'react-leaflet-draw';
+import {FeatureGroup, GeoJSON, Map} from 'react-leaflet';
+import {Geometry} from '../../../../../core/model/modflow';
+import {LatLngBoundsExpression} from 'leaflet';
+import {getStyle} from '../../../../../services/geoTools/mapHelpers';
+import React, {useState} from 'react';
+import md5 from 'md5';
 
 interface IProps {
     onChange: (geometry: Geometry) => void;

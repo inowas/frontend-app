@@ -1,8 +1,7 @@
-import React from 'react';
-// @ts-ignore
-import Control from 'react-leaflet-control';
-import {pure} from 'recompose';
 import {Button, Popup} from 'semantic-ui-react';
+
+import Control from 'react-leaflet-control';
+import React from 'react';
 
 const styles = {
     leafletButton: {
@@ -72,4 +71,4 @@ const intersectionControl = (props: IProps) => {
     );
 };
 
-export default pure(intersectionControl);
+export default intersectionControl;

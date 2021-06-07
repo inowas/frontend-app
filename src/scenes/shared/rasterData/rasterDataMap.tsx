@@ -1,19 +1,17 @@
-import React from 'react';
-import {Children, LayersControl, Map} from 'react-leaflet';
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
-import {ModflowModel} from '../../../core/model/modflow';
-import BoundaryCollection from '../../../core/model/modflow/boundaries/BoundaryCollection';
 import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
-import {rainbowFactory} from '../../../services/rainbowvis/helpers';
-import Rainbow from '../../../services/rainbowvis/Rainbowvis';
+import {Children, LayersControl} from 'react-leaflet';
 import {ILegendItem} from '../../../services/rainbowvis/types';
-import {renderBoundaryOverlays, renderBoundingBoxLayer} from '../../t03/components/maps/mapLayers';
+import {LeafletMouseEvent} from 'leaflet';
+import {ModflowModel} from '../../../core/model/modflow';
+import {max, min} from './helpers';
+import {rainbowFactory} from '../../../services/rainbowvis/helpers';
+import {renderBoundaryOverlays, renderBoundingBoxLayer, renderContourLayer} from '../../t03/components/maps/mapLayers';
+import BoundaryCollection from '../../../core/model/modflow/boundaries/BoundaryCollection';
 import ColorLegend from './ColorLegend';
-import ContourLayer from './contourLayer';
-import {
-    max,
-    min
-} from './helpers';
+import CustomMap from './CustomMap';
+import Rainbow from '../../../services/rainbowvis/Rainbowvis';
+import React from 'react';
 
 const styles = {
     map: {
@@ -22,7 +20,7 @@ const styles = {
     }
 };
 
-const renderLegend = (rainbow: Rainbow, unit: string = '') => {
+const renderLegend = (rainbow: Rainbow, unit = '') => {
     const gradients = rainbow.gradients.slice().reverse();
     const lastGradient = gradients[gradients.length - 1];
     const legend: ILegendItem[] = gradients.map((gradient) => ({
@@ -43,6 +41,7 @@ interface IProps {
     children?: Children;
     data: number | Array2D<number>;
     model: ModflowModel;
+    onClickCell?: (latlng: [number, number]) => void;
     unit: string;
 }
 
@@ -50,11 +49,18 @@ const RasterDataMap = (props: IProps) => {
     const {children, model, data, unit} = props;
     const rainbowVis = rainbowFactory({min: min(data), max: max(data)});
 
+    const handleClickCell = (e: LeafletMouseEvent) => {
+      if (props.onClickCell) {
+        props.onClickCell([e.latlng.lng, e.latlng.lat]);
+      }
+    };
+
     return (
-        <Map
+        <CustomMap
             style={styles.map}
             zoomControl={false}
             bounds={model.boundingBox.getBoundsLatLng()}
+            onclick={props.onClickCell ? handleClickCell : undefined}
         >
             <BasicTileLayer/>
             {renderBoundingBoxLayer(model.boundingBox, model.rotation, model.geometry)}
@@ -63,18 +69,12 @@ const RasterDataMap = (props: IProps) => {
                 {renderBoundaryOverlays(props.boundaries)}
             </LayersControl>
             }
-            <ContourLayer
-                boundingBox={model.boundingBox}
-                data={data}
-                geometry={model.geometry}
-                gridSize={model.gridSize}
-                rainbow={rainbowVis}
-                rotation={model.rotation}
-                steps={0}
-            />
+
+            {renderContourLayer({model, data, rainbow: rainbowVis, steps: 0})}
+
             {children}
             {renderLegend(rainbowVis, unit)}
-        </Map>
+        </CustomMap>
     );
 };
 

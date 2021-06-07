@@ -1,10 +1,9 @@
-import Uuid from 'uuid';
-import DataSourceCollection from '../../../core/model/rtm/DataSourceCollection';
-import FileDataSource from '../../../core/model/rtm/FileDataSource';
-import {IDateTimeValue, IFileDataSource} from '../../../core/model/rtm/Sensor.type';
 import {DATADROPPER_URL} from '../../../services/api';
+import {DataSourceCollection, FileDataSource} from '../../../core/model/rtm/monitoring';
+import {IDateTimeValue, IFileDataSource} from '../../../core/model/rtm/monitoring/Sensor.type';
+import Uuid from 'uuid';
 
-test('Test DatasourceCollection merge with local data', async () => {
+test('DatasourceCollection merge with local data', async () => {
     const data1 = [
         {timeStamp: 123000, value: 1},
         {timeStamp: 124000, value: 2},
@@ -36,7 +35,7 @@ async function submitData(data: IDateTimeValue[]) {
     return await FileDataSource.fromData(data);
 }
 
-test('Test DatasourceCollection fetches automatically if data is not loaded', async () => {
+test('DatasourceCollection fetches automatically if data is not loaded', async () => {
     const ds1Inst = await submitData([
         {timeStamp: 123000, value: 1},
         {timeStamp: 124000, value: 2},
@@ -68,21 +67,19 @@ test('Test DatasourceCollection fetches automatically if data is not loaded', as
     );
 });
 
-test('Test FileDataSource, loading pre-loaded data', async () => {
+test('FileDataSource, loading pre-loaded data', async () => {
     const obj: IFileDataSource = {
         id: Uuid.v4(),
         file: {filename: '', server: DATADROPPER_URL}
     };
 
-    const ds = new FileDataSource(obj);
-
-    // @ts-ignore
-    ds._props.data = [{timeStamp: 1, value: 1.2}];
+    obj.data = [{timeStamp: 1, value: 1.2}];
+    const ds = (new FileDataSource(obj));
     await ds.loadData();
     expect(ds.data).toEqual([{timeStamp: 1, value: 1.2}]);
 });
 
-test('Test FileDataSource, loading from http-resource', async () => {
+test('FileDataSource, loading from http-resource', async () => {
     const obj: IFileDataSource = {
         id: Uuid.v4(),
         file: {
@@ -97,7 +94,7 @@ test('Test FileDataSource, loading from http-resource', async () => {
 });
 
 // async/await can be used.
-test('Test FileDataSource from data', async () => {
+test('FileDataSource from data', async () => {
     const data = [{
         timeStamp: 123444,
         value: 1
@@ -114,7 +111,7 @@ test('Test FileDataSource from data', async () => {
 });
 
 // async/await can be used.
-test('Test FileDataSource from filename', async () => {
+test('FileDataSource from filename', async () => {
     const ds = await FileDataSource.fromFile({
         filename: 'fb6da03381069eec2492185b9ab2879f03a962af.json',
         server: DATADROPPER_URL

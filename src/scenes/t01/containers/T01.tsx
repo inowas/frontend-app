@@ -8,6 +8,10 @@ import React, {useEffect, useState} from 'react';
 import ToolGrid from '../../shared/simpleTools/ToolGrid';
 import image from '../images/T01.png';
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import csvFile from '../data/2018-10-25-mar-in-scales.csv';
+
 const navigation = [{
     name: 'Documentation',
     path: 'https://inowas.com/tools/t01-sat-basin-infiltration-capacity-reduction-database/',
@@ -21,12 +25,12 @@ const T01 = (props: IProps) => {
     const [data, setData] = useState<any>(null);
 
     useEffect(() => {
-        loadCsvFile();
+        loadCsvFile(csvFile);
     }, []);
 
-    const loadCsvFile = () => {
+    const loadCsvFile = (file: string) => {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
-        PapaParse.parse(require('../data/2018-10-25-mar-in-scales.csv'), {
+        PapaParse.parse(file, {
             download: true,
             delimiter: ';',
             dynamicTyping: true,
@@ -61,7 +65,7 @@ const T01 = (props: IProps) => {
     };
 
     const handleReset = () => {
-        loadCsvFile();
+        loadCsvFile(csvFile);
     };
 
     if (!data) {

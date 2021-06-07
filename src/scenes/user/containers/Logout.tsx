@@ -1,7 +1,7 @@
-import React, {useEffect} from 'react';
-import {useDispatch} from 'react-redux';
-import {Redirect} from 'react-router';
 import {Action} from '../actions/index';
+import {Redirect} from 'react-router';
+import {useDispatch} from 'react-redux';
+import React, {useEffect} from 'react';
 
 const Logout = () => {
     const dispatch = useDispatch();

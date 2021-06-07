@@ -1,7 +1,7 @@
-import {Feature, Point} from '@turf/helpers';
 import * as turf from '@turf/turf';
-import {floor} from 'lodash';
 import {BoundingBox, GridSize} from '../../core/model/modflow';
+import {Feature, Point} from '@turf/helpers';
+import {floor} from 'lodash';
 
 export const rotateCoordinateAroundPoint = (
     point1: {lng: number, lat: number},

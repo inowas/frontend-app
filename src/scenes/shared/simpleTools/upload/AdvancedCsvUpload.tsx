@@ -1,7 +1,4 @@
-import moment from 'moment';
 import * as Papa from 'papaparse';
-import {ParseResult} from 'papaparse';
-import React, {ChangeEvent, MouseEvent, SyntheticEvent, useEffect, useState} from 'react';
 import {
     Button,
     Dimmer,
@@ -15,8 +12,11 @@ import {
     Table
 } from 'semantic-ui-react';
 import {ECsvColumnType} from './types';
+import {ParseResult} from 'papaparse';
+import React, {ChangeEvent, MouseEvent, SyntheticEvent, useEffect, useState} from 'react';
+import moment from 'moment';
 
-type TColumns = Array<{ key: number, value: string, text: string, type?: ECsvColumnType }>;
+export type TColumns = Array<{ key: number, value: string, text: string, type?: ECsvColumnType }>;
 
 interface IProps {
     columns: TColumns;

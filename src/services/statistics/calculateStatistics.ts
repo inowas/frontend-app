@@ -1,7 +1,7 @@
-import gaussian from 'gaussian';
-import {sortBy, uniq} from 'lodash';
-import math from 'mathjs';
 import {IHobData, IStatistics} from '../../scenes/t03/components/content/observation/statistics';
+import {sortBy, uniq} from 'lodash';
+import gaussian from 'gaussian';
+import math from 'mathjs';
 
 export interface ILinearRegression {
     slope: number;

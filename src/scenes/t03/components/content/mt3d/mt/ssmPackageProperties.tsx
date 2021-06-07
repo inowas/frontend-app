@@ -1,16 +1,16 @@
-import React, {useEffect, useState} from 'react';
-import {Form, Grid, Header, Input, Label} from 'semantic-ui-react';
-import {FlopyModflowMfdis} from '../../../../../../core/model/flopy/packages/mf';
-import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
-import {FlopyMt3dMtssm} from '../../../../../../core/model/flopy/packages/mt';
-import {IFlopyMt3dMtssm} from '../../../../../../core/model/flopy/packages/mt/FlopyMt3dMtssm';
 import {Array2D} from '../../../../../../core/model/geometry/Array2D.type';
+import {FlopyModflowMfdis} from '../../../../../../core/model/flopy/packages/mf';
+import {FlopyMt3dMtssm} from '../../../../../../core/model/flopy/packages/mt';
+import {Form, Grid, Header, Input, Label} from 'semantic-ui-react';
 import {GridSize} from '../../../../../../core/model/modflow';
+import {IFlopyMt3dMtssm} from '../../../../../../core/model/flopy/packages/mt/FlopyMt3dMtssm';
 import {RainbowOrLegend} from '../../../../../../services/rainbowvis/types';
-import renderInfoPopup from '../../../../../shared/complexTools/InfoPopup';
-import InfoPopup from '../../../../../shared/InfoPopup';
 import {RasterDataImage} from '../../../../../shared/rasterData';
 import {documentation} from '../../../../defaults/transport';
+import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
+import InfoPopup from '../../../../../shared/InfoPopup';
+import React, {useEffect, useState} from 'react';
+import renderInfoPopup from '../../../../../shared/complexTools/InfoPopup';
 
 interface IProps {
     mfPackages: FlopyModflow;

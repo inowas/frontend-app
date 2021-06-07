@@ -1,7 +1,7 @@
-import uuidv4 from 'uuid/v4';
 import {ILayerParameter} from '../../../core/model/modflow/soilmodel/LayerParameter.type';
 import {IRasterParameter} from '../../../core/model/modflow/soilmodel/RasterParameter.type';
 import {ISoilmodelLayer} from '../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
+import uuidv4 from 'uuid/v4';
 
 export interface IParameter {
     name: string;

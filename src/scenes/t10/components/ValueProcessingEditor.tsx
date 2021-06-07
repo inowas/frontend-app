@@ -2,12 +2,12 @@ import {Button, DropdownProps, Form, Grid, Header, InputOnChangeData, Label, Mod
 import {DataPoint} from 'downsample';
 import {DatePicker} from '../../shared/uiComponents';
 import {IDatePickerProps} from '../../shared/uiComponents/DatePicker';
-import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
+import {IDateTimeValue} from '../../../core/model/rtm/monitoring/Sensor.type';
 import {IValueProcessingOperator} from '../../../core/model/rtm/processing/Processing.type';
 import {LTOB} from 'downsample';
 import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import {cloneDeep} from 'lodash';
-import DataSourceCollection from '../../../core/model/rtm/DataSourceCollection';
+import DataSourceCollection from '../../../core/model/rtm/monitoring/DataSourceCollection';
 import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 import ValueProcessing, {operators} from '../../../core/model/rtm/processing/ValueProcessing';
 import moment from 'moment';
@@ -175,7 +175,7 @@ const ValueProcessingEditor = (props: IProps) => {
         ).map((d) => ({
             x: d.timeStamp,
             y: d.value
-        })), 200);
+        })), 200) as DataPoint[];
 
         return (
             <ResponsiveContainer height={300}>

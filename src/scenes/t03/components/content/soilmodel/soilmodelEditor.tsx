@@ -1,7 +1,3 @@
-import {cloneDeep} from 'lodash';
-import React, {MouseEvent, SyntheticEvent, useEffect, useRef, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {useHistory, useLocation, useParams} from 'react-router-dom';
 import {
     Button,
     Dimmer,
@@ -16,22 +12,13 @@ import {
     Progress,
     Segment
 } from 'semantic-ui-react';
-import Uuid from 'uuid';
+import {CreateZoneModal, ZoneDetails} from './zones';
 import {EMessageState, IMessage} from '../../../../../core/model/messages/Message.type';
-import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
-import {ModflowModel} from '../../../../../core/model/modflow';
-import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
-import {Soilmodel, SoilmodelLayer, Zone, ZonesCollection} from '../../../../../core/model/modflow/soilmodel';
-import LayerParameterZonesCollection from '../../../../../core/model/modflow/soilmodel/LayerParameterZonesCollection';
-import {ISoilmodelLayer} from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
-import {saveLayer} from '../../../../../core/model/modflow/soilmodel/updater/services';
-import {IZone} from '../../../../../core/model/modflow/soilmodel/Zone.type';
 import {IRootReducer} from '../../../../../reducers';
-import {sendCommand} from '../../../../../services/api';
-import {sendCommands} from '../../../../../services/api/commandHelper';
-import NoContent from '../../../../shared/complexTools/noContent';
-import ContentToolBar from '../../../../shared/ContentToolbar2';
-import {usePrevious} from '../../../../shared/simpleTools/helpers/customHooks';
+import {ISoilmodelLayer} from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
+import {IZone} from '../../../../../core/model/modflow/soilmodel/Zone.type';
+import {ModflowModel} from '../../../../../core/model/modflow';
+import {Soilmodel, SoilmodelLayer, Zone, ZonesCollection} from '../../../../../core/model/modflow/soilmodel';
 import {
     addLayer,
     addMessage,
@@ -42,18 +29,31 @@ import {
     updateMessage,
     updateZone
 } from '../../../actions/actions';
-import Command from '../../../commands/modflowModelCommand';
-import {messageDirty, messageError, messageSaving} from '../../../defaults/messages';
 import {
     basParameters,
     defaultSoilmodelLayer,
     modpathParameters,
     soilmodelParameters
 } from '../../../defaults/soilmodel';
-import LayerDetails from './layerDetails';
-import LayersList from './layersList';
-import {CreateZoneModal, ZoneDetails} from './zones';
+import {cloneDeep} from 'lodash';
+import {messageDirty, messageError, messageSaving} from '../../../defaults/messages';
+import {saveLayer} from '../../../../../core/model/modflow/soilmodel/updater/services';
+import {sendCommand} from '../../../../../services/api';
+import {sendCommands} from '../../../../../services/api/commandHelper';
+import {useDispatch, useSelector} from 'react-redux';
+import {useHistory, useLocation, useParams} from 'react-router-dom';
+import {usePrevious} from '../../../../shared/simpleTools/helpers/customHooks';
+import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
+import Command from '../../../commands/modflowModelCommand';
+import ContentToolBar from '../../../../shared/ContentToolbar2';
 import CreateZone from './zones/createZone';
+import LayerDetails from './layerDetails';
+import LayerParameterZonesCollection from '../../../../../core/model/modflow/soilmodel/LayerParameterZonesCollection';
+import LayersList from './layersList';
+import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
+import NoContent from '../../../../shared/complexTools/noContent';
+import React, {MouseEvent, SyntheticEvent, useEffect, useRef, useState} from 'react';
+import Uuid from 'uuid';
 import ZonesList from './zonesList';
 
 const baseUrl = '/tools/T03';
@@ -93,7 +93,7 @@ const SoilmodelEditor = () => {
         saving: null
     });
 
-    const {id, pid, property, type} = useParams();
+    const {id, pid, property, type} = useParams<{ id: string, pid: string, property: string, type: string }>();
 
     const dispatch = useDispatch();
     const location = useLocation();
@@ -125,6 +125,7 @@ const SoilmodelEditor = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pid, soilmodel]);
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const searchParams = new URLSearchParams(location.search);
     const activeParamType = searchParams.get('type') || 'soilmodel';
     const activeParam = searchParams.get('param') || 'properties';

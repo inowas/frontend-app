@@ -1,9 +1,8 @@
-import React from 'react';
-import {pure} from 'recompose';
 import {Button, Icon, Menu, Popup} from 'semantic-ui-react';
+import {IZone} from '../../../../../core/model/modflow/soilmodel/Zone.type';
 import {Zone, ZonesCollection} from '../../../../../core/model/modflow/soilmodel';
 import LayersCollection from '../../../../../core/model/modflow/soilmodel/LayersCollection';
-import {IZone} from '../../../../../core/model/modflow/soilmodel/Zone.type';
+import React from 'react';
 
 interface IProps {
     layers: LayersCollection;
@@ -87,4 +86,4 @@ const ZonesList = ({layers, zones, onClick, onClone, onRemove, readOnly, selecte
     );
 };
 
-export default pure(ZonesList);
+export default ZonesList;

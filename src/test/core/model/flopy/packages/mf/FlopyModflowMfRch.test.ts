@@ -1,11 +1,11 @@
-import {Polygon} from 'geojson';
-import moment from 'moment';
-import Uuid from 'uuid';
-import {FlopyModflowMfrch} from '../../../../../../core/model/flopy/packages/mf';
 import {Cells, Geometry, GridSize, Stressperiod} from '../../../../../../core/model/modflow';
+import {FlopyModflowMfrch} from '../../../../../../core/model/flopy/packages/mf';
+import {Polygon} from 'geojson';
 import {RechargeBoundary} from '../../../../../../core/model/modflow/boundaries';
 import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import Stressperiods from '../../../../../../core/model/modflow/Stressperiods';
+import Uuid from 'uuid';
+import moment from 'moment';
 
 const createRechargeBoundary = () => {
     const id = Uuid.v4();

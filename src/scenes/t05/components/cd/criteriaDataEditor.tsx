@@ -1,16 +1,16 @@
-import React, {MouseEvent, useEffect, useState} from 'react';
-import {RouteComponentProps, withRouter} from 'react-router-dom';
-import {Dimmer, Loader, MenuItemProps, Message, Step} from 'semantic-ui-react';
-import {MCDA} from '../../../../core/model/mcda';
+import {CriteriaRasterUpload, CriteriaReclassification} from './index';
 import {Criterion} from '../../../../core/model/mcda/criteria';
+import {Dimmer, Loader, MenuItemProps, Message, Step} from 'semantic-ui-react';
 import {ICriterion} from '../../../../core/model/mcda/criteria/Criterion.type';
-import {RasterLayer} from '../../../../core/model/mcda/gis';
 import {ITask, retrieveRasters} from '../../../../services/api/rasterHelper';
-import {usePrevious} from '../../../shared/simpleTools/helpers/customHooks';
+import {MCDA} from '../../../../core/model/mcda';
+import {RasterLayer} from '../../../../core/model/mcda/gis';
+import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {criterionStep} from '../../defaults/defaults';
+import {usePrevious} from '../../../shared/simpleTools/helpers/customHooks';
 import CriteriaDataConstraints from './criteriaDataConstraints';
 import CriteriaDataResults from './criteriaDataResults';
-import {CriteriaRasterUpload, CriteriaReclassification} from './index';
+import React, {MouseEvent, useEffect, useState} from 'react';
 
 interface IProps extends RouteComponentProps<any> {
     activeTool?: string;

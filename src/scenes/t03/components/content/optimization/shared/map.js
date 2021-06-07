@@ -1,16 +1,16 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {GeoJSON, Map, Rectangle, FeatureGroup, CircleMarker} from 'react-leaflet';
-import {uniqueId} from 'lodash';
-import {Button, Form, Grid, Header, Message, Modal, Segment} from 'semantic-ui-react';
-import InputRange from './inputRange';
-import InputObjectList from './inputObjectList';
-import {EditControl} from 'react-leaflet-draw';
-import {getActiveCellFromCoordinate} from '../../../../../../services/geoTools';
-import {ModflowModel} from '../../../../../../core/model/modflow';
-import {getStyle} from '../../../maps';
-import {BasicTileLayer} from '../../../../../../services/geoTools/tileLayers';
 import {AbstractPosition, OptimizationLocation, OptimizationObjectsCollection} from '../../../../../../core/model/modflow/optimization';
+import {BasicTileLayer} from '../../../../../../services/geoTools/tileLayers';
+import {Button, Form, Grid, Header, Message, Modal, Segment} from 'semantic-ui-react';
+import {CircleMarker, FeatureGroup, GeoJSON, Map, Rectangle} from 'react-leaflet';
+import {EditControl} from 'react-leaflet-draw';
+import {ModflowModel} from '../../../../../../core/model/modflow';
+import {getActiveCellFromCoordinate} from '../../../../../../services/geoTools';
+import {getStyle} from '../../../maps';
+import {uniqueId} from 'lodash';
+import InputObjectList from './inputObjectList';
+import InputRange from './inputRange';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 const styles = {
     map: {
@@ -36,7 +36,7 @@ class OptimizationMap extends React.Component {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         this.setState({
             location: {
                 ...nextProps.location.toObject(),
@@ -98,10 +98,10 @@ class OptimizationMap extends React.Component {
         const dX = (bbox.xMax - bbox.xMin) / gridSize.nX;
         const dY = (bbox.yMax - bbox.yMin) / gridSize.nY;
 
-        const cXmin = bbox.xMin + location.col.min * dX;
-        const cXmax = bbox.xMin + location.col.max * dX;
-        const cYmin = bbox.yMax - location.row.min * dY;
-        const cYmax = bbox.yMax - location.row.max * dY;
+        const cXmin = bbox.xMin + (location.col.min * dX);
+        const cXmax = bbox.xMin + (location.col.max * dX);
+        const cYmin = bbox.yMax - (location.row.min * dY);
+        const cYmax = bbox.yMax - (location.row.max * dY);
 
         if (cXmin === cXmax && cYmin === cYmax && !this.state.isEditing) {
             return (

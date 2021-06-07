@@ -1,10 +1,13 @@
 import React from 'react';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import {mounding} from 'gwflowjs/lib/library';
+import {IT02Data} from '../defaults';
 import {Icon, Message} from 'semantic-ui-react';
 import {getParameterValues} from '../../shared/simpleTools/helpers';
-import {IT02Data} from '../defaults';
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import {mounding} from 'gwflowjs/lib/library';
 
 interface IProps {
     parameters: IT02Data['parameters'];

@@ -1,5 +1,4 @@
 import React from 'react';
-import {pure} from 'recompose';
 import PropTypes from 'prop-types';
 import {
     Bar,
@@ -85,4 +84,4 @@ Info.propTypes = {
     data: PropTypes.array.isRequired
 };
 
-export default pure(Info);
+export default Info;

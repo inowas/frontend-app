@@ -1,16 +1,14 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {pure} from 'recompose';
-
+import {Button, Grid, Icon, Segment} from 'semantic-ui-react';
 import {
     CartesianGrid, Label,
     Line, LineChart,
     ResponsiveContainer, XAxis, YAxis,
 } from 'recharts';
-
-import {Button, Grid, Icon, Segment} from 'semantic-ui-react';
-import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
 import {calculateTravelTimeT13A} from '../calculations';
+import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
+
+import PropTypes from 'prop-types';
+import React from 'react';
 
 const calculateDiagramData = (w, K, ne, L, hL, xMin, xMax, dX) => {
     const data = [];
@@ -59,7 +57,7 @@ const renderLabels = (xe, xi, L, data) => {
     if (xe > L) {
         return (
             <Segment raised style={styles.diagramErrorLabel}>
-                <p>Arrival location, x<sub>e</sub>, can not be bigger than the Aquifer length, L<sup>'</sup>.</p>
+                <p>Arrival location, x<sub>e</sub>, can not be bigger than the Aquifer length, L<sup>&apos;</sup>.</p>
             </Segment>
         );
     }
@@ -67,7 +65,7 @@ const renderLabels = (xe, xi, L, data) => {
     if (xi > L) {
         return (
             <Segment raised style={styles.diagramErrorLabel}>
-                <p>Initial location, x<sub>i</sub>, can not be bigger than the Aquifer length, L<sup>'</sup>.</p>
+                <p>Initial location, x<sub>i</sub>, can not be bigger than the Aquifer length, L<sup>&apos;</sup>.</p>
             </Segment>
         );
     }
@@ -162,4 +160,4 @@ Chart.propTypes = {
     parameters: PropTypes.array.isRequired,
 };
 
-export default pure(Chart);
+export default Chart;

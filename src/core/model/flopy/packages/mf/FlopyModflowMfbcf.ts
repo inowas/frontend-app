@@ -1,8 +1,8 @@
 import {Array2D} from '../../../geometry/Array2D.type';
-import {SoilmodelLayer} from '../../../modflow/soilmodel';
-import Soilmodel from '../../../modflow/soilmodel/Soilmodel';
 import {IPropertyValueObject} from '../../../types';
+import {SoilmodelLayer} from '../../../modflow/soilmodel';
 import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
+import Soilmodel from '../../../modflow/soilmodel/Soilmodel';
 
 export interface IFlopyModflowMfbcf {
     ipakcb: number;

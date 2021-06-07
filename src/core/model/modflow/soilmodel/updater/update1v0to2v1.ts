@@ -1,14 +1,14 @@
-import uuidv4 from 'uuid/v4';
-import {ModflowModel} from '../..';
-import {
-    defaultSoilmodelLayerParameters,
-    defaultSoilmodelParameters
-} from '../../../../../scenes/t03/defaults/soilmodel';
 import {ILayerParameterZone} from '../LayerParameterZone.type';
 import {IRasterParameter} from '../RasterParameter.type';
 import {ISoilmodel1v0} from '../Soilmodel.type';
 import {ISoilmodelLayer, ISoilmodelLayer1v0} from '../SoilmodelLayer.type';
 import {IZone, IZoneLegacy} from '../Zone.type';
+import {ModflowModel} from '../..';
+import {
+    defaultSoilmodelLayerParameters,
+    defaultSoilmodelParameters
+} from '../../../../../scenes/t03/defaults/soilmodel';
+import uuidv4 from 'uuid/v4';
 
 const update1v0to2v1 = (soilmodel: ISoilmodel1v0, model: ModflowModel) => {
     type parameterProp = 'top' | 'botm' | 'vka' | 'hk' | 'hani' | 'ss' | 'sy';

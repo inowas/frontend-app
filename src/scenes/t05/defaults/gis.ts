@@ -1,5 +1,5 @@
-import uuidv4 from 'uuid';
 import {IRule} from '../../../core/model/mcda/criteria/Rule.type';
+import uuidv4 from 'uuid';
 
 const heatMapColors: {
     [name: string]: string[]

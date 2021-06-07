@@ -1,6 +1,3 @@
-import {ZonesCollection} from '../../../modflow/soilmodel';
-import {IPropertyValueObject} from '../../../types';
-import FlopyModpathPackage from './FlopyModpathPackage';
 import {
     FlopyModpathMp7,
     FlopyModpathMp7bas,
@@ -8,7 +5,10 @@ import {
     FlopyModpathMp7particlegroup,
     FlopyModpathMp7sim
 } from './index';
+import {IPropertyValueObject} from '../../../types';
 import {ModpathPackage} from './types';
+import {ZonesCollection} from '../../../modflow/soilmodel';
+import FlopyModpathPackage from './FlopyModpathPackage';
 
 const packagesMap: IPropertyValueObject = {
     mp7: FlopyModpathMp7,
@@ -50,7 +50,7 @@ class FlopyModpath {
         return FlopyModpath.fromObject({});
     }
 
-    private _enabled: boolean = false;
+    private _enabled = false;
     private _meta: {
         zones: ZonesCollection
     } = {
@@ -72,6 +72,7 @@ class FlopyModpath {
 
     public setPackage(p: FlopyModpathPackage) {
         for (const name in packagesMap) {
+            // eslint-disable-next-line no-prototype-builtins
             if (packagesMap.hasOwnProperty(name) && p instanceof packagesMap[name]) {
                 this._packages[name] = p;
                 return;
@@ -89,6 +90,7 @@ class FlopyModpath {
     public getPackageType(p: ModpathPackage) {
         let type = null;
         for (const name in packagesMap) {
+            // eslint-disable-next-line no-prototype-builtins
             if (packagesMap.hasOwnProperty(name) && p instanceof packagesMap[name]) {
                 type = name;
             }
@@ -111,6 +113,7 @@ class FlopyModpath {
         };
 
         for (const prop in this.packages) {
+            // eslint-disable-next-line no-prototype-builtins
             if (this.packages.hasOwnProperty(prop)) {
                 obj[prop] = this.packages[prop].toObject();
             }
@@ -129,6 +132,7 @@ class FlopyModpath {
         };
 
         for (const prop in this.packages) {
+            // eslint-disable-next-line no-prototype-builtins
             if (this.packages.hasOwnProperty(prop)) {
                 obj[prop] = this.packages[prop].toObject();
             }

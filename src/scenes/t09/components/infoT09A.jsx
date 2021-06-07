@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Icon, Message} from 'semantic-ui-react';
-import {pure} from 'recompose';
 import {getParameterValues} from '../../shared/simpleTools/helpers';
 
 const Info = ({parameters}) => {
@@ -27,4 +26,4 @@ Info.propTypes = {
     parameters: PropTypes.array.isRequired
 };
 
-export default pure(Info);
+export default Info;

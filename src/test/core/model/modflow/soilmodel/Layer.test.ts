@@ -1,10 +1,9 @@
-import {Polygon} from 'geojson';
 import {Geometry} from '../../../../../core/model/geometry';
 import {ICell} from '../../../../../core/model/geometry/Cells.type';
-import GridSize from '../../../../../core/model/geometry/GridSize';
 import {LayerParameterZonesCollection, ZonesCollection} from '../../../../../core/model/modflow/soilmodel';
-import SoilmodelLayer from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
 import {defaultSoilmodelLayer} from '../../../../../scenes/t03/defaults/soilmodel';
+import GridSize from '../../../../../core/model/geometry/GridSize';
+import SoilmodelLayer from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
 
 test('Zones to parameters', () => {
     const gridSize = new GridSize({n_x: 3, n_y: 3});

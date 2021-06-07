@@ -1,14 +1,15 @@
 import {Button, DropdownProps, Form, Grid, Header, Label, Modal, Segment} from 'semantic-ui-react';
 import {DataPoint, LTOB} from 'downsample';
 import {DatePicker} from '../../shared/uiComponents';
-import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
+import {IDateTimeValue} from '../../../core/model/rtm/monitoring/Sensor.type';
 import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
+import {SensorDataSource} from '../../../core/model/rtm/monitoring';
 import {fetchUrl} from '../../../services/api';
 import {maxBy, minBy, uniqBy} from 'lodash';
 import {usePrevious} from '../../shared/simpleTools/helpers/customHooks';
 import React, {SyntheticEvent, useEffect, useState} from 'react';
-import SensorDataSource from '../../../core/model/rtm/SensorDataSource';
 import moment from 'moment';
+import uuid from 'uuid';
 
 interface IProps {
     dataSource?: SensorDataSource;
@@ -386,7 +387,7 @@ const SensorDatasourceEditor = (props: IProps) => {
         const downSampledDataLTOB: DataPoint[] = LTOB(data.map((d: IDateTimeValue) => ({
             x: d.timeStamp,
             y: d.value
-        })), 200);
+        })), 200) as DataPoint[];
 
         return (
             <ResponsiveContainer height={300}>
@@ -461,7 +462,7 @@ const SensorDatasourceEditor = (props: IProps) => {
                                         selection={true}
                                         value={dataSource ? dataSource.server : (server || undefined)}
                                         onChange={handleChangeServer}
-                                        options={servers.map((s) => ({key: s.url, value: s.url, text: s.url}))}
+                                        options={servers.map((s) => ({key: uuid.v4(), value: s.url, text: s.url}))}
                                     />
                                 </Segment>
                             </Form>

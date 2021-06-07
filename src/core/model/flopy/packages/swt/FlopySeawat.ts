@@ -1,10 +1,10 @@
+import {FlopySeawatPackage, FlopySeawatSwt, FlopySeawatSwtvdf, FlopySeawatSwtvsc} from './index';
 import {GenericObject} from '../../../genericObject/GenericObject';
-import {VariableDensity} from '../../../modflow';
-import {IPropertyValueObject} from '../../../types';
 import {IFlopySeawatSwt} from './FlopySeawatSwt';
 import {IFlopySeawatSwtvdf} from './FlopySeawatSwtvdf';
 import {IFlopySeawatSwtvsc} from './FlopySeawatSwtvsc';
-import {FlopySeawatPackage, FlopySeawatSwt, FlopySeawatSwtvdf, FlopySeawatSwtvsc} from './index';
+import {IPropertyValueObject} from '../../../types';
+import {VariableDensity} from '../../../modflow';
 
 export interface IFlopySeawat extends IPropertyValueObject {
     enabled: boolean;
@@ -111,6 +111,8 @@ export default class FlopySeawat extends GenericObject<IFlopySeawat> {
         }
 
         const obj = {...this._props};
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         delete obj.enabled;
 
         return {

@@ -1,9 +1,9 @@
-import React from 'react';
-import {pure} from 'recompose';
-import PropTypes from 'prop-types';
-import {getParameterValues} from '../../shared/simpleTools/helpers';
 import {Icon, Message} from 'semantic-ui-react';
 import {calculateTravelTimeT13E} from '../calculations';
+import {getParameterValues} from '../../shared/simpleTools/helpers';
+
+import PropTypes from 'prop-types';
+import React from 'react';
 
 const Info = ({parameters}) => {
     const {Qw, ne, hL, h0, xi, x} = getParameterValues(parameters);
@@ -37,4 +37,4 @@ Info.propTypes = {
     parameters: PropTypes.array.isRequired
 };
 
-export default pure(Info);
+export default Info;

@@ -1,7 +1,7 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import {Button, Dropdown, Grid, Icon, Message, Transition} from 'semantic-ui-react';
 import {OPTIMIZATION_EDIT_SAVED, OPTIMIZATION_EDIT_UNSAVED} from '../../../../defaults/optimization';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 const styles = {
     thinMessage: {
@@ -21,7 +21,8 @@ class OptimizationToolbar extends React.Component {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    UNSAFE_componentWillReceiveProps(nextProps, nextContext) {
         this.setState({
             editState: nextProps.editState
         });
