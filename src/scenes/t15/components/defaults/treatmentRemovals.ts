@@ -163,7 +163,7 @@ export const treatmentRemovals: ITreatmentRemoval[] = [
     'ReferenceLink': 'http://apps.who.int/iris/bitstream/10665/44584/1/9789241548151_eng.pdf#page=162'
   },
   {
-    'TreatmentGroup': 'Pretreatment',
+    'TreatmentGroup': 'Natural Attenuation',
     'TreatmentName': 'Bank filtration',
     'PathogenGroup': 'Bacteria',
     'Min': 2,
@@ -172,7 +172,7 @@ export const treatmentRemovals: ITreatmentRemoval[] = [
     'ReferenceLink': 'http://apps.who.int/iris/bitstream/10665/44584/1/9789241548151_eng.pdf#page=162'
   },
   {
-    'TreatmentGroup': 'Pretreatment',
+    'TreatmentGroup': 'Natural Attenuation',
     'TreatmentName': 'Bank filtration',
     'PathogenGroup': 'Viruses',
     'Min': 2.1,
@@ -181,7 +181,7 @@ export const treatmentRemovals: ITreatmentRemoval[] = [
     'ReferenceLink': 'http://apps.who.int/iris/bitstream/10665/44584/1/9789241548151_eng.pdf#page=162'
   },
   {
-    'TreatmentGroup': 'Pretreatment',
+    'TreatmentGroup': 'Natural Attenuation',
     'TreatmentName': 'Bank filtration',
     'PathogenGroup': 'Protozoa',
     'Min': 1,
