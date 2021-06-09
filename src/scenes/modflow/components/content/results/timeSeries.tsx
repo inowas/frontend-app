@@ -76,9 +76,9 @@ const TimeSeries = (props: IProps) => {
     ) {
       return;
     }
-    const f = selectedCells.filter((c) => c[0] === cell[0] && c[1] === cell[1]);
+    const f = selectedCells.filter((c) => c[1] === cell[0] && c[0] === cell[1]);
     if (f.length > 0) {
-      const cSelectedCells = selectedCells.filter((c) => !(c[0] === cell[0] && c[1] === cell[1]));
+      const cSelectedCells = selectedCells.filter((c) => !(c[1] === cell[0] && c[0] === cell[1]));
       setSelectedCells(cSelectedCells);
     } else {
       setIsFetching(true);
