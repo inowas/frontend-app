@@ -658,4 +658,3 @@ export const treatmentRemovals: ITreatmentRemoval[] = [
     'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
   }
   ];
-  
