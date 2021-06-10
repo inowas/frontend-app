@@ -199,7 +199,7 @@ export const treatmentRemovals: ITreatmentRemoval[] = [
     'ReferenceLink': 'http://apps.who.int/iris/bitstream/10665/44584/1/9789241548151_eng.pdf#page=162'
   },
   {
-    'TreatmentGroup': 'Pretreatment',
+    'TreatmentGroup': 'Natural Attenuation',
     'TreatmentName': 'Storage reservoirs',
     'PathogenGroup': 'Bacteria',
     'Min': 0.7,
@@ -208,7 +208,7 @@ export const treatmentRemovals: ITreatmentRemoval[] = [
     'ReferenceLink': 'http://apps.who.int/iris/bitstream/10665/44584/1/9789241548151_eng.pdf#page=162'
   },
   {
-    'TreatmentGroup': 'Pretreatment',
+    'TreatmentGroup': 'Natural Attenuation',
     'TreatmentName': 'Storage reservoirs',
     'PathogenGroup': 'Protozoa',
     'Min': 1.4,
@@ -218,7 +218,7 @@ export const treatmentRemovals: ITreatmentRemoval[] = [
   },
   {
     'TreatmentGroup': 'Primary disinfection',
-    'TreatmentName': 'Chlorination, wastewater',
+    'TreatmentName': 'Chlorine',
     'PathogenGroup': 'Bacteria',
     'Min': 2,
     'Max': 2,
@@ -227,7 +227,7 @@ export const treatmentRemovals: ITreatmentRemoval[] = [
   },
   {
     'TreatmentGroup': 'Primary disinfection',
-    'TreatmentName': 'Chlorination, wastewater',
+    'TreatmentName': 'Chlorine',
     'PathogenGroup': 'Viruses',
     'Min': 2,
     'Max': 2,
@@ -236,7 +236,7 @@ export const treatmentRemovals: ITreatmentRemoval[] = [
   },
   {
     'TreatmentGroup': 'Primary disinfection',
-    'TreatmentName': 'Chlorination, wastewater',
+    'TreatmentName': 'Chlorine',
     'PathogenGroup': 'Protozoa',
     'Min': 2,
     'Max': 2,
@@ -248,27 +248,27 @@ export const treatmentRemovals: ITreatmentRemoval[] = [
     'TreatmentName': 'Chlorine dioxide',
     'PathogenGroup': 'Bacteria',
     'Min': 2,
-    'Max': 2,
-    'ReferenceName': 'WHO (2011): Drinking water guideline, Table 7.7',
-    'ReferenceLink': 'http://apps.who.int/iris/bitstream/10665/44584/1/9789241548151_eng.pdf#page=162'
+    'Max': 6,
+    'ReferenceName': 'NRMMC-EPHC-AHMC (2006)',
+    'ReferenceLink': 'Australian Guidelines for Water Recycling: Managing Health and Environmental Risks (Phase 1) Natural Resource Ministerial Management Council, Environment Protection and Heritage Council and National Health and Medical Research Council, Canberra'
   },
   {
     'TreatmentGroup': 'Primary disinfection',
     'TreatmentName': 'Chlorine dioxide',
     'PathogenGroup': 'Viruses',
-    'Min': 2,
-    'Max': 2,
-    'ReferenceName': 'WHO (2011): Drinking water guideline, Table 7.7',
-    'ReferenceLink': 'http://apps.who.int/iris/bitstream/10665/44584/1/9789241548151_eng.pdf#page=162'
+    'Min': 0.5,
+    'Max': 1.5,
+    'ReferenceName': 'NRMMC-EPHC-AHMC (2006)',
+    'ReferenceLink': 'Australian Guidelines for Water Recycling: Managing Health and Environmental Risks (Phase 1) Natural Resource Ministerial Management Council, Environment Protection and Heritage Council and National Health and Medical Research Council, Canberra'
   },
   {
     'TreatmentGroup': 'Primary disinfection',
     'TreatmentName': 'Chlorine dioxide',
     'PathogenGroup': 'Protozoa',
-    'Min': 2,
-    'Max': 2,
-    'ReferenceName': 'WHO (2011): Drinking water guideline, Table 7.7',
-    'ReferenceLink': 'http://apps.who.int/iris/bitstream/10665/44584/1/9789241548151_eng.pdf#page=162'
+    'Min': 1,
+    'Max': 3,
+    'ReferenceName': 'NRMMC-EPHC-AHMC (2006)',
+    'ReferenceLink': 'Australian Guidelines for Water Recycling: Managing Health and Environmental Risks (Phase 1) Natural Resource Ministerial Management Council, Environment Protection and Heritage Council and National Health and Medical Research Council, Canberra'
   },
   {
     'TreatmentGroup': 'Primary disinfection',
@@ -296,6 +296,114 @@ export const treatmentRemovals: ITreatmentRemoval[] = [
     'Max': 2,
     'ReferenceName': 'WHO (2011): Drinking water guideline, Table 7.7',
     'ReferenceLink': 'http://apps.who.int/iris/bitstream/10665/44584/1/9789241548151_eng.pdf#page=162'
+  },
+  {
+    'TreatmentGroup': 'Primary disinfection',
+    'TreatmentName': 'UV disinfection, wastewater',
+    'PathogenGroup': 'Bacteria',
+    'Min': 2,
+    'Max': 4,
+    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
+    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
+  },
+  {
+    'TreatmentGroup': 'Primary disinfection',
+    'TreatmentName': 'UV disinfection, wastewater',
+    'PathogenGroup': 'Viruses',
+    'Min': 1,
+    'Max': 3,
+    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
+    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
+  },
+  {
+    'TreatmentGroup': 'Primary disinfection',
+    'TreatmentName': 'UV disinfection, wastewater',
+    'PathogenGroup': 'Protozoa',
+    'Min': 3,
+    'Max': 3,
+    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
+    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
+  },
+  {
+    'TreatmentGroup': 'Primary treatment',
+    'TreatmentName': 'Quiescent basin',
+    'PathogenGroup': 'Bacteria',
+    'Min': 0,
+    'Max': 0.5,
+    'ReferenceName': 'NRMMC-EPHC-AHMC (2006)',
+    'ReferenceLink': 'Australian Guidelines for Water Recycling: Managing Health and Environmental Risks (Phase 1) Natural Resource Ministerial Management Council, Environment Protection and Heritage Council and National Health and Medical Research Council, Canberra'
+  },
+  {
+    'TreatmentGroup': 'Primary treatment',
+    'TreatmentName': 'Quiescent basin',
+    'PathogenGroup': 'Viruses',
+    'Min': 0.5,
+    'Max': 1,
+    'ReferenceName': 'NRMMC-EPHC-AHMC (2006)',
+    'ReferenceLink': 'Australian Guidelines for Water Recycling: Managing Health and Environmental Risks (Phase 1) Natural Resource Ministerial Management Council, Environment Protection and Heritage Council and National Health and Medical Research Council, Canberra'
+  },
+  {
+    'TreatmentGroup': 'Primary treatment',
+    'TreatmentName': 'Quiescent basin',
+    'PathogenGroup': 'Protozoa',
+    'Min': 0,
+    'Max': 0.1,
+    'ReferenceName': 'NRMMC-EPHC-AHMC (2006)',
+    'ReferenceLink': 'Australian Guidelines for Water Recycling: Managing Health and Environmental Risks (Phase 1) Natural Resource Ministerial Management Council, Environment Protection and Heritage Council and National Health and Medical Research Council, Canberra'
+  },
+  {
+    'TreatmentGroup': 'Secondary treatment',
+    'TreatmentName': 'Activated sludge',
+    'PathogenGroup': 'Bacteria',
+    'Min': 1,
+    'Max': 3,
+    'ReferenceName': 'NRMMC-EPHC-AHMC (2006)',
+    'ReferenceLink': 'Australian Guidelines for Water Recycling: Managing Health and Environmental Risks (Phase 1) Natural Resource Ministerial Management Council, Environment Protection and Heritage Council and National Health and Medical Research Council, Canberra'
+  },
+  {
+    'TreatmentGroup': 'Secondary treatment',
+    'TreatmentName': 'Activated sludge',
+    'PathogenGroup': 'Viruses',
+    'Min': 0.5,
+    'Max': 1,
+    'ReferenceName': 'NRMMC-EPHC-AHMC (2006)',
+    'ReferenceLink': 'Australian Guidelines for Water Recycling: Managing Health and Environmental Risks (Phase 1) Natural Resource Ministerial Management Council, Environment Protection and Heritage Council and National Health and Medical Research Council, Canberra'
+  },
+  {
+    'TreatmentGroup': 'Secondary treatment',
+    'TreatmentName': 'Activated sludge',
+    'PathogenGroup': 'Protozoa',
+    'Min': 0,
+    'Max': 2,
+    'ReferenceName': 'NRMMC-EPHC-AHMC (2006)',
+    'ReferenceLink': 'Australian Guidelines for Water Recycling: Managing Health and Environmental Risks (Phase 1) Natural Resource Ministerial Management Council, Environment Protection and Heritage Council and National Health and Medical Research Council, Canberra'
+  },
+  {
+    'TreatmentGroup': 'Natural Attenuation',
+    'TreatmentName': 'Soil-Aquifer passage',
+    'PathogenGroup': 'Bacteria',
+    'Min': 1,
+    'Max': 3,
+    'ReferenceName': 'Sharma and Kennedy (2016) for primary effluent table 1',
+    'ReferenceLink': 'http://dx.doi.org/10.1016/j.ibiod.2016.09.013'
+  },
+  {
+    'TreatmentGroup': 'Natural Attenuation',
+    'TreatmentName': 'Soil-Aquifer passage',
+    'PathogenGroup': 'Viruses',
+    'Min': 0.5,
+    'Max': 1,
+    'ReferenceName': 'Sharma and Kennedy (2016) for primary effluent table 1',
+    'ReferenceLink': 'http://dx.doi.org/10.1016/j.ibiod.2016.09.013'
+  },
+  {
+    'TreatmentGroup': 'Natural Attenuation',
+    'TreatmentName': 'Soil-Aquifer passage',
+    'PathogenGroup': 'Protozoa',
+    'Min': 0,
+    'Max': 2,
+    'ReferenceName': 'Sharma and Kennedy (2016) for primary effluent table 1',
+    'ReferenceLink': 'http://dx.doi.org/10.1016/j.ibiod.2016.09.013'
   },
   {
     'TreatmentGroup': 'Primary disinfection',
@@ -325,220 +433,31 @@ export const treatmentRemovals: ITreatmentRemoval[] = [
     'ReferenceLink': 'https://doi.org/10.1016/j.watres.2005.10.030'
   },
   {
-    'TreatmentGroup': 'Pretreatment',
-    'TreatmentName': 'Primary treatment',
+    'TreatmentGroup': 'Primary disinfection',
+    'TreatmentName': 'UV disinfection 40 mJ/cm2, drinking',
     'PathogenGroup': 'Bacteria',
-    'Min': 0,
-    'Max': 0.5,
-    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
-    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
-  },
-  {
-    'TreatmentGroup': 'Pretreatment',
-    'TreatmentName': 'Primary treatment',
-    'PathogenGroup': 'Viruses',
-    'Min': 0,
-    'Max': 0.1,
-    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
-    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
-  },
-  {
-    'TreatmentGroup': 'Pretreatment',
-    'TreatmentName': 'Primary treatment',
-    'PathogenGroup': 'Protozoa',
-    'Min': 0,
-    'Max': 1,
-    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
-    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
-  },
-  {
-    'TreatmentGroup': 'Pretreatment',
-    'TreatmentName': 'Secondary treatment',
-    'PathogenGroup': 'Bacteria',
-    'Min': 1,
-    'Max': 3,
-    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
-    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
-  },
-  {
-    'TreatmentGroup': 'Pretreatment',
-    'TreatmentName': 'Secondary treatment',
-    'PathogenGroup': 'Viruses',
-    'Min': 0.5,
-    'Max': 2,
-    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
-    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
-  },
-  {
-    'TreatmentGroup': 'Pretreatment',
-    'TreatmentName': 'Secondary treatment',
-    'PathogenGroup': 'Protozoa',
-    'Min': 0.5,
-    'Max': 1.5,
-    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
-    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
-  },
-  {
-    'TreatmentGroup': 'Filtration',
-    'TreatmentName': 'Dual media filtration',
-    'PathogenGroup': 'Bacteria',
-    'Min': 0,
-    'Max': 1,
-    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
-    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
-  },
-  {
-    'TreatmentGroup': 'Filtration',
-    'TreatmentName': 'Dual media filtration',
-    'PathogenGroup': 'Viruses',
-    'Min': 0.5,
-    'Max': 3,
-    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
-    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
-  },
-  {
-    'TreatmentGroup': 'Filtration',
-    'TreatmentName': 'Dual media filtration',
-    'PathogenGroup': 'Protozoa',
-    'Min': 1.5,
-    'Max': 2.5,
-    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
-    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
-  },
-  {
-    'TreatmentGroup': 'Filtration',
-    'TreatmentName': 'Membrane filtration',
-    'PathogenGroup': 'Bacteria',
-    'Min': 3.5,
+    'Min': 4.6,
     'Max': 6,
-    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
-    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
+    'ReferenceName': 'Hijnen et al. (2006)',
+    'ReferenceLink': 'https://doi.org/10.1016/j.watres.2005.10.030'
   },
   {
-    'TreatmentGroup': 'Filtration',
-    'TreatmentName': 'Membrane filtration',
+    'TreatmentGroup': 'Primary disinfection',
+    'TreatmentName': 'UV disinfection 40 mJ/cm2, drinking',
     'PathogenGroup': 'Viruses',
+    'Min': 4.1,
+    'Max': 5.9,
+    'ReferenceName': 'Hijnen et al. (2006)',
+    'ReferenceLink': 'https://doi.org/10.1016/j.watres.2005.10.030'
+  },
+  {
+    'TreatmentGroup': 'Primary disinfection',
+    'TreatmentName': 'UV disinfection 40 mJ/cm2, drinking',
+    'PathogenGroup': 'Protozoa',
     'Min': 2.5,
-    'Max': 6,
-    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
-    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
-  },
-  {
-    'TreatmentGroup': 'Filtration',
-    'TreatmentName': 'Membrane filtration',
-    'PathogenGroup': 'Protozoa',
-    'Min': 6,
-    'Max': 6,
-    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
-    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
-  },
-  {
-    'TreatmentGroup': 'Primary disinfection',
-    'TreatmentName': 'Chlorination, drinking water',
-    'PathogenGroup': 'Bacteria',
-    'Min': 2,
-    'Max': 6,
-    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
-    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
-  },
-  {
-    'TreatmentGroup': 'Primary disinfection',
-    'TreatmentName': 'Chlorination, drinking water',
-    'PathogenGroup': 'Viruses',
-    'Min': 1,
     'Max': 3,
-    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
-    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
-  },
-  {
-    'TreatmentGroup': 'Primary disinfection',
-    'TreatmentName': 'Chlorination, drinking water',
-    'PathogenGroup': 'Protozoa',
-    'Min': 0,
-    'Max': 1.5,
-    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
-    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
-  },
-  {
-    'TreatmentGroup': 'Primary disinfection',
-    'TreatmentName': 'Ozonation, wastewater',
-    'PathogenGroup': 'Bacteria',
-    'Min': 2,
-    'Max': 6,
-    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
-    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
-  },
-  {
-    'TreatmentGroup': 'Primary disinfection',
-    'TreatmentName': 'Ozonation, wastewater',
-    'PathogenGroup': 'Viruses',
-    'Min': 3,
-    'Max': 6,
-    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
-    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
-  },
-  {
-    'TreatmentGroup': 'Wetlands',
-    'TreatmentName': 'Wetlands, surface flow',
-    'PathogenGroup': 'Bacteria',
-    'Min': 1.5,
-    'Max': 2.5,
-    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
-    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
-  },
-  {
-    'TreatmentGroup': 'Wetlands',
-    'TreatmentName': 'Wetlands, surface flow',
-    'PathogenGroup': 'Protozoa',
-    'Min': 0.5,
-    'Max': 1.5,
-    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
-    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
-  },
-  {
-    'TreatmentGroup': 'Wetlands',
-    'TreatmentName': 'Wetlands, subsurface flow',
-    'PathogenGroup': 'Bacteria',
-    'Min': 0.5,
-    'Max': 3,
-    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
-    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
-  },
-  {
-    'TreatmentGroup': 'Wetlands',
-    'TreatmentName': 'Wetlands, subsurface flow',
-    'PathogenGroup': 'Protozoa',
-    'Min': 0.5,
-    'Max': 2,
-    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
-    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
-  },
-  {
-    'TreatmentGroup': 'Primary disinfection',
-    'TreatmentName': 'UV disinfection, wastewater',
-    'PathogenGroup': 'Bacteria',
-    'Min': 2,
-    'Max': 4,
-    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
-    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
-  },
-  {
-    'TreatmentGroup': 'Primary disinfection',
-    'TreatmentName': 'UV disinfection, wastewater',
-    'PathogenGroup': 'Viruses',
-    'Min': 1,
-    'Max': 3,
-    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
-    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
-  },
-  {
-    'TreatmentGroup': 'Primary disinfection',
-    'TreatmentName': 'UV disinfection, wastewater',
-    'PathogenGroup': 'Protozoa',
-    'Min': 3,
-    'Max': 3,
-    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
-    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
+    'ReferenceName': 'Hijnen et al. (2006)',
+    'ReferenceLink': 'https://doi.org/10.1016/j.watres.2005.10.030'
   },
   {
     'TreatmentGroup': 'Filtration',
@@ -649,30 +568,93 @@ export const treatmentRemovals: ITreatmentRemoval[] = [
     'ReferenceLink': 'http://info.nsf.org/Certified/pdwe/Listings.asp'
   },
   {
-    'TreatmentGroup': 'Primary disinfection',
-    'TreatmentName': 'UV disinfection 40 mJ/cm2, drinking',
+    'TreatmentGroup': 'Natural Attenuation',
+    'TreatmentName': 'Wetlands - surface flow',
     'PathogenGroup': 'Bacteria',
-    'Min': 4.6,
-    'Max': 6,
-    'ReferenceName': 'Hijnen et al. (2006)',
-    'ReferenceLink': 'https://doi.org/10.1016/j.watres.2005.10.030'
+    'Min': 1.5,
+    'Max': 2.5,
+    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
+    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
   },
   {
-    'TreatmentGroup': 'Primary disinfection',
-    'TreatmentName': 'UV disinfection 40 mJ/cm2, drinking',
-    'PathogenGroup': 'Viruses',
-    'Min': 4.1,
-    'Max': 5.9,
-    'ReferenceName': 'Hijnen et al. (2006)',
-    'ReferenceLink': 'https://doi.org/10.1016/j.watres.2005.10.030'
-  },
-  {
-    'TreatmentGroup': 'Primary disinfection',
-    'TreatmentName': 'UV disinfection 40 mJ/cm2, drinking',
+    'TreatmentGroup': 'Natural Attenuation',
+    'TreatmentName': 'Wetlands - surface flow',
     'PathogenGroup': 'Protozoa',
-    'Min': 2.5,
+    'Min': 0.5,
+    'Max': 1.5,
+    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
+    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
+  },
+  {
+    'TreatmentGroup': 'Natural Attenuation',
+    'TreatmentName': 'Wetlands - subsurface flow',
+    'PathogenGroup': 'Bacteria',
+    'Min': 0.5,
     'Max': 3,
-    'ReferenceName': 'Hijnen et al. (2006)',
-    'ReferenceLink': 'https://doi.org/10.1016/j.watres.2005.10.030'
+    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
+    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
+  },
+  {
+    'TreatmentGroup': 'Natural Attenuation',
+    'TreatmentName': 'Wetlands - subsurface flow',
+    'PathogenGroup': 'Protozoa',
+    'Min': 0.5,
+    'Max': 2,
+    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
+    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
+  },
+  {
+    'TreatmentGroup': 'Filtration',
+    'TreatmentName': 'Dual media filtration',
+    'PathogenGroup': 'Bacteria',
+    'Min': 0,
+    'Max': 1,
+    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
+    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
+  },
+  {
+    'TreatmentGroup': 'Filtration',
+    'TreatmentName': 'Dual media filtration',
+    'PathogenGroup': 'Viruses',
+    'Min': 0.5,
+    'Max': 3,
+    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
+    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
+  },
+  {
+    'TreatmentGroup': 'Filtration',
+    'TreatmentName': 'Dual media filtration',
+    'PathogenGroup': 'Protozoa',
+    'Min': 1.5,
+    'Max': 2.5,
+    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
+    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
+  },
+  {
+    'TreatmentGroup': 'Filtration',
+    'TreatmentName': 'Membrane filtration',
+    'PathogenGroup': 'Bacteria',
+    'Min': 3.5,
+    'Max': 6,
+    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
+    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
+  },
+  {
+    'TreatmentGroup': 'Filtration',
+    'TreatmentName': 'Membrane filtration',
+    'PathogenGroup': 'Viruses',
+    'Min': 2.5,
+    'Max': 6,
+    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
+    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
+  },
+  {
+    'TreatmentGroup': 'Filtration',
+    'TreatmentName': 'Membrane filtration',
+    'PathogenGroup': 'Protozoa',
+    'Min': 6,
+    'Max': 6,
+    'ReferenceName': 'DEMEAUWARE Deliverable 3.1 (p.18-19): NRMMC-EPHC-AHMC (2006), WHO 2006)',
+    'ReferenceLink': 'http://demoware.eu/en/results/deliverables/deliverable-d3-1-appropiate-and-user-friendly-methodologies-for-ra_lca_wfp.pdf/@@download/file/Deliverable%20D3.1%20-%20Appropiate%20and%20user%20friendly%20methodologies%20for%20RA_LCA_WFP.pdf'
   }
-];
+  ];
