@@ -13,7 +13,7 @@ class FileData<T> extends GenericObject<IDataDropperData<T>> {
             error: null
         });
 
-        await fds.loadData().then().catch();
+        await fds.loadData().then().catch((e) => console.log(e));
         return fds;
     }
 
