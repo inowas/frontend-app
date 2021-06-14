@@ -68,7 +68,6 @@ class FileData<T> extends GenericObject<IDataDropperData<T>> {
         this._props.fetching = true;
         try {
             if (this.file) {
-                console.log(this._props);
                 this._props.data = await retrieveData(this.file);
             }
 
