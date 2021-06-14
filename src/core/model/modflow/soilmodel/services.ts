@@ -1,11 +1,11 @@
-import {Array2D} from '../../geometry/Array2D.type';
-import {FileData, dropData} from '../../../../services/dataDropper';
-import {IModflowModel} from '../ModflowModel.type';
-import {ISoilmodel} from './Soilmodel.type';
-import {ISoilmodelLayer} from './SoilmodelLayer.type';
-import {Soilmodel} from './index';
-import {cloneDeep, uniq} from 'lodash';
-import {sendCommand} from '../../../../services/api';
+import { Array2D } from '../../geometry/Array2D.type';
+import { FileData, dropData } from '../../../../services/dataDropper';
+import { IModflowModel } from '../ModflowModel.type';
+import { ISoilmodel } from './Soilmodel.type';
+import { ISoilmodelLayer } from './SoilmodelLayer.type';
+import { Soilmodel } from './index';
+import { cloneDeep, uniq } from 'lodash';
+import { sendCommand } from '../../../../services/api';
 import ModflowModelCommand from '../../../../scenes/t03/commands/modflowModelCommand';
 
 export const saveLayer = (
@@ -13,7 +13,7 @@ export const saveLayer = (
   model: IModflowModel,
   isFinished: boolean,
   task = 0,
-  onEachTask: ({message, task}: { message: string, task: number }) => any,
+  onEachTask: ({ message, task }: { message: string, task: number }) => any,
   onFinished: (layer: ISoilmodelLayer) => any
 ): any => {
   const parameters = layer.parameters.filter((p) => Array.isArray(p.value));
@@ -30,7 +30,7 @@ export const saveLayer = (
     if (Array.isArray(parameters[0].value) && uniq(parameters[0].value).length === 1) {
       layer.parameters = layer.parameters.map((p) => {
         if (p.id === parameters[0].id) {
-          p.data = {file: null};
+          p.data = { file: null };
           p.value = (parameters[0].value as Array2D<number>)[0][0];
         }
         return p;
@@ -66,7 +66,7 @@ export const saveLayer = (
     if (Array.isArray(relations[0].value) && uniq(relations[0].value).length === 1) {
       layer.relations = layer.relations.map((r) => {
         if (r.id === relations[0].id) {
-          r.data = {file: null};
+          r.data = { file: null };
           r.value = (relations[0].value as Array2D<number>)[0][0];
         }
         return r;
@@ -127,12 +127,12 @@ export const saveLayer = (
 export const saveSoilmodel = (
   model: IModflowModel,
   soilmodel: ISoilmodel,
-  onEachTask: ({message, task}: { message: string, task: number }) => any,
+  onEachTask: ({ message, task }: { message: string, task: number }) => any,
   onSuccess: (soilmodel: ISoilmodel, needToBeFetched: boolean) => any,
   saveLayers: boolean,
   saveProperties: boolean,
   commands: ModflowModelCommand[] = [],
-  task = 0,
+  task = 0
 ): ISoilmodel | void => {
   const cSoilmodel = Soilmodel.fromObject(soilmodel);
 
@@ -174,7 +174,7 @@ export const saveSoilmodel = (
       if (Array.isArray(parameters[0].value) && uniq(parameters[0].value).length === 1) {
         cLayer.parameters = cLayer.parameters.map((p) => {
           if (p.id === parameters[0].id) {
-            p.data = {file: null};
+            p.data = { file: null };
             p.value = (parameters[0].value as Array2D<number>)[0][0];
           }
           return p;
@@ -217,7 +217,7 @@ export const saveSoilmodel = (
       if (Array.isArray(relations[0].value) && uniq(relations[0].value).length === 1) {
         cLayer.relations = cLayer.relations.map((r) => {
           if (r.id === relations[0].id) {
-            r.data = {file: null};
+            r.data = { file: null };
             r.value = (relations[0].value as Array2D<number>)[0][0];
           }
           return r;
@@ -322,7 +322,6 @@ export const loadSoilmodel = async (
             if (l.id === layer.id) {
               l.parameters = l.parameters.map((p) => {
                 if (p.id === parameter.id) {
-                  console.log(file.toObject());
                   p.data = file.toObject() as any;
                 }
                 return p;
@@ -331,7 +330,6 @@ export const loadSoilmodel = async (
             return l;
           });
 
-          soilmodel.layers = []; // TODO: REMOVE LATER
           return await loadSoilmodel(soilmodel, onEachTask, onFinished);
         } catch (error) {
           console.log(error);

@@ -60,7 +60,7 @@ class FileData<T> extends GenericObject<IDataDropperData<T>> {
     }
 
     public async loadData() {
-        if (this._props.data || this._props.fetching) {
+        if (this._props.data) {
             return null;
         }
 
