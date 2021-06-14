@@ -1,6 +1,6 @@
-import {GenericObject} from '../../core/model/genericObject/GenericObject';
-import {IDataDropperData, IDataDropperFile} from './DataDropper.type';
-import {dropData, retrieveData} from './DataDropperHelper';
+import { GenericObject } from '../../core/model/genericObject/GenericObject';
+import { IDataDropperData, IDataDropperFile } from './DataDropper.type';
+import { dropData, retrieveData } from './DataDropperHelper';
 
 class FileData<T> extends GenericObject<IDataDropperData<T>> {
 
@@ -60,7 +60,7 @@ class FileData<T> extends GenericObject<IDataDropperData<T>> {
     }
 
     public async loadData() {
-        if (this._props.data) {
+        if (this._props.data || this._props.fetching) {
             return null;
         }
 
@@ -68,6 +68,7 @@ class FileData<T> extends GenericObject<IDataDropperData<T>> {
         this._props.fetching = true;
         try {
             if (this.file) {
+                console.log(this._props);
                 this._props.data = await retrieveData(this.file);
             }
 
