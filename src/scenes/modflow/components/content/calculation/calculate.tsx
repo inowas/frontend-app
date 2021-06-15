@@ -41,12 +41,6 @@ const Calculate = (props: IProps) => {
             return;
         }
 
-        console.log({
-          state: calculation.state,
-          model: model.calculationId,
-          packages: packages.calculation_id
-        })
-
         if (calculation.state >= CALCULATION_STARTED && calculation.state < CALCULATION_STATE_CALCULATING) {
             setCanBeCalculated(false);
             setShowProgress(true);
