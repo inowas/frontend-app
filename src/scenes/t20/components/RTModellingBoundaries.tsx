@@ -228,7 +228,6 @@ const RTModellingBoundaries = (props: IProps) => {
                 selection={true}
                 options={[
                     {key: EMethodType.CONSTANT, value: EMethodType.CONSTANT, text: 'Constant'},
-                    {key: EMethodType.FUNCTION, value: EMethodType.FUNCTION, text: 'Function'},
                     {key: EMethodType.SENSOR, value: EMethodType.SENSOR, text: 'Sensor'}
                 ]}
                 onChange={handleChangeSelect(bId, propertyKey, opId)}

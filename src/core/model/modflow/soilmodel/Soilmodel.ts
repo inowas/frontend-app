@@ -1,16 +1,12 @@
 import { Array2D } from '../../geometry/Array2D.type';
 import {Cells, Geometry} from '../../geometry';
-import {ISoilmodel, ISoilmodel1v0, ISoilmodel2v0, ISoilmodelExport} from './Soilmodel.type';
+import {ISoilmodel, ISoilmodelExport} from './Soilmodel.type';
 import {ISoilmodelLayer} from './SoilmodelLayer.type';
 import {IZone} from './Zone.type';
 import {LayersCollection, RasterParametersCollection, ZonesCollection} from './index';
-import {ModflowModel} from '../index';
 import {cloneDeep} from 'lodash';
 import {defaultSoilmodelParameters} from '../../../../scenes/t03/defaults/soilmodel';
-import {version} from './updater/defaults';
 import SoilmodelLayer from './SoilmodelLayer';
-import SoilmodelLegacy from './SoilmodelLegacy';
-import updateSoilmodel from './updater/updateSoilmodel';
 import uuidv4 from 'uuid/v4';
 
 class Soilmodel {
@@ -80,17 +76,12 @@ class Soilmodel {
             layers: [defaultLayer.toObject()],
             properties: {
                 parameters,
-                version,
                 zones: [defaultZone]
             }
         });
     }
 
-    public static fromExport(obj: ISoilmodelExport, model: ModflowModel) {
-        if (this.isLegacy(obj)) {
-            const result = updateSoilmodel(obj, model);
-            return new Soilmodel(result.soilmodel);
-        }
+    public static fromExport(obj: ISoilmodelExport) {
         return new Soilmodel(obj as ISoilmodel);
     }
 
@@ -98,16 +89,8 @@ class Soilmodel {
         return new Soilmodel(obj);
     }
 
-    public static fromQuery(obj: ISoilmodel | ISoilmodel1v0 | ISoilmodel2v0) {
-        if (Soilmodel.isLegacy(obj)) {
-            return new SoilmodelLegacy(obj as ISoilmodel1v0 | ISoilmodel2v0);
-        }
-
+    public static fromQuery(obj: ISoilmodel) {
         return new Soilmodel(obj as ISoilmodel);
-    }
-
-    public static isLegacy(input: any) {
-        return !input.properties || (input.properties && input.properties.version !== version);
     }
 
     private readonly _props: ISoilmodel;
@@ -115,11 +98,6 @@ class Soilmodel {
     constructor(props: ISoilmodel) {
         this._props = cloneDeep(props);
     }
-
-    public checkVersion = () => {
-        return version === this.version &&
-            this.layersCollection.all.filter((l) => !l.relations || !l.parameters).length === 0;
-    };
 
     public addLayer(layer: ISoilmodelLayer) {
         const defaultZone = this.zonesCollection.findFirstBy('isDefault', true);

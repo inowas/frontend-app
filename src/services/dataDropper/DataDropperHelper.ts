@@ -1,5 +1,5 @@
-import {DATADROPPER_URL} from '../api';
-import {IDataDropperFile} from './DataDropper.type';
+import { DATADROPPER_URL } from '../api';
+import { IDataDropperFile } from './DataDropper.type';
 
 export async function dropData(data: any) {
     const response = await fetch(
@@ -8,7 +8,7 @@ export async function dropData(data: any) {
             body: JSON.stringify(data),
             headers: {
                 'Access-Control-Allow-Origin': '*',
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             }
         });
 
@@ -23,9 +23,7 @@ export async function dropData(data: any) {
 
 export async function retrieveData(file: IDataDropperFile) {
     const url = new URL(`${file.server}/${file.filename}`);
-
     const localStorageObj = sessionStorage.getItem(file.filename);
-
     if (localStorageObj) {
         return JSON.parse(localStorageObj);
     }
@@ -35,12 +33,14 @@ export async function retrieveData(file: IDataDropperFile) {
             method: 'get',
             headers: {
                 'Access-Control-Allow-Origin': '*',
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             }
         });
 
     try {
-        return await response.json();
+        const data = await response.json();
+        sessionStorage.setItem(file.filename, JSON.stringify(data));
+        return data;
     } catch (e) {
         throw new Error('Datadropper file not found');
     }
