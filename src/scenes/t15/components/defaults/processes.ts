@@ -81,13 +81,13 @@ const processes: IProcessDefault[] = [
     'TreatmentDescription': 'UV-light is mostly effective at 254 nm where it affects DNA or RNA thus preventing reproduction of the organism (inactivation). Log reduction for drinking water UV is based on closed UV-reactors wich have been validated according to appropriate standards (e.g. USEPA or DVGW). Effectiveness of disinfection depends on delivered fluence (dose in mJ/cm2), which varies with lamp intensity, exposure time (flow rate) and UV-absorption by the water (organics). Excessive turbidity and certain dissolved species inhibit this process; hence, turbidity should be kept below 1 NTU to support effective disinfection.'
   },
   {
-    'TreatmentName': 'Primary treatment',
-    'TreatmentGroup': 'Quiescent basin',
+    'TreatmentName': 'Quiescent basin',
+    'TreatmentGroup': 'Primary treatment',
     'TreatmentDescription': 'Primary treatment consists of temporarily holding the sewage in a quiescent basin where heavy solids can settle to the bottom while oil, grease and lighter solids float to the surface. The settled and floating materials are removed and the remaining liquid may be discharged or subjected to secondary treatment'
   },
   {
-    'TreatmentName': 'Secondary treatment',
-    'TreatmentGroup': 'Activated sludge',
+    'TreatmentName': 'Activated sludge',
+    'TreatmentGroup': 'Secondary treatment',
     'TreatmentDescription': 'Secondary treatment consists of an activated sludge process to break down organics in the wastewater and a settling stage to separate the biologiscal sludge from the water.'
   },
   {
