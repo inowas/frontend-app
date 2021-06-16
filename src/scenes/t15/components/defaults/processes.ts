@@ -47,8 +47,8 @@ const processes: IProcessDefault[] = [
   },
   {
     'TreatmentName': 'Bank filtration',
-    'TreatmentGroup': 'Pretreatment',
-    'TreatmentDescription': 'Water is abstracted through wells located close to surface water, thus the bank serves as a natural filter. Log removal depends on travel distance and time, soil type (grain size),\n and geochemicl conditions (oxygen level, pH)'
+    'TreatmentGroup': 'Natural Attenuation',
+    'TreatmentDescription': 'Bank filtration systems are typically installed near perennial streams or lakes that are in hydraulic contact to the adjacent aquifer. Water is abstracted through wells located close to the surface water. Log removal depends on travel distance and flow velocity, grain size distribution, and geochemical conditions (redox, pH)'
   },
   {
     'TreatmentName': 'Roughing filters',
@@ -57,7 +57,7 @@ const processes: IProcessDefault[] = [
   },
   {
     'TreatmentName': 'Storage reservoirs',
-    'TreatmentGroup': 'Pretreatment',
+    'TreatmentGroup': 'Natural Attenuation',
     'TreatmentDescription': 'Water is protected from human recontamination in reservoirs, however wildlife and waterfoul may introduce pathogens. Log reduction occurs due to sedimentation, UV radiation from sunlight and die-off in time,  depending on construction (mixing) and temperature. Reporded reduction based on residence time > 40 days (bacteria), 160 days (protozoa)'
   },
   {
@@ -81,14 +81,19 @@ const processes: IProcessDefault[] = [
     'TreatmentDescription': 'UV-light is mostly effective at 254 nm where it affects DNA or RNA thus preventing reproduction of the organism (inactivation). Log reduction for drinking water UV is based on closed UV-reactors wich have been validated according to appropriate standards (e.g. USEPA or DVGW). Effectiveness of disinfection depends on delivered fluence (dose in mJ/cm2), which varies with lamp intensity, exposure time (flow rate) and UV-absorption by the water (organics). Excessive turbidity and certain dissolved species inhibit this process; hence, turbidity should be kept below 1 NTU to support effective disinfection.'
   },
   {
-    'TreatmentName': 'Primary treatment',
-    'TreatmentGroup': 'Pretreatment',
+    'TreatmentName': 'Quiescent basin',
+    'TreatmentGroup': 'Primary treatment',
     'TreatmentDescription': 'Primary treatment consists of temporarily holding the sewage in a quiescent basin where heavy solids can settle to the bottom while oil, grease and lighter solids float to the surface. The settled and floating materials are removed and the remaining liquid may be discharged or subjected to secondary treatment'
   },
   {
-    'TreatmentName': 'Secondary treatment',
-    'TreatmentGroup': 'Pretreatment',
+    'TreatmentName': 'Activated sludge',
+    'TreatmentGroup': 'Secondary treatment',
     'TreatmentDescription': 'Secondary treatment consists of an activated sludge process to break down organics in the wastewater and a settling stage to separate the biologiscal sludge from the water.'
+  },
+  {
+    'TreatmentName': 'Soil-Aquifer passage',
+    'TreatmentGroup': 'Natural Attenuation',
+    'TreatmentDescription': 'The Soil-Aquifer passage refers to infiltration through the vadose (unsaturated) zone to recharge the underlying aquifer. Microbial treatment performance of the soil-aquifer passage is site-specific and depends on thickness of the unsaturated zone, travel distance, flow velocity, grain size distribution, and geochemical conditions (redox, pH)'
   },
   {
     'TreatmentName': 'Dual media filtration',
@@ -101,7 +106,7 @@ const processes: IProcessDefault[] = [
     'TreatmentDescription': 'A membrane is a thin sheet with small openings that removes solids and depending on membrane type, solutes from the water when this is led through the membrane.'
   },
   {
-    'TreatmentName': 'Chlorination, drinking water',
+    'TreatmentName': 'Chlorine',
     'TreatmentGroup': 'Primary disinfection',
     'TreatmentDescription': 'Log inactivation depends on free chlorine concentration and contact time (CT); not effective against Cryptosporidium oocysts, reported log reduction is mostly for Giardia. Turbidity and chlorine-demanding solutes inhibit this process; hence, turbidity should be kept below 1 NTU to support\n effective disinfection. Where this is not practical, turbidities should be kept below 5 NTU with higher chlorine doses or contact times. In addition to initial disinfection, the benefits of maintaining free chlorine residuals throughout distribution systems at or above 0.2 mg/l should be considered'
   },
@@ -117,12 +122,12 @@ const processes: IProcessDefault[] = [
   },
   {
     'TreatmentName': 'Wetlands, surface flow',
-    'TreatmentGroup': 'Wetlands',
+    'TreatmentGroup': 'Natural Attenuation',
     'TreatmentDescription': 'An artificial wetland to treat municipal or industrial wastewater, greywater or stormwater runoff by a combination of sedimentation and biological processes including plants. Effect depends on design and climate, especially les log reduction at lower temperatures.'
   },
   {
     'TreatmentName': 'Wetlands, subsurface flow',
-    'TreatmentGroup': 'Wetlands',
+    'TreatmentGroup': 'Natural Attenuation',
     'TreatmentDescription': 'An artificial wetland to treat municipal or industrial wastewater, greywater or stormwater runoff by a combination of sedimentation, filtration and biological processes including plants. Effect depends on design, soil/filter media and climate, especially les log reduction at lower temperatures.'
   },
   {
