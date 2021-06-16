@@ -7,8 +7,8 @@ import IExposureScenario from '../../../../core/model/qmra/ExposureScenario.type
 import InfoBox from '../InfoBox';
 import Qmra from '../../../../core/model/qmra/Qmra';
 import _ from 'lodash';
-import descriptions from '../defaults/descriptions';
-import scenarios from '../defaults/exposure';
+import descriptions from '../defaults/descriptions.json';
+import scenarios from '../defaults/exposure.json';
 import uuid from 'uuid';
 
 interface IProps {
@@ -123,7 +123,7 @@ const ExposureEditor = ({qmra, onChange}: IProps) => {
                 className="icon primary"
                 options={
                   [{text: 'New Exposure', value: -1, key: -1}].concat(
-                  scenarios.map((s, key) => {
+                    scenarios.map((s, key) => {
                     return {
                       text: s.name, value: key, key
                     }

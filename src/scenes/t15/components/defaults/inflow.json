@@ -1,0 +1,285 @@
+[
+  {
+    "name": "Escherichia coli",
+    "group": "Bacteria",
+    "reference": "WHO (2011): Drinking water guideline, Table 7.6",
+    "link": "http://apps.who.int/iris/bitstream/10665/44584/1/9789241548151_eng.pdf#page=159",
+    "min": 1e+06,
+    "max": 1e+10,
+    "type": "log10_norm",
+    "notes": ""
+  },
+  {
+    "name": "Vibrio cholerae",
+    "group": "Bacteria",
+    "reference": "WHO (2011): Drinking water guideline, Table 7.6",
+    "link": "http://apps.who.int/iris/bitstream/10665/44584/1/9789241548151_eng.pdf#page=159",
+    "min": 100,
+    "max": 1000000,
+    "type": "log10_norm",
+    "notes": ""
+  },
+  {
+    "name": "Enteroviruses",
+    "group": "Viruses",
+    "reference": "WHO (2011): Drinking water guideline, Table 7.6",
+    "link": "http://apps.who.int/iris/bitstream/10665/44584/1/9789241548151_eng.pdf#page=159",
+    "min": 1,
+    "max": 1000,
+    "type": "log10_norm",
+    "notes": ""
+  },
+  {
+    "name": "Giardia duodenalis",
+    "group": "Protozoa",
+    "reference": "WHO (2011): Drinking water guideline, Table 7.6",
+    "link": "http://apps.who.int/iris/bitstream/10665/44584/1/9789241548151_eng.pdf#page=159",
+    "min": 1,
+    "max": 10000,
+    "type": "log10_norm",
+    "notes": ""
+  },
+  {
+    "name": "Rotavirus",
+    "group": "Viruses",
+    "reference": "WHO (2006) safe use wastewater V2",
+    "link": "http://www.who.int/water_sanitation_health/wastewater/wwuvol2intro.pdf",
+    "min": 0.1,
+    "max": 1000,
+    "type": "log10_norm",
+    "notes": "calculated from raw (T3.2)*removal(T5.2)"
+  },
+  {
+    "name": "Rotavirus",
+    "group": "Viruses",
+    "reference": "WHO (2011): Drinking water guideline, Table 7.6",
+    "link": "http://apps.who.int/iris/bitstream/10665/44584/1/9789241548151_eng.pdf#page=159",
+    "min": 0.01,
+    "max": 100,
+    "type": "log10_norm",
+    "notes": ""
+  },
+  {
+    "name": "Rotavirus",
+    "group": "Viruses",
+    "reference": "WHO GDWQ (2004)",
+    "link": "http://www.who.int/water_sanitation_health/dwq/GDWQ2004web.pdf",
+    "min": 30,
+    "max": 60,
+    "type": "log10_norm",
+    "notes": "High detectable concentration. Impaced rivers and streames."
+  },
+  {
+    "name": "Rotavirus",
+    "group": "Viruses",
+    "reference": "WHO GDWQ (2004)",
+    "link": "http://www.who.int/water_sanitation_health/dwq/GDWQ2004web.pdf",
+    "min": 0,
+    "max": 3,
+    "type": "log10_norm",
+    "notes": "High detectable concentration. Wilderness rivers and streams."
+  },
+  {
+    "name": "Rotavirus",
+    "group": "Viruses",
+    "reference": "KWR 2016.081",
+    "link": "https://library.kwrwater.nl/publication/54026237/",
+    "min": 0,
+    "max": 0.01,
+    "type": "log10_norm",
+    "notes": "Collected from several literature in this report (min set to zero)"
+  },
+  {
+    "name": "Rotavirus",
+    "group": "Viruses",
+    "reference": "Sales Ortells 2015",
+    "link": "https://repository.tudelft.nl/islandora/object/uuid:0e41d07b-9f44-4220-aaac-e22c73c5074a?collection=research",
+    "min": 9.74510658007135,
+    "max": 64.7460691472062,
+    "type": "log10_norm",
+    "notes": "entered 5% and 95% of the lognormal type"
+  },
+  {
+    "name": "Rotavirus",
+    "group": "Viruses",
+    "reference": "WHO (2011): Drinking water guideline, Table 7.6",
+    "link": "http://apps.who.int/iris/bitstream/10665/44584/1/9789241548151_eng.pdf#page=159",
+    "min": 50,
+    "max": 5000,
+    "type": "log10_norm",
+    "notes": ""
+  },
+  {
+    "name": "Rotavirus",
+    "group": "Viruses",
+    "reference": "WHO GDWQ (2004)",
+    "link": "http://www.who.int/water_sanitation_health/dwq/GDWQ2004web.pdf",
+    "min": 0,
+    "max": 2,
+    "type": "log10_norm",
+    "notes": ""
+  },
+  {
+    "name": "Campylobacter jejuni and Campylobacter coli",
+    "group": "Bacteria",
+    "reference": "WHO (2006) safe use wastewater V2",
+    "link": "http://www.who.int/water_sanitation_health/wastewater/wwuvol2intro.pdf",
+    "min": 0.001,
+    "max": 1000,
+    "type": "log10_norm",
+    "notes": "calculated from raw (T3.2)*removal(T5.2)"
+  },
+  {
+    "name": "Campylobacter jejuni and Campylobacter coli",
+    "group": "Bacteria",
+    "reference": "WHO (2011): Drinking water guideline, Table 7.6",
+    "link": "http://apps.who.int/iris/bitstream/10665/44584/1/9789241548151_eng.pdf#page=159",
+    "min": 100,
+    "max": 10000,
+    "type": "log10_norm",
+    "notes": ""
+  },
+  {
+    "name": "Campylobacter jejuni and Campylobacter coli",
+    "group": "Bacteria",
+    "reference": "WHO GDWQ (2004)",
+    "link": "http://www.who.int/water_sanitation_health/dwq/GDWQ2004web.pdf",
+    "min": 90,
+    "max": 2500,
+    "type": "log10_norm",
+    "notes": "High detectable concentration. Impaced rivers and streames."
+  },
+  {
+    "name": "Campylobacter jejuni and Campylobacter coli",
+    "group": "Bacteria",
+    "reference": "WHO GDWQ (2004)",
+    "link": "http://www.who.int/water_sanitation_health/dwq/GDWQ2004web.pdf",
+    "min": 0,
+    "max": 1100,
+    "type": "log10_norm",
+    "notes": "High detectable concentration. Wilderness rivers and streams."
+  },
+  {
+    "name": "Campylobacter jejuni and Campylobacter coli",
+    "group": "Bacteria",
+    "reference": "KWR 2016.081",
+    "link": "https://library.kwrwater.nl/publication/54026237/",
+    "min": 0,
+    "max": 24,
+    "type": "log10_norm",
+    "notes": "Collected from several literature in this report (min set to zero)"
+  },
+  {
+    "name": "Campylobacter jejuni and Campylobacter coli",
+    "group": "Bacteria",
+    "reference": "Sales Ortells 2015",
+    "link": "https://repository.tudelft.nl/islandora/object/uuid:0e41d07b-9f44-4220-aaac-e22c73c5074a?collection=research",
+    "min": 13.8694279635122,
+    "max": 287.039358509118,
+    "type": "log10_norm",
+    "notes": "entered 5% and 95% of the lognormal type"
+  },
+  {
+    "name": "Campylobacter jejuni and Campylobacter coli",
+    "group": "Bacteria",
+    "reference": "WHO (2011): Drinking water guideline, Table 7.6",
+    "link": "http://apps.who.int/iris/bitstream/10665/44584/1/9789241548151_eng.pdf#page=159",
+    "min": 100,
+    "max": 1000000,
+    "type": "log10_norm",
+    "notes": ""
+  },
+  {
+    "name": "Campylobacter jejuni and Campylobacter coli",
+    "group": "Bacteria",
+    "reference": "WHO GDWQ (2004)",
+    "link": "http://www.who.int/water_sanitation_health/dwq/GDWQ2004web.pdf",
+    "min": 0,
+    "max": 10,
+    "type": "log10_norm",
+    "notes": ""
+  },
+  {
+    "name": "Cryptosporidium parvum and Cryptosporidium hominis",
+    "group": "Protozoa",
+    "reference": "WHO (2006) safe use wastewater V2",
+    "link": "http://www.who.int/water_sanitation_health/wastewater/wwuvol2intro.pdf",
+    "min": 0.01,
+    "max": 10000,
+    "type": "log10_norm",
+    "notes": "calculated from raw (T3.2)*removal(T5.2)"
+  },
+  {
+    "name": "Cryptosporidium parvum and Cryptosporidium hominis",
+    "group": "Protozoa",
+    "reference": "WHO (2011): Drinking water guideline, Table 7.6",
+    "link": "http://apps.who.int/iris/bitstream/10665/44584/1/9789241548151_eng.pdf#page=159",
+    "min": 0,
+    "max": 1000,
+    "type": "log10_norm",
+    "notes": ""
+  },
+  {
+    "name": "Cryptosporidium parvum and Cryptosporidium hominis",
+    "group": "Protozoa",
+    "reference": "WHO GDWQ (2004)",
+    "link": "http://www.who.int/water_sanitation_health/dwq/GDWQ2004web.pdf",
+    "min": 2,
+    "max": 480,
+    "type": "log10_norm",
+    "notes": "High detectable concentration. Impaced rivers and streames."
+  },
+  {
+    "name": "Cryptosporidium parvum and Cryptosporidium hominis",
+    "group": "Protozoa",
+    "reference": "WHO GDWQ (2004)",
+    "link": "http://www.who.int/water_sanitation_health/dwq/GDWQ2004web.pdf",
+    "min": 2,
+    "max": 240,
+    "type": "log10_norm",
+    "notes": "High detectable concentration. Wilderness rivers and streams."
+  },
+  {
+    "name": "Cryptosporidium parvum and Cryptosporidium hominis",
+    "group": "Protozoa",
+    "reference": "KWR 2016.081",
+    "link": "https://library.kwrwater.nl/publication/54026237/",
+    "min": 0,
+    "max": 0.19,
+    "type": "log10_norm",
+    "notes": "Collected from several literature in this report (min set to zero)"
+  },
+  {
+    "name": "Cryptosporidium parvum and Cryptosporidium hominis",
+    "group": "Protozoa",
+    "reference": "Sales Ortells 2015",
+    "link": "https://repository.tudelft.nl/islandora/object/uuid:0e41d07b-9f44-4220-aaac-e22c73c5074a?collection=research",
+    "min": 0.0000452008261942372,
+    "max": 0.0880751977503127,
+    "type": "log10_norm",
+    "notes": "entered 5% and 95% of the lognormal type"
+  },
+  {
+    "name": "Cryptosporidium parvum and Cryptosporidium hominis",
+    "group": "Protozoa",
+    "reference": "WHO (2011): Drinking water guideline, Table 7.6",
+    "link": "http://apps.who.int/iris/bitstream/10665/44584/1/9789241548151_eng.pdf#page=159",
+    "min": 1,
+    "max": 10000,
+    "type": "log10_norm",
+    "notes": ""
+  },
+  {
+    "name": "Cryptosporidium parvum and Cryptosporidium hominis",
+    "group": "Protozoa",
+    "reference": "WHO GDWQ (2004)",
+    "link": "http://www.who.int/water_sanitation_health/dwq/GDWQ2004web.pdf",
+    "min": 0,
+    "max": 1,
+    "type": "log10_norm",
+    "notes": ""
+  }
+]
+
+
+

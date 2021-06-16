@@ -1,6 +1,5 @@
 import {Button, Dropdown, DropdownProps, Grid, Segment} from 'semantic-ui-react';
 import {ITreatmentProcess} from '../../../../core/model/qmra/TreatmentProcess.type';
-import {treatmentRemovals} from '../defaults/treatmentRemovals';
 import ElementsList from '../ElementsList';
 import InfoBox from '../InfoBox';
 import ProcessForm from './ProcessForm';
@@ -10,7 +9,8 @@ import Qmra from '../../../../core/model/qmra/Qmra';
 import React, {useEffect, useState} from 'react';
 import TreatmentProcess from '../../../../core/model/qmra/TreatmentProcess';
 import _ from 'lodash';
-import descriptions from '../defaults/descriptions';
+import descriptions from '../defaults/descriptions.json';
+import treatmentRemovals from '../defaults/treatmentRemovals.json';
 import uuid from 'uuid';
 
 interface IProps {

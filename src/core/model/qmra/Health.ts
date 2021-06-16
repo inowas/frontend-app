@@ -1,7 +1,7 @@
 import { GenericObject } from '../genericObject/GenericObject';
 import IHealth, { IHealthPayload } from './Health.type';
 import Pathogen from './Pathogen';
-import healthDefaults from '../../../scenes/t15/components/defaults/health';
+import healthDefaults from '../../../scenes/t15/components/defaults/health.json';
 import uuid from 'uuid';
 
 class Health extends GenericObject<IHealth> {

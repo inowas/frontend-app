@@ -1,5 +1,5 @@
 import { GenericObject } from '../genericObject/GenericObject';
-import IPathogen, { IPathogenPayload } from './Pathogen.type';
+import IPathogen, {IPathogenPayload} from './Pathogen.type';
 
 class Pathogen extends GenericObject<IPathogen> {
   get id() {
@@ -42,16 +42,26 @@ class Pathogen extends GenericObject<IPathogen> {
     return this._props.reference;
   }
 
+  get link() {
+    return this._props.link;
+  }
+
+  get notes() {
+    return this._props.notes;
+  }
+
   public static fromDefaults() {
     return new Pathogen({
       id: 0,
       name: 'New Pathogen',
       group: 'Bacteria',
-      simulate: 0,
+      simulate: 1,
       type: 'log10_norm',
       min: 10,
       max: 10000,
       reference: '',
+      link: '',
+      notes: ''
     });
   }
 
@@ -68,7 +78,9 @@ class Pathogen extends GenericObject<IPathogen> {
       simulate: obj.simulate,
       min: obj.min,
       max: obj.max,
-      reference: ''
+      reference: '',
+      link: '',
+      notes: ''
     });
   }
 
