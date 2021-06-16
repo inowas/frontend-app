@@ -17,6 +17,8 @@ interface IPathogen {
   min: number;
   max: number;
   reference: string;
+  link: string;
+  notes: string;
 }
 
 export default IPathogen;

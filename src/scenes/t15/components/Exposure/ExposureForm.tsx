@@ -1,4 +1,4 @@
-import {DropdownProps, Form, InputProps, Segment} from 'semantic-ui-react';
+import {DropdownProps, Form, Icon, InputProps, Segment} from 'semantic-ui-react';
 import ExposureScenario from '../../../../core/model/qmra/ExposureScenario';
 import IExposureScenario from '../../../../core/model/qmra/ExposureScenario.type';
 import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
@@ -72,6 +72,8 @@ const ExposureForm = ({onChange, readOnly, selectedExposure}: IProps) => {
     setElement(cItem);
     onChange(ExposureScenario.fromObject(cItem));
   };
+
+  const handleClickLink = (url: string) => () => window.open(url, '_blank');
 
   return (
     <Form>
@@ -188,6 +190,10 @@ const ExposureForm = ({onChange, readOnly, selectedExposure}: IProps) => {
         </Form.Field>
         <Form.Field>
           <Form.Input
+            icon={
+              element.link !== '' ? <Icon name="external alternate" link onClick={handleClickLink(element.link)}/> :
+                undefined
+            }
             label="Link"
             name="link"
             onBlur={handleBlur()}

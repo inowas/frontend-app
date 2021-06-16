@@ -1,11 +1,9 @@
-import {Button, Grid, Label, Modal, Segment} from 'semantic-ui-react';
-import {doseResponseDefaults} from '../defaults/doseResponse';
+import {Button, Grid, Segment} from 'semantic-ui-react';
 import {useEffect, useState} from 'react';
+import DefaultModal from './DefaultModal';
 import DoseResponse from '../../../../core/model/qmra/DoseResponse';
-import DoseResponseForm from '../DoseResponse/DoseResponseForm';
 import ElementsList from '../ElementsList';
 import Health from '../../../../core/model/qmra/Health';
-import HealthForm from '../Health/HealthForm';
 import IDoseResponse from '../../../../core/model/qmra/DoseResponse.type';
 import IHealth from '../../../../core/model/qmra/Health.type';
 import IPathogen from '../../../../core/model/qmra/Pathogen.type';
@@ -14,8 +12,10 @@ import Pathogen from '../../../../core/model/qmra/Pathogen';
 import PathogenForm from './PathogenForm';
 import Qmra from '../../../../core/model/qmra/Qmra';
 import _ from 'lodash';
-import descriptions from '../defaults/descriptions';
-import healthDefaults from '../defaults/health';
+import descriptions from '../defaults/descriptions.json';
+import doseResponseDefaults from '../defaults/doseResponse.json';
+import healthDefaults from '../defaults/health.json';
+import pathogenDefaults from '../defaults/inflow.json';
 
 interface IProps {
   onChange: (qmra: Qmra) => void;
@@ -25,10 +25,12 @@ interface IProps {
 const defaultGroups = ['Bacteria', 'Protozoa', 'Viruses'];
 
 const PathogenEditor = ({qmra, onChange}: IProps) => {
-  const [defaultDoseResponse, setDefaultDoseResponse] = useState<IDoseResponse>();
-  const [defaultHealth, setDefaultHealth] = useState<IHealth>();
-  const [selectedDoseResponse, setSelectedDoseResponse] = useState<IDoseResponse>();
+  const [filteredDoseResponseDefaults, setFilteredDoseResponseDefaults] = useState<IDoseResponse[]>([]);
+  const [filteredHealthDefaults, setFilteredHealthDefaults] = useState<IHealth[]>([]);
+  const [filteredPathogenDefaults, setFilteredPathogenDefaults] = useState<IPathogen[]>([]);
   const [selectedElement, setSelectedElement] = useState<IPathogen>();
+
+  const [selectedDoseResponse, setSelectedDoseResponse] = useState<IDoseResponse>();
   const [selectedHealth, setSelectedHealth] = useState<IHealth>();
 
   useEffect(() => {
@@ -47,11 +49,11 @@ const PathogenEditor = ({qmra, onChange}: IProps) => {
     if (doseResponses.length < 1 || healths.length < 1 || !selectedElement) {
       return;
     }
-    let cDoseResponse = doseResponses[0];
+    const cDoseResponse = doseResponses[0];
     cDoseResponse.pathogenName = p.name;
     cDoseResponse.pathogenGroup = p.group;
 
-    let cHealth = healths[0];
+    const cHealth = healths[0];
     cHealth.pathogenName = p.name;
 
     setSelectedDoseResponse(DoseResponse.fromObject(cDoseResponse).toObject());
@@ -59,29 +61,41 @@ const PathogenEditor = ({qmra, onChange}: IProps) => {
 
     if (p.name !== selectedElement.name) {
       setSelectedElement(p.toObject());
-      const defaultDoseResponses = doseResponseDefaults.filter((d) => d.pathogenName === p.name);
-      if (defaultDoseResponses.length > 0) {
-        cDoseResponse = {
-          ...defaultDoseResponses[0],
-          id: cDoseResponse.id,
-          pathogenId: p.id,
-          k: defaultDoseResponses[0].k || null,
-          alpha: defaultDoseResponses[0].alpha || null,
-          n50: defaultDoseResponses[0].n50 || null
-        };
-        setDefaultDoseResponse(cDoseResponse);
-      }
-      const defaultHealth = healthDefaults.filter((h) => h.pathogenName === p.name);
-      if (defaultHealth.length > 0) {
-        cHealth = {
-          ...defaultHealth[0],
+
+      const dDefaults: IDoseResponse[] = doseResponseDefaults
+        .filter((d) => d.pathogenName === p.name).map((d) => {
+          return {
+            ...d,
+            id: cDoseResponse.id,
+            pathogenId: p.id,
+            k: d.k || null,
+            alpha: d.alpha || null,
+            n50: d.n50 || null
+          }
+        });
+
+      const hDefaults = healthDefaults.filter((h) => h.pathogenName === p.name).map((h) => {
+        return {
+          ...h,
           id: cHealth.id,
           pathogenId: p.id
         };
-        setDefaultHealth(cHealth);
-      }
+      });
 
-      if (defaultHealth.length > 0 || defaultDoseResponses.length > 0) {
+      const pDefaults: IPathogen[] = pathogenDefaults.filter((pd) => pd.name === p.name).map((pd, i) => {
+        return {
+          ...pd,
+          id: i,
+          simulate: 0
+        }
+      });
+
+      setFilteredDoseResponseDefaults(dDefaults);
+      setFilteredHealthDefaults(hDefaults);
+      setFilteredPathogenDefaults(pDefaults);
+
+
+      if (dDefaults.length > 0 || hDefaults.length > 0 || pDefaults.length > 0) {
         return;
       }
     }
@@ -155,37 +169,60 @@ const PathogenEditor = ({qmra, onChange}: IProps) => {
 
     onChange(cQmra);
     setSelectedDoseResponse(undefined);
-    setDefaultDoseResponse(undefined);
-    setDefaultHealth(undefined);
+    resetDefaults();
   };
 
-  const handleAcceptModal = () => {
-    if (!selectedElement || (!defaultDoseResponse && !defaultHealth)) {
-      setDefaultDoseResponse(undefined);
-      setDefaultHealth(undefined);
+  const handleAcceptModal = (
+    d: DoseResponse | null, h: Health | null, p: Pathogen | null
+  ) => {
+    if (!selectedElement || !selectedDoseResponse || !selectedHealth ||
+      (filteredDoseResponseDefaults.length === 0 && filteredHealthDefaults.length === 0 &&
+        filteredPathogenDefaults.length === 0)) {
+      resetDefaults();
       return;
     }
+    let cPathogen = selectedElement;
     const elements = [];
-    if (defaultDoseResponse) { elements.push(DoseResponse.fromObject(defaultDoseResponse)); }
-    if (defaultHealth) { elements.push(Health.fromObject(defaultHealth)); }
-    handleDispatch(Pathogen.fromObject(selectedElement), elements);
-    setDefaultDoseResponse(undefined);
-    setDefaultHealth(undefined);
+    if (d) {
+      elements.push(d);
+    } else {
+      elements.push(DoseResponse.fromObject(selectedDoseResponse))
+    }
+    if (h) {
+      elements.push(h);
+    } else {
+      elements.push(Health.fromObject(selectedHealth))
+    }
+    if (p) {
+      cPathogen = p.toObject();
+      cPathogen.id = selectedElement.id;
+      cPathogen.simulate = selectedElement.simulate;
+    }
+    handleDispatch(Pathogen.fromObject(cPathogen), elements);
+    resetDefaults();
   };
 
   const handleCloseModal = () => {
     if (!selectedElement || (!selectedDoseResponse && !selectedHealth)) {
-      setDefaultDoseResponse(undefined);
-      setDefaultHealth(undefined);
+      resetDefaults()
       return;
     }
     const elements = [];
-    if (selectedDoseResponse) { elements.push(DoseResponse.fromObject(selectedDoseResponse)); }
-    if (selectedHealth) { elements.push(Health.fromObject(selectedHealth)); }
+    if (selectedDoseResponse) {
+      elements.push(DoseResponse.fromObject(selectedDoseResponse));
+    }
+    if (selectedHealth) {
+      elements.push(Health.fromObject(selectedHealth));
+    }
     handleDispatch(Pathogen.fromObject(selectedElement), elements);
-    setDefaultDoseResponse(undefined);
-    setDefaultHealth(undefined);
+    resetDefaults();
   };
+
+  const resetDefaults = () => {
+    setFilteredDoseResponseDefaults([]);
+    setFilteredHealthDefaults([]);
+    setFilteredPathogenDefaults([]);
+  }
 
   return (
     <Segment color={'grey'}>
@@ -232,33 +269,14 @@ const PathogenEditor = ({qmra, onChange}: IProps) => {
         </Grid.Row>
       </Grid>
       <InfoBox header="Inflow concentration of pathogens" description={descriptions.inflow}/>
-      {(defaultDoseResponse || defaultHealth) && (
-        <Modal onClose={handleCloseModal} open={true}>
-          <Modal.Header>Do you want to import the defaults for this pathogen?</Modal.Header>
-          <Modal.Content>
-            {defaultDoseResponse &&
-            <Segment>
-              <Label color="blue" ribbon>
-                Dose Response
-              </Label>
-              <DoseResponseForm readOnly={true} selectedDoseResponse={DoseResponse.fromObject(defaultDoseResponse)}/>
-            </Segment>
-            }
-            {defaultHealth &&
-            <Segment>
-              <Label color="blue" ribbon>
-                Health
-              </Label>
-              <HealthForm readOnly={true} selectedHealth={Health.fromObject(defaultHealth)}/>
-            </Segment>
-            }
-          </Modal.Content>
-          <Modal.Actions>
-            <Button onClick={handleCloseModal}>No</Button>
-            <Button content="Yes" icon="checkmark" labelPosition="right" primary onClick={handleAcceptModal}/>
-          </Modal.Actions>
-        </Modal>
-      )}
+      {(filteredDoseResponseDefaults.length > 0 || filteredHealthDefaults.length > 0 ||
+        filteredPathogenDefaults.length > 0) && <DefaultModal
+        onAccept={handleAcceptModal}
+        onClose={handleCloseModal}
+        doseResponeDefaults={filteredDoseResponseDefaults.map((d) => DoseResponse.fromObject(d))}
+        healthDefaults={filteredHealthDefaults.map((h) => Health.fromObject(h))}
+        pathogenDefaults={filteredPathogenDefaults.map((p) => Pathogen.fromObject(p))}
+      />}
     </Segment>
   );
 };

@@ -1,19 +1,19 @@
-import { ChangeEvent, SyntheticEvent, useEffect, useState } from 'react';
-import { DropdownProps, Form, InputProps } from 'semantic-ui-react';
-import { doseResponseDefaults } from '../defaults/doseResponse';
+import {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
+import {DropdownProps, Form, Icon, InputProps} from 'semantic-ui-react';
 import {randomDistributions} from '../defaults/distribution';
 import IPathogen from '../../../../core/model/qmra/Pathogen.type';
 import Pathogen from '../../../../core/model/qmra/Pathogen';
 import _ from 'lodash';
+import doseResponseDefaults from '../defaults/doseResponse.json';
 
 interface IProps {
-  groups: string[];
-  onChange: (e: Pathogen) => void;
+  groups?: string[];
+  onChange?: (e: Pathogen) => void;
   readOnly: boolean;
   selectedPathogen: Pathogen;
 }
 
-const PathogenForm = ({ groups, onChange, readOnly, selectedPathogen }: IProps) => {
+const PathogenForm = ({groups, onChange, readOnly, selectedPathogen}: IProps) => {
   const [activeInput, setActiveInput] = useState<null | string>(null);
   const [activeValue, setActiveValue] = useState<string>('');
   const [element, setElement] = useState<IPathogen>(selectedPathogen.toObject());
@@ -29,7 +29,7 @@ const PathogenForm = ({ groups, onChange, readOnly, selectedPathogen }: IProps) 
   }, [selectedPathogen]);
 
   const handleBlur = (type?: string) => () => {
-    if (!activeInput) {
+    if (!activeInput || !onChange) {
       return null;
     }
 
@@ -43,12 +43,16 @@ const PathogenForm = ({ groups, onChange, readOnly, selectedPathogen }: IProps) 
     onChange(Pathogen.fromObject(cItem));
   };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>, { name, value }: InputProps) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>, {name, value}: InputProps) => {
     setActiveInput(name);
     setActiveValue(value);
   };
 
-  const handleSelect = (e: SyntheticEvent, { name, value }: DropdownProps) => {
+  const handleSelect = (e: SyntheticEvent, {name, value}: DropdownProps) => {
+    if (!onChange) {
+      return;
+    }
+
     const cItem = {
       ...element,
       [name]: value,
@@ -56,6 +60,8 @@ const PathogenForm = ({ groups, onChange, readOnly, selectedPathogen }: IProps) 
     setElement(cItem);
     onChange(Pathogen.fromObject(cItem));
   };
+
+  const handleClickLink = (url: string) => () => window.open(url, '_blank');
 
   return (
     <Form>
@@ -67,7 +73,8 @@ const PathogenForm = ({ groups, onChange, readOnly, selectedPathogen }: IProps) 
             name="group"
             onAddItem={handleSelect}
             onChange={handleSelect}
-            options={groups.map((g) => ({ key: g, value: g, text: g }))}
+            options={groups ? groups.map((g) => ({key: g, value: g, text: g})) :
+              [{key: selectedPathogen.group, value: selectedPathogen.group, text: selectedPathogen.group}]}
             readOnly={readOnly}
             search
             value={element.group}
@@ -80,7 +87,7 @@ const PathogenForm = ({ groups, onChange, readOnly, selectedPathogen }: IProps) 
             name="name"
             onAddItem={handleSelect}
             onChange={handleSelect}
-            options={_.orderBy(defaults, ['asc']).map((g) => ({ key: g, value: g, text: g }))}
+            options={_.orderBy(defaults, ['asc']).map((g) => ({key: g, value: g, text: g}))}
             readOnly={readOnly}
             search
             value={element.name}
@@ -93,7 +100,7 @@ const PathogenForm = ({ groups, onChange, readOnly, selectedPathogen }: IProps) 
           name="type"
           onAddItem={handleSelect}
           onChange={handleSelect}
-          options={randomDistributions.map((t) => ({ key: t, value: t, text: t }))}
+          options={randomDistributions.map((t) => ({key: t, value: t, text: t}))}
           readOnly={readOnly}
           value={element.type}
         />
@@ -122,14 +129,40 @@ const PathogenForm = ({ groups, onChange, readOnly, selectedPathogen }: IProps) 
           />
         </Form.Field>
       </Form.Group>
+      <Form.Group widths="equal">
+        <Form.Field>
+          <Form.Input
+            label="Reference"
+            name="reference"
+            onBlur={handleBlur()}
+            onChange={handleChange}
+            readOnly={readOnly}
+            value={activeInput === 'reference' ? activeValue : element.reference}
+          />
+        </Form.Field>
+        <Form.Field>
+          <Form.Input
+            icon={
+              element.link !== '' ? <Icon name="external alternate" link onClick={handleClickLink(element.link)}/> :
+                undefined
+            }
+            label="Link"
+            name="link"
+            onBlur={handleBlur()}
+            onChange={handleChange}
+            readOnly={readOnly}
+            value={activeInput === 'link' ? activeValue : element.link}
+          />
+        </Form.Field>
+      </Form.Group>
       <Form.Field>
         <Form.Input
-          label="Literature source"
-          name="reference"
+          label="Notes"
+          name="notes"
           onBlur={handleBlur()}
           onChange={handleChange}
           readOnly={readOnly}
-          value={activeInput === 'reference' ? activeValue : element.reference}
+          value={activeInput === 'notes' ? activeValue : element.notes}
         />
       </Form.Field>
     </Form>

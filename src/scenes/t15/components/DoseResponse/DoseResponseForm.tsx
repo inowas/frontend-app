@@ -1,5 +1,5 @@
 import {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
-import {DropdownProps, Form, InputProps} from 'semantic-ui-react';
+import {DropdownProps, Form, Icon, InputProps} from 'semantic-ui-react';
 import DoseResponse from '../../../../core/model/qmra/DoseResponse';
 import IDoseResponse from '../../../../core/model/qmra/DoseResponse.type';
 
@@ -68,6 +68,8 @@ const DoseResponseForm = ({onChange, readOnly, selectedDoseResponse}: IProps) =>
     setElement(cItem);
     onChange(DoseResponse.fromObject(cItem));
   };
+
+  const handleClickLink = (url: string) => () => window.open(url, '_blank');
 
   return (
     <Form>
@@ -143,6 +145,10 @@ const DoseResponseForm = ({onChange, readOnly, selectedDoseResponse}: IProps) =>
       </Form.Field>
       <Form.Field>
         <Form.Input
+          icon={
+            element.link !== '' ? <Icon name="external alternate" link onClick={handleClickLink(element.link)}/> :
+              undefined
+          }
           label="Link"
           name="link"
           onBlur={handleBlur()}

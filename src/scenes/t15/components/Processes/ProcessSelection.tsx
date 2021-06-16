@@ -1,7 +1,7 @@
 import {Button, Label, List, Modal, Segment} from 'semantic-ui-react';
 import React from 'react';
 import _ from 'lodash';
-import processes from '../defaults/processes';
+import processes from '../defaults/processes.json';
 
 interface IProps {
   onClose: () => void;

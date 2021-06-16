@@ -31,13 +31,13 @@ const Navigation = (props: IProps) => {
               icon: renderIcon('certificate', 'inflow')
             },
             {
-              name: 'Treatment Train',
+              name: 'Treatment Steps',
               property: 'processes',
               icon: renderIcon('cogs', 'processes'),
               disabled: props.qmra.inflow.length < 1
             },
             {
-              name: 'Treatment steps',
+              name: 'Treatment Train',
               property: 'schemes',
               icon: renderIcon('boxes', 'schemes'),
               disabled: props.qmra.inflow.length < 1
