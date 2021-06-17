@@ -1,11 +1,12 @@
 import * as Content from './index';
 import { CALCULATE_PACKAGES_INPUT } from '../../../modflow/worker/t03.worker';
+import {Calculation} from '../../../../core/model/modflow';
 import { ICalculatePackagesInputData } from '../../../modflow/worker/t03.worker.type';
 import { IFlopyPackages } from '../../../../core/model/flopy/packages/FlopyPackages.type';
 import { IRootReducer } from '../../../../reducers';
 import { Loader, Segment } from 'semantic-ui-react';
 import { asyncWorker } from '../../../modflow/worker/worker';
-import { updatePackages } from '../../actions/actions';
+import {startCalculation, updatePackages } from '../../actions/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import BoundaryCollection from '../../../../core/model/modflow/boundaries/BoundaryCollection';
 import FlopyPackages from '../../../../core/model/flopy/packages/FlopyPackages';
@@ -27,17 +28,12 @@ const PackageActualizationWrapper = (props: IProps) => {
   const T03 = useSelector((state: IRootReducer) => state.T03);
   const dispatch = useDispatch();
 
-  const modelObj = useSelector((state: IRootReducer) => state.T03.model);
-  const boundariesObj = useSelector((state: IRootReducer) => state.T03.boundaries);
-  const soilmodelObj = useSelector((state: IRootReducer) => state.T03.soilmodel);
-  const transportObj = useSelector((state: IRootReducer) => state.T03.transport);
-  const variableDensityObj = useSelector((state: IRootReducer) => state.T03.variableDensity);
-
-  const model = modelObj ? ModflowModel.fromObject(modelObj) : null;
-  const boundaries = boundariesObj ? BoundaryCollection.fromObject(boundariesObj) : null;
-  const soilmodel = soilmodelObj ? Soilmodel.fromObject(soilmodelObj) : null;
-  const transport = transportObj ? Transport.fromObject(transportObj) : null;
-  const variableDensity = variableDensityObj ? VariableDensity.fromObject(variableDensityObj) : null;
+  const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
+  const boundaries = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
+  const calculation = T03.calculation ? Calculation.fromObject(T03.calculation) : null;
+  const soilmodel = T03.soilmodel ? Soilmodel.fromObject(T03.soilmodel) : null;
+  const transport = T03.transport ? Transport.fromObject(T03.transport) : null;
+  const variableDensity = T03.variableDensity ? VariableDensity.fromObject(T03.variableDensity) : null;
   const packages = T03.packages.data ? FlopyPackages.fromObject(T03.packages.data) : null;
 
   useEffect(() => {
@@ -140,7 +136,12 @@ const PackageActualizationWrapper = (props: IProps) => {
   }
 
   if (property === 'calculation') {
-    return (<Content.Calculation />);
+    return (<Content.Calculation
+      calculation={calculation}
+      model={model}
+      packages={packages}
+      startCalculation={startCalculation}
+    />);
   }
 
   return null;

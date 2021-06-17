@@ -16,7 +16,7 @@ import {ParseResult} from 'papaparse';
 import React, {ChangeEvent, MouseEvent, SyntheticEvent, useEffect, useState} from 'react';
 import moment from 'moment';
 
-type TColumns = Array<{ key: number, value: string, text: string, type?: ECsvColumnType }>;
+export type TColumns = Array<{ key: number, value: string, text: string, type?: ECsvColumnType }>;
 
 interface IProps {
     columns: TColumns;

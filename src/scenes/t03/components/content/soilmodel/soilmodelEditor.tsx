@@ -37,7 +37,7 @@ import {
 } from '../../../defaults/soilmodel';
 import {cloneDeep} from 'lodash';
 import {messageDirty, messageError, messageSaving} from '../../../defaults/messages';
-import {saveLayer} from '../../../../../core/model/modflow/soilmodel/updater/services';
+import {saveLayer} from '../../../../../core/model/modflow/soilmodel/services';
 import {sendCommand} from '../../../../../services/api';
 import {sendCommands} from '../../../../../services/api/commandHelper';
 import {useDispatch, useSelector} from 'react-redux';

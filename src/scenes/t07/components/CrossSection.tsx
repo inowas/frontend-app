@@ -250,7 +250,6 @@ const CrossSection = (props: IProps) => {
                                     col={selectedCol}
                                     row={selectedRow}
                                     show={'row'}
-                                    globalMinMax={globalMinMax}
                                 />
                             </Segment>
                         </Grid.Column>
@@ -262,7 +261,6 @@ const CrossSection = (props: IProps) => {
                                     col={selectedCol}
                                     row={selectedRow}
                                     show={'col'}
-                                    globalMinMax={globalMinMax}
                                 />
                             </Segment>
                         </Grid.Column>

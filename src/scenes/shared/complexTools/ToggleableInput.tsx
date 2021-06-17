@@ -1,5 +1,5 @@
 import {Icon, Input, InputOnChangeData, Popup} from 'semantic-ui-react';
-import React, {ChangeEvent, useState} from 'react';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 
 interface IProps {
     name: string;
@@ -12,6 +12,10 @@ interface IProps {
 
 const ToggleableInput = (props: IProps) => {
     const [localValue, setLocalValue] = useState<string | number | null>(props.value);
+
+    useEffect(() => {
+        setLocalValue(props.value);
+    }, [props.value]);
 
     const handleChange = () => {
         const parsedValue = props.type === 'number' && typeof localValue === 'string' ?
@@ -30,7 +34,12 @@ const ToggleableInput = (props: IProps) => {
     const handleLocalChange = (e: ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => setLocalValue(data.value);
 
     const handleToggle = () => {
-        setLocalValue(props.value === null ? props.placeholder : null);
+        if (props.type === 'number') {
+            setLocalValue(props.value === null ? 0 : null);
+        }
+        if (props.type === 'string') {
+            setLocalValue(props.value === null ? props.placeholder : null);
+        }
         return props.onChange(props.name, props.value === null ? props.placeholder : null);
     };
 

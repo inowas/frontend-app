@@ -59,6 +59,16 @@ class BoundaryCollection extends Collection<Boundary> {
     return this;
   }
 
+  public toggleById(id: string) {
+    this.items = this.items.map((i) => {
+      if (i.id === id) {
+        i.isExcludedFromCalculation = !i.isExcludedFromCalculation;
+      }
+      return i;
+    });
+    return this;
+  }
+
   public toObject = (): IBoundary[] => {
     return this.all.map((b) => b.toObject());
   };
@@ -67,7 +77,7 @@ class BoundaryCollection extends Collection<Boundary> {
     return this.all.map((b) => b.toExport(stressPeriods));
   };
 
-  public filter = (callable: (b: any) => boolean) => {
+  public filter = (callable: (b: Boundary) => boolean) => {
     return BoundaryCollection.fromObject(this.all.filter(callable).map((b) => b.toObject()));
   };
 

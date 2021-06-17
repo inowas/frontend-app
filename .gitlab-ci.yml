@@ -4,7 +4,7 @@ stages:
   - deploy
 
 test:
-  image: node:12
+  image: node:16
   stage: test
 
   script:
@@ -12,7 +12,7 @@ test:
     - CI=true yarn test --all --colors
 
 build:dev:
-  image: node:12
+  image: node:16
   stage: build
 
   script:
@@ -53,7 +53,7 @@ deploy:dev:
     - dev
 
 build:smart-control:
-  image: node:12
+  image: node:16
   stage: build
   script:
     - yarn install
@@ -64,8 +64,6 @@ build:smart-control:
       - build/
   only:
     - tags
-  except:
-    - master
 
 deploy:smart-control:
   stage: deploy
@@ -89,11 +87,9 @@ deploy:smart-control:
     url: https://dss.smart-control.inowas.com
   only:
     - tags
-  except:
-    - master
 
 build:training:
-  image: node:12
+  image: node:16
   stage: build
   script:
     - yarn install
@@ -104,8 +100,6 @@ build:training:
       - build/
   only:
     - tags
-  except:
-    - master
 
 deploy:training:
   stage: deploy
@@ -129,11 +123,9 @@ deploy:training:
     url: https://training.inowas.com
   only:
     - tags
-  except:
-    - master
 
 build:prod:
-  image: node:12
+  image: node:16
   stage: build
   script:
     - yarn install
@@ -144,8 +136,6 @@ build:prod:
       - build/
   only:
     - tags
-  except:
-    - master
 
 deploy:prod:staging:
   stage: deploy
@@ -169,8 +159,6 @@ deploy:prod:staging:
     url: https://staging.inowas.com
   only:
     - tags
-  except:
-    - master
 
 deploy:prod:production:
   stage: deploy
@@ -195,5 +183,3 @@ deploy:prod:production:
   when: manual
   only:
     - tags
-  except:
-    - master

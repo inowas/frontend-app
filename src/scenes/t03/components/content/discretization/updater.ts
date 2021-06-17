@@ -5,7 +5,7 @@ import {Cells, ModflowModel, Soilmodel} from '../../../../../core/model/modflow'
 import {ICalculateCellsInputData} from '../../../../modflow/worker/t03.worker.type';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {asyncWorker} from '../../../../modflow/worker/worker';
-import {saveLayer} from '../../../../../core/model/modflow/soilmodel/updater/services';
+import {saveLayer} from '../../../../../core/model/modflow/soilmodel/services';
 import {sendCommand} from '../../../../../services/api';
 import LayersCollection from '../../../../../core/model/modflow/soilmodel/LayersCollection';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
