@@ -1,6 +1,7 @@
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
 import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
 import {Children, GeoJSON, LayersControl} from 'react-leaflet';
+import {GeoJson} from '../../../core/model/geometry/Geometry.type';
 import {ILegendItem} from '../../../services/rainbowvis/types';
 import {LeafletMouseEvent} from 'leaflet';
 import {ModflowModel} from '../../../core/model/modflow';
@@ -12,7 +13,6 @@ import ColorLegend from './ColorLegend';
 import CustomMap from './CustomMap';
 import Rainbow from '../../../services/rainbowvis/Rainbowvis';
 import React from 'react';
-import {GeoJson} from "../../../core/model/geometry/Geometry.type";
 
 const styles = {
   map: {
@@ -79,7 +79,7 @@ const RasterDataMap = (props: IProps) => {
       {props.zones &&
       <LayersControl position="topright">
         {props.zones.map((r, k) => (
-          <LayersControl.Overlay name={r.name} checked={true}>
+          <LayersControl.Overlay key={k} name={r.name} checked={true}>
             <GeoJSON
               key={k}
               data={r.geometry}
