@@ -6,7 +6,7 @@ import ElementsList from '../ElementsList';
 import IDoseResponse from '../../../../core/model/qmra/DoseResponse.type';
 import InfoBox from '../InfoBox';
 import Qmra from '../../../../core/model/qmra/Qmra';
-import descriptions from '../defaults/descriptions';
+import descriptions from '../defaults/descriptions.json';
 
 interface IProps {
   onChange: (qmra: Qmra) => void;

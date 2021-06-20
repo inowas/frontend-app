@@ -1,6 +1,6 @@
-import {GenericObject} from '../../core/model/genericObject/GenericObject';
-import {IDataDropperData, IDataDropperFile} from './DataDropper.type';
-import {dropData, retrieveData} from './DataDropperHelper';
+import { GenericObject } from '../../core/model/genericObject/GenericObject';
+import { IDataDropperData, IDataDropperFile } from './DataDropper.type';
+import { dropData, retrieveData } from './DataDropperHelper';
 
 class FileData<T> extends GenericObject<IDataDropperData<T>> {
 
@@ -13,7 +13,7 @@ class FileData<T> extends GenericObject<IDataDropperData<T>> {
             error: null
         });
 
-        await fds.loadData().then().catch();
+        await fds.loadData().then().catch((e) => console.log(e));
         return fds;
     }
 

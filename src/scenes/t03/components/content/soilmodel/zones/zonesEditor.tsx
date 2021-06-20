@@ -8,6 +8,7 @@ import {
   Loader
 } from 'semantic-ui-react';
 import {Array2D} from '../../../../../../core/model/geometry/Array2D.type';
+import {GeoJson} from '../../../../../../core/model/geometry/Geometry.type';
 import {ICell} from '../../../../../../core/model/geometry/Cells.type';
 import {ILayerParameterZone} from '../../../../../../core/model/modflow/soilmodel/LayerParameterZone.type';
 import {IRasterFileMetadata} from '../../../../../../services/api/types';
@@ -18,13 +19,15 @@ import {
 } from '../../../../../../core/model/modflow/soilmodel';
 import {ModflowModel} from '../../../../../../core/model/modflow';
 import {RasterDataMap, RasterfileUploadModal} from '../../../../../shared/rasterData';
+import {distinct} from '../../../../../modflow/defaults/colorScales';
 import {getActiveCellFromCoordinate} from '../../../../../../services/geoTools';
 import {rasterDownload} from '../../../../../shared/rasterData/helpers';
 import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import CellAnalyzer, {CellAnalyzerParameters} from '../../../../../shared/rasterData/CellAnalyzer';
-import React, {ChangeEvent, MouseEvent, useState} from 'react';
+import React, {ChangeEvent, MouseEvent, useEffect, useState} from 'react';
 import SoilmodelLayer from '../../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
 import ZonesTable from './zonesTable';
+import uuid from 'uuid';
 
 interface IUploadData {
   data: Array2D<number>;
@@ -62,13 +65,39 @@ interface ICellInformation {
   parameters: CellAnalyzerParameters;
 }
 
+interface IActiveZone {
+  color: string;
+  geometry: GeoJson;
+  name: string;
+}
+
 const ZonesEditor = (props: IProps) => {
   const [activeIndex, setActiveIndex] = useState<number>(0);
+  const [activeZones, setActiveZones] = useState<IActiveZone[]>([]);
   const [cellInfo, setCellInfo] = useState<ICellInformation | null>(null);
   const [smoothParams, setSmoothParams] = useState<ISmoothParameters>({cycles: 1, distance: 1});
   const [rasterUploadModal, setRasterUploadModal] = useState<boolean>(false);
+  const [rerenderKey, setRerenderKey] = useState<string>(uuid.v4());
 
   const relations = props.layer.getRelationsByParameter(props.parameter.id);
+
+  useEffect(() => {
+    const az: IActiveZone[] = [];
+    props.zones.all.forEach((z, k) => {
+      const relation = relations.filterBy('zoneId', z.id);
+      if (relation.length > 0 && relation[0].priority !== 0) {
+        az.push({
+          color: k < distinct.length ? distinct[k] : distinct[0],
+          geometry: z.geometry as GeoJson,
+          name: z.name
+        });
+      }
+    });
+
+    setActiveZones(az);
+    setRerenderKey(uuid.v4());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.layer]);
 
   const recalculateMap = () => props.onChange(relations, props.parameter.id);
 
@@ -199,11 +228,13 @@ const ZonesEditor = (props: IProps) => {
         parameters={cellInfo ? cellInfo.parameters : undefined}
       >
         <RasterDataMap
+          key={rerenderKey}
           model={props.model}
           boundaries={props.boundaries}
           data={data as Array2D<number> | number}
           onClickCell={handleClickCell}
           unit={props.parameter.unit}
+          zones={activeZones}
         />
       </CellAnalyzer>
     );

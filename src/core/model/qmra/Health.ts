@@ -1,7 +1,7 @@
 import { GenericObject } from '../genericObject/GenericObject';
 import IHealth, { IHealthPayload } from './Health.type';
 import Pathogen from './Pathogen';
-import healthDefaults from '../../../scenes/t15/components/defaults/health';
+import healthDefaults from '../../../scenes/t15/components/defaults/health.json';
 import uuid from 'uuid';
 
 class Health extends GenericObject<IHealth> {
@@ -52,6 +52,8 @@ class Health extends GenericObject<IHealth> {
       id: uuid.v4(),
       pathogenId: pathogen.id,
       pathogenName: pathogen.name,
+      dalysPerCase: 0,
+      infectionToIllness: 0,
       reference1: '',
       reference2: ''
     });
@@ -66,8 +68,8 @@ class Health extends GenericObject<IHealth> {
       id: uuid.v4(),
       pathogenId: obj.PathogenID,
       pathogenName: obj.PathogenName,
-      infectionToIllness: obj['infection_to_illness'],
-      dalysPerCase: obj['dalys_per_case'],
+      infectionToIllness: obj['infection_to_illness'] || 0,
+      dalysPerCase: obj['dalys_per_case'] || 0,
       reference1: '',
       reference2: ''
     });

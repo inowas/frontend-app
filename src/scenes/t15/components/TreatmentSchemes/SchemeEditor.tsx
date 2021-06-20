@@ -161,6 +161,7 @@ const SchemeEditor = ({qmra, onChange}: IProps) => {
                 </Label.Group>
               </Segment>
             )}
+            {selectedElement &&
             <Dropdown
               button
               className="icon positive"
@@ -173,6 +174,7 @@ const SchemeEditor = ({qmra, onChange}: IProps) => {
               onChange={handleAddProcess}
               text="Add treatment process"
             />
+            }
           </Grid.Column>
         </Grid.Row>
       </Grid>

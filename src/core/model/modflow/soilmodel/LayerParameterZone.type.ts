@@ -9,12 +9,3 @@ export interface ILayerParameterZone {
     value?: number | Array2D<number>;
     zoneId: string;
 }
-
-export interface ILayerParameterZone2v0 {
-    id: string;
-    layerId: string;
-    zoneId: string;
-    parameter: string;
-    value: number | Array2D<number>;
-    priority: number;
-}

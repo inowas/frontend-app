@@ -1,5 +1,5 @@
 import {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
-import {DropdownProps, Form, InputProps} from 'semantic-ui-react';
+import {DropdownProps, Form, Icon, InputProps} from 'semantic-ui-react';
 import DoseResponse from '../../../../core/model/qmra/DoseResponse';
 import IDoseResponse from '../../../../core/model/qmra/DoseResponse.type';
 
@@ -46,12 +46,14 @@ const DoseResponseForm = ({onChange, readOnly, selectedDoseResponse}: IProps) =>
     }
 
     const cItem = {
-      ...element
+      ...element,
+      reference: '',
+      link: ''
     };
 
     if (value === 'beta-Poisson') {
       cItem.bestFitModel = 'beta-Poisson';
-      cItem.k = undefined;
+      cItem.k = null;
       cItem.n50 = 0;
       cItem.alpha = 0;
     }
@@ -59,13 +61,15 @@ const DoseResponseForm = ({onChange, readOnly, selectedDoseResponse}: IProps) =>
     if (value === 'exponential') {
       cItem.bestFitModel = 'exponential';
       cItem.k = 0;
-      cItem.n50 = undefined;
-      cItem.alpha = undefined;
+      cItem.n50 = null;
+      cItem.alpha = null;
     }
 
     setElement(cItem);
     onChange(DoseResponse.fromObject(cItem));
   };
+
+  const handleClickLink = (url: string) => () => window.open(url, '_blank');
 
   return (
     <Form>
@@ -98,7 +102,7 @@ const DoseResponseForm = ({onChange, readOnly, selectedDoseResponse}: IProps) =>
             placeholder="alpha"
             readOnly={readOnly}
             type="number"
-            value={activeInput === 'alpha' ? activeValue : element.alpha}
+            value={activeInput === 'alpha' ? activeValue : element.alpha || 0}
           />
         </Form.Field>
         <Form.Field>
@@ -110,7 +114,7 @@ const DoseResponseForm = ({onChange, readOnly, selectedDoseResponse}: IProps) =>
             placeholder="N50"
             readOnly={readOnly}
             type="number"
-            value={activeInput === 'n50' ? activeValue : element.n50}
+            value={activeInput === 'n50' ? activeValue : element.n50 || 0}
           />
         </Form.Field>
       </Form.Group>
@@ -125,7 +129,7 @@ const DoseResponseForm = ({onChange, readOnly, selectedDoseResponse}: IProps) =>
           placeholder="k"
           readOnly={readOnly}
           type="number"
-          value={activeInput === 'k' ? activeValue : element.k}
+          value={activeInput === 'k' ? activeValue : element.k || 0}
         />
       </Form.Field>
       }
@@ -141,6 +145,10 @@ const DoseResponseForm = ({onChange, readOnly, selectedDoseResponse}: IProps) =>
       </Form.Field>
       <Form.Field>
         <Form.Input
+          icon={
+            element.link !== '' ? <Icon name="external alternate" link onClick={handleClickLink(element.link)}/> :
+              undefined
+          }
           label="Link"
           name="link"
           onBlur={handleBlur()}

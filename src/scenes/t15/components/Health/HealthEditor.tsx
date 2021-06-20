@@ -6,7 +6,7 @@ import HealthForm from './HealthForm';
 import IHealth from '../../../../core/model/qmra/Health.type';
 import InfoBox from '../InfoBox';
 import Qmra from '../../../../core/model/qmra/Qmra';
-import descriptions from '../defaults/descriptions';
+import descriptions from '../defaults/descriptions.json';
 
 interface IProps {
   onChange: (qmra: Qmra) => void;
