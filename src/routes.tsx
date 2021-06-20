@@ -65,6 +65,7 @@ const getRoutes = () => {
         <Route exact={true} path="/tools/T15/:id?/:property?/:pid?" component={Scenes.T15}/>
         <Route exact={true} path="/tools/T18/:id?" component={Scenes.T18}/>
         <Route exact={true} path="/tools/T19/:id?" component={Scenes.T19}/>
+        <Route exact={true} path="/tools/T20" component={Scenes.T20.CreateRealTimeModelling}/>
         <Route exact={true} path="/tools/T20/:id/:property?/:pid?" component={Scenes.T20.EditRealTimeModelling}/>
 
         <Route path="/imprint" component={Scenes.Imprint}/>
