@@ -1,5 +1,5 @@
 import { CALCULATE_STATISTICS_INPUT } from '../../../../modflow/worker/t03.worker';
-import { Container, DropdownProps, Form, Grid, Header, Segment, Table } from 'semantic-ui-react';
+import {Container, DropdownProps, Form, Grid, Header, Message, Segment, Table} from 'semantic-ui-react';
 import { ILinearRegression } from '../../../../../services/statistics/calculateStatistics';
 import { IRootReducer } from '../../../../../reducers';
 import { ModflowModel } from '../../../../../core/model/modflow';
@@ -60,6 +60,7 @@ export interface IStatistics {
 }
 
 const ObservationStatistics = () => {
+  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isCalculating, setIsCalculating] = useState<boolean>(false);
 
@@ -98,9 +99,10 @@ const ObservationStatistics = () => {
           exclude: excludedWells
         }
       }).then((data: IStatistics) => {
-        setIsCalculating(false);
         setStatistics(data);
       }).catch(() => {
+        setError('Calculation Error: Add more observation wells or stress periods.');
+      }).finally(() => {
         setIsCalculating(false);
       });
     }
@@ -136,7 +138,8 @@ const ObservationStatistics = () => {
       <Grid>
         <Grid.Row>
           <Grid.Column>
-            {!statistics && <span>LOADING</span>}
+            {error && <Message negative>{error}</Message>}
+            {!statistics && !error && <span>LOADING</span>}
             {hobData && hobData.length === 0 && <span>No observation data available</span>}
             {hobData && hobData.length > 0 && statistics &&
             <Container fluid={true}>
