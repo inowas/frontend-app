@@ -273,12 +273,16 @@ const FileDatasourceEditor = (props: IProps) => {
                         tickFormatter={formatDateTimeTicks}
                         type={'number'}
                     />
-                    <YAxis dataKey={'y'} name={parameterField || ''} domain={['auto', 'auto']}/>
+                    <YAxis
+                      dataKey={'y'}
+                      name={!parameterField ? '' : parameterField.toFixed(2)}
+                      domain={['auto', 'auto']}
+                    />
                     <Scatter
                         data={downSampledDataLTOB}
                         line={{stroke: '#1eb1ed', strokeWidth: 2}}
                         lineType={'joint'}
-                        name={parameterField || ''}
+                        name={!parameterField ? '' : parameterField.toFixed(2)}
                         shape={<RenderNoShape/>}
                     />
                 </ScatterChart>

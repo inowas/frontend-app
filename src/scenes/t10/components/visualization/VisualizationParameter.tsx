@@ -13,7 +13,7 @@ import {
     ReferenceArea,
     ReferenceLine,
     ResponsiveContainer,
-    ScatterChart, Tooltip,
+    Tooltip,
     XAxis,
     YAxis,
 } from 'recharts';
@@ -142,7 +142,7 @@ const VisualizationParameter = (props: IProps) => {
     const [timeRange, setTimeRange] = useState<[number, number] | null>(null);
     const [timeSlideId, setTimeSliderId] = useState<string>(Uuid.v4());
 
-    const chartRef = useRef<ScatterChart>(null);
+    const chartRef = useRef(null);
     const timeRef = useRef<number>(0);
 
     const handleMoveTimeSlider = (result: [number, number]) => setTimeRange(

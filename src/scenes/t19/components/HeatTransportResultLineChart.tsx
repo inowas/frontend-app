@@ -87,7 +87,11 @@ const HeatTransportResultChart = (props: IProps) => {
 
     return (
         <ResponsiveContainer height={300}>
-            <LineChart data={props.data}>
+            <LineChart
+              data={props.data}
+              syncId={props.useSameTimes ? 'syncedChart' : undefined}
+              syncMethod="value"
+            >
                 <CartesianGrid strokeDasharray="3 3"/>
                 <XAxis
                     dataKey={'x'}

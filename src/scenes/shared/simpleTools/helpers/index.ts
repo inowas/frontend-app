@@ -1,19 +1,6 @@
 import * as ReactDOM from 'react-dom';
-import {
-    AreaChart,
-    BarChart,
-    ComposedChart,
-    LineChart,
-    PieChart,
-    RadarChart,
-    RadialBarChart,
-    ScatterChart
-} from 'recharts';
 import {IPropertyValueObject} from '../../../../core/model/types';
 import {IToolMetaData} from '../ToolMetaData/ToolMetaData.type';
-
-type TChart = ScatterChart | LineChart | BarChart | AreaChart | ComposedChart | PieChart |
-    RadarChart | RadialBarChart;
 
 interface IMinMaxDataObject {
     id: string;
@@ -103,7 +90,7 @@ export const downloadFile = (name: string, uri: string) => {
     document.body.removeChild(downloadLink);
 };
 
-export const exportChartData = (ref: TChart | null) => {
+export const exportChartData = (ref: any) => {
     if (!ref) {
         return null;
     }
@@ -117,7 +104,7 @@ export const exportChartData = (ref: TChart | null) => {
     csvContent += keys.join(',');
     csvContent += '\r\n';
 
-    rows.forEach((row) => {
+    rows.forEach((row: any) => {
         csvContent += Object.values(row).join(',');
         csvContent += '\r\n';
     });
@@ -127,7 +114,7 @@ export const exportChartData = (ref: TChart | null) => {
     downloadFile('chart.csv', encodedUri);
 };
 
-export const exportChartImage = (ref: TChart | null) => {
+export const exportChartImage = (ref: any) => {
     if (!ref) {
         return null;
     }

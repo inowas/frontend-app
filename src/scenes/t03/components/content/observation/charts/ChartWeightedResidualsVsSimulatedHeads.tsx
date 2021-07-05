@@ -108,7 +108,7 @@ const chartWeightedResidualsVsSimulatedHeads = (props: IProps) => {
                             return null;
                         })
                     }
-                    <Scatter data={line} line={{stroke: 'red', strokeWidth: 2}} shape={() => null}/>
+                    <Scatter data={line} line={{stroke: 'red', strokeWidth: 2}} shape={() => <div />}/>
                     <ReferenceLine y={0} stroke="blue" strokeWidth={2}/>
                     <Tooltip cursor={{strokeDasharray: '3 3'}} content={customTooltip}/>
                 </ScatterChart>

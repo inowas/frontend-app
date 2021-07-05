@@ -32,7 +32,7 @@ const BudgetResults = (props: IProps) => {
     const [totalTimes] = useState<number[] | null>(
         calculation && calculation.times ? calculation.times.budget.total_times : []
     );
-    const chartRef = useRef<BarChart>(null);
+    const chartRef = useRef(null);
 
     useEffect(() => {
         if (props.reducer.calculation) {
