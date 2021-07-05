@@ -30,7 +30,6 @@ const Calculation = (props: IProps) => {
       && T20.calculation.calculation_id !== rtm.calculationId) {
       const cRtm = rtm.toObject();
       cRtm.data.calculation_id = T20.calculation.calculation_id;
-      console.log('TRIGGER')
       props.onChange(RTModelling.fromObject(cRtm));
     }
     // eslint-disable-next-line
