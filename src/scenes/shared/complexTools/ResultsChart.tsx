@@ -42,7 +42,7 @@ interface IProps {
   yLabel?: string;
 }
 
-const renderTooltip = (show: string) => (e: TooltipProps) => {
+const renderTooltip = (show: string) => (e: TooltipProps<any, any>) => {
   const data = e.payload && e.payload.length >= 1 ? e.payload[0].payload : {name: '', value: 0};
   let name = 'Column';
 

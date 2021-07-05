@@ -92,7 +92,7 @@ const chartRankedResidualsAgainstNormalProbability = (props: IProps) => {
                             return null;
                         })
                     }
-                    <Scatter data={line} line={{stroke: 'red', strokeWidth: 2}} shape={() => null}/>
+                    <Scatter data={line} line={{stroke: 'red', strokeWidth: 2}} shape={() => <div />}/>
                     <Tooltip cursor={{strokeDasharray: '3 3'}} content={customTooltip}/>
                 </ScatterChart>
             </ResponsiveContainer>

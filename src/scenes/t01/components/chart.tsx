@@ -48,7 +48,7 @@ interface IProps {
 
 const Chart = (props: IProps) => {
 
-    const chartRef = useRef<ScatterChart | null>(null);
+    const chartRef = useRef<any>(null);
 
     const scatterLines = props.data.map((row) => {
         if (row.selected) {
@@ -107,7 +107,7 @@ const Chart = (props: IProps) => {
                                     angle={270}
                                     fill={'#4C4C4C'}
                                     position="left"
-                                    style={{textAnchor: 'center', fontSize: '13px'}}
+                                    style={{textAnchor: 'middle', fontSize: '13px'}}
                                     value={'v50/v50o'}
                                 />
                             </YAxis>

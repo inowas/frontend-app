@@ -17,7 +17,7 @@ interface IProps {
 
 const DataSourcesChart = (props: IProps) => {
   const [data, setData] = useState<IDateTimeValue[] | null>(null);
-  const chartRef = useRef<ScatterChart>(null);
+  const chartRef = useRef(null);
   const [isFetching, setIsFetching] = useState<boolean>(false);
 
   useEffect(() => {

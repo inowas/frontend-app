@@ -92,9 +92,9 @@ const chartObservedVsCalculatedHead = (props: IProps) => {
                         })
                     }
 
-                    <Scatter data={line} line={{stroke: 'black', strokeWidth: 2}} shape={() => null}/>
-                    <Scatter data={linePlusDelta} line={{stroke: 'red', strokeWidth: 2}} shape={() => null}/>
-                    <Scatter data={lineMinusDelta} line={{stroke: 'red', strokeWidth: 2}} shape={() => null}/>
+                    <Scatter data={line} line={{stroke: 'black', strokeWidth: 2}} shape={() => <div />}/>
+                    <Scatter data={linePlusDelta} line={{stroke: 'red', strokeWidth: 2}} shape={() => <div />}/>
+                    <Scatter data={lineMinusDelta} line={{stroke: 'red', strokeWidth: 2}} shape={() => <div />}/>
                     <Tooltip cursor={{strokeDasharray: '3 3'}} content={customTooltip}/>
                 </ScatterChart>
             </ResponsiveContainer>
