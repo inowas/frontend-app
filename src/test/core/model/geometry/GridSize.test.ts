@@ -24,14 +24,16 @@ test('From data (2D Array)', () => {
 
 test('Set delr and delc', () => {
   const gridSize = GridSize.fromArray([10, 12]);
-  gridSize.distX = [0.1, 0.2, 0.3, 0.4, 0.5, 1];
+  gridSize.distX = [0, 0.1, 0.2, 0.3, 0.4, 0.5];
   expect(gridSize.nX).toEqual(6);
-  gridSize.distY = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 1];
+  gridSize.distY = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6];
   expect(gridSize.nY).toEqual(7);
 });
 
 test('Get cumulative delr and delc', () => {
   const gridSize = GridSize.fromArray([10, 12]);
-  gridSize.distX = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 1];
+  expect(gridSize.distX).toEqual([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]);
+  expect(gridSize.delr).toEqual([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]);
+  gridSize.distX = [0, 0.1, 0.2, 0.3, 0.4, 0.5];
   expect(gridSize.delr).toEqual([0.1, 0.1, 0.1, 0.1, 0.1, 0.5]);
 });

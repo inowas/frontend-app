@@ -23,6 +23,7 @@ class GridSize extends GenericObject<IGridSize> {
       this._props.distX = new Array(this.nX).fill(1 / this.nX)
         .reduce((a, x, i) => [...a, a.length > 0 ? x + a[i - 1] : x], [])
         .map((value: number) => parseFloat(value.toPrecision(5))) as Array<number>;
+      this._props.distX.pop();
       this._props.distX = [0, ...this._props.distX];
     }
 
@@ -33,7 +34,11 @@ class GridSize extends GenericObject<IGridSize> {
     if (value[0] !== 0) {
       value.unshift(0);
     }
-    this.nX = value.length - 1;
+    if (value[value.length - 1] === 1) {
+      value.pop();
+    }
+    
+    this.nX = value.length;
     this._props.distX = value;
   }
 
@@ -53,6 +58,7 @@ class GridSize extends GenericObject<IGridSize> {
       this._props.distY = new Array(this.nY).fill(1 / this.nY)
         .reduce((a, x, i) => [...a, a.length > 0 ? x + a[i - 1] : x], [])
         .map((value: number) => parseFloat(value.toPrecision(5))) as Array<number>;
+      this._props.distY.pop();
       this._props.distY = [0, ...this._props.distY];
     }
 
@@ -63,19 +69,23 @@ class GridSize extends GenericObject<IGridSize> {
     if (value[0] !== 0) {
       value.unshift(0);
     }
-    this.nY = value.length - 1;
+    if (value[value.length - 1] === 1) {
+      value.pop();
+    }
+    this.nY = value.length;
     this._props.distY = value;
   }
 
   public get delc() {
-    return this.distY.slice(1).map((n, i) => n - this.distY[i])
+    const distY = [...this.distY, 1];
+    return distY.slice(1).map((n, i) => n - distY[i])
       .map((value: number) => parseFloat(value.toPrecision(5)));
   }
 
   public get delr() {
-    return this.distX.slice(1).map((n, i) => n - this.distX[i])
+    const distX = [...this.distX, 1];
+    return distX.slice(1).map((n, i) => n - distX[i])
       .map((value: number) => parseFloat(value.toPrecision(5)));
-
   }
 
   public static fromNxNy(nX: number, nY: number) {
