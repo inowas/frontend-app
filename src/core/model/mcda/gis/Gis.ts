@@ -3,7 +3,7 @@ import {BoundingBox, Geometry} from '../../geometry';
 import {Cells} from '../../modflow';
 import {IGis, IGis1v0} from './Gis.type';
 import {booleanContains, booleanOverlap} from '@turf/turf';
-import {getGridCells} from '../../../../services/geoTools';
+import {getGridCellsFromVariableGrid} from '../../../../services/geoTools';
 import GridSize from '../../geometry/GridSize';
 import RasterLayer from './RasterLayer';
 import VectorLayersCollection from './VectorLayersCollection';
@@ -66,7 +66,7 @@ class Gis {
     }
 
     public calculateActiveCells(gridSize: GridSize) {
-        const gridCells = getGridCells(this.boundingBox, gridSize);
+        const gridCells = getGridCellsFromVariableGrid(this.boundingBox, gridSize);
         const raster = RasterLayer.fromDefaults();
         raster.data = Array(gridSize.nY).fill(0).map(() => Array(gridSize.nX).fill(1)) as Array2D<number>;
         raster.boundingBox = this.boundingBox;

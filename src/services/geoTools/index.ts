@@ -2,7 +2,6 @@ import { BoundingBox, Cells, Geometry, GridSize } from '../../core/model/modflow
 import { ICell } from '../../core/model/geometry/Cells.type';
 import { Polygon } from 'geojson';
 import { area, booleanContains, booleanCrosses, booleanOverlap, envelope, intersect, lineString } from '@turf/turf';
-import { floor } from 'lodash';
 
 /* Calculate GridCells
 Structure:
@@ -24,8 +23,41 @@ export const getGridCells = (boundingBox: BoundingBox, gridSize: GridSize) => {
         x,
         y: gridSize.nY - y - 1,
         geometry: envelope(lineString([
-          [boundingBox.xMin + x * dx, boundingBox.yMax - (gridSize.nY - y) * dy],
-          [boundingBox.xMin + (x + 1) * dx, boundingBox.yMax - (gridSize.nY - y - 1) * dy]
+          [
+            boundingBox.xMin + x * dx,
+            boundingBox.yMax - (gridSize.nY - y) * dy
+          ],
+          [
+            boundingBox.xMin + (x + 1) * dx,
+            boundingBox.yMax - (gridSize.nY - y - 1) * dy
+          ]
+        ]))
+      });
+    }
+  }
+
+  return cells;
+};
+
+export const getGridCellsFromVariableGrid = (boundingBox: BoundingBox, gridSize: GridSize) => {
+  const dx = boundingBox.dX;
+  const dy = boundingBox.dY;
+
+  const cells = [];
+  for (let y = 0; y < gridSize.nY; y++) {
+    for (let x = 0; x < gridSize.nX; x++) {
+      cells.push({
+        x,
+        y: gridSize.nY - y - 1,
+        geometry: envelope(lineString([
+          [
+            boundingBox.xMin + gridSize.getDistXStart()[x] * dx,
+            boundingBox.yMax - gridSize.getDistYStart()[(gridSize.nY - y - 1)] * dy
+          ],
+          [
+            boundingBox.xMin + gridSize.getDistXEnd()[x] * dx,
+            boundingBox.yMax - gridSize.getDistYEnd()[(gridSize.nY - y - 1)] * dy
+          ]
         ]))
       });
     }
@@ -36,14 +68,21 @@ export const getGridCells = (boundingBox: BoundingBox, gridSize: GridSize) => {
 
 export const getActiveCellFromCoordinate = (coordinate: number[], boundingBox: BoundingBox,
                                             gridSize: GridSize): ICell => {
-  const dx = boundingBox.dX / gridSize.nX;
-  const dy = boundingBox.dY / gridSize.nY;
-  const x = coordinate[0];
-  const y = coordinate[1];
+
+  const [x, y] = coordinate;
+  if (x < boundingBox.xMin || x > boundingBox.xMax) {
+    throw Error('Outside BoundingBox.');
+  }
+  if (y < boundingBox.yMin || y > boundingBox.yMax) {
+    throw Error('Outside BoundingBox.');
+  }
+
+  const distXRel = (x - boundingBox.xMin) / boundingBox.dX;
+  const distYRel = (y - boundingBox.yMin) / boundingBox.dY;
 
   return [
-    floor((x - boundingBox.xMin) / dx),
-    floor(gridSize.nY - (y - boundingBox.yMin) / dy)
+    gridSize.getCellFromDistX(distXRel),
+    gridSize.getCellFromDistY(distYRel)
   ];
 };
 
@@ -68,7 +107,7 @@ export const calculateActiveCells = (
   }
 
   if (geometry.fromType('linestring')) {
-    const gridCells = getGridCells(boundingBox, gridSize);
+    const gridCells = getGridCellsFromVariableGrid(boundingBox, gridSize);
     gridCells.forEach((cell) => {
       if (booleanContains(cell.geometry, geometry) || booleanCrosses(geometry, cell.geometry)) {
         activeCells.addCell([cell.x, cell.y]);
@@ -77,7 +116,7 @@ export const calculateActiveCells = (
   }
 
   if (geometry.fromType('polygon')) {
-    const gridCells = getGridCells(boundingBox, gridSize);
+    const gridCells = getGridCellsFromVariableGrid(boundingBox, gridSize);
     const cellArea = area(gridCells[0].geometry);
     gridCells.forEach((cell) => {
       if (booleanContains(cell.geometry, geometry)) {
@@ -96,4 +135,20 @@ export const calculateActiveCells = (
   }
 
   return activeCells;
+};
+
+export const getCenterFromCell = (cell: ICell, boundingBox: BoundingBox, gridSize: GridSize) => {
+  const [x, y] = cell;
+  if (x < 0 || x >= gridSize.nX) {
+    throw Error('Out of bounds');
+  }
+
+  if (y < 0 || y >= gridSize.nY) {
+    throw Error('Out of bounds');
+  }
+
+  return [
+    parseFloat((gridSize.getCentersX()[x] * boundingBox.dX).toPrecision(5)),
+    parseFloat((gridSize.getCentersY()[y] * boundingBox.dY).toPrecision(5))
+  ];
 };

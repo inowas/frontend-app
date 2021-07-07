@@ -43,6 +43,16 @@ class GridSize extends GenericObject<IGridSize> {
     this._props.distX = value;
   }
 
+  public getDistXStart(): Array<number> {
+    return this.distX;
+  }
+
+  public getDistXEnd(): Array<number> {
+    const distXEnd = [...this.distX, 1];
+    distXEnd.shift();
+    return distXEnd;
+  }
+
   public get nY() {
     return this._props.n_y;
   }
@@ -76,6 +86,24 @@ class GridSize extends GenericObject<IGridSize> {
     }
     this.nY = value.length;
     this._props.distY = value;
+  }
+
+  public getDistYStart(): Array<number> {
+    return this.distY;
+  }
+
+  public getDistYEnd(): Array<number> {
+    const distYEnd = [...this.distY, 1];
+    distYEnd.shift();
+    return distYEnd;
+  }
+
+  public getCentersX(): Array<number> {
+    return this.getDistXEnd().map((end: number, idx) => (end + this.getDistXStart()[idx]) / 2);
+  }
+
+  public getCentersY(): Array<number> {
+    return this.getDistYEnd().map((end: number, idx) => (end + this.getDistYStart()[idx]) / 2);
   }
 
   public get delc() {
@@ -116,6 +144,29 @@ class GridSize extends GenericObject<IGridSize> {
 
   public isWithIn = (x: number, y: number) => {
     return (x >= 0 && x <= (this.nX - 1) && y >= 0 && y <= (this.nY - 1));
+  };
+
+  public getCellFromDistX = (dist: number) => {
+    let cellX = 0;
+
+    this.distX.forEach((distX: number, idx) => {
+      if (dist > distX) {
+        cellX = idx;
+      }
+    });
+
+    return cellX;
+  };
+
+  public getCellFromDistY = (distY: number) => {
+    let cellY = 0;
+    this.distY.forEach((value: number, idx) => {
+      if (value < distY) {
+        cellY = idx;
+      }
+    });
+
+    return this.nY - cellY - 1;
   };
 }
 

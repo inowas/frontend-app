@@ -37,3 +37,24 @@ test('Get cumulative delr and delc', () => {
   gridSize.distX = [0, 0.1, 0.2, 0.3, 0.4, 0.5];
   expect(gridSize.delr).toEqual([0.1, 0.1, 0.1, 0.1, 0.1, 0.5]);
 });
+
+test('Get cell', () => {
+  const gridSize = GridSize.fromArray([10, 12]);
+  gridSize.distX = [0, 0.1, 0.2, 0.3, 0.4, 0.5];
+  expect(gridSize.delr).toEqual([0.1, 0.1, 0.1, 0.1, 0.1, 0.5]);
+  expect(gridSize.getCellFromDistX(0.05)).toEqual(0);
+  expect(gridSize.getCellFromDistX(0.1)).toEqual(0);
+  expect(gridSize.getCellFromDistX(0.11)).toEqual(1);
+  expect(gridSize.getCellFromDistX(0.50)).toEqual(4);
+  expect(gridSize.getCellFromDistX(0.51)).toEqual(5);
+  expect(gridSize.getCellFromDistX(1)).toEqual(5);
+
+  gridSize.distY = [0, 0.1, 0.2, 0.3, 0.4, 0.5];
+  expect(gridSize.delr).toEqual([0.1, 0.1, 0.1, 0.1, 0.1, 0.5]);
+  expect(gridSize.getCellFromDistY(0.05)).toEqual(5);
+  expect(gridSize.getCellFromDistY(0.1)).toEqual(5);
+  expect(gridSize.getCellFromDistY(0.11)).toEqual(4);
+  expect(gridSize.getCellFromDistY(0.50)).toEqual(1);
+  expect(gridSize.getCellFromDistY(0.51)).toEqual(0);
+  expect(gridSize.getCellFromDistY(1)).toEqual(0);
+});
