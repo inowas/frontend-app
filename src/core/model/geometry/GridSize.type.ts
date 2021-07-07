@@ -1,6 +1,9 @@
 export interface IGridSize {
   n_x: number;
   n_y: number;
-  delc?: Array<number>;
-  delr?: Array<number>;
+  distX?: Array<number>;
+  distY?: Array<number>;
 }
+
+//distX => Array of relative startPoints of cells from 0 (xMin)
+//distY => Array of relative startPoints of cells from 0 (yMin)
