@@ -1,6 +1,7 @@
+import {AllGeoJSON} from '@turf/helpers';
 import { BoundingBox, Cells, Geometry, GridSize } from '../../core/model/modflow';
 import { ICell } from '../../core/model/geometry/Cells.type';
-import { Polygon } from 'geojson';
+import {Polygon} from 'geojson';
 import { area, booleanContains, booleanCrosses, booleanOverlap, envelope, intersect, lineString } from '@turf/turf';
 import { floor } from 'lodash';
 
@@ -97,3 +98,73 @@ export const calculateActiveCells = (
 
   return activeCells;
 };
+
+export interface IRowsAndColumns {
+  columns: number[];
+  columnKeys: number[];
+  rows: number[];
+  rowKeys: number[];
+}
+
+export const getRowsAndColumnsFromGeoJson = (geoJson: AllGeoJSON, boundingBox: BoundingBox, gridSize: GridSize): IRowsAndColumns => {
+  const bbox = BoundingBox.fromGeoJson(geoJson);
+
+  const columnKeys: number[] = [];
+  const columns = gridSize.distX.filter((d, i) => {
+    const x = boundingBox.xMin + d * boundingBox.dX;
+    if (x >= bbox.xMin && x <= bbox.xMax) {
+      columnKeys.push(i);
+      return true;
+    }
+    return false;
+  });
+
+  const rowKeys: number[] = [];
+  const rows = gridSize.distY.filter((d, i) => {
+    const y = boundingBox.yMin + d * boundingBox.dY;
+    if (y >= bbox.yMin && y <= bbox.yMax) {
+      rowKeys.push(i);
+      return true;
+    }
+    return false;
+  });
+
+  return {
+    columns,
+    columnKeys,
+    rows,
+    rowKeys
+  };
+};
+
+export const calculateColumns = (boundingBox: BoundingBox, gridSize: GridSize) => {
+  const c = gridSize.distX.map((d) => {
+    return [
+      [boundingBox.yMin, d * boundingBox.dX + boundingBox.xMin],
+      [boundingBox.yMax, d * boundingBox.dX + boundingBox.xMin]
+    ];
+  });
+
+  c.push([
+    [boundingBox.yMin, boundingBox.dX + boundingBox.xMin],
+    [boundingBox.yMax, boundingBox.dX + boundingBox.xMin]
+  ]);
+
+  return c as [[number, number], [number, number]][];
+}
+
+export const calculateRows = (boundingBox: BoundingBox, gridSize: GridSize) => {
+  const r = gridSize.distY.map((d) => {
+    return [
+      [d * boundingBox.dY + boundingBox.yMin, boundingBox.xMin],
+      [d * boundingBox.dY + boundingBox.yMin, boundingBox.xMax]
+    ];
+  });
+
+  r.push([
+    [boundingBox.dY + boundingBox.yMin, boundingBox.xMin],
+    [boundingBox.dY + boundingBox.yMin, boundingBox.xMax]
+  ]);
+
+  return r as [[number, number], [number, number]][];
+}
