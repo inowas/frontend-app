@@ -18,6 +18,7 @@ class GridSize extends GenericObject<IGridSize> {
     }
   }
 
+  //distX => Array of relative startPoints of cells from 0 (xMin)
   public get distX(): Array<number> {
     if (!this._props.distX) {
       this._props.distX = new Array(this.nX).fill(1 / this.nX)
@@ -37,7 +38,7 @@ class GridSize extends GenericObject<IGridSize> {
     if (value[value.length - 1] === 1) {
       value.pop();
     }
-    
+
     this.nX = value.length;
     this._props.distX = value;
   }
@@ -53,6 +54,7 @@ class GridSize extends GenericObject<IGridSize> {
     }
   }
 
+  //distY => Array of relative startPoints of cells from 0 (yMin)
   public get distY(): Array<number> {
     if (!this._props.distY) {
       this._props.distY = new Array(this.nY).fill(1 / this.nY)
