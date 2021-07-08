@@ -1,7 +1,7 @@
 import * as turf from '@turf/turf';
 import { BoundingBox, GridSize } from '../../core/model/modflow';
 import { Feature, Point } from '@turf/helpers';
-import { floor } from 'lodash';
+import { getActiveCellFromCoordinate } from './index';
 
 export const rotateCoordinateAroundPoint = (
   point1: { lng: number, lat: number },
@@ -28,10 +28,5 @@ export const getCellFromClick = (
   const x = rot.lng;
   const y = rot.lat;
 
-  const dx = boundingBox.dX / gridSize.nX;
-  const dy = boundingBox.dY / gridSize.nY;
-  return [
-    floor((x - boundingBox.xMin) / dx),
-    floor(gridSize.nY - (y - boundingBox.yMin) / dy)
-  ];
+  return getActiveCellFromCoordinate([x, y], boundingBox, gridSize) as [number, number];
 };
