@@ -123,12 +123,12 @@ export const delc = (boundingBox: BoundingBox, gridSize: GridSize): number | Arr
 
   const options: { units: 'kilometers' } = { units: 'kilometers' };
 
+  const dYInMeters = distance(point1, point2, options) * 1000;
   if (!gridSize.delc) {
-    return Number((distance(point1, point2, options) / gridSize.nY * 1000).toFixed(3));
+    return parseFloat((dYInMeters / gridSize.nY).toPrecision(5));
   }
 
-  const dY = distance(point1, point2, options);
-  return gridSize.delc.map((dCCell) => dCCell * dY);
+  return gridSize.delc.map((dCCell) => parseFloat((dCCell * dYInMeters).toPrecision(5)));
 };
 
 export const delr = (boundingBox: BoundingBox, gridSize: GridSize): number | Array<number> => {
@@ -152,12 +152,13 @@ export const delr = (boundingBox: BoundingBox, gridSize: GridSize): number | Arr
 
   const options: { units: 'kilometers' } = { units: 'kilometers' };
 
+  const dXInMeters = distance(point1, point2, options) * 1000;
+
   if (!gridSize.delr) {
-    return Number((distance(point1, point2, options) / gridSize.nX * 1000).toFixed(3));
+    return parseFloat((dXInMeters / gridSize.nX).toPrecision(5));
   }
 
-  const dX = distance(point1, point2, options);
-  return gridSize.delr.map((dRCell) => dRCell * dX);
+  return gridSize.delr.map((dCCell) => parseFloat((dCCell * dXInMeters).toPrecision(5)));
 };
 
 export const distanceBetweenCoordinates = (lat1: number, lon1: number, lat2: number, lon2: number) => {
