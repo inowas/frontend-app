@@ -191,8 +191,8 @@ export const getRowsAndColumnsFromGeoJson = (geoJson: AllGeoJSON, boundingBox: B
   const rows: number[] = [];
 
   for (let y = 0; y < gridSize.nY; y++) {
-    const distYStart = boundingBox.yMax - (gridSize.getDistanceYStart(gridSize.nY - y - 1) * boundingBox.dY);
-    const distYEnd = boundingBox.yMax - (gridSize.getDistanceYEnd(gridSize.nY - y - 1) * boundingBox.dY);
+    const distYStart = boundingBox.yMax - (gridSize.getDistanceYStart(y) * boundingBox.dY);
+    const distYEnd = boundingBox.yMax - (gridSize.getDistanceYEnd(y) * boundingBox.dY);
 
     if (
       (distYStart > bbox.yMin && distYEnd < bbox.yMin) ||
@@ -235,8 +235,8 @@ export const calculateRows = (boundingBox: BoundingBox, gridSize: GridSize) => {
     rows.push({
       dist: gridSize.distY[y],
       boundingBox: new BoundingBox([
-        [boundingBox.xMin, boundingBox.yMax - gridSize.getDistanceYStart((gridSize.nY - y - 1)) * boundingBox.dY],
-        [boundingBox.xMax, boundingBox.yMax - gridSize.getDistanceYEnd((gridSize.nY - y - 1)) * boundingBox.dY]
+        [boundingBox.xMin, boundingBox.yMax - gridSize.getDistanceYStart(y) * boundingBox.dY],
+        [boundingBox.xMax, boundingBox.yMax - gridSize.getDistanceYEnd(y) * boundingBox.dY]
       ]).toObject()
     });
   }
