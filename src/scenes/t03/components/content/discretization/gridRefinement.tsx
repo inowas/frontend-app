@@ -1,65 +1,49 @@
 import {BoundingBox, GridSize} from '../../../../../core/model/geometry';
-import {FeatureGroup, Polygon, Rectangle} from 'react-leaflet';
-import {IBoundingBox} from '../../../../../core/model/geometry/BoundingBox.type';
-import {IRowsAndColumns, calculateColumns, calculateRows} from '../../../../../services/geoTools';
-import {createRef, useEffect, useRef, useState} from 'react';
+import {FeatureGroup, Polygon,} from 'react-leaflet';
+import {IBoundingBoxWithDist, IRowsAndColumns, calculateColumns, calculateRows} from '../../../../../services/geoTools';
+import {useEffect, useState} from 'react';
 
 interface IProps {
   boundingBox: BoundingBox;
   gridSize: GridSize;
-  onChange: (g?: GridSize) => void;
   selectedRowsAndColumns: IRowsAndColumns | null;
 }
 
 const GridRefinement = (props: IProps) => {
-  const [columns, setColumns] = useState<IBoundingBox[]>(calculateColumns(props.boundingBox, props.gridSize).map((b) => b.toObject()));
-  const [rows, setRows] = useState<IBoundingBox[]>(calculateRows(props.boundingBox, props.gridSize).map((b) => b.toObject()));
+  const [columns, setColumns] = useState<IBoundingBoxWithDist[]>(calculateColumns(props.boundingBox, props.gridSize).map((b) => b));
+  const [rows, setRows] = useState<IBoundingBoxWithDist[]>(calculateRows(props.boundingBox, props.gridSize).map((b) => b));
 
   useEffect(() => {
-    setColumns(calculateColumns(props.boundingBox, props.gridSize).map((b) => b.toObject()));
-    setRows(calculateRows(props.boundingBox, props.gridSize).map((b) => b.toObject()))
+    setColumns(calculateColumns(props.boundingBox, props.gridSize).map((b) => b));
+    setRows(calculateRows(props.boundingBox, props.gridSize).map((b) => b))
   }, [props.boundingBox, props.gridSize]);
-
-
-  const columnRef = useRef<any>(calculateColumns(props.boundingBox, props.gridSize).map(() => createRef()));
-  const rowsRef = useRef<any>(calculateRows(props.boundingBox, props.gridSize).map(() => createRef()));
-
-  const handleClickPolyline = (k: number) => (e: any) => {
-    if (k < 1 || k >= props.gridSize.nX) {
-      return null;
-    }
-    console.log(e)
-  };
 
   return (
     <FeatureGroup>
-      {columns && columns.map((c, k) =>
+      {columns && columns.map((c) =>
         <Polygon
           color="#000000"
-          fill={props.selectedRowsAndColumns ? props.selectedRowsAndColumns.columnKeys.includes(k) : false}
+          fill={props.selectedRowsAndColumns ? props.selectedRowsAndColumns.columns.includes(c.dist) : false}
           fillColor="blue"
-          key={`columns_${k}`}
-          onClick={handleClickPolyline(k)}
-          positions={BoundingBox.fromObject(c).getCornersLatLng()}
-          ref={columnRef.current[k]}
+          key={`columns_${c.dist}`}
+          positions={BoundingBox.fromObject(c.boundingBox).getCornersLatLng()}
           weight={1}
         />
       )}
-      {rows && rows.map((r, k) =>
+      {rows && rows.map((r) =>
         <Polygon
           color="#000000"
-          fill={props.selectedRowsAndColumns ? props.selectedRowsAndColumns.rowKeys.includes(k) : false}
-          fillColor="blue"
-          key={`rows_${k}`}
-          onClick={handleClickPolyline(k)}
-          positions={BoundingBox.fromObject(r).getCornersLatLng()}
-          ref={rowsRef.current[k]}
+          interactive={true}
+          fill={props.selectedRowsAndColumns ? props.selectedRowsAndColumns.rows.includes(r.dist) : false}
+          fillColor="red"
+          key={`rows_${r.dist}`}
+          positions={BoundingBox.fromObject(r.boundingBox).getCornersLatLng()}
           weight={1}
         />
       )}
 
     </FeatureGroup>
   );
-};
+}
 
 export default GridRefinement;

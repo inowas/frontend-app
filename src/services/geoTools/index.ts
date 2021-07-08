@@ -1,8 +1,9 @@
-import { AllGeoJSON } from '@turf/helpers';
-import { BoundingBox, Cells, Geometry, GridSize } from '../../core/model/modflow';
-import { ICell } from '../../core/model/geometry/Cells.type';
-import { Polygon } from 'geojson';
-import { area, booleanContains, booleanCrosses, booleanOverlap, envelope, intersect, lineString } from '@turf/turf';
+import {AllGeoJSON} from '@turf/helpers';
+import {BoundingBox, Cells, Geometry, GridSize} from '../../core/model/modflow';
+import {IBoundingBox} from '../../core/model/geometry/BoundingBox.type';
+import {ICell} from '../../core/model/geometry/Cells.type';
+import {Polygon} from 'geojson';
+import {area, booleanContains, booleanCrosses, booleanOverlap, envelope, intersect, lineString} from '@turf/turf';
 
 /* Calculate GridCells
 Structure:
@@ -166,90 +167,78 @@ export const getCenterFromCell = (cell: ICell, boundingBox: BoundingBox, gridSiz
 
 export interface IRowsAndColumns {
   columns: number[];
-  columnKeys: number[];
   rows: number[];
-  rowKeys: number[];
 }
 
 export const getRowsAndColumnsFromGeoJson = (geoJson: AllGeoJSON, boundingBox: BoundingBox, gridSize: GridSize): IRowsAndColumns => {
   const bbox = BoundingBox.fromGeoJson(geoJson);
 
-  let xMin: {value: number, key: number} = {value: -Infinity, key: -1};
-  let xMax: {value: number, key: number} = {value: Infinity, key: -1};
-  let yMin: {value: number, key: number} = {value: -Infinity, key: -1};
-  let yMax: {value: number, key: number} = {value: -Infinity, key: -1};
+  const columns: number[] = [];
 
-  gridSize.distX.forEach((d, i) => {
-    const x = boundingBox.xMin + d * boundingBox.dX;
-    if (x < bbox.xMin && x > xMin.value) {
-      xMin = {value: x, key: i};
-    }
-    if (x > bbox.xMax && x < xMax.value) {
-      xMax = {value: x, key: i};
-    }
-  });
+  for (let x = 0; x < gridSize.nX; x++) {
+    const distXStart = boundingBox.xMin + (gridSize.getDistanceXStart(x) * boundingBox.dX);
+    const distXEnd = boundingBox.xMin + (gridSize.getDistanceXEnd(x) * boundingBox.dX);
 
-  gridSize.distY.forEach((d, i) => {
-    const y = boundingBox.yMin + d * boundingBox.dY;
-    if (y < bbox.yMin && y > yMin.value) {
-      yMin = {value: y, key: i};
+    if (
+      (distXStart < bbox.xMin && distXEnd > bbox.xMin) ||
+      (distXStart > bbox.xMin && distXEnd > bbox.xMin && distXEnd < bbox.xMax && distXStart < bbox.xMax) ||
+      (distXStart < bbox.xMax && distXEnd > bbox.xMax)
+    ) {
+      columns.push(gridSize.distX[x]);
     }
-    if (y > bbox.yMax && y < yMax.value) {
-      yMax = {value: y, key: i};
-    }
-  });
+  }
 
-  const columnKeys: number[] = [];
-  const columns = gridSize.distX.filter((d, i) => {
-    const x = boundingBox.xMin + d * boundingBox.dX;
-    if (x >= bbox.xMin && x <= bbox.xMax) {
-      columnKeys.push(i);
-      return true;
-    }
-    return false;
-  });
+  const rows: number[] = [];
 
-  const rowKeys: number[] = [];
-  const rows = gridSize.distY.filter((d, i) => {
-    const y = boundingBox.yMin + d * boundingBox.dY;
-    if (y >= bbox.yMin && y <= bbox.yMax) {
-      rowKeys.push(i);
-      return true;
+  for (let y = 0; y < gridSize.nY; y++) {
+    const distYStart = boundingBox.yMax - (gridSize.getDistanceYStart(gridSize.nY - y - 1) * boundingBox.dY);
+    const distYEnd = boundingBox.yMax - (gridSize.getDistanceYEnd(gridSize.nY - y - 1) * boundingBox.dY);
+
+    if (
+      (distYStart > bbox.yMin && distYEnd < bbox.yMin) ||
+      (distYStart > bbox.yMin && distYEnd > bbox.yMin && distYEnd < bbox.yMax && distYStart < bbox.yMax) ||
+      (distYStart > bbox.yMax && distYEnd < bbox.yMax)
+    ) {
+      rows.push(gridSize.distY[y]);
     }
-    return false;
-  });
+  }
 
   return {
     columns,
-    columnKeys,
     rows,
-    rowKeys
   };
 };
 
+export interface IBoundingBoxWithDist {
+  boundingBox: IBoundingBox;
+  dist: number;
+}
+
 export const calculateColumns = (boundingBox: BoundingBox, gridSize: GridSize) => {
-  const columns = [];
+  const columns: IBoundingBoxWithDist[] = [];
   for (let x = 0; x < gridSize.nX; x++) {
-    columns.push(
-      new BoundingBox([
+    columns.push({
+      dist: gridSize.distX[x],
+      boundingBox: new BoundingBox([
         [boundingBox.xMin + (gridSize.getDistanceXStart(x) * boundingBox.dX), boundingBox.yMin],
         [boundingBox.xMin + (gridSize.getDistanceXEnd(x) * boundingBox.dX), boundingBox.yMax]
-      ])
-    );
+      ]).toObject()
+    });
   }
 
   return columns;
 };
 
 export const calculateRows = (boundingBox: BoundingBox, gridSize: GridSize) => {
-  const rows = [];
-  for (let y = 0; y < gridSize.nY; y++) {
-    rows.push(
-      new BoundingBox([
+  const rows: IBoundingBoxWithDist[] = [];
+  for (let y = gridSize.nY - 1; y >= 0; y--) {
+    rows.push({
+      dist: gridSize.distY[y],
+      boundingBox: new BoundingBox([
         [boundingBox.xMin, boundingBox.yMax - gridSize.getDistanceYStart((gridSize.nY - y - 1)) * boundingBox.dY],
         [boundingBox.xMax, boundingBox.yMax - gridSize.getDistanceYEnd((gridSize.nY - y - 1)) * boundingBox.dY]
-      ])
-    );
+      ]).toObject()
+    });
   }
 
   return rows;
