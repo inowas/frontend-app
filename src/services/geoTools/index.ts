@@ -1,3 +1,4 @@
+import { AllGeoJSON } from '@turf/helpers';
 import { BoundingBox, Cells, Geometry, GridSize } from '../../core/model/modflow';
 import { ICell } from '../../core/model/geometry/Cells.type';
 import { Polygon } from 'geojson';
@@ -161,4 +162,70 @@ export const getCenterFromCell = (cell: ICell, boundingBox: BoundingBox, gridSiz
     parseFloat((gridSize.getCenterX(x) * boundingBox.dX).toPrecision(5)),
     parseFloat((gridSize.getCenterY(y) * boundingBox.dY).toPrecision(5))
   ];
+};
+
+export interface IRowsAndColumns {
+  columns: number[];
+  columnKeys: number[];
+  rows: number[];
+  rowKeys: number[];
+}
+
+export const getRowsAndColumnsFromGeoJson = (geoJson: AllGeoJSON, boundingBox: BoundingBox, gridSize: GridSize): IRowsAndColumns => {
+  const bbox = BoundingBox.fromGeoJson(geoJson);
+
+  const columnKeys: number[] = [];
+  const columns = gridSize.distX.filter((d, i) => {
+    const x = boundingBox.xMin + d * boundingBox.dX;
+    if (x >= bbox.xMin && x <= bbox.xMax) {
+      columnKeys.push(i);
+      return true;
+    }
+    return false;
+  });
+
+  const rowKeys: number[] = [];
+  const rows = gridSize.distY.filter((d, i) => {
+    const y = boundingBox.yMin + d * boundingBox.dY;
+    if (y >= bbox.yMin && y <= bbox.yMax) {
+      rowKeys.push(i);
+      return true;
+    }
+    return false;
+  });
+
+  return {
+    columns,
+    columnKeys,
+    rows,
+    rowKeys
+  };
+};
+
+export const calculateColumns = (boundingBox: BoundingBox, gridSize: GridSize) => {
+  const columns = [];
+  for (let x = 0; x < gridSize.nX; x++) {
+    columns.push({
+      geometry: envelope(lineString([
+        [boundingBox.xMin + gridSize.getDistanceXStart(x) * boundingBox.dX, boundingBox.yMin],
+        [boundingBox.xMin + gridSize.getDistanceXEnd(x) * boundingBox.dX, boundingBox.yMax]
+      ]))
+    });
+  }
+
+  return columns;
+};
+
+export const calculateRows = (boundingBox: BoundingBox, gridSize: GridSize) => {
+  const rows = [];
+  for (let y = 0; y < gridSize.nY; y++) {
+    rows.push({
+      geometry: envelope(lineString([
+        [boundingBox.xMin, boundingBox.yMax - gridSize.getDistanceYStart((gridSize.nY - y - 1)) * boundingBox.dY],
+        [boundingBox.xMax, boundingBox.yMax - gridSize.getDistanceYEnd((gridSize.nY - y - 1)) * boundingBox.dY]
+      ]))
+    });
+  }
+
+  return rows;
 };
