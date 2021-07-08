@@ -205,12 +205,12 @@ export const getRowsAndColumnsFromGeoJson = (geoJson: AllGeoJSON, boundingBox: B
 export const calculateColumns = (boundingBox: BoundingBox, gridSize: GridSize) => {
   const columns = [];
   for (let x = 0; x < gridSize.nX; x++) {
-    columns.push({
-      geometry: envelope(lineString([
+    columns.push(
+      new BoundingBox([
         [boundingBox.xMin + gridSize.getDistanceXStart(x) * boundingBox.dX, boundingBox.yMin],
         [boundingBox.xMin + gridSize.getDistanceXEnd(x) * boundingBox.dX, boundingBox.yMax]
-      ]))
-    });
+      ])
+    );
   }
 
   return columns;
@@ -219,12 +219,12 @@ export const calculateColumns = (boundingBox: BoundingBox, gridSize: GridSize) =
 export const calculateRows = (boundingBox: BoundingBox, gridSize: GridSize) => {
   const rows = [];
   for (let y = 0; y < gridSize.nY; y++) {
-    rows.push({
-      geometry: envelope(lineString([
+    rows.push(
+      new BoundingBox([
         [boundingBox.xMin, boundingBox.yMax - gridSize.getDistanceYStart((gridSize.nY - y - 1)) * boundingBox.dY],
         [boundingBox.xMax, boundingBox.yMax - gridSize.getDistanceYEnd((gridSize.nY - y - 1)) * boundingBox.dY]
-      ]))
-    });
+      ])
+    );
   }
 
   return rows;
