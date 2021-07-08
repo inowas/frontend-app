@@ -4,7 +4,7 @@ import { Array2D } from '../../core/model/geometry/Array2D.type';
 import { BoundingBox, Geometry, GridSize } from '../../core/model/modflow';
 import { ContourMultiPolygon } from 'd3';
 import { max, min } from '../../scenes/shared/rasterData/helpers';
-import _ from 'lodash';
+import { uniq } from 'lodash';
 
 export const getThresholds = (data: Array2D<number>, unique: number[], maxSteps = 100, fixedSteps?: number) => {
   let mSteps = fixedSteps || maxSteps;
@@ -41,7 +41,7 @@ export const rasterToContour = (
 
   const fData = ([] as number[]).concat(...cData);
 
-  const unique = _.uniq(fData).sort((a, b) => a - b);
+  const unique = uniq(fData).sort((a, b) => a - b);
   const cThresholds = getThresholds(cData, unique);
   const cContours = d3.contours()
     .size([gridSize.nX, gridSize.nY])
@@ -52,8 +52,32 @@ export const rasterToContour = (
     mp.coordinates = mp.coordinates.map((c) => {
       c = c.map((cc) => {
         cc = cc.map((ccc) => {
-          ccc[0] = boundingBox.xMin + gridSize.getCenterX(ccc[0]) * boundingBox.dX;
-          ccc[1] = boundingBox.yMax - gridSize.getCenterY(ccc[1]) * boundingBox.dY;
+          const cellX = Math.floor(ccc[0]);
+          switch (cellX) {
+            case 0:
+              ccc[0] = boundingBox.xMin;
+              break;
+            case gridSize.nX:
+              ccc[0] = boundingBox.xMax;
+              break;
+            default:
+              ccc[0] = boundingBox.xMin + gridSize.getCenterX(cellX) * boundingBox.dX;
+              break;
+          }
+
+          const cellY = Math.floor(ccc[1]);
+          switch (cellY) {
+            case 0:
+              ccc[1] = boundingBox.yMax;
+              break;
+            case gridSize.nY:
+              ccc[1] = boundingBox.yMin;
+              break;
+            default:
+              ccc[1] = boundingBox.yMax - gridSize.getCenterY(cellY) * boundingBox.dY;
+              break;
+          }
+
           return ccc;
         });
         return cc;
