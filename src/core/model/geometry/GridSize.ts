@@ -43,14 +43,22 @@ class GridSize extends GenericObject<IGridSize> {
     this._props.distX = value;
   }
 
-  public getDistXStart(): Array<number> {
+  public getDistancesXStart(): Array<number> {
     return this.distX;
   }
 
-  public getDistXEnd(): Array<number> {
+  public getDistanceXStart(x: number): number {
+    return this.getDistancesXStart()[x];
+  }
+
+  public getDistancesXEnd(): Array<number> {
     const distXEnd = [...this.distX, 1];
     distXEnd.shift();
     return distXEnd;
+  }
+
+  public getDistanceXEnd(x: number): number {
+    return this.getDistancesXEnd()[x];
   }
 
   public get nY() {
@@ -88,22 +96,38 @@ class GridSize extends GenericObject<IGridSize> {
     this._props.distY = value;
   }
 
-  public getDistYStart(): Array<number> {
+  public getDistancesYStart(): Array<number> {
     return this.distY;
   }
 
-  public getDistYEnd(): Array<number> {
+  public getDistanceYStart(y: number): number {
+    return this.getDistancesYStart()[y];
+  }
+
+  public getDistancesYEnd(): Array<number> {
     const distYEnd = [...this.distY, 1];
     distYEnd.shift();
     return distYEnd;
   }
 
+  public getDistanceYEnd(y: number): number {
+    return this.getDistancesYEnd()[y];
+  }
+
   public getCentersX(): Array<number> {
-    return this.getDistXEnd().map((end: number, idx) => (end + this.getDistXStart()[idx]) / 2);
+    return this.getDistancesXEnd().map((end: number, idx) => (end + this.getDistancesXStart()[idx]) / 2);
+  }
+
+  public getCenterX(x: number): number {
+    return this.getCentersX()[x];
   }
 
   public getCentersY(): Array<number> {
-    return this.getDistYEnd().map((end: number, idx) => (end + this.getDistYStart()[idx]) / 2);
+    return this.getDistancesYEnd().map((end: number, idx) => (end + this.getDistancesYStart()[idx]) / 2);
+  }
+
+  public getCenterY(y: number): number {
+    return this.getCentersY()[y];
   }
 
   public get delc() {

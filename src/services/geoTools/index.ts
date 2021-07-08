@@ -11,6 +11,7 @@ const cells = [
 {x:1, y:4, geometry: geometry},
 {x:1, y:5, geometry: geometry},
 ]
+// @deprecated
 */
 export const getGridCells = (boundingBox: BoundingBox, gridSize: GridSize) => {
   const dx = boundingBox.dX / gridSize.nX;
@@ -39,6 +40,15 @@ export const getGridCells = (boundingBox: BoundingBox, gridSize: GridSize) => {
   return cells;
 };
 
+/* Calculate GridCells
+Structure:
+const cells = [
+{x:1, y:2, geometry: geometry},
+{x:1, y:3, geometry: geometry},
+{x:1, y:4, geometry: geometry},
+{x:1, y:5, geometry: geometry},
+]
+*/
 export const getGridCellsFromVariableGrid = (boundingBox: BoundingBox, gridSize: GridSize) => {
   const dx = boundingBox.dX;
   const dy = boundingBox.dY;
@@ -51,12 +61,12 @@ export const getGridCellsFromVariableGrid = (boundingBox: BoundingBox, gridSize:
         y: gridSize.nY - y - 1,
         geometry: envelope(lineString([
           [
-            boundingBox.xMin + gridSize.getDistXStart()[x] * dx,
-            boundingBox.yMax - gridSize.getDistYStart()[(gridSize.nY - y - 1)] * dy
+            boundingBox.xMin + gridSize.getDistanceXStart(x) * dx,
+            boundingBox.yMax - gridSize.getDistanceYStart((gridSize.nY - y - 1)) * dy
           ],
           [
-            boundingBox.xMin + gridSize.getDistXEnd()[x] * dx,
-            boundingBox.yMax - gridSize.getDistYEnd()[(gridSize.nY - y - 1)] * dy
+            boundingBox.xMin + gridSize.getDistancesXEnd()[x] * dx,
+            boundingBox.yMax - gridSize.getDistancesYEnd()[(gridSize.nY - y - 1)] * dy
           ]
         ]))
       });
@@ -148,7 +158,7 @@ export const getCenterFromCell = (cell: ICell, boundingBox: BoundingBox, gridSiz
   }
 
   return [
-    parseFloat((gridSize.getCentersX()[x] * boundingBox.dX).toPrecision(5)),
-    parseFloat((gridSize.getCentersY()[y] * boundingBox.dY).toPrecision(5))
+    parseFloat((gridSize.getCenterX(x) * boundingBox.dX).toPrecision(5)),
+    parseFloat((gridSize.getCenterY(y) * boundingBox.dY).toPrecision(5))
   ];
 };
