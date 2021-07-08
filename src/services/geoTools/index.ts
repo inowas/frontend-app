@@ -174,6 +174,31 @@ export interface IRowsAndColumns {
 export const getRowsAndColumnsFromGeoJson = (geoJson: AllGeoJSON, boundingBox: BoundingBox, gridSize: GridSize): IRowsAndColumns => {
   const bbox = BoundingBox.fromGeoJson(geoJson);
 
+  let xMin: {value: number, key: number} = {value: -Infinity, key: -1};
+  let xMax: {value: number, key: number} = {value: Infinity, key: -1};
+  let yMin: {value: number, key: number} = {value: -Infinity, key: -1};
+  let yMax: {value: number, key: number} = {value: -Infinity, key: -1};
+
+  gridSize.distX.forEach((d, i) => {
+    const x = boundingBox.xMin + d * boundingBox.dX;
+    if (x < bbox.xMin && x > xMin.value) {
+      xMin = {value: x, key: i};
+    }
+    if (x > bbox.xMax && x < xMax.value) {
+      xMax = {value: x, key: i};
+    }
+  });
+
+  gridSize.distY.forEach((d, i) => {
+    const y = boundingBox.yMin + d * boundingBox.dY;
+    if (y < bbox.yMin && y > yMin.value) {
+      yMin = {value: y, key: i};
+    }
+    if (y > bbox.yMax && y < yMax.value) {
+      yMax = {value: y, key: i};
+    }
+  });
+
   const columnKeys: number[] = [];
   const columns = gridSize.distX.filter((d, i) => {
     const x = boundingBox.xMin + d * boundingBox.dX;
@@ -207,8 +232,8 @@ export const calculateColumns = (boundingBox: BoundingBox, gridSize: GridSize) =
   for (let x = 0; x < gridSize.nX; x++) {
     columns.push(
       new BoundingBox([
-        [boundingBox.xMin + gridSize.getDistanceXStart(x) * boundingBox.dX, boundingBox.yMin],
-        [boundingBox.xMin + gridSize.getDistanceXEnd(x) * boundingBox.dX, boundingBox.yMax]
+        [boundingBox.xMin + (gridSize.getDistanceXStart(x) * boundingBox.dX), boundingBox.yMin],
+        [boundingBox.xMin + (gridSize.getDistanceXEnd(x) * boundingBox.dX), boundingBox.yMax]
       ])
     );
   }

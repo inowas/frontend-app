@@ -1,9 +1,8 @@
 import {BoundingBox, GridSize} from '../../../../../core/model/geometry';
-import {FeatureGroup, Polyline, Rectangle} from 'react-leaflet';
+import {FeatureGroup, Polygon, Rectangle} from 'react-leaflet';
+import {IBoundingBox} from '../../../../../core/model/geometry/BoundingBox.type';
 import {IRowsAndColumns, calculateColumns, calculateRows} from '../../../../../services/geoTools';
-import {LeafletMouseEvent} from 'leaflet';
 import {createRef, useEffect, useRef, useState} from 'react';
-import GridRefinementModal from './gridRefinementModal';
 
 interface IProps {
   boundingBox: BoundingBox;
@@ -13,24 +12,17 @@ interface IProps {
 }
 
 const GridRefinement = (props: IProps) => {
-  const [columns, setColumns] = useState<Array<[[number, number], [number, number]]>>(calculateColumns(props.boundingBox, props.gridSize));
-  const [rows, setRows] = useState<Array<[[number, number], [number, number]]>>(calculateRows(props.boundingBox, props.gridSize));
+  const [columns, setColumns] = useState<IBoundingBox[]>(calculateColumns(props.boundingBox, props.gridSize).map((b) => b.toObject()));
+  const [rows, setRows] = useState<IBoundingBox[]>(calculateRows(props.boundingBox, props.gridSize).map((b) => b.toObject()));
 
   useEffect(() => {
-    setColumns(calculateColumns(props.boundingBox, props.gridSize));
-    setRows(calculateRows(props.boundingBox, props.gridSize))
+    setColumns(calculateColumns(props.boundingBox, props.gridSize).map((b) => b.toObject()));
+    setRows(calculateRows(props.boundingBox, props.gridSize).map((b) => b.toObject()))
   }, [props.boundingBox, props.gridSize]);
+
 
   const columnRef = useRef<any>(calculateColumns(props.boundingBox, props.gridSize).map(() => createRef()));
   const rowsRef = useRef<any>(calculateRows(props.boundingBox, props.gridSize).map(() => createRef()));
-
-  const handleCancelModal = () => props.onChange();
-
-  const handleChangeModal = (g: GridSize) => props.onChange(g);
-
-  const handleClickCell = (e: LeafletMouseEvent) => {
-    console.log(e);
-  };
 
   const handleClickPolyline = (k: number) => (e: any) => {
     if (k < 1 || k >= props.gridSize.nX) {
@@ -39,64 +31,33 @@ const GridRefinement = (props: IProps) => {
     console.log(e)
   };
 
-  const handleHoverColumn = (k: number, weight: number, color: string) => () => {
-    if (k < 1 || k >= props.gridSize.nX) {
-      return null;
-    }
-    columnRef.current[k].current.leafletElement.setStyle({color, weight});
-  };
-
-  const handleHoverRow = (k: number, weight: number, color: string) => () => {
-    if (k < 1 || k >= props.gridSize.nY) {
-      return null;
-    }
-    rowsRef.current[k].current.leafletElement.setStyle({color, weight});
-  };
-
   return (
     <FeatureGroup>
-      <Rectangle
-        bounds={props.boundingBox.getBoundsLatLng()}
-        interactive={true}
-        onclick={handleClickCell}
-        fillOpacity={0}
-        stroke={false}
-      />
       {columns && columns.map((c, k) =>
-        <Polyline
+        <Polygon
           color="#000000"
-          interactive={true}
+          fill={props.selectedRowsAndColumns ? props.selectedRowsAndColumns.columnKeys.includes(k) : false}
+          fillColor="blue"
           key={`columns_${k}`}
           onClick={handleClickPolyline(k)}
-          onmouseover={handleHoverColumn(k, 3, 'red')}
-          onmouseout={handleHoverColumn(k, 2, 'black')}
-          positions={c}
+          positions={BoundingBox.fromObject(c).getCornersLatLng()}
           ref={columnRef.current[k]}
-          weight={2}
+          weight={1}
         />
       )}
       {rows && rows.map((r, k) =>
-        <Polyline
+        <Polygon
           color="#000000"
-          interactive={true}
+          fill={props.selectedRowsAndColumns ? props.selectedRowsAndColumns.rowKeys.includes(k) : false}
+          fillColor="blue"
           key={`rows_${k}`}
           onClick={handleClickPolyline(k)}
-          onmouseover={handleHoverRow(k, 3, 'red')}
-          onmouseout={handleHoverRow(k, 2, 'black')}
-          positions={r}
+          positions={BoundingBox.fromObject(r).getCornersLatLng()}
           ref={rowsRef.current[k]}
-          weight={2}
+          weight={1}
         />
       )}
-      {(props.selectedRowsAndColumns && (props.selectedRowsAndColumns.rows.length > 0 ||
-        props.selectedRowsAndColumns.columns.length > 0)) &&
-      <GridRefinementModal
-        gridSize={props.gridSize}
-        onCancel={handleCancelModal}
-        onChange={handleChangeModal}
-        selectedColumns={props.selectedRowsAndColumns.columnKeys}
-        selectedRows={props.selectedRowsAndColumns.rowKeys}
-      />}
+
     </FeatureGroup>
   );
 };

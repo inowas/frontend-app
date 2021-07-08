@@ -192,6 +192,15 @@ class BoundingBox {
     ];
   };
 
+  public getCornersLatLng = (): Array<[number, number]> => {
+    return [
+      [this.yMin, this.xMin],
+      [this.yMax, this.xMin],
+      [this.yMax, this.xMax],
+      [this.yMin, this.xMax]
+    ];
+  };
+
   public sameAs = (obj: BoundingBox) => {
     return isEqual(obj.toObject(), this.toObject());
   };

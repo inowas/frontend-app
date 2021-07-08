@@ -173,12 +173,8 @@ const DiscretizationMap = (props: IProps) => {
   }
 
   const handleClickOnMap = ({latlng}: { latlng: any }) => {
-    if (mode === 'single' || readOnlyRef.current || !cellsRef.current || !props.boundingBox ||
+    if (mode !== 'single' || readOnlyRef.current || !cellsRef.current || !props.boundingBox ||
       !props.gridSize || !props.geometry) {
-      return null;
-    }
-
-    if (mode === 'refinement') {
       return null;
     }
 
