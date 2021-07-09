@@ -16,9 +16,9 @@ import {
 import {Polygon} from 'react-leaflet';
 import {addMessage} from '../../../actions/actions';
 import {asyncWorker} from '../../../../modflow/worker/worker';
+import {getCellFromClick, rotateCoordinateAroundPoint} from '../../../../../services/geoTools/getCellFromClick';
 import {messageError} from '../../../defaults/messages';
 import {renderBoundaryOverlays, renderBoundingBoxLayer} from '../../maps/mapLayers';
-import {rotateCoordinateAroundPoint} from '../../../../../services/geoTools/getCellFromClick';
 import {useDispatch} from 'react-redux';
 import AffectedCellsLayer from '../../../../../services/geoTools/affectedCellsLayer';
 import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
@@ -189,11 +189,13 @@ const DiscretizationMap = (props: IProps) => {
 
     const latlngRot = props.rotation ?
       rotateCoordinateAroundPoint(latlng, props.geometry.centerOfMass, props.rotation) : latlng;
-    const x = latlngRot.lng;
-    const y = latlngRot.lat;
+
+    const clickedCell = getCellFromClick(
+      props.boundingBox, props.gridSize, latlngRot, props.rotation, props.geometry.centerOfMass
+    );
 
     const c: Cells = cellsRef.current;
-    c.toggle([x, y], props.boundingBox, props.gridSize);
+    c.toggle(clickedCell, props.boundingBox, props.gridSize, false);
     cellsRef.current = _.cloneDeep(c);
     props.onChangeCells(c);
   };
