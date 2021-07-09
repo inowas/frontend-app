@@ -58,6 +58,13 @@ class GridSize extends GenericObject<IGridSize> {
   }
 
   public getDistanceXEnd(x: number): number {
+    if (x > 0 && x < 1) {
+      const index = this.distX.indexOf(x);
+      if (index) {
+        return this.getDistancesXEnd()[index];
+      }
+      return 1;
+    }
     return this.getDistancesXEnd()[x];
   }
 
@@ -111,6 +118,13 @@ class GridSize extends GenericObject<IGridSize> {
   }
 
   public getDistanceYEnd(y: number): number {
+    if (y > 0 && y < 1) {
+      const index = this.distY.indexOf(y);
+      if (index) {
+        return this.getDistancesYEnd()[index];
+      }
+      return 1;
+    }
     return this.getDistancesYEnd()[y];
   }
 

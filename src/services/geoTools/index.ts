@@ -1,9 +1,9 @@
-import { AllGeoJSON } from '@turf/helpers';
-import { BoundingBox, Cells, Geometry, GridSize } from '../../core/model/modflow';
-import { IBoundingBox } from '../../core/model/geometry/BoundingBox.type';
-import { ICell } from '../../core/model/geometry/Cells.type';
-import { Polygon } from 'geojson';
-import { area, booleanContains, booleanCrosses, booleanOverlap, envelope, intersect, lineString } from '@turf/turf';
+import {AllGeoJSON} from '@turf/helpers';
+import {BoundingBox, Cells, Geometry, GridSize} from '../../core/model/modflow';
+import {IBoundingBox} from '../../core/model/geometry/BoundingBox.type';
+import {ICell} from '../../core/model/geometry/Cells.type';
+import {Polygon} from 'geojson';
+import {area, booleanContains, booleanCrosses, booleanOverlap, envelope, intersect, lineString} from '@turf/turf';
 
 /* Calculate GridCells
 Structure:
@@ -78,9 +78,9 @@ export const getGridCellsFromVariableGrid = (boundingBox: BoundingBox, gridSize:
   return cells;
 };
 
-export const getActiveCellFromCoordinate = (coordinate: number[], boundingBox: BoundingBox,
-                                            gridSize: GridSize): ICell => {
-
+export const getActiveCellFromCoordinate = (
+  coordinate: number[], boundingBox: BoundingBox, gridSize: GridSize
+): ICell => {
   const [x, y] = coordinate;
   if (x < boundingBox.xMin || x > boundingBox.xMax) {
     throw Error('Outside BoundingBox.');
@@ -170,6 +170,15 @@ export interface IRowsAndColumns {
   rows: number[];
 }
 
+export const getRowsAndColumnsFromCoordinate = (coordinate: any, boundingBox: BoundingBox, gridSize: GridSize) => {
+  const cell = getActiveCellFromCoordinate([coordinate.lng, coordinate.lat], boundingBox, gridSize);
+
+  return {
+    columns: [gridSize.distX[cell[0]]],
+    rows: [gridSize.distY[gridSize.distY.length - cell[1] - 1]]
+  }
+};
+
 export const getRowsAndColumnsFromGeoJson = (geoJson: AllGeoJSON, boundingBox: BoundingBox, gridSize: GridSize): IRowsAndColumns => {
   const bbox = BoundingBox.fromGeoJson(geoJson);
 
@@ -195,9 +204,9 @@ export const getRowsAndColumnsFromGeoJson = (geoJson: AllGeoJSON, boundingBox: B
     const distYEnd = boundingBox.yMin + (gridSize.getDistanceYEnd(y) * boundingBox.dY);
 
     if (
-      (distYStart > bbox.yMin && distYEnd < bbox.yMin) ||
+      (distYStart < bbox.yMin && distYEnd > bbox.yMin) ||
       (distYStart > bbox.yMin && distYEnd > bbox.yMin && distYEnd < bbox.yMax && distYStart < bbox.yMax) ||
-      (distYStart > bbox.yMax && distYEnd < bbox.yMax)
+      (distYStart < bbox.yMax && distYEnd > bbox.yMax)
     ) {
       rows.push(gridSize.distY[y]);
     }

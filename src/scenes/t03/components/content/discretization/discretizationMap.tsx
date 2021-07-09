@@ -1,7 +1,7 @@
 import * as turf from '@turf/turf';
 import {BasicTileLayer} from '../../../../../services/geoTools/tileLayers';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../core/model/geometry';
-import {Button, Popup} from 'semantic-ui-react';
+import {Button} from 'semantic-ui-react';
 import {CALCULATE_CELLS_INPUT} from '../../../../modflow/worker/t03.worker';
 import {Control, DrawEvents, LatLngBoundsExpression, LatLngExpression} from 'leaflet';
 import {EditControl} from 'react-leaflet-draw';
@@ -9,7 +9,10 @@ import {FeatureGroup, LayersControl, Map} from 'react-leaflet';
 import {ICalculateCellsInputData} from '../../../../modflow/worker/t03.worker.type';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {IGeometry} from '../../../../../core/model/geometry/Geometry.type';
-import {IRowsAndColumns, getRowsAndColumnsFromGeoJson} from '../../../../../services/geoTools';
+import {
+  IRowsAndColumns,
+  getRowsAndColumnsFromGeoJson
+} from '../../../../../services/geoTools';
 import {Polygon} from 'react-leaflet';
 import {addMessage} from '../../../actions/actions';
 import {asyncWorker} from '../../../../modflow/worker/worker';
@@ -179,7 +182,8 @@ const DiscretizationMap = (props: IProps) => {
 
   const handleClickOnMap = ({latlng}: { latlng: any }) => {
     if (mode !== 'single' || readOnlyRef.current || !cellsRef.current || !props.boundingBox ||
-      !props.gridSize || !props.geometry) {
+      !props.gridSize || !props.geometry || latlng.lat < props.boundingBox.yMin || latlng.lat > props.boundingBox.yMax
+      || latlng.lng < props.boundingBox.xMin || latlng.lng > props.boundingBox.xMax) {
       return null;
     }
 
@@ -228,72 +232,74 @@ const DiscretizationMap = (props: IProps) => {
         <Button primary={mode === 'refinement'} onClick={handleToggleDrawing('refinement')}>Grid Refinement</Button>
       </Button.Group>
       }
-      <Popup
-        content={
-          <GridRefinementPopup
-            gridSize={props.gridSize}
-            onCancel={handleCancelSelection}
-            onChange={handleChangeGridRefinement}
-            selectedColumns={selected && selected.columns ? selected.columns : []}
-            selectedRows={selected && selected.rows ? selected.rows : []}
+      <Map
+        style={style.map}
+        bounds={getBoundsLatLng() as LatLngBoundsExpression}
+        maxZoom={16}
+        onclick={handleClickOnMap}
+        ref={mapRef}
+      >
+        <BasicTileLayer/>
+        {!props.readOnly && <FeatureGroup>
+          <EditControl
+            position="topright"
+            draw={{
+              circle: false,
+              circlemarker: false,
+              marker: false,
+              polyline: mode === 'multi' && geometry !== null,
+              rectangle: mode === 'refinement' && geometry !== null,
+              polygon: geometry === null || mode === 'multi'
+            }}
+            edit={{
+              edit: mode !== 'refinement' && geometry !== null && !!props.onChangeGeometry,
+              remove: false
+            }}
+            onCreated={onCreated}
+            onEdited={onEdited}
+            ref={refDrawControl}
           />
+          {geometry &&
+          <Polygon
+            key={uniqueId()}
+            positions={Geometry.fromObject(geometry).coordinatesLatLng as LatLngExpression[]}
+          />
+          }
+        </FeatureGroup>
         }
-        on='click'
-        open={!!selected}
-        offset={[0, -120]}
-        position='right center'
-        trigger={
-          <Map
-            style={style.map}
-            bounds={getBoundsLatLng() as LatLngBoundsExpression}
-            maxZoom={16}
-            onclick={handleClickOnMap}
-            ref={mapRef}
-          >
-            <BasicTileLayer/>
-            {!props.readOnly && <FeatureGroup>
-              <EditControl
-                position="topright"
-                draw={{
-                  circle: false,
-                  circlemarker: false,
-                  marker: false,
-                  polyline: mode === 'multi' && geometry !== null,
-                  rectangle: mode === 'refinement' && geometry !== null,
-                  polygon: geometry === null || mode === 'multi'
-                }}
-                edit={{
-                  edit: mode !== 'refinement' && geometry !== null && !!props.onChangeGeometry,
-                  remove: false
-                }}
-                onCreated={onCreated}
-                onEdited={onEdited}
-                ref={refDrawControl}
-              />
-              {geometry &&
-              <Polygon
-                key={uniqueId()}
-                positions={Geometry.fromObject(geometry).coordinatesLatLng as LatLngExpression[]}
-              />
-              }
-            </FeatureGroup>
-            }
-            {props.boundaries.length > 0 &&
-            <LayersControl position="topright">
-              {renderBoundaryOverlays(props.boundaries)}
-            </LayersControl>
-            }
-            {mode !== 'refinement' && renderActiveCellsLayer()}
-            {renderBoundingBoxLayer(props.boundingBox, props.rotation, props.geometry || undefined)}
-            {mode === 'refinement' && <GridRefinement
-              boundingBox={props.boundingBox}
-              gridSize={props.gridSize}
-              selectedRowsAndColumns={selected}
-            />}
-          </Map>
-        }/>
+        {props.boundaries.length > 0 &&
+        <LayersControl position="topright">
+          {renderBoundaryOverlays(props.boundaries)}
+        </LayersControl>
+        }
+        {mode !== 'refinement' && renderActiveCellsLayer()}
+        {renderBoundingBoxLayer(props.boundingBox, props.rotation, props.geometry || undefined)}
+        {mode === 'refinement' && <GridRefinement
+          boundingBox={props.boundingBox}
+          geometry={props.geometry || undefined}
+          gridSize={props.gridSize}
+          rotation={props.rotation}
+          selectedRowsAndColumns={selected}
+        />}
+      </Map>
+      {selected &&
+      <div style={{
+        bottom: '110px',
+        position: 'absolute',
+        right: '25px',
+        zIndex: 1000
+      }}>
+        <GridRefinementPopup
+          gridSize={props.gridSize}
+          onCancel={handleCancelSelection}
+          onChange={handleChangeGridRefinement}
+          selectedColumns={selected && selected.columns ? selected.columns : []}
+          selectedRows={selected && selected.rows ? selected.rows : []}
+        />
+      </div>
+      }
     </React.Fragment>
   );
-}
+};
 
 export default DiscretizationMap;

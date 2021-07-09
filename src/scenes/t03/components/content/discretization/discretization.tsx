@@ -121,6 +121,7 @@ const Discretization = () => {
     if (!boundaries || !soilmodel) {
       return null;
     }
+
     boundaryUpdater(
       _.cloneDeep(boundaries),
       model,

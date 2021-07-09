@@ -5,7 +5,6 @@ import {DiscretizationMap, GridProperties} from './index';
 import {Form, Grid} from 'semantic-ui-react';
 import {ICalculateCellsInputData} from '../../../../modflow/worker/t03.worker.type';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
-import {IGridSize} from '../../../../../core/model/geometry/GridSize.type';
 import {IRootReducer} from '../../../../../reducers';
 import {addMessage} from '../../../actions/actions';
 import {asyncWorker} from '../../../../modflow/worker/worker';
@@ -13,7 +12,7 @@ import {dxCell, dyCell} from '../../../../../services/geoTools/distance';
 import {messageError} from '../../../defaults/messages';
 import {useDispatch, useSelector} from 'react-redux';
 import ContentToolBar from '../../../../shared/ContentToolbar2';
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import UploadGeoJSONModal from '../create/UploadGeoJSONModal';
 
 interface IProps {
@@ -24,16 +23,10 @@ interface IProps {
 }
 
 const GridEditor = (props: IProps) => {
-  const [gridSize, setGridSize] = useState<IGridSize>(props.model.gridSize.toObject());
-
   const dispatch = useDispatch();
 
   const T03 = useSelector((state: IRootReducer) => state.T03);
   const boundaryCollection = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
-
-  useEffect(() => {
-    setGridSize(props.model.gridSize.toObject());
-  }, [props.model]);
 
   if (!boundaryCollection) {
     return null;
@@ -47,7 +40,7 @@ const GridEditor = (props: IProps) => {
     props.onChange(model);
   };
 
-  const handleChangeGeometry = (g: Geometry) => {
+  const handleChangeGeometry = (g: Geometry, gs?: GridSize) => {
     const rotation = props.model.rotation;
     let geometryWithRotation: null | Geometry = null;
     let bb: BoundingBox = BoundingBox.fromGeoJson(g);
@@ -61,7 +54,7 @@ const GridEditor = (props: IProps) => {
       data: {
         geometry: geometryWithRotation ? geometryWithRotation.toObject() : g.toObject(),
         boundingBox: bb.toObject(),
-        gridSize: props.model.gridSize.toObject(),
+        gridSize: gs ? gs.toObject() : props.model.gridSize.toObject(),
         intersection: props.model.intersection
       } as ICalculateCellsInputData
     }).then((c: ICells) => {
@@ -69,17 +62,16 @@ const GridEditor = (props: IProps) => {
       model.cells = Cells.fromObject(c);
       model.geometry = Geometry.fromObject(g.toObject());
       model.boundingBox = BoundingBox.fromObject(bb.toObject());
+      if (gs) {
+        model.gridSize = gs;
+      }
       return props.onChange(model);
     }).catch(() => {
       dispatch(addMessage(messageError('discretization', 'Calculating cells failed.')));
     });
   };
 
-  const handleChangeGridSize = (g: GridSize) => {
-    const model = props.model.getClone();
-    model.gridSize = g;
-    return props.onChange(model);
-  }
+  const handleChangeGridSize = (g: GridSize) => handleChangeGeometry(props.model.geometry, g);
 
   const handleChangeRotation = (g: GridSize, i: number, r: number, c: Cells) => {
     const model = props.model.getClone();
@@ -119,13 +111,13 @@ const GridEditor = (props: IProps) => {
             <Form.Group>
               <Form.Input
                 label="Cell height"
-                value={Math.round(dyCell(boundingBox, GridSize.fromObject(gridSize)) * 10000) / 10}
+                value={Math.round(dyCell(boundingBox, props.model.gridSize) * 10000) / 10}
                 width={'6'}
                 readOnly={true}
               />
               <Form.Input
                 label="Cell width"
-                value={Math.round(dxCell(boundingBox, GridSize.fromObject(gridSize)) * 10000) / 10}
+                value={Math.round(dxCell(boundingBox, props.model.gridSize) * 10000) / 10}
                 width={'6'}
                 readOnly={true}
               />
@@ -141,7 +133,7 @@ const GridEditor = (props: IProps) => {
           <GridProperties
             boundingBox={boundingBox}
             geometry={geometry}
-            gridSize={GridSize.fromObject(gridSize)}
+            gridSize={props.model.gridSize}
             intersection={props.model.intersection}
             onChange={handleChangeRotation}
             rotation={props.model.rotation}
@@ -156,7 +148,7 @@ const GridEditor = (props: IProps) => {
             boundingBox={boundingBox}
             boundaries={boundaryCollection}
             geometry={geometry}
-            gridSize={GridSize.fromObject(gridSize)}
+            gridSize={props.model.gridSize}
             intersection={props.model.intersection}
             onChangeGeometry={handleChangeGeometry}
             onChangeCells={handleChangeCells}

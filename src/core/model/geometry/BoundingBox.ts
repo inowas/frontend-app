@@ -174,6 +174,9 @@ class BoundingBox {
   }
 
   public geoJsonWithRotation = (rotation: number, center: Feature<Point | null>): GeoJSON => {
+    if (rotation % 360 === 0) {
+      return this.geoJson;
+    }
     return turf.transformRotate(
       Geometry.fromGeoJson(this.geoJson).toGeoJSON(), rotation, { pivot: center }
     );
