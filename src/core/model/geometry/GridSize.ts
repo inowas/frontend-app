@@ -32,7 +32,7 @@ class GridSize extends GenericObject<IGridSize> {
   }
 
   public set distX(value) {
-    if (value[0] !== 0) {
+    if (value.length === 0 || value[0] !== 0) {
       value.unshift(0);
     }
     if (value[value.length - 1] === 1) {
@@ -86,7 +86,7 @@ class GridSize extends GenericObject<IGridSize> {
   }
 
   public set distY(value) {
-    if (value[0] !== 0) {
+    if (value.length === 0 || value[0] !== 0) {
       value.unshift(0);
     }
     if (value[value.length - 1] === 1) {
@@ -173,22 +173,24 @@ class GridSize extends GenericObject<IGridSize> {
   public getCellFromDistX = (dist: number) => {
     let cellX = 0;
 
-    this.distX.forEach((distX: number, idx) => {
-      if (dist > distX) {
-        cellX = idx;
-      }
-    });
+    this.getDistancesXStart()
+      .forEach((distX: number, idx) => {
+        if (dist > distX) {
+          cellX = idx;
+        }
+      });
 
     return cellX;
   };
 
   public getCellFromDistY = (distY: number) => {
     let cellY = 0;
-    this.distY.forEach((value: number, idx) => {
-      if (value < distY) {
-        cellY = idx;
-      }
-    });
+    this.getDistancesYStart()
+      .forEach((value: number, idx) => {
+        if (value < distY) {
+          cellY = idx;
+        }
+      });
 
     return this.nY - cellY - 1;
   };

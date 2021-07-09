@@ -1,9 +1,9 @@
-import {AllGeoJSON} from '@turf/helpers';
-import {BoundingBox, Cells, Geometry, GridSize} from '../../core/model/modflow';
-import {IBoundingBox} from '../../core/model/geometry/BoundingBox.type';
-import {ICell} from '../../core/model/geometry/Cells.type';
-import {Polygon} from 'geojson';
-import {area, booleanContains, booleanCrosses, booleanOverlap, envelope, intersect, lineString} from '@turf/turf';
+import { AllGeoJSON } from '@turf/helpers';
+import { BoundingBox, Cells, Geometry, GridSize } from '../../core/model/modflow';
+import { IBoundingBox } from '../../core/model/geometry/BoundingBox.type';
+import { ICell } from '../../core/model/geometry/Cells.type';
+import { Polygon } from 'geojson';
+import { area, booleanContains, booleanCrosses, booleanOverlap, envelope, intersect, lineString } from '@turf/turf';
 
 /* Calculate GridCells
 Structure:
@@ -191,8 +191,8 @@ export const getRowsAndColumnsFromGeoJson = (geoJson: AllGeoJSON, boundingBox: B
   const rows: number[] = [];
 
   for (let y = 0; y < gridSize.nY; y++) {
-    const distYStart = boundingBox.yMax - (gridSize.getDistanceYStart(y) * boundingBox.dY);
-    const distYEnd = boundingBox.yMax - (gridSize.getDistanceYEnd(y) * boundingBox.dY);
+    const distYStart = boundingBox.yMin + (gridSize.getDistanceYStart(y) * boundingBox.dY);
+    const distYEnd = boundingBox.yMin + (gridSize.getDistanceYEnd(y) * boundingBox.dY);
 
     if (
       (distYStart > bbox.yMin && distYEnd < bbox.yMin) ||
@@ -205,7 +205,7 @@ export const getRowsAndColumnsFromGeoJson = (geoJson: AllGeoJSON, boundingBox: B
 
   return {
     columns,
-    rows,
+    rows
   };
 };
 
@@ -231,12 +231,12 @@ export const calculateColumns = (boundingBox: BoundingBox, gridSize: GridSize) =
 
 export const calculateRows = (boundingBox: BoundingBox, gridSize: GridSize) => {
   const rows: IBoundingBoxWithDist[] = [];
-  for (let y = gridSize.nY - 1; y >= 0; y--) {
+  for (let y = 0; y < gridSize.nY; y++) {
     rows.push({
       dist: gridSize.distY[y],
       boundingBox: new BoundingBox([
-        [boundingBox.xMin, boundingBox.yMax - gridSize.getDistanceYStart(y) * boundingBox.dY],
-        [boundingBox.xMax, boundingBox.yMax - gridSize.getDistanceYEnd(y) * boundingBox.dY]
+        [boundingBox.xMin, boundingBox.yMin + gridSize.getDistanceYStart(y) * boundingBox.dY],
+        [boundingBox.xMax, boundingBox.yMin + gridSize.getDistanceYEnd(y) * boundingBox.dY]
       ]).toObject()
     });
   }
