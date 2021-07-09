@@ -13,8 +13,8 @@ interface IProps {
 const GridRefinementPopup = ({gridSize, onCancel, onChange, selectedRows, selectedColumns}: IProps) => {
   const [activeInput, setActiveInput] = useState<string | null>(null);
   const [activeValue, setActiveValue] = useState<string>('');
-  const [columns, setColumns] = useState<number>(1);
-  const [rows, setRows] = useState<number>(1);
+  const [columns, setColumns] = useState<number>(selectedColumns.length);
+  const [rows, setRows] = useState<number>(selectedRows.length);
 
   const handleBlur = () => {
     const value = parseInt(activeValue, 10);

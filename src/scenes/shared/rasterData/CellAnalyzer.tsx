@@ -50,7 +50,7 @@ const CellAnalyzer = (props: IProps) => {
             <List.Item key={key}>
               <span style={{float: 'left'}}>{p.name}:</span>&nbsp;
               <span style={{float: 'right'}}>
-                {p.value.toString().length > 10 ? p.value.toExponential(4) : p.value}
+                {p.value && p.value.toString().length > 10 ? p.value.toExponential(4) : (p.value || '-')}
               </span>
             </List.Item>
           ))}
