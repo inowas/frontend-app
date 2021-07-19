@@ -12,7 +12,7 @@ interface IProps {
     boundaries: BoundaryCollection;
     model: ModflowModel;
     onChange: (modflowModel: ModflowModel) => void;
-    onSave: () => void;
+    onSave: (updateNeeded: boolean) => void;
     onUndo: () => void;
 }
 
@@ -65,7 +65,7 @@ const StressperiodsEditor = (props: IProps) => {
                                 stressperiods={props.model.stressperiods}
                             />
                         }
-                        onSave={props.onSave}
+                        onSave={() => props.onSave(false)}
                         onUndo={props.onUndo}
                     />
                 </Grid.Column>

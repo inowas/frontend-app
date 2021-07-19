@@ -6,7 +6,7 @@ import {FeatureGroup, GeoJSON, Map, Polygon} from 'react-leaflet';
 import {Geometry} from '../../../../core/model/geometry';
 import {Gis, VectorLayer, VectorLayersCollection} from '../../../../core/model/mcda/gis';
 import {heatMapColors} from '../../defaults/gis';
-import ActiveCellsLayer from '../../../../services/geoTools/activeCellsLayer';
+import ActiveCellsLayer from './activeCellsLayer';
 import CriteriaRasterMap from '../cd/criteriaRasterMap';
 import GridSize from '../../../../core/model/geometry/GridSize';
 import React, {useRef, useState} from 'react';

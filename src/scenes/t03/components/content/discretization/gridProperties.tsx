@@ -77,6 +77,10 @@ const GridProperties = (props: IProps) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gridSize]);
 
+    useEffect(() => {
+      setGridSize(props.gridSize.toObject());
+    }, [props.gridSize]);
+
     const calculateRotation = (r: number) => {
         // No rotation:
         let bbox = BoundingBox.fromGeoJson(props.geometry.toGeoJSON());

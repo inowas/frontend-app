@@ -1,5 +1,5 @@
 import * as turf from '@turf/turf';
-import {BoundingBox, Cells, Geometry, GridSize} from '../../core/model/geometry';
+import {BoundingBox, Cells, Geometry, GridSize} from '../../../../core/model/geometry';
 import {FeatureGroup, Polygon, Polyline} from 'react-leaflet';
 import {LatLngExpression} from 'leaflet';
 import {union} from '@turf/turf';

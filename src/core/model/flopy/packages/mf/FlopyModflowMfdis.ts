@@ -10,8 +10,8 @@ export interface IFlopyModflowMfdis {
     nrow: number;
     ncol: number;
     nper: number;
-    delr: number;
-    delc: number;
+    delr: number|Array<number>;
+    delc: number|Array<number>;
     laycbd: number | number[];
     top: Array2D<number> | number;
     botm: Array<number | Array2D<number>> | number;
