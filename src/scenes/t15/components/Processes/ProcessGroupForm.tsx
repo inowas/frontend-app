@@ -1,7 +1,7 @@
-import { Button, DropdownProps, Form, InputProps, Label, Segment } from 'semantic-ui-react';
-import { ChangeEvent, SyntheticEvent, useEffect, useState } from 'react';
-import { ITreatmentProcess } from '../../../../core/model/qmra/TreatmentProcess.type';
-import {randomDistributions} from '../defaults/distribution';
+import {Button, DropdownProps, Form, InputProps, Label, Segment} from 'semantic-ui-react';
+import {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
+import {ERandomDistribution, randomDistributions} from '../defaults/distribution';
+import {ITreatmentProcess} from '../../../../core/model/qmra/TreatmentProcess.type';
 import TreatmentProcess from '../../../../core/model/qmra/TreatmentProcess';
 
 interface IProps {
@@ -11,7 +11,10 @@ interface IProps {
   process: TreatmentProcess;
 }
 
-const ProcessGroupForm = ({ onChange, onRemove, readOnly, process }: IProps) => {
+const distributionFunctions = randomDistributions.filter(
+  (d) => d === ERandomDistribution.UNIFORM || d === ERandomDistribution.NORM);
+
+const ProcessGroupForm = ({onChange, onRemove, readOnly, process}: IProps) => {
   const [activeInput, setActiveInput] = useState<null | string>(null);
   const [activeValue, setActiveValue] = useState<string>('');
   const [element, setElement] = useState<ITreatmentProcess>(process.toObject());
@@ -35,14 +38,14 @@ const ProcessGroupForm = ({ onChange, onRemove, readOnly, process }: IProps) => 
     onChange(TreatmentProcess.fromObject(cItem));
   };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>, { name, value }: InputProps) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>, {name, value}: InputProps) => {
     setActiveInput(name);
     setActiveValue(value);
   };
 
   const handleRemove = () => onRemove(TreatmentProcess.fromObject(element));
 
-  const handleSelect = (e: SyntheticEvent, { name, value }: DropdownProps) => {
+  const handleSelect = (e: SyntheticEvent, {name, value}: DropdownProps) => {
     const cItem = {
       ...element,
       [name]: value,
@@ -53,17 +56,17 @@ const ProcessGroupForm = ({ onChange, onRemove, readOnly, process }: IProps) => 
 
   return (
     <Segment raised>
-      <Label color='blue' ribbon>
+      <Label color="blue" ribbon>
         {element.pathogenGroup}
       </Label>
-      <Button circular floated="right" icon='trash' onClick={handleRemove}/>
+      <Button circular floated="right" icon="trash" onClick={handleRemove}/>
       <Form>
         <Form.Select
           label="Probability Density Function"
           name="type"
           onAddItem={handleSelect}
           onChange={handleSelect}
-          options={randomDistributions.map((t) => ({ key: t, value: t, text: t }))}
+          options={distributionFunctions.map((t) => ({key: t, value: t, text: t}))}
           readOnly={readOnly}
           value={element.type}
         />

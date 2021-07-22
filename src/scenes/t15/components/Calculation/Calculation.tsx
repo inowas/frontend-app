@@ -55,6 +55,7 @@ const Calculation = ({qmra}: IProps) => {
       </Segment>
       {results &&
       <Export
+        qmra={qmra}
         results={results}
       />
       }

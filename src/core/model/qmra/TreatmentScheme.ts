@@ -24,6 +24,10 @@ class TreatmentScheme extends GenericObject<ITreatmentScheme> {
     return this._props.name;
   }
 
+  set name(value: string) {
+    this._props.name = value;
+  }
+
   get treatmentId() {
     return this._props.treatmentId;
   }

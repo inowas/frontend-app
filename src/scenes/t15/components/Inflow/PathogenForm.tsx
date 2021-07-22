@@ -1,6 +1,6 @@
 import {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 import {DropdownProps, Form, Icon, InputProps} from 'semantic-ui-react';
-import {randomDistributions} from '../defaults/distribution';
+import {ERandomDistribution, randomDistributions} from '../defaults/distribution';
 import IPathogen from '../../../../core/model/qmra/Pathogen.type';
 import Pathogen from '../../../../core/model/qmra/Pathogen';
 import _ from 'lodash';
@@ -12,6 +12,8 @@ interface IProps {
   readOnly: boolean;
   selectedPathogen: Pathogen;
 }
+
+const distributionFunctions = randomDistributions.filter((d) => d !== ERandomDistribution.TRIANGLE);
 
 const PathogenForm = ({groups, onChange, readOnly, selectedPathogen}: IProps) => {
   const [activeInput, setActiveInput] = useState<null | string>(null);
@@ -100,7 +102,7 @@ const PathogenForm = ({groups, onChange, readOnly, selectedPathogen}: IProps) =>
           name="type"
           onAddItem={handleSelect}
           onChange={handleSelect}
-          options={randomDistributions.map((t) => ({key: t, value: t, text: t}))}
+          options={distributionFunctions.map((t) => ({key: t, value: t, text: t}))}
           readOnly={readOnly}
           value={element.type}
         />
