@@ -82,6 +82,7 @@ const SchemeEditor = ({qmra, onChange}: IProps) => {
 
     const cQmra = Qmra.fromObject(qmra.toObject());
     const newElement = TreatmentScheme.fromProcess(processes[0]);
+    newElement.name = selectedElement.name;
     newElement.schemeId = selectedElement.schemeId;
     cQmra.addElement(newElement);
 
