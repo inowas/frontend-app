@@ -1,25 +1,18 @@
-import { Array2D } from '../../../core/model/geometry/Array2D.type';
-import { BasicTileLayer } from '../../../services/geoTools/tileLayers';
-import { BoundaryCollection } from '../../../core/model/modflow/boundaries';
-import { ColorLegend, ReactLeafletHeatMapCanvasOverlay } from '../rasterData';
+import {Array2D} from '../../../core/model/geometry/Array2D.type';
+import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
+import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 import {
   FeatureGroup, GeoJSON,
-  LayersControl,
   Map,
+  Pane,
   Viewport
 } from 'react-leaflet';
-import { FullscreenControl } from './index';
-import { Geometry, ModflowModel } from '../../../core/model/modflow';
-import { ICell } from '../../../core/model/geometry/Cells.type';
-import { IReactLeafletHeatMapProps } from '../rasterData/ReactLeafletHeatMapCanvasOverlay.type';
-import { LeafletMouseEvent } from 'leaflet';
-import { createGridData, rainbowFactory } from '../rasterData/helpers';
-import { getCellFromClick } from '../../../services/geoTools/getCellFromClick';
-import { renderAreaLayer, renderBoundaryOverlays, renderBoundingBoxLayer } from '../../t03/components/maps/mapLayers';
-import ContourLayer from '../rasterData/contourLayer';
-import Rainbow from '../../../services/rainbowvis/Rainbowvis';
-import React, { useEffect, useRef, useState } from 'react';
-import _ from 'lodash';
+import {Geometry, ModflowModel} from '../../../core/model/modflow';
+import {ICell} from '../../../core/model/geometry/Cells.type';
+import {LeafletMouseEvent} from 'leaflet';
+import {getCellFromClick} from '../../../services/geoTools/getCellFromClick';
+import MapWithControls, {IMapWithControlsOptions} from '../../t03/components/maps/mapWithControls';
+import React, {useEffect, useRef, useState} from 'react';
 import uuid from 'uuid';
 
 const style = {
@@ -63,17 +56,15 @@ interface IState {
   viewport: Viewport | null;
 }
 
-const QUANTILE = 1;
-
 const ResultsMap = (props: IProps) => {
-  const [state, setState] = useState<IState>({ viewport: null });
+  const [state, setState] = useState<IState>({viewport: null});
   const [renderKey, setRenderKey] = useState<string>(uuid.v4());
   const mapRef = useRef<Map | null>(null);
 
   useEffect(() => {
-      const { viewport } = props;
+      const {viewport} = props;
       if (viewport) {
-        setState({ viewport });
+        setState({viewport});
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -82,7 +73,7 @@ const ResultsMap = (props: IProps) => {
 
   useEffect(() => {
     if (props.viewport) {
-      setState({ viewport: props.viewport });
+      setState({viewport: props.viewport});
     }
   }, [props.viewport]);
 
@@ -90,7 +81,7 @@ const ResultsMap = (props: IProps) => {
     setRenderKey(uuid.v4());
   }, [props.activeCell]);
 
-  const handleClickOnMap = ({ latlng }: LeafletMouseEvent) => {
+  const handleClickOnMap = ({latlng}: LeafletMouseEvent) => {
     const activeCell = getCellFromClick(
       props.model.boundingBox,
       props.model.gridSize,
@@ -106,25 +97,9 @@ const ResultsMap = (props: IProps) => {
     props.onClick(activeCell);
   };
 
-  const renderLegend = (rainbow: Rainbow) => {
-    const gradients = rainbow.gradients.slice().reverse();
-    const lastGradient = gradients[gradients.length - 1];
-    const legend = gradients.map((gradient) => ({
-      color: '#' + gradient.endColor,
-      value: Number(gradient.maxNum).toExponential(2)
-    }));
-
-    legend.push({
-      color: '#' + lastGradient.startColor,
-      value: Number(lastGradient.minNum).toExponential(2)
-    });
-
-    return <ColorLegend legend={legend} unit="m" />;
-  };
-
   const renderSelectedRowAndCol = () => {
     const [selectedCol, selectedRow] = props.activeCell;
-    const { boundingBox, gridSize } = props.model;
+    const {boundingBox, gridSize} = props.model;
 
     const rowXMin = boundingBox.xMin;
     const rowXMax = boundingBox.xMax;
@@ -199,8 +174,8 @@ const ResultsMap = (props: IProps) => {
       return;
     }
 
-    const { viewport } = mapRef.current;
-    setState({ viewport });
+    const {viewport} = mapRef.current;
+    setState({viewport});
 
     if (!props.onViewPortChange) {
       return;
@@ -209,79 +184,34 @@ const ResultsMap = (props: IProps) => {
     return props.onViewPortChange(viewport);
   };
 
-  const filteredData = _.sortBy(_.flatten(props.data).filter((n) => n !== null));
-  const q = Math.floor(QUANTILE / 100 * filteredData.length);
-
-  let minData = filteredData[q];
-  let maxData = filteredData[filteredData.length - q];
-
-  if (props.globalMinMax) {
-    [minData, maxData] = props.globalMinMax;
+  const options: IMapWithControlsOptions = {
+    raster: {
+      colors: props.colors || ['#800080', '#ff2200', '#fcff00', '#45ff8e', '#15d6ff', '#0000FF'],
+      enabled: true,
+      globalMinMax: props.globalMinMax,
+      layer: 0,
+      quantile: 1
+    }
   }
 
-  const rainbowVis = rainbowFactory(
-    { min: minData, max: maxData },
-    props.colors || ['#800080', '#ff2200', '#fcff00', '#45ff8e', '#15d6ff', '#0000FF']
-  );
-
-  const renderRaster = () => {
-    const mapProps = {
-      nX: props.model.gridSize.nX,
-      nY: props.model.gridSize.nY,
-      rainbow: rainbowVis,
-      data: createGridData(props.data, props.model.gridSize.nX, props.model.gridSize.nY),
-      bounds: props.model.boundingBox.getBoundsLatLng(),
-      opacity: 0.75,
-      sharpening: 10,
-      zIndex: 1
-    } as IReactLeafletHeatMapProps;
-
-    if ((props.mode && props.mode === 'contour') || (!props.mode && props.model.rotation % 360 !== 0)) {
-      return (
-        <ContourLayer
-          boundingBox={props.model.boundingBox}
-          data={props.data}
-          geometry={props.model.geometry}
-          gridSize={props.model.gridSize}
-          ibound={props.ibound}
-          rainbow={rainbowVis}
-          rotation={props.model.rotation}
-        />
-      );
-    }
-    return (
-      <ReactLeafletHeatMapCanvasOverlay
-        {
-          ...mapProps
-        }
-      />
-    );
-  };
-
   return (
-    <Map
-      ref={mapRef}
+    <MapWithControls
+      mapRef={mapRef}
       style={style.map}
       bounds={state.viewport ? undefined : props.model.geometry.getBoundsLatLng()}
       zoom={state.viewport && state.viewport.zoom ? state.viewport.zoom : undefined}
       center={state.viewport && state.viewport.center ? state.viewport.center : undefined}
       onclick={handleClickOnMap}
-      boundsOptions={{ padding: [20, 20] }}
+      boundsOptions={{padding: [20, 20]}}
       onmoveend={handleViewPortChange}
+      options={options}
+      raster={props.data}
     >
-      <BasicTileLayer />
-      <FullscreenControl position="topright" />
-      <LayersControl position="topright">
-        <LayersControl.Overlay name="Model area" checked={true}>
-          {renderAreaLayer(props.model.geometry)}
-        </LayersControl.Overlay>
-        {renderRaster()}
-        {renderBoundingBoxLayer(props.model.boundingBox, props.model.rotation, props.model.geometry)}
-        {renderBoundaryOverlays(props.boundaries)}
-        {renderLegend(rainbowVis)}
-      </LayersControl>
-      {renderSelectedRowAndCol()}
-    </Map>
+      <BasicTileLayer/>
+      <Pane name="front" style={{zIndex: 501}}>
+        {renderSelectedRowAndCol()}
+      </Pane>
+    </MapWithControls>
   );
 };
 

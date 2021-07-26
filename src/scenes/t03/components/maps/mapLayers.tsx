@@ -65,17 +65,17 @@ export const renderBoundaryOverlay = (
     );
 };
 
-export const renderBoundaryOverlays = (boundaries: BoundaryCollection) => {
+export const renderBoundaryOverlays = (boundaries: BoundaryCollection, checked = false) => {
     return [
-        renderBoundaryOverlay(boundaries, 'Constant head boundaries', EBoundaryType.CHD),
-        renderBoundaryOverlay(boundaries, 'Drainage', EBoundaryType.DRN),
-        renderBoundaryOverlay(boundaries, 'Evapotranspiration', EBoundaryType.EVT),
-        renderBoundaryOverlay(boundaries, 'Flow and head boundaries', EBoundaryType.FHB),
-        renderBoundaryOverlay(boundaries, 'General head boundaries', EBoundaryType.GHB),
-        renderBoundaryOverlay(boundaries, 'Head observations', EBoundaryType.HOB),
-        renderBoundaryOverlay(boundaries, 'Recharge', EBoundaryType.RCH),
-        renderBoundaryOverlay(boundaries, 'Rivers', EBoundaryType.RIV, true),
-        renderBoundaryOverlay(boundaries, 'Wells', EBoundaryType.WEL, true)
+        renderBoundaryOverlay(boundaries, 'Constant head boundaries', EBoundaryType.CHD, checked),
+        renderBoundaryOverlay(boundaries, 'Drainage', EBoundaryType.DRN, checked),
+        renderBoundaryOverlay(boundaries, 'Evapotranspiration', EBoundaryType.EVT, checked),
+        renderBoundaryOverlay(boundaries, 'Flow and head boundaries', EBoundaryType.FHB, checked),
+        renderBoundaryOverlay(boundaries, 'General head boundaries', EBoundaryType.GHB, checked),
+        renderBoundaryOverlay(boundaries, 'Head observations', EBoundaryType.HOB, checked),
+        renderBoundaryOverlay(boundaries, 'Recharge', EBoundaryType.RCH, checked),
+        renderBoundaryOverlay(boundaries, 'Rivers', EBoundaryType.RIV, checked === undefined ? true : checked),
+        renderBoundaryOverlay(boundaries, 'Wells', EBoundaryType.WEL, checked === undefined ? true : checked)
     ];
 };
 

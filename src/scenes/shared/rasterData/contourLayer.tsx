@@ -1,7 +1,7 @@
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
 import {BoundingBox, Geometry, GridSize} from '../../../core/model/modflow';
 import {ContourMultiPolygon} from 'd3';
-import {FeatureGroup, GeoJSON} from 'react-leaflet';
+import {GeoJSON} from 'react-leaflet';
 import {rasterToContour} from '../../../services/geoTools/contours';
 import Rainbow from '../../../services/rainbowvis/Rainbowvis';
 import React, {useEffect, useState} from 'react';
@@ -47,7 +47,7 @@ const ContourLayer = (props: IProps) => {
     }, [contours, thresholds]);
 
     return (
-        <FeatureGroup key={renderKey}>
+        <div key={renderKey}>
             {contours.map((mp, key) => (
                 <GeoJSON
                     key={key}
@@ -58,7 +58,7 @@ const ContourLayer = (props: IProps) => {
                     priority={0}
                 />
             ))}
-        </FeatureGroup>
+        </div>
     );
 };
 

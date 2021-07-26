@@ -1,5 +1,5 @@
 import {BoundingBox, Geometry, GridSize} from '../../../../../core/model/geometry';
-import {FeatureGroup, GeoJSON} from 'react-leaflet';
+import {GeoJSON} from 'react-leaflet';
 import {IBoundingBoxWithDist, IRowsAndColumns, calculateColumns, calculateRows} from '../../../../../services/geoTools';
 import {useEffect, useState} from 'react';
 import uuid from 'uuid';
@@ -24,7 +24,7 @@ const GridRefinement = (props: IProps) => {
   }, [props.boundingBox, props.gridSize]);
 
   return (
-    <FeatureGroup key={renderKey}>
+    <div key={renderKey}>
       {columns && columns.map((c) =>
         <GeoJSON
           color="#000000"
@@ -49,8 +49,7 @@ const GridRefinement = (props: IProps) => {
           weight={1}
         />
       )}
-
-    </FeatureGroup>
+    </div>
   );
 }
 
