@@ -221,7 +221,8 @@ const DataFetcherWrapper = (props: IProps) => {
   );
 
   const everythingIsLoaded = () => {
-    const eil: boolean = !!model && !!boundaries && !!soilmodel && !!transport && !!variableDensity && !!packages;
+    const eil: boolean = !!model && !!boundaries && !!soilmodel && !!transport && !!variableDensity && !!packages &&
+      !!packages.data;
     if (eil) {
       setTimeout(() => setShowModal(false), 1000);
     }

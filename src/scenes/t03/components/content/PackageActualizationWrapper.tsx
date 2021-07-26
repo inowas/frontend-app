@@ -21,7 +21,6 @@ interface IProps {
 }
 
 const PackageActualizationWrapper = (props: IProps) => {
-
   const [isCalculating, setIsCalculating] = useState<boolean>(true);
   const [isError, setError] = useState<any>(false);
 
@@ -42,7 +41,7 @@ const PackageActualizationWrapper = (props: IProps) => {
   }, []);
 
   const recalculate = () => {
-    if (!boundaries || !model || !soilmodel || !transport || !variableDensity) {
+    if (!boundaries || !model || !packages || !soilmodel || !transport || !variableDensity) {
       return;
     }
 
