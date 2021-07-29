@@ -2,7 +2,7 @@ import * as GeoJSON from 'geojson';
 import {BasicTileLayer} from '../../../../../services/geoTools/tileLayers';
 import {BoundingBox} from '../../../../../core/model/geometry';
 import {Button, Form, Grid, Modal, Tab, TabProps} from 'semantic-ui-react';
-import {CircleMarker, Map, Polygon, Polyline} from 'react-leaflet';
+import {CircleMarker, MapContainer, Polygon, Polyline} from 'react-leaflet';
 import {GeoJson} from '../../../../../core/model/geometry/Geometry.type'
 import {GeoJsonGeometryTypes} from 'geojson';
 import {Geometry} from '../../../../../core/model/modflow';
@@ -84,7 +84,7 @@ const UploadGeoJSONModal = (props: IProps) => {
     const [isValid, setIsValid] = useState<boolean>(false);
     const [activeTab, setActiveTab] = useState<number>(0);
 
-    const mapRef = useRef<Map>(null);
+    const mapRef = useRef<JSX.Element>(null);
 
     useEffect(() => {
         if (geometry && geometry.type === 'Point' && mapRef.current) {
@@ -234,14 +234,14 @@ ${props.geometry ? examples[props.geometry] : examples.polygon}`}
                                 </Form>
                             </Grid.Column>
                             <Grid.Column>
-                                <Map
+                                <MapContainer
                                     style={style.map}
                                     bounds={getBoundsLatLng()}
                                     ref={mapRef}
                                 >
                                     <BasicTileLayer/>
                                     {geometry && areaLayer()}
-                                </Map>
+                                </MapContainer>
                             </Grid.Column>
                         </Grid.Row>
                         :

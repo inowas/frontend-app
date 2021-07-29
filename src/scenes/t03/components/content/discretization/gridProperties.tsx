@@ -4,7 +4,7 @@ import {BasicTileLayer} from '../../../../../services/geoTools/tileLayers';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../core/model/modflow';
 import {Button, Checkbox, Form, Grid, Icon, InputOnChangeData, Modal} from 'semantic-ui-react';
 import {CALCULATE_CELLS_INPUT} from '../../../../modflow/worker/t03.worker';
-import {GeoJSON, Map} from 'react-leaflet';
+import {GeoJSON, MapContainer} from 'react-leaflet';
 import {GeoJsonObject} from 'geojson';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {IGridSize} from '../../../../../core/model/geometry/GridSize.type';
@@ -233,7 +233,7 @@ const GridProperties = (props: IProps) => {
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
-                    <Map
+                    <MapContainer
                         style={style.map}
                         bounds={props.boundingBox.getBoundsLatLng()}
                     >
@@ -250,7 +250,7 @@ const GridProperties = (props: IProps) => {
                             rotation={{geometry: props.geometry, angle: rotation}}
                         />
                         {renderAreaLayer(props.geometry)}
-                    </Map>
+                    </MapContainer>
                 </Grid.Row>
             </Grid>
         );
@@ -378,7 +378,7 @@ const GridProperties = (props: IProps) => {
                         </Button>
                     </Grid.Row>
                     <Grid.Row>
-                        <Map
+                        <MapContainer
                             style={style.map}
                             bounds={props.boundingBox.getBoundsLatLng()}
                         >
@@ -390,7 +390,7 @@ const GridProperties = (props: IProps) => {
                                 style={getStyle('bounding_box')}
                             />
                             }
-                        </Map>
+                        </MapContainer>
                     </Grid.Row>
                 </Grid>
             </Form>

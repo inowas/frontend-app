@@ -4,7 +4,7 @@ import {DatePicker} from '../../shared/uiComponents';
 import {ETimeResolution, IRtModellingData} from '../../../core/model/rtm/modelling/RTModelling.type';
 import {IDatePickerProps} from '../../shared/uiComponents/DatePicker';
 import {IRootReducer} from '../../../reducers';
-import {Map} from 'react-leaflet';
+import {MapContainer} from 'react-leaflet';
 import {ModflowModel} from '../../../core/model/modflow';
 import {renderAreaLayer} from '../../t03/components/maps/mapLayers';
 import {useSelector} from 'react-redux';
@@ -74,13 +74,13 @@ const RTModellingSetup = (props: IProps) => {
             <Segment>
                 <h3>{model.name}</h3>
                 <p>{model.description}</p>
-                <Map
+                <MapContainer
                     style={style.map}
                     bounds={model.boundingBox.getBoundsLatLng()}
                 >
                     <BasicTileLayer/>
                     {renderAreaLayer(model.geometry)}
-                </Map>
+                </MapContainer>
             </Segment>
         )
     };

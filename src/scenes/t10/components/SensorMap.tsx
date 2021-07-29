@@ -1,6 +1,5 @@
 import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
-import {CircleMarker, FeatureGroup, Map} from 'react-leaflet';
-import {DrawEvents} from 'leaflet';
+import {CircleMarker, FeatureGroup, MapContainer} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
 import {GeoJson} from '../../../core/model/geometry/Geometry.type';
 import {Geometry} from '../../../core/model/modflow';
@@ -34,7 +33,7 @@ const SensorMap = (props: IProps) => {
   const [geometry, setGeometry] = useState<GeoJson | null>(
     props.geometry ? Geometry.fromGeoJson(props.geometry).toObject() : null
   );
-  const refMap = useRef<Map>(null);
+  const refMap = useRef<any>(null);
   const refPrevSensor = usePrevious<Sensor>(props.sensor);
 
   const setBoundingBox = () => {
@@ -76,14 +75,14 @@ const SensorMap = (props: IProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.sensor]);
 
-  const handleCreated = (e: DrawEvents.Created) => {
+  const handleCreated = (e: any) => {
     const cGeometry = Geometry.fromGeoJson(e.layer.toGeoJSON()).toObject() as Point;
     setMapKey(uuidv4());
     props.onChangeGeometry(cGeometry);
     return setGeometry(cGeometry);
   };
 
-  const handleEdited = (e: DrawEvents.Edited) => {
+  const handleEdited = (e: any) => {
     e.layers.eachLayer((layer: any) => {
       const cGeometry = Geometry.fromGeoJson(layer.toGeoJSON()).toObject() as Point;
       props.onChangeGeometry(cGeometry);
@@ -150,7 +149,7 @@ const SensorMap = (props: IProps) => {
   };
 
   return (
-    <Map
+    <MapContainer
       style={style.map}
       bounds={boundingBox}
       ref={refMap}
@@ -167,7 +166,7 @@ const SensorMap = (props: IProps) => {
       <FeatureGroup>
         {renderSensors(props.rtm.sensors)}
       </FeatureGroup>
-    </Map>
+    </MapContainer>
   );
 };
 

@@ -2,7 +2,7 @@ import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../../../core/model/geometry';
 import {EditControl} from 'react-leaflet-draw';
 import {Feature} from 'geojson';
-import {FeatureGroup, GeoJSON, Map} from 'react-leaflet';
+import {FeatureGroup, GeoJSON, MapContainer} from 'react-leaflet';
 import {GeoJson} from '../../../../core/model/geometry/Geometry.type';
 import {Icon, Message} from 'semantic-ui-react';
 import {LatLng, LatLngBoundsExpression} from 'leaflet';
@@ -205,7 +205,7 @@ class CreateModelMap extends React.Component<ICreateModelMapProps, ICreateModelM
 
     public render() {
         return (
-            <Map
+            <MapContainer
                 style={style.map}
                 bounds={this.getBoundsLatLng()}
                 onClick={this.handleClickOnMap}
@@ -215,7 +215,7 @@ class CreateModelMap extends React.Component<ICreateModelMapProps, ICreateModelM
                 {this.state.geometry && this.areaLayer()}
                 {this.state.boundingBox && this.boundingBoxLayer()}
                 {this.renderCalculationMessage()}
-            </Map>
+            </MapContainer>
         );
     }
 }

@@ -14,7 +14,7 @@ import { ETimeResolution } from '../../../core/model/rtm/modelling/RTModelling.t
 import { IDatePickerProps } from '../../shared/uiComponents/DatePicker';
 import { IModflowModel } from '../../../core/model/modflow/ModflowModel.type';
 import { IToolInstance } from '../../types';
-import { Map } from 'react-leaflet';
+import { MapContainer } from 'react-leaflet';
 import { ModflowModel } from '../../../core/model/modflow';
 import { createToolInstance } from '../../dashboard/commands';
 import { fetchApiWithToken, fetchUrl, sendCommandAsync } from '../../../services/api';
@@ -179,13 +179,13 @@ const CreateRealTimeModelling = () => {
     return (
       <Segment>
         <p>{selectedModel.description}</p>
-        <Map
+        <MapContainer
           style={style.map}
           bounds={model.boundingBox.getBoundsLatLng()}
         >
           <BasicTileLayer />
           {renderAreaLayer(model.geometry)}
-        </Map>
+        </MapContainer>
       </Segment>
     );
   };

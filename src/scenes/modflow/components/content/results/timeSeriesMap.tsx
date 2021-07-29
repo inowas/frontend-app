@@ -1,16 +1,15 @@
-import {Array2D} from '../../../../../core/model/geometry/Array2D.type';
-import {BasicTileLayer} from '../../../../../services/geoTools/tileLayers';
-import {BoundaryCollection, ModflowModel} from '../../../../../core/model/modflow';
-import {FullscreenControl} from '../../../../shared/complexTools';
-import {LayersControl, Map, Rectangle} from 'react-leaflet';
-import {LeafletMouseEvent} from 'leaflet';
+import { Array2D } from '../../../../../core/model/geometry/Array2D.type';
+import { BasicTileLayer } from '../../../../../services/geoTools/tileLayers';
+import { BoundaryCollection, ModflowModel } from '../../../../../core/model/modflow';
+import { FullscreenControl } from '../../../../shared/complexTools';
+import { LayersControl, MapContainer, Rectangle } from 'react-leaflet';
+import { LeafletMouseEvent } from 'leaflet';
 import { misc } from '../../../defaults/colorScales';
 import {
   renderAreaLayer,
   renderBoundaryOverlays,
   renderBoundingBoxLayer
 } from '../../../../t03/components/maps/mapLayers';
-import React from 'react';
 
 const style = {
   map: {
@@ -49,14 +48,14 @@ const TimeSeriesMap = (props: IProps) => {
   };
 
   return (
-    <Map
+    <MapContainer
       style={style.map}
       bounds={props.model.geometry.getBoundsLatLng()}
       onclick={handleClickCell}
-      boundsOptions={{padding: [20, 20]}}
+      boundsOptions={{ padding: [20, 20] }}
     >
-      <BasicTileLayer/>
-      <FullscreenControl position="topright"/>
+      <BasicTileLayer />
+      <FullscreenControl position="topright" />
       <LayersControl position="topright">
         <LayersControl.Overlay name="Model area" checked={true}>
           {renderAreaLayer(props.model.geometry)}
@@ -65,7 +64,7 @@ const TimeSeriesMap = (props: IProps) => {
         {renderBoundaryOverlays(props.boundaries)}
         {props.selectedCells.map((c, key) => renderCell(c, key))}
       </LayersControl>
-    </Map>
+    </MapContainer>
   );
 };
 

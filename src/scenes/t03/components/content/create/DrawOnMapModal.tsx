@@ -1,7 +1,7 @@
 import {BasicTileLayer} from '../../../../../services/geoTools/tileLayers';
 import {Button, Modal} from 'semantic-ui-react';
 import {EditControl} from 'react-leaflet-draw';
-import {FeatureGroup, GeoJSON, Map} from 'react-leaflet';
+import {FeatureGroup, GeoJSON, MapContainer} from 'react-leaflet';
 import {Geometry} from '../../../../../core/model/modflow';
 import {LatLngBoundsExpression} from 'leaflet';
 import {getStyle} from '../../../../../services/geoTools/mapHelpers';
@@ -89,14 +89,14 @@ const DrawOnMapModal = (props: IProps) => {
         <Modal open={true} dimmer={'inverted'}>
             <Modal.Header>Draw your Polygon on map</Modal.Header>
             <Modal.Content>
-                <Map
+                <MapContainer
                     style={style.map}
                     bounds={[[60, 10], [45, 30]] as LatLngBoundsExpression}
                 >
                     <BasicTileLayer/>
                     {!geometry && editControl()}
                     {geometry && areaLayer()}
-                </Map>
+                </MapContainer>
             </Modal.Content>
             <Modal.Actions>
                 <Button color={'black'} onClick={() => setShowModal(false)}>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="903af1ea-deab-49cd-b15e-d9f7863f350e" name="Default Changelist" comment="Feature/2078 - Change boundaries by percentage&#10;&#10;*">
+      <change afterPath="$PROJECT_DIR$/src/scenes/shared/leaflet/CustomLayerControl2.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/shared/leaflet/CustomLayerControl.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/t03/components/content/create/DrawOnMapModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t03/components/content/create/DrawOnMapModal.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/t03/components/content/create/UploadGeoJSONModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t03/components/content/create/UploadGeoJSONModal.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/t03/components/maps/mapWithControls.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t03/components/maps/mapWithControls.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/t03/components/maps/optimizationMap.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/t20/components/RTModellingSetup.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t20/components/RTModellingSetup.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/t20/containers/CreateRealTimeModelling.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t20/containers/CreateRealTimeModelling.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings">
+    <execution />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="feature/2078-change-boundaries-by-percentage" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="ProjectId" id="1rpvLYcVtQ6Y85LfM51TwJee2Mz" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="Git.Branch.Popup.ShowAllRemotes" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="eslint.code.style.apply.dismiss" value="true" />
+    <property name="js.linters.configure.manually.selectedeslint" value="true" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.standard" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.standard" value="" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="yarn" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.General" />
+    <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="903af1ea-deab-49cd-b15e-d9f7863f350e" name="Default Changelist" comment="" />
+      <created>1619685790983</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1619685790983</updated>
+      <workItem from="1619685792787" duration="1081000" />
+      <workItem from="1619879966035" duration="3000" />
+      <workItem from="1620037860248" duration="147000" />
+      <workItem from="1620038027976" duration="3155000" />
+      <workItem from="1620119523187" duration="7843000" />
+      <workItem from="1620207524616" duration="1652000" />
+      <workItem from="1625147718657" duration="519000" />
+      <workItem from="1625148264068" duration="2445000" />
+      <workItem from="1626776643246" duration="246000" />
+      <workItem from="1626776893844" duration="1742000" />
+      <workItem from="1626965452383" duration="231000" />
+      <workItem from="1627046938212" duration="1786000" />
+      <workItem from="1627543623841" duration="4787000" />
+    </task>
+    <task id="LOCAL-00001" summary="Feature/2064 - T15 Improvements&#10;* Add default processes">
+      <created>1620133753480</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1620133753480</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Feature/2064 - T15 Improvements and fixes&#10;&#10;* Add store for results">
+      <created>1620210170123</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1620210170123</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="Feature/2064 - T15 Improvements&#10;* Add default processes" />
+    <MESSAGE value="Feature/2064 - T15 Improvements and fixes&#10;&#10;* Add store for results" />
+    <option name="LAST_COMMIT_MESSAGE" value="Feature/2064 - T15 Improvements and fixes&#10;&#10;* Add store for results" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>

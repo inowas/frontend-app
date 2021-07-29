@@ -1,33 +1,33 @@
 import * as turf from '@turf/turf';
-import {Array2D} from '../../../../core/model/geometry/Array2D.type';
-import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
+import { Array2D } from '../../../../core/model/geometry/Array2D.type';
+import { BasicTileLayer } from '../../../../services/geoTools/tileLayers';
 import {
   Boundary,
   BoundaryCollection,
   LineBoundary, WellBoundary,
 } from '../../../../core/model/modflow/boundaries';
-import {CALCULATE_CELLS_INPUT} from '../../../modflow/worker/t03.worker';
-import {Cells, Geometry, ModflowModel} from '../../../../core/model/modflow';
-import {CircleMarker, FeatureGroup, GeoJSON, Map, Polygon, Polyline} from 'react-leaflet';
-import {Dimmer, Grid, Icon, List, Loader} from 'semantic-ui-react';
-import {EditControl} from 'react-leaflet-draw';
-import {GeoJson} from '../../../../core/model/geometry/Geometry.type';
-import {ICalculateCellsInputData} from '../../../modflow/worker/t03.worker.type';
-import {ICells} from '../../../../core/model/geometry/Cells.type';
-import {LatLngExpression} from 'leaflet';
-import {LineString, Point} from 'geojson';
-import {SoilmodelLayer} from '../../../../core/model/modflow/soilmodel';
-import {addMessage} from '../../actions/actions';
-import {asyncWorker} from '../../../modflow/worker/worker';
-import {getCellFromClick, rotateCoordinateAroundPoint} from '../../../../services/geoTools/getCellFromClick';
-import {getStyle} from './index';
-import {messageError} from '../../defaults/messages';
-import {uniqueId} from 'lodash';
-import {useDispatch} from 'react-redux';
+import { CALCULATE_CELLS_INPUT } from '../../../modflow/worker/t03.worker';
+import { Cells, Geometry, ModflowModel } from '../../../../core/model/modflow';
+import { CircleMarker, FeatureGroup, GeoJSON, MapContainer, Polygon, Polyline } from 'react-leaflet';
+import { Dimmer, Grid, Icon, List, Loader } from 'semantic-ui-react';
+import { EditControl } from 'react-leaflet-draw';
+import { GeoJson } from '../../../../core/model/geometry/Geometry.type';
+import { ICalculateCellsInputData } from '../../../modflow/worker/t03.worker.type';
+import { ICells } from '../../../../core/model/geometry/Cells.type';
+import { LatLngExpression } from 'leaflet';
+import { LineString, Point } from 'geojson';
+import { SoilmodelLayer } from '../../../../core/model/modflow/soilmodel';
+import { addMessage } from '../../actions/actions';
+import { asyncWorker } from '../../../modflow/worker/worker';
+import { getCellFromClick, rotateCoordinateAroundPoint } from '../../../../services/geoTools/getCellFromClick';
+import { getStyle } from './index';
+import { messageError } from '../../defaults/messages';
+import { uniqueId } from 'lodash';
+import { useDispatch } from 'react-redux';
 import AffectedCellsLayer from '../../../../services/geoTools/affectedCellsLayer';
 import BoundingBox from '../../../../core/model/geometry/BoundingBox';
 import GridSize from '../../../../core/model/geometry/GridSize';
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import Soilmodel from '../../../../core/model/modflow/soilmodel/Soilmodel';
 import math from 'mathjs';
 
@@ -58,7 +58,7 @@ const BoundaryDiscretizationMap = (props: IProps) => {
     let g = geometry.toGeoJSON();
     if (props.model.rotation % 360 !== 0) {
       g = turf.transformRotate(
-        geometry.toGeoJSON(), -1 * props.model.rotation, {pivot: props.model.geometry.centerOfMass}
+        geometry.toGeoJSON(), -1 * props.model.rotation, { pivot: props.model.geometry.centerOfMass }
       );
     }
     asyncWorker({
@@ -81,8 +81,8 @@ const BoundaryDiscretizationMap = (props: IProps) => {
   };
 
   const handleOnEdited = (e: any) => {
-    const {boundary, model} = props;
-    const {boundingBox, gridSize} = model;
+    const { boundary, model } = props;
+    const { boundingBox, gridSize } = model;
 
     e.layers.eachLayer((layer: any) => {
       const geometry = Geometry.fromGeoJson(layer.toGeoJSON());
@@ -161,7 +161,7 @@ const BoundaryDiscretizationMap = (props: IProps) => {
   };
 
   const showBoundaryGeometry = () => {
-    const {boundary, readOnly, showActiveCells} = props;
+    const { boundary, readOnly, showActiveCells } = props;
 
     // When rendering Cells, the geometry should not be editable
     if (readOnly || showActiveCells) {
@@ -192,7 +192,7 @@ const BoundaryDiscretizationMap = (props: IProps) => {
   };
 
   const modelGeometryLayer = () => {
-    const {geometry} = props.model;
+    const { geometry } = props.model;
     return (
       <GeoJSON
         key={geometry.hash()}
@@ -228,7 +228,7 @@ const BoundaryDiscretizationMap = (props: IProps) => {
     );
   };
 
-  const handleClickOnMap = ({latlng}: { latlng: { lng: number, lat: number } }) => {
+  const handleClickOnMap = ({ latlng }: { latlng: { lng: number, lat: number } }) => {
     if (!props.showActiveCells || props.readOnly) {
       return null;
     }
@@ -256,9 +256,9 @@ const BoundaryDiscretizationMap = (props: IProps) => {
   };
 
   const legend = [
-    {active: true, name: 'AFFECTED', color: '#393B89'},
-    {active: true, name: 'INACTIVE', color: '#888888'},
-    {active: true, name: 'OTHER', color: '#9C9EDE'}
+    { active: true, name: 'AFFECTED', color: '#393B89' },
+    { active: true, name: 'INACTIVE', color: '#888888' },
+    { active: true, name: 'OTHER', color: '#9C9EDE' }
   ];
 
   return (
@@ -267,38 +267,38 @@ const BoundaryDiscretizationMap = (props: IProps) => {
         <Dimmer active={isLoading} inverted={true}>
           <Loader>Loading</Loader>
         </Dimmer>
-        <Map
+        <MapContainer
           style={style.map}
           bounds={props.model.boundingBox.getBoundsLatLng()}
           onClick={!props.readOnly && handleClickOnMap}
         >
-          <BasicTileLayer/>
+          <BasicTileLayer />
           {renderOtherBoundaries(props.boundaries)}
           {props.showBoundaryGeometry && showBoundaryGeometry()}
           {modelGeometryLayer()}
           {props.showActiveCells && affectedCellsLayer()}
-        </Map>
+        </MapContainer>
       </Grid.Column>
       {props.showActiveCells &&
-      <Grid.Column width={3}>
-        <List>
-          <List.Item>
-            {legend.map((c, key) =>
-              <List.Item
-                key={key}
-              >
-                <Icon
-                  style={{
-                    color: c.color
-                  }}
-                  name="square"
-                />
-                {c.name}
-              </List.Item>
-            )}
-          </List.Item>
-        </List>
-      </Grid.Column>
+        <Grid.Column width={3}>
+          <List>
+            <List.Item>
+              {legend.map((c, key) =>
+                <List.Item
+                  key={key}
+                >
+                  <Icon
+                    style={{
+                      color: c.color
+                    }}
+                    name="square"
+                  />
+                  {c.name}
+                </List.Item>
+              )}
+            </List.Item>
+          </List>
+        </Grid.Column>
       }
     </Grid>
   );

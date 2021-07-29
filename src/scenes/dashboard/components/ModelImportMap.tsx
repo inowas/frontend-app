@@ -1,7 +1,7 @@
 import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
 import {Boundary, BoundaryCollection, HeadObservationWell, WellBoundary} from '../../../core/model/modflow/boundaries';
 import {BoundingBox, Geometry} from '../../../core/model/modflow';
-import {CircleMarker, FeatureGroup, GeoJSON, LayersControl, Map} from 'react-leaflet';
+import {CircleMarker, FeatureGroup, GeoJSON, LayersControl, MapContainer} from 'react-leaflet';
 import {getStyle} from '../../../services/geoTools/mapHelpers';
 import React from 'react';
 
@@ -65,7 +65,7 @@ const modelImportMap = (props: IProps) => {
     );
 
     return (
-        <Map
+        <MapContainer
             style={style.map}
             bounds={props.geometry.getBoundsLatLng()}
             boundsOptions={{padding: [5, 5]}}
@@ -94,7 +94,7 @@ const modelImportMap = (props: IProps) => {
                 {renderBoundaryOverlay(props.boundaries, 'Wells', 'wel', true)}
 
             </LayersControl>
-        </Map>
+        </MapContainer>
     );
 };
 

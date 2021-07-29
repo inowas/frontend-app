@@ -2,7 +2,7 @@ import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import {BoundaryFactory} from '../../../../core/model/modflow/boundaries';
 import {BoundaryType} from '../../../../core/model/modflow/boundaries/Boundary.type';
 import {EditControl} from 'react-leaflet-draw';
-import {FeatureGroup, LayersControl, Map} from 'react-leaflet';
+import {FeatureGroup, LayersControl, MapContainer} from 'react-leaflet';
 import {Geometry} from '../../../../core/model/modflow';
 import { renderAreaLayer, renderBoundaryOverlays } from './mapLayers';
 import BoundaryCollection from '../../../../core/model/modflow/boundaries/BoundaryCollection';
@@ -26,7 +26,7 @@ const style = {
 
 const CreateBoundaryMap = (props: IProps) => {
     const [isEditing, setIsEditing] = useState<boolean>(false);
-    const mapRef = useRef<Map>(null);
+    const mapRef = useRef<any>(null);
 
     const handleOnCreated = (e: any) => {
         const cGeometry = Geometry.fromGeoJson(e.layer.toGeoJSON());
@@ -71,7 +71,7 @@ const CreateBoundaryMap = (props: IProps) => {
 
     return (
         <React.Fragment>
-            <Map
+            <MapContainer
                 style={style.map}
                 bounds={props.area.getBoundsLatLng()}
                 ref={mapRef}
@@ -90,7 +90,7 @@ const CreateBoundaryMap = (props: IProps) => {
                 }
                 {editControl()}
                 {renderAreaLayer(props.area)}
-            </Map>
+            </MapContainer>
         </React.Fragment>
     );
 };

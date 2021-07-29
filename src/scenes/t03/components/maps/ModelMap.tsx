@@ -2,7 +2,7 @@ import * as GeoJson from 'geojson';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import {Boundary, BoundaryCollection, WellBoundary} from '../../../../core/model/modflow/boundaries';
 import {Cells, Geometry} from '../../../../core/model/modflow';
-import {CircleMarker, GeoJSON, Map, Polygon, Polyline} from 'react-leaflet';
+import {CircleMarker, GeoJSON, MapContainer, Polygon, Polyline} from 'react-leaflet';
 import {LatLngExpression} from 'leaflet';
 import {getStyle} from '../../../../services/geoTools/mapHelpers';
 import {renderAreaLayer} from './mapLayers';
@@ -116,7 +116,7 @@ const modelMap = (props: IProps) => {
     };
 
     return (
-        <Map
+        <MapContainer
             style={style.map}
             zoomControl={false}
             bounds={props.geometry.getBoundsLatLng()}
@@ -133,7 +133,7 @@ const modelMap = (props: IProps) => {
                 rotation={props.rotation ? {geometry: props.geometry, angle: props.rotation} : undefined}
             />
             }
-        </Map>
+        </MapContainer>
     );
 };
 

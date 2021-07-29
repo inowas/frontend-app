@@ -1,32 +1,31 @@
-import {ContentWrapper} from '../components/content/index';
-import {DataFetcherWrapper} from '../components';
-import {Grid, Icon} from 'semantic-ui-react';
-import {IRootReducer} from '../../../reducers';
-import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
+import { ContentWrapper } from '../components/content/index';
+import { DataFetcherWrapper } from '../components';
+import { Grid, Icon } from 'semantic-ui-react';
+import { IRootReducer } from '../../../reducers';
+import { IToolMetaDataEdit } from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
 import {
   ModflowModel,
 } from '../../../core/model/modflow';
-import {RouteComponentProps} from 'react-router-dom';
-import {cloneDeep} from 'lodash';
-import {sendCommand} from '../../../services/api';
+import { RouteComponentProps } from 'react-router-dom';
+import { cloneDeep } from 'lodash';
+import { sendCommand } from '../../../services/api';
 import {
   updateCalculation, updateModel
 } from '../actions/actions';
-import {updateProcessedPackages, updateProcessingPackages} from '../../t20/actions/actions';
-import {useDispatch, useSelector} from 'react-redux';
+import { updateProcessedPackages, updateProcessingPackages } from '../../t20/actions/actions';
+import { useDispatch, useSelector } from 'react-redux';
 import AppContainer from '../../shared/AppContainer';
 import CalculationProcess from '../../modflow/components/content/calculation/CalculationProcess';
 import MessageBox from '../../shared/MessageBox';
 import ModflowModelCommand from '../commands/modflowModelCommand';
 import Navigation from './navigation';
-import OptimizationProgressBar from '../components/content/optimization/optimizationProgressBar';
-import React, {ReactNode, useEffect, useState} from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 
 const navDocumentation = [{
   name: 'Documentation',
   path: 'https://inowas.com/tools/t03-modflow-model-setup-and-editor/',
-  icon: <Icon name="file"/>
+  icon: <Icon name="file" />
 }];
 
 type IProps = RouteComponentProps<{
@@ -47,28 +46,28 @@ const T03 = (props: IProps) => {
   const model = T03Reducer.model ? ModflowModel.fromObject(T03Reducer.model) : null;
 
   useEffect(() => {
-      const {search} = props.location;
+    const { search } = props.location;
 
-      if (search.startsWith('?sid=')) {
-        const cScenarioAnalysisId = search.split('=')[1];
+    if (search.startsWith('?sid=')) {
+      const cScenarioAnalysisId = search.split('=')[1];
 
-        const cNavigation = cloneDeep(navigation);
-        cNavigation.push({
-          name: 'Return to ScenarioAnalysis',
-          path: '/tools/T07/' + cScenarioAnalysisId,
-          icon: <Icon name="file"/>
-        });
+      const cNavigation = cloneDeep(navigation);
+      cNavigation.push({
+        name: 'Return to ScenarioAnalysis',
+        path: '/tools/T07/' + cScenarioAnalysisId,
+        icon: <Icon name="file" />
+      });
 
-        setNavigation(cNavigation);
-      }
+      setNavigation(cNavigation);
+    }
 
-    },
+  },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
   const saveMetaData = (tool: IToolMetaDataEdit) => {
-    const {name, description} = tool;
+    const { name, description } = tool;
     const isPublic = tool.public;
 
     if (model) {
@@ -103,18 +102,17 @@ const T03 = (props: IProps) => {
         <Grid padded={true}>
           <Grid.Row>
             <Grid.Column width={3}>
-              <Navigation/>
+              <Navigation />
               <CalculationProcess
                 reducer={T03Reducer}
                 updateCalculation={updateCalculation}
                 updateProcessedPackages={updateProcessedPackages}
                 updateProcessingPackages={updateProcessingPackages}
               />
-              <OptimizationProgressBar/>
             </Grid.Column>
             <Grid.Column width={13}>
-              <MessageBox/>
-              <ContentWrapper/>
+              <MessageBox />
+              <ContentWrapper />
             </Grid.Column>
           </Grid.Row>
         </Grid>
