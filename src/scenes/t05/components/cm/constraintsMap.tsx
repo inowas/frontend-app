@@ -139,7 +139,7 @@ const ConstraintsMap = (props: IProps) => {
       key={md5(JSON.stringify(props.map.boundingBox.toObject()))}
       data={props.map.boundingBox.geoJson}
       pathOptions={{
-        color: "grey"
+        color: 'grey'
       }}
     />
   );

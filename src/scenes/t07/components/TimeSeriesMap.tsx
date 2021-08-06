@@ -5,8 +5,8 @@ import { ICell } from '../../../core/model/geometry/Cells.type';
 import { LeafletMouseEvent } from 'leaflet';
 import { getActiveCellFromCoordinate } from '../../../services/geoTools';
 import { renderAreaLayer, renderBoundaryOverlays, renderBoundingBoxLayer } from '../../t03/components/maps/mapLayers';
-import CenterControl from '../../shared/leaflet/CenterControl';
 import { useRef } from 'react';
+import CenterControl from '../../shared/leaflet/CenterControl';
 
 interface IProps {
   activeCell: ICell;

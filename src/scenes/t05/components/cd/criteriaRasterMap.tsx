@@ -2,19 +2,19 @@ import { BasicTileLayer } from '../../../../services/geoTools/tileLayers';
 import { BoundingBox } from '../../../../core/model/geometry';
 import { Button, Icon } from 'semantic-ui-react';
 import { ColorLegend, ColorLegendDiscrete } from '../../../shared/rasterData';
-import { LeafletMouseEvent } from 'leaflet';
 import { EditControl } from 'react-leaflet-draw';
 import { FeatureGroup, MapContainer, Rectangle } from 'react-leaflet';
 import { ILegendItemDiscrete, RainbowOrLegend } from '../../../../services/rainbowvis/types';
+import { LeafletMouseEvent } from 'leaflet';
 import { RasterLayer } from '../../../../core/model/mcda/gis';
 import { createGridData } from '../../../shared/rasterData/helpers';
 import { getActiveCellFromCoordinate } from '../../../../services/geoTools';
 import { getStyle } from '../../../t03/components/maps';
+import { useEffect, useState } from 'react';
 import CanvasHeatMapOverlay from '../../../shared/rasterData/leafletCanvasHeatMapOverlay';
 import GridSize from '../../../../core/model/geometry/GridSize';
 import Rainbow from '../../../../services/rainbowvis/Rainbowvis';
 import RasterDataImage from '../../../shared/rasterData/rasterDataImage';
-import { useEffect, useState } from 'react';
 
 const options = {
   edit: {

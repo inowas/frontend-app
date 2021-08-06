@@ -3,7 +3,7 @@ import { BasicTileLayer } from '../../../../../services/geoTools/tileLayers';
 import { BoundingBox, Cells, Geometry, GridSize } from '../../../../../core/model/geometry';
 import { Button } from 'semantic-ui-react';
 import { CALCULATE_CELLS_INPUT } from '../../../../modflow/worker/t03.worker';
-import { Control, LatLngBoundsExpression, LatLngExpression, Map } from 'leaflet';
+import { Control, LatLngBoundsExpression, LatLngExpression } from 'leaflet';
 import { EditControl } from 'react-leaflet-draw';
 import { FeatureGroup, LayersControl, MapContainer } from 'react-leaflet';
 import { ICalculateCellsInputData } from '../../../../modflow/worker/t03.worker.type';
@@ -26,7 +26,6 @@ import GridRefinement from './gridRefinement';
 import GridRefinementPopup from './gridRefinementPopup';
 import React, { useEffect, useRef, useState } from 'react';
 import _, { uniqueId } from 'lodash';
-import { LeafletElement } from '@react-leaflet/core';
 
 interface IProps {
   boundingBox: BoundingBox;

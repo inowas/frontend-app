@@ -5,9 +5,9 @@ import { CircleMarker, MapContainer, Tooltip } from 'react-leaflet';
 import { ColorLegend } from '../../../shared/rasterData';
 import { IParameterWithMetaData, ITimeStamps } from './types';
 import { LatLngExpression } from 'leaflet';
+import { SyntheticEvent, useEffect, useState } from 'react';
 import { heatMapColors } from '../../../t05/defaults/gis';
 import { rainbowFactory } from '../../../shared/rasterData/helpers';
-import { SyntheticEvent, useEffect, useState } from 'react';
 import _ from 'lodash';
 
 interface IProps {

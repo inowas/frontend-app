@@ -3,9 +3,9 @@ import { BasicTileLayer } from '../../../../../services/geoTools/tileLayers';
 import { BoundingBox, Geometry } from '../../../../../core/model/modflow';
 import { Button, Checkbox, CheckboxProps, Grid, List, Message } from 'semantic-ui-react';
 import { CircleMarker, GeoJSON, MapContainer, useMapEvents } from 'react-leaflet';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import { GeoJSON as GeoJSONType, GeoJsonGeometryTypes } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
-import { FormEvent, useEffect, useRef, useState } from 'react';
 import uuid from 'uuid';
 
 interface IProps {

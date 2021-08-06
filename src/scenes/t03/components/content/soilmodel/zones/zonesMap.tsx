@@ -1,8 +1,8 @@
 import { BasicTileLayer } from '../../../../../../services/geoTools/tileLayers';
-import { LatLngExpression } from 'leaflet';
 import { EditControl } from 'react-leaflet-draw';
 import { FeatureGroup, LayersControl, MapContainer, Polygon } from 'react-leaflet';
 import { Geometry } from '../../../../../../core/model/geometry';
+import { LatLngExpression } from 'leaflet';
 import { ModflowModel } from '../../../../../../core/model/modflow';
 import { Zone, ZonesCollection } from '../../../../../../core/model/modflow/soilmodel';
 import { renderAreaLayer, renderBoundaryOverlays, renderBoundingBoxLayer } from '../../../maps/mapLayers';

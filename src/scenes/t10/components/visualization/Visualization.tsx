@@ -7,9 +7,9 @@ import {
 import { IParameterWithMetaData } from './types';
 import { ISensorParameter } from '../../../../core/model/rtm/monitoring/Sensor.type';
 import { Rtm } from '../../../../core/model/rtm/monitoring';
+import { SyntheticEvent, useEffect, useState } from 'react';
 import { ToggleableSensorList, VisualizationParameter } from './index';
 import { heatMapColors } from '../../../t05/defaults/gis';
-import { SyntheticEvent, useEffect, useState } from 'react';
 import _ from 'lodash';
 
 interface IProps {
