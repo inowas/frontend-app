@@ -10,7 +10,7 @@ const ReactLeafletHeatMapCanvasOverlay = (props: IReactLeafletHeatMapProps) => {
     const {data, ...options} = props;
 
     const layer = canvasHeatMapOverlay(props.nX, props.nY, props.data, props.bounds, props.rainbow, props.rotationAngle,
-      props.rotationCenter, props.sharpening, options)
+      props.rotationCenter, props.sharpening, options);
     map.addLayer(layer);
     return () => {
       map.removeLayer(layer);

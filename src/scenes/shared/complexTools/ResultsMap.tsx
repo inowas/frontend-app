@@ -179,7 +179,7 @@ const ResultsMap = (props: IProps) => {
       layer: 0,
       quantile: 1
     }
-  }
+  };
 
   return (
     <MapWithControls

@@ -74,16 +74,16 @@ const defaultOptions: IMapWithControlsOptions = {
     layer: 0,
     quantile: 1
   }
-}
+};
 
-const MapWithControls = (props: TProps, ref: any) => {
+const MapWithControls = forwardRef((props: TProps, ref: any) => {
   let options: IMapWithControlsOptions = defaultOptions;
 
   if (props.options) {
     options = {
       ...options,
       ...props.options
-    }
+    };
   }
 
   const T03 = useSelector((state: IRootReducer) => state.T03);
@@ -162,7 +162,7 @@ const MapWithControls = (props: TProps, ref: any) => {
     return (
       <LayersControl position="topright">
         {renderLegend(rainbowVis)}
-        <LayersControl.BaseLayer name="Raster">
+        <LayersControl.Overlay checked={true} name="Raster">
           <LayerGroup>
             <ReactLeafletHeatMapCanvasOverlay
               nX={mapProps.nX}
@@ -173,8 +173,8 @@ const MapWithControls = (props: TProps, ref: any) => {
               sharpening={mapProps.sharpening}
             />
           </LayerGroup>
-        </LayersControl.BaseLayer>
-        <LayersControl.BaseLayer name="Contours">
+        </LayersControl.Overlay>
+        <LayersControl.Overlay name="Contours">
           <LayerGroup>
             <ContourLayer
               boundingBox={model.boundingBox}
@@ -186,7 +186,7 @@ const MapWithControls = (props: TProps, ref: any) => {
               rotation={model.rotation}
             />
           </LayerGroup>
-        </LayersControl.BaseLayer>
+        </LayersControl.Overlay>
       </LayersControl>
     );
   }
@@ -235,7 +235,7 @@ const MapWithControls = (props: TProps, ref: any) => {
       </Pane>
       {props.children}
     </MapContainer>
-  )
-}
+  );
+});
 
-export default forwardRef(MapWithControls);
+export default MapWithControls;
