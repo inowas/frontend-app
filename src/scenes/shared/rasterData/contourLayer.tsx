@@ -52,10 +52,11 @@ const ContourLayer = (props: IProps) => {
                 <GeoJSON
                     key={key}
                     data={mp}
-                    color={`#${props.rainbow.colorAt(thresholds[key])}`}
-                    fill={true}
-                    weight={1.5}
-                    priority={0}
+                    style={{
+                      color: `#${props.rainbow.colorAt(thresholds[key])}`,
+                      fill: true,
+                      weight: 1.5,
+                    }}
                 />
             ))}
         </div>

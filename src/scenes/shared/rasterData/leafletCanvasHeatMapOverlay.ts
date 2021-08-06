@@ -295,7 +295,7 @@ export const canvasHeatMapOverlayClass = Layer.extend({
   }
 });
 
-const CanvasHeatMapOverlay = (
+const canvasHeatMapOverlay = (
   nX: number,
   nY: number,
   data: IData[],
@@ -311,4 +311,4 @@ const CanvasHeatMapOverlay = (
   return overlay;
 };
 
-export default CanvasHeatMapOverlay;
+export default canvasHeatMapOverlay;

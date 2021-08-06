@@ -4,16 +4,39 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="903af1ea-deab-49cd-b15e-d9f7863f350e" name="Default Changelist" comment="Feature/2078 - Change boundaries by percentage&#10;&#10;*">
-      <change afterPath="$PROJECT_DIR$/src/scenes/shared/leaflet/CustomLayerControl2.tsx" afterDir="false" />
+    <list default="true" id="903af1ea-deab-49cd-b15e-d9f7863f350e" name="Default Changelist" comment="Implement map component&#10;&#10;* Update to react-leaflet v3&#10;* Fix heatMapCanvasOverlay">
+      <change afterPath="$PROJECT_DIR$/src/scenes/shared/rasterData/ReactLeafletHeatMapCanvasOverlay.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config-overrides.js" beforeDir="false" afterPath="$PROJECT_DIR$/config-overrides.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/shared/leaflet/CustomLayerControl.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/t03/components/content/create/DrawOnMapModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t03/components/content/create/DrawOnMapModal.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/modflow/components/content/results/timeSeriesMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/modflow/components/content/results/timeSeriesMap.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/shared/complexTools/FullscreenControl.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/shared/complexTools/ResultsMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/shared/complexTools/ResultsMap.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/shared/complexTools/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/shared/complexTools/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/shared/leaflet/CenterControl.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/shared/leaflet/CenterControl.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/shared/leaflet/IntersectionControl.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/shared/leaflet/IntersectionControl.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/shared/rasterData/contourLayer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/shared/rasterData/contourLayer.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/shared/rasterData/leafletCanvasHeatMapOverlay.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/shared/rasterData/leafletCanvasHeatMapOverlay.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/shared/rasterData/rasterDataMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/shared/rasterData/rasterDataMap.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/shared/rasterData/rasterFromPoints.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/shared/rasterData/rasterFromPoints.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/t03/components/content/create/UploadGeoJSONFile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t03/components/content/create/UploadGeoJSONFile.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/scenes/t03/components/content/create/UploadGeoJSONModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t03/components/content/create/UploadGeoJSONModal.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/t03/components/content/discretization/discretizationMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t03/components/content/discretization/discretizationMap.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/t03/components/content/discretization/gridRefinement.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t03/components/content/discretization/gridRefinement.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/t03/components/content/soilmodel/zones/createZone.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t03/components/content/soilmodel/zones/createZone.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/t03/components/content/soilmodel/zones/createZoneModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t03/components/content/soilmodel/zones/createZoneModal.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/t03/components/content/soilmodel/zones/zoneDetails.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t03/components/content/soilmodel/zones/zoneDetails.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/t03/components/content/soilmodel/zones/zonesMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t03/components/content/soilmodel/zones/zonesMap.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/t03/components/maps/mapLayers.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t03/components/maps/mapLayers.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/scenes/t03/components/maps/mapWithControls.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t03/components/maps/mapWithControls.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/t03/components/maps/optimizationMap.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/t20/components/RTModellingSetup.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t20/components/RTModellingSetup.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scenes/t20/containers/CreateRealTimeModelling.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t20/containers/CreateRealTimeModelling.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/t03/containers/T03.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t03/containers/T03.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/t05/components/cd/criteriaRasterMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t05/components/cd/criteriaRasterMap.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/t05/components/cm/constraintsMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t05/components/cm/constraintsMap.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/t07/components/CrossSection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t07/components/CrossSection.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/t07/components/TimeSeriesMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t07/components/TimeSeriesMap.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/t10/components/visualization/Visualization.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t10/components/visualization/Visualization.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scenes/t10/components/visualization/VisualizationMap.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/scenes/t10/components/visualization/VisualizationMap.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/geoTools/affectedCellsLayer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/geoTools/affectedCellsLayer.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -41,7 +64,7 @@
     </file-type-list>
   </component>
   <component name="ProjectId" id="1rpvLYcVtQ6Y85LfM51TwJee2Mz" />
-  <component name="ProjectLevelVcsManager">
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
   </component>
   <component name="ProjectViewState">
@@ -65,7 +88,7 @@
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="yarn" />
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.General" />
-    <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
+    <property name="ts.external.directory.path" value="$PROJECT_DIR$/node_modules/typescript/lib" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -89,6 +112,7 @@
       <workItem from="1626965452383" duration="231000" />
       <workItem from="1627046938212" duration="1786000" />
       <workItem from="1627543623841" duration="4787000" />
+      <workItem from="1628250439200" duration="5318000" />
     </task>
     <task id="LOCAL-00001" summary="Feature/2064 - T15 Improvements&#10;* Add default processes">
       <created>1620133753480</created>
@@ -126,7 +150,8 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Feature/2064 - T15 Improvements&#10;* Add default processes" />
     <MESSAGE value="Feature/2064 - T15 Improvements and fixes&#10;&#10;* Add store for results" />
-    <option name="LAST_COMMIT_MESSAGE" value="Feature/2064 - T15 Improvements and fixes&#10;&#10;* Add store for results" />
+    <MESSAGE value="Implement map component&#10;&#10;* Update to react-leaflet v3&#10;* Fix heatMapCanvasOverlay" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implement map component&#10;&#10;* Update to react-leaflet v3&#10;* Fix heatMapCanvasOverlay" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

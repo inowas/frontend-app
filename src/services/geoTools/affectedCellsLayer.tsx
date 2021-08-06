@@ -220,21 +220,21 @@ const AffectedCellsLayer = (props: IProps) => {
     <LayersControl position="topright">
       {!!iBoundLayer &&
       <LayersControl.Overlay name="Inactive cells" checked={true} key={iBoundKey}>
-        <FeatureGroup color={styles.inactive.fillColor}>
+        <FeatureGroup>
           {iBoundLayer}
         </FeatureGroup>
       </LayersControl.Overlay>
       }
       {!!boundaryLayer &&
       <LayersControl.Overlay name="Affected cells" checked={true} key={boundaryKey}>
-        <FeatureGroup color={styles.affected.fillColor}>
+        <FeatureGroup>
           {boundaryLayer}
         </FeatureGroup>
       </LayersControl.Overlay>
       }
       {!!boundaryLayers && !!props.boundary &&
       <LayersControl.Overlay name={`Cells of other ${props.boundary.type} boundaries`} checked={true}>
-        <FeatureGroup color={styles.other.fillColor}>
+        <FeatureGroup>
           {boundaryLayers}
         </FeatureGroup>
       </LayersControl.Overlay>

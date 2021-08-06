@@ -1,12 +1,7 @@
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
 import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
 import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
-import {
-  FeatureGroup, GeoJSON,
-  Map,
-  Pane,
-  Viewport
-} from 'react-leaflet';
+import {FeatureGroup, GeoJSON, Pane} from 'react-leaflet';
 import {Geometry, ModflowModel} from '../../../core/model/modflow';
 import {ICell} from '../../../core/model/geometry/Cells.type';
 import {LeafletMouseEvent} from 'leaflet';
@@ -46,20 +41,20 @@ interface IProps {
   mode?: 'contour' | 'heatmap';
   model: ModflowModel;
   onClick: (cell: ICell) => any;
-  onViewPortChange?: (viewport: Viewport) => any;
-  viewport?: Viewport;
+  onViewPortChange?: (viewport: any) => any;
+  viewport?: any;
   colors?: string[];
   opacity?: number;
 }
 
 interface IState {
-  viewport: Viewport | null;
+  viewport: any;
 }
 
 const ResultsMap = (props: IProps) => {
   const [state, setState] = useState<IState>({viewport: null});
   const [renderKey, setRenderKey] = useState<string>(uuid.v4());
-  const mapRef = useRef<Map | null>(null);
+  const mapRef = useRef<any>(null);
 
   useEffect(() => {
       const {viewport} = props;
@@ -149,21 +144,13 @@ const ResultsMap = (props: IProps) => {
           data={selectedColJson.toGeoJSONWithRotation(
             -1 * props.model.rotation, props.model.geometry.centerOfMass
           )}
-          color={style.selectedCol.color}
-          weight={style.selectedCol.weight}
-          opacity={style.selectedCol.opacity}
-          fillColor={style.selectedCol.fillColor}
-          fillOpacity={style.selectedCol.fillOpacity}
+          style={style.selectedCol}
         />
         <GeoJSON
           data={selectedRowJson.toGeoJSONWithRotation(
             -1 * props.model.rotation, props.model.geometry.centerOfMass
           )}
-          color={style.selectedCol.color}
-          weight={style.selectedCol.weight}
-          opacity={style.selectedCol.opacity}
-          fillColor={style.selectedCol.fillColor}
-          fillOpacity={style.selectedCol.fillOpacity}
+          style={style.selectedCol}
         />
       </FeatureGroup>
     );
@@ -196,14 +183,14 @@ const ResultsMap = (props: IProps) => {
 
   return (
     <MapWithControls
-      mapRef={mapRef}
+      ref={mapRef}
       style={style.map}
       bounds={state.viewport ? undefined : props.model.geometry.getBoundsLatLng()}
       zoom={state.viewport && state.viewport.zoom ? state.viewport.zoom : undefined}
       center={state.viewport && state.viewport.center ? state.viewport.center : undefined}
-      onclick={handleClickOnMap}
+      onClick={handleClickOnMap}
       boundsOptions={{padding: [20, 20]}}
-      onmoveend={handleViewPortChange}
+      onMoveEnd={handleViewPortChange}
       options={options}
       raster={props.data}
     >

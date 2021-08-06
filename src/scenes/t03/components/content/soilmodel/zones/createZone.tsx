@@ -12,7 +12,6 @@ import {
     List, Loader,
     Segment
 } from 'semantic-ui-react';
-import {DrawEvents} from 'leaflet';
 import {default as Geometry} from '../../../../../../core/model/geometry/Geometry';
 import {ICalculateCellsInputData} from '../../../../../modflow/worker/t03.worker.type';
 import {ICells} from '../../../../../../core/model/geometry/Cells.type';
@@ -111,7 +110,7 @@ const CreateZone = () => {
         });
     };
 
-    const handleCreatePath = (e: DrawEvents.Created) => {
+    const handleCreatePath = (e: any) => {
         const layer = e.layer;
         if (layer) {
             const g = layer.toGeoJSON().geometry;
@@ -119,7 +118,7 @@ const CreateZone = () => {
         }
     };
 
-    const handleEditPath = (e: DrawEvents.Edited) => {
+    const handleEditPath = (e: any) => {
         const layers = e.layers.toGeoJSON() as geojson.FeatureCollection;
 
         if (layers.features.length > 0) {

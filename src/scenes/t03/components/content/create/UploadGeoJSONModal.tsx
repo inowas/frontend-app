@@ -84,7 +84,7 @@ const UploadGeoJSONModal = (props: IProps) => {
     const [isValid, setIsValid] = useState<boolean>(false);
     const [activeTab, setActiveTab] = useState<number>(0);
 
-    const mapRef = useRef<JSX.Element>(null);
+    const mapRef = useRef<any>(null);
 
     useEffect(() => {
         if (geometry && geometry.type === 'Point' && mapRef.current) {

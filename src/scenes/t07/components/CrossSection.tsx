@@ -7,7 +7,6 @@ import {IBoundary} from '../../../core/model/modflow/boundaries/Boundary.type';
 import {ICalculation} from '../../../core/model/modflow/Calculation.type';
 import {IModflowModel} from '../../../core/model/modflow/ModflowModel.type';
 import {ScenarioAnalysis} from '../../../core/model/scenarioAnalysis';
-import {Viewport} from 'react-leaflet';
 import {fetchCalculationResultsFlow} from '../../../services/api';
 import React, {useEffect, useState} from 'react';
 import ResultsChart from '../../shared/complexTools/ResultsChart';
@@ -39,7 +38,7 @@ const CrossSection = (props: IProps) => {
     const [selectedRow, setSelectedRow] = useState<number>();
     const [selectedTotim, setSelectedTotim] = useState<number | null>(null);
     const [selectedType, setSelectedType] = useState<EResultType>(EResultType.HEAD);
-    const [commonViewPort, setCommonViewPort] = useState<Viewport | undefined>(undefined);
+    const [commonViewPort, setCommonViewPort] = useState<any>();
 
     useEffect(() => {
         const {basemodel, basemodelCalculation} = props;

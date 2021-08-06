@@ -17,7 +17,6 @@ export const renderAreaLayer = (geometry: Geometry) => {
             key={geometry.hash()}
             data={geometry.toGeoJSON()}
             style={getStyle('area')}
-            priority={100}
         />
     );
 };
@@ -56,7 +55,6 @@ export const renderBoundaryOverlay = (
                             key={Geometry.fromGeoJson(b.geometry).hash() + '-' + b.layers.join('-')}
                             data={b.geometry}
                             style={getStyle(b.type)}
-                            priority={100}
                         />
                     );
                 })}
@@ -88,7 +86,6 @@ export const renderBoundingBoxLayer = (boundingBox: BoundingBox, rotation?: numb
             key={md5(JSON.stringify(data))}
             data={data}
             style={getStyle('bounding_box')}
-            priority={90}
         />
     );
 };
@@ -129,10 +126,11 @@ export const renderContourLayer = (props: IRenderContourLayerProps) => {
                 <GeoJSON
                     key={key}
                     data={mp}
-                    color={`#${props.rainbow.colorAt(thresholds[key])}`}
-                    fill={true}
-                    weight={1.5}
-                    priority={0}
+                    style={{
+                      color: `#${props.rainbow.colorAt(thresholds[key])}`,
+                      fill: true,
+                      weight: 1.5
+                    }}
                 />
 
             ))}

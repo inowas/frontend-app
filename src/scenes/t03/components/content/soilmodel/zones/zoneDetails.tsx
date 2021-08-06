@@ -15,7 +15,6 @@ import {
 } from 'semantic-ui-react';
 import {CALCULATE_CELLS_INPUT} from '../../../../../modflow/worker/t03.worker';
 import {Cells, ModflowModel} from '../../../../../../core/model/modflow';
-import {DrawEvents} from 'leaflet';
 import {Geometry} from '../../../../../../core/model/geometry';
 import {ICalculateCellsInputData} from '../../../../../modflow/worker/t03.worker.type';
 import {ICells} from '../../../../../../core/model/geometry/Cells.type';
@@ -146,7 +145,7 @@ const ZoneDetails = (props: IProps) => {
         });
     };
 
-    const handleCreatePath = (e: DrawEvents.Created) => {
+    const handleCreatePath = (e: any) => {
         const layer = e.layer;
         if (layer) {
             const geometry = Geometry.fromGeoJson(layer.toGeoJSON().geometry);
@@ -154,7 +153,7 @@ const ZoneDetails = (props: IProps) => {
         }
     };
 
-    const handleEditPath = (e: DrawEvents.Edited) => {
+    const handleEditPath = (e: any) => {
         const layers = e.layers.toGeoJSON() as geojson.FeatureCollection;
 
         if (layers.features.length > 0) {

@@ -4619,14 +4619,6 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-leaflet@^2.8.1":
-  version "2.8.1"
-  resolved "https://registry.yarnpkg.com/@types/react-leaflet/-/react-leaflet-2.8.1.tgz#acda592cf1b7dfe20ac81071c21c1e5521fe71a4"
-  integrity sha512-BbFyH9R/MecfXaz1Yt29oGBG8AxIKILgAniO61/kv9/sRe5/qj9yDxf3PW7M+nDl5Wn3V7Mp9inKF0LflV+KkQ==
-  dependencies:
-    "@types/leaflet" "*"
-    "@types/react" "*"
-
 "@types/react-redux@^7.1.16":
   version "7.1.16"
   resolved "https://registry.yarnpkg.com/@types/react-redux/-/react-redux-7.1.16.tgz#0fbd04c2500c12105494c83d4a3e45c084e3cb21"
@@ -7914,6 +7906,11 @@ dotenv@8.2.0:
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.2.0.tgz#97e619259ada750eea3e4ea3e26bceea5424b16a"
   integrity sha512-8sJ78ElpbDJBHNeBzUbUVLsqKdccaa/BXF1uPTw3GrvQTBgrQrtObr2mUrE38vzYd8cEv+m/JBfDLioYcfXoaw==
 
+dotenv@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-4.0.0.tgz#864ef1379aced55ce6f95debecdce179f7a0cd1d"
+  integrity sha1-hk7xN5rO1Vzm+V3r7NzhefegzR0=
+
 downsample@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/downsample/-/downsample-1.4.0.tgz#f7500318efd5d979641d45fe49cd2dc8d7cb9397"
@@ -11140,11 +11137,6 @@ leaflet-draw@^1.0.4:
   resolved "https://registry.yarnpkg.com/leaflet-draw/-/leaflet-draw-1.0.4.tgz#45be92f378ed253e7202fdeda1fcc71885198d46"
   integrity sha512-rsQ6saQO5ST5Aj6XRFylr5zvarWgzWnrg46zQ1MEOEIHsppdC/8hnN8qMoFvACsPvTioAuysya/TVtog15tyAQ==
 
-leaflet.fullscreen@1.4.5:
-  version "1.4.5"
-  resolved "https://registry.yarnpkg.com/leaflet.fullscreen/-/leaflet.fullscreen-1.4.5.tgz#3b558dece24d9b51ce762b2e00fe902727f47272"
-  integrity sha512-rQnZswt/bI2HXmYDWjvgu8GIgg5TAyJEVOXJ1SVpo+36G9/YJ4j8gt8bz7VQU5P/gs2tQNCFbuuWtKYpSw8gbA==
-
 leaflet@^1.7.1:
   version "1.7.1"
   resolved "https://registry.yarnpkg.com/leaflet/-/leaflet-1.7.1.tgz#10d684916edfe1bf41d688a3b97127c0322a2a19"
@@ -14026,7 +14018,7 @@ promzard@^0.3.0:
   dependencies:
     read "1"
 
-prop-types@15.x, prop-types@>=15.0.0, prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.2, prop-types@^15.6.x, prop-types@^15.7.2:
+prop-types@15.x, prop-types@>=15.0.0, prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -14300,7 +14292,22 @@ react-app-polyfill@^2.0.0:
     regenerator-runtime "^0.13.7"
     whatwg-fetch "^3.4.1"
 
-react-app-rewired@^2.1.6:
+react-app-rewire-babel-loader@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/react-app-rewire-babel-loader/-/react-app-rewire-babel-loader-0.1.1.tgz#26287ba5aa3c666af43e3f61c7f07e6ccc34ba42"
+  integrity sha512-T0i7jM4BMhJa3aaVd1ohfQunANHzY9QToHKLBoVXMwq29OnCwZEa7SFB0xbJUKZBP+AtZkp2DMzGWIDF7JSJsQ==
+  dependencies:
+    react-app-rewired "^1.4.0"
+
+react-app-rewired@^1.4.0:
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/react-app-rewired/-/react-app-rewired-1.6.2.tgz#32ce90abc2c4e2b86c71e4e270bd36663b3b1c9a"
+  integrity sha512-TxbP1W9jPPTmj0YJeFNgcJc6IMg7sv845aHUIUvVQtXdA8IWzOZairk3Bth6GHbxoF2QitbvUlM7/NAH4VmmJg==
+  dependencies:
+    cross-spawn "^5.1.0"
+    dotenv "^4.0.0"
+
+react-app-rewired@^2.1.8:
   version "2.1.8"
   resolved "https://registry.yarnpkg.com/react-app-rewired/-/react-app-rewired-2.1.8.tgz#e192f93b98daf96889418d33d3e86cf863812b56"
   integrity sha512-wjXPdKPLscA7mn0I1de1NHrbfWdXz4S1ladaGgHVKdn1hTgKK5N6EdGIJM0KrS6bKnJBj7WuqJroDTsPKKr66Q==
@@ -14429,14 +14436,6 @@ react-leaflet-draw@^0.19.8:
   dependencies:
     fast-deep-equal "^2.0.1"
     lodash-es "^4.17.15"
-
-react-leaflet-fullscreen@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/react-leaflet-fullscreen/-/react-leaflet-fullscreen-1.0.1.tgz#59496664cb45ecb431d50506e61e0a14a1fa9f98"
-  integrity sha512-o6zZlytomWQiWyUh6hbdlJVSgbuCHF1M7JUgS8Z6IOBUo3aFPiHKju7Osb9eKu3nTUoN1jWsm5ZNhRteY+NChQ==
-  dependencies:
-    leaflet.fullscreen "1.4.5"
-    prop-types "^15.6.x"
 
 react-leaflet@^3.2.0:
   version "3.2.0"

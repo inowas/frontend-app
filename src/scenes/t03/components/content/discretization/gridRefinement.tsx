@@ -27,26 +27,30 @@ const GridRefinement = (props: IProps) => {
     <div key={renderKey}>
       {columns && columns.map((c) =>
         <GeoJSON
-          color="#000000"
-          fill={props.selectedRowsAndColumns ? props.selectedRowsAndColumns.columns.includes(c.dist) : false}
-          fillColor="blue"
           key={`columns_${c.dist}`}
           data={props.geometry && props.rotation ?
             BoundingBox.fromObject(c.boundingBox).geoJsonWithRotation(props.rotation, props.geometry.centerOfMass) :
             BoundingBox.fromObject(c.boundingBox).geoJson}
-          weight={1}
+          style={{
+            color: '#000000',
+            fill: props.selectedRowsAndColumns ? props.selectedRowsAndColumns.columns.includes(c.dist) : false,
+            fillColor: 'blue',
+            weight: 1
+          }}
         />
       )}
       {rows && rows.map((r) =>
         <GeoJSON
-          color="#000000"
-          fill={props.selectedRowsAndColumns ? props.selectedRowsAndColumns.rows.includes(r.dist) : false}
-          fillColor="red"
           key={`rows_${r.dist}`}
           data={props.geometry && props.rotation ?
             BoundingBox.fromObject(r.boundingBox).geoJsonWithRotation(props.rotation, props.geometry.centerOfMass) :
             BoundingBox.fromObject(r.boundingBox).geoJson}
-          weight={1}
+          style={{
+            color: '#000000',
+            fill: props.selectedRowsAndColumns ? props.selectedRowsAndColumns.rows.includes(r.dist) : false,
+            fillColor: 'red',
+            weight: 1
+          }}
         />
       )}
     </div>

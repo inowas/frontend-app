@@ -103,7 +103,7 @@ const RasterFromPoints = (props: IProps) => {
             return null;
         }
         return (
-            <FeatureGroup zIndex={10000}>
+            <FeatureGroup>
                 {data.map((point) => (
                     <CircleMarker
                         key={uuid.v4()}
