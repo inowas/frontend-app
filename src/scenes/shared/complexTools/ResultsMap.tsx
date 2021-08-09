@@ -1,13 +1,13 @@
-import {Array2D} from '../../../core/model/geometry/Array2D.type';
-import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
-import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
-import {FeatureGroup, GeoJSON, Pane} from 'react-leaflet';
-import {Geometry, ModflowModel} from '../../../core/model/modflow';
-import {ICell} from '../../../core/model/geometry/Cells.type';
-import {LeafletMouseEvent} from 'leaflet';
-import {getCellFromClick} from '../../../services/geoTools/getCellFromClick';
-import MapWithControls, {IMapWithControlsOptions} from '../../t03/components/maps/mapWithControls';
-import React, {useEffect, useRef, useState} from 'react';
+import { Array2D } from '../../../core/model/geometry/Array2D.type';
+import { BasicTileLayer } from '../../../services/geoTools/tileLayers';
+import { BoundaryCollection } from '../../../core/model/modflow/boundaries';
+import { FeatureGroup, GeoJSON, Pane } from 'react-leaflet';
+import { Geometry, ModflowModel } from '../../../core/model/modflow';
+import { ICell } from '../../../core/model/geometry/Cells.type';
+import { LeafletMouseEvent } from 'leaflet';
+import { getCellFromClick } from '../../../services/geoTools/getCellFromClick';
+import MapWithControls, { IMapWithControlsOptions } from '../../t03/components/maps/mapWithControls';
+import React, { useEffect, useState } from 'react';
 import uuid from 'uuid';
 
 const style = {
@@ -52,23 +52,22 @@ interface IState {
 }
 
 const ResultsMap = (props: IProps) => {
-  const [state, setState] = useState<IState>({viewport: null});
+  const [state, setState] = useState<IState>({ viewport: null });
   const [renderKey, setRenderKey] = useState<string>(uuid.v4());
-  const mapRef = useRef<any>(null);
 
   useEffect(() => {
-      const {viewport} = props;
-      if (viewport) {
-        setState({viewport});
-      }
-    },
+    const { viewport } = props;
+    if (viewport) {
+      setState({ viewport });
+    }
+  },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
   useEffect(() => {
     if (props.viewport) {
-      setState({viewport: props.viewport});
+      setState({ viewport: props.viewport });
     }
   }, [props.viewport]);
 
@@ -76,7 +75,7 @@ const ResultsMap = (props: IProps) => {
     setRenderKey(uuid.v4());
   }, [props.activeCell]);
 
-  const handleClickOnMap = ({latlng}: LeafletMouseEvent) => {
+  const handleClickOnMap = ({ latlng }: LeafletMouseEvent) => {
     const activeCell = getCellFromClick(
       props.model.boundingBox,
       props.model.gridSize,
@@ -94,7 +93,7 @@ const ResultsMap = (props: IProps) => {
 
   const renderSelectedRowAndCol = () => {
     const [selectedCol, selectedRow] = props.activeCell;
-    const {boundingBox, gridSize} = props.model;
+    const { boundingBox, gridSize } = props.model;
 
     const rowXMin = boundingBox.xMin;
     const rowXMax = boundingBox.xMax;
@@ -157,18 +156,11 @@ const ResultsMap = (props: IProps) => {
   };
 
   const handleViewPortChange = () => {
-    if (!mapRef.current) {
-      return;
-    }
-
-    const {viewport} = mapRef.current;
-    setState({viewport});
-
     if (!props.onViewPortChange) {
       return;
     }
 
-    return props.onViewPortChange(viewport);
+    return props.onViewPortChange([]);
   };
 
   const options: IMapWithControlsOptions = {
@@ -183,19 +175,18 @@ const ResultsMap = (props: IProps) => {
 
   return (
     <MapWithControls
-      ref={mapRef}
       style={style.map}
       bounds={state.viewport ? undefined : props.model.geometry.getBoundsLatLng()}
       zoom={state.viewport && state.viewport.zoom ? state.viewport.zoom : undefined}
       center={state.viewport && state.viewport.center ? state.viewport.center : undefined}
       onClick={handleClickOnMap}
-      boundsOptions={{padding: [20, 20]}}
+      boundsOptions={{ padding: [20, 20] }}
       onMoveEnd={handleViewPortChange}
       options={options}
       raster={props.data}
     >
-      <BasicTileLayer/>
-      <Pane name="front" style={{zIndex: 501}}>
+      <BasicTileLayer />
+      <Pane name="front" style={{ zIndex: 501 }}>
         {renderSelectedRowAndCol()}
       </Pane>
     </MapWithControls>

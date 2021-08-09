@@ -1,19 +1,19 @@
 import * as React from 'react';
-import {Array2D} from '../../../../core/model/geometry/Array2D.type';
-import {BoundaryCollection, ModflowModel} from '../../../../core/model/modflow';
-import {BoundaryFactory} from '../../../../core/model/modflow/boundaries';
-import {ColorLegend} from '../../../shared/rasterData';
-import {FlopyModflowMfbas} from '../../../../core/model/flopy/packages/mf';
-import {FlopyPackages} from '../../../../core/model/flopy';
-import {GeoJSON, LayerGroup, LayersControl, MapContainer, MapContainerProps, Pane} from 'react-leaflet';
-import {IReactLeafletHeatMapProps} from '../../../shared/rasterData/ReactLeafletHeatMapCanvasOverlay.type';
-import {IRootReducer} from '../../../../reducers';
-import {LeafletMouseEvent} from 'leaflet';
-import {ReactNode, forwardRef} from 'react';
-import {createGridData, rainbowFactory} from '../../../shared/rasterData/helpers';
-import {getStyle} from '../../../../services/geoTools/mapHelpers';
-import {renderBoundaryOverlays} from './mapLayers';
-import {useSelector} from 'react-redux';
+import { Array2D } from '../../../../core/model/geometry/Array2D.type';
+import { BoundaryCollection, ModflowModel } from '../../../../core/model/modflow';
+import { BoundaryFactory } from '../../../../core/model/modflow/boundaries';
+import { ColorLegend } from '../../../shared/rasterData';
+import { FlopyModflowMfbas } from '../../../../core/model/flopy/packages/mf';
+import { FlopyPackages } from '../../../../core/model/flopy';
+import { GeoJSON, LayerGroup, LayersControl, MapConsumer, MapContainer, MapContainerProps, Pane, useMapEvents } from 'react-leaflet';
+import { IReactLeafletHeatMapProps } from '../../../shared/rasterData/ReactLeafletHeatMapCanvasOverlay.type';
+import { IRootReducer } from '../../../../reducers';
+import { LeafletEvent, LeafletMouseEvent, Map } from 'leaflet';
+import { ReactNode } from 'react';
+import { createGridData, rainbowFactory } from '../../../shared/rasterData/helpers';
+import { getStyle } from '../../../../services/geoTools/mapHelpers';
+import { renderBoundaryOverlays } from './mapLayers';
+import { useSelector } from 'react-redux';
 import ContourLayer from '../../../shared/rasterData/contourLayer';
 import GridRefinement from '../content/discretization/gridRefinement';
 import Rainbow from '../../../../services/rainbowvis/Rainbowvis';
@@ -47,7 +47,7 @@ export interface IMapWithControlsOptions {
 interface IProps {
   children: ReactNode;
   onClick?: (e: LeafletMouseEvent) => any;
-  onMoveEnd?: (e: LeafletMouseEvent) => any;
+  onMoveEnd?: (e: LeafletEvent) => any;
   options?: IMapWithControlsOptions;
   raster?: Array2D<number>;
 }
@@ -76,7 +76,7 @@ const defaultOptions: IMapWithControlsOptions = {
   }
 };
 
-const MapWithControls = forwardRef((props: TProps, ref: any) => {
+const MapWithControls = (props: TProps) => {
   let options: IMapWithControlsOptions = defaultOptions;
 
   if (props.options) {
@@ -112,7 +112,7 @@ const MapWithControls = forwardRef((props: TProps, ref: any) => {
       value: Number(lastGradient.minNum).toExponential(2)
     });
 
-    return <ColorLegend legend={legend} unit="m"/>;
+    return <ColorLegend legend={legend} unit="m" />;
   };
 
   const renderRaster = () => {
@@ -131,7 +131,7 @@ const MapWithControls = forwardRef((props: TProps, ref: any) => {
     }
 
     const rainbowVis = rainbowFactory(
-      {min: minData, max: maxData},
+      { min: minData, max: maxData },
       options.raster.colors || ['#800080', '#ff2200', '#fcff00', '#45ff8e', '#15d6ff', '#0000FF']
     );
 
@@ -193,49 +193,53 @@ const MapWithControls = forwardRef((props: TProps, ref: any) => {
 
   return (
     <MapContainer
-      ref={ref}
-      onClick={props.onClick}
-      onMoveEnd={props.onMoveEnd}
       zoomControl={false}
       {...props}
     >
+      <MapConsumer>
+        {(map: Map) => {
+          map.on('click', (e: LeafletMouseEvent) => props.onClick ? props.onClick(e) : null);
+          map.on('moveend', (e: LeafletEvent) => props.onMoveEnd ? props.onMoveEnd(e) : null);
+          return null;
+        }}
+      </MapConsumer>
       {props.raster &&
-      <Pane name="back" style={{zIndex: 499}}>
-        {renderRaster()}
-      </Pane>
+        <Pane name="back" style={{ zIndex: 499 }}>
+          {renderRaster()}
+        </Pane>
       }
-      <Pane name="middle" style={{zIndex: 500}}>
+      <Pane name="middle" style={{ zIndex: 500 }}>
         <LayersControl position="topright">
           {model && options.grid && options.grid.enabled &&
-          <LayersControl.Overlay checked={options.grid.checked} name="Grid">
-            <LayerGroup>
-              <GridRefinement
-                boundingBox={model.boundingBox}
-                gridSize={model.gridSize}
-                selectedRowsAndColumns={null}
-              />
-            </LayerGroup>
-          </LayersControl.Overlay>
+            <LayersControl.Overlay checked={options.grid.checked} name="Grid">
+              <LayerGroup>
+                <GridRefinement
+                  boundingBox={model.boundingBox}
+                  gridSize={model.gridSize}
+                  selectedRowsAndColumns={null}
+                />
+              </LayerGroup>
+            </LayersControl.Overlay>
           }
           {model && options.area && options.area.enabled &&
-          <LayersControl.Overlay checked={options.area.checked} name="Model Area">
-            <LayerGroup>
-              <GeoJSON
-                key={model.geometry.hash()}
-                data={model.geometry.toGeoJSON()}
-                style={getStyle('area')}
-              />
-            </LayerGroup>
-          </LayersControl.Overlay>
+            <LayersControl.Overlay checked={options.area.checked} name="Model Area">
+              <LayerGroup>
+                <GeoJSON
+                  key={model.geometry.hash()}
+                  data={model.geometry.toGeoJSON()}
+                  style={getStyle('area')}
+                />
+              </LayerGroup>
+            </LayersControl.Overlay>
           }
           {boundaries && options.boundaries && options.boundaries.enabled &&
-          renderBoundaryOverlays(boundaries, options.boundaries?.checked)
+            renderBoundaryOverlays(boundaries, options.boundaries?.checked)
           }
         </LayersControl>
       </Pane>
       {props.children}
     </MapContainer>
   );
-});
+};
 
 export default MapWithControls;
