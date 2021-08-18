@@ -1,4 +1,4 @@
-import {AdvancedCsvUpload} from '../../../../shared/simpleTools/upload';
+import {AdvancedCsvUpload} from '../../../../shared/upload';
 import {Boundary, LineBoundary} from '../../../../../core/model/modflow/boundaries';
 import {Button, Icon, Input, Pagination, PaginationProps, Table} from 'semantic-ui-react';
 import {ISpValues} from '../../../../../core/model/modflow/boundaries/Boundary.type';

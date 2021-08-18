@@ -1,6 +1,6 @@
-import {AdvancedCsvUpload} from '../simpleTools/upload';
+import {AdvancedCsvUpload} from '../upload';
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
-import {ECsvColumnType} from '../simpleTools/upload/types';
+import {ECsvColumnType} from '../upload/types';
 import {Grid, List, Segment} from 'semantic-ui-react';
 import {IRootReducer} from '../../../reducers';
 import {ModflowModel} from '../../../core/model/modflow';

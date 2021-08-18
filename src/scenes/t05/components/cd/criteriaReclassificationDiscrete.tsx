@@ -1,17 +1,16 @@
+import {AdvancedCsvUpload} from '../../../shared/upload';
 import {Button, Dropdown, Grid, Icon, Input, InputOnChangeData, Message, Segment, Table} from 'semantic-ui-react';
 import {ColorResult, SketchPicker} from 'react-color';
 import {Criterion} from '../../../../core/model/mcda/criteria';
+import {ECsvColumnType} from '../../../shared/upload/types';
 import {ICriterion} from '../../../../core/model/mcda/criteria/Criterion.type';
 import {IRule} from '../../../../core/model/mcda/criteria/Rule.type';
-import {ParseResult} from 'papaparse';
 import {criterionStep} from '../../defaults/defaults';
 import {dropData} from '../../../../services/api';
 import {heatMapColors} from '../../defaults/gis';
 import {rainbowFactory} from '../../../shared/rasterData/helpers';
-import CsvUpload from '../../../shared/simpleTools/upload/CsvUpload';
 import Rainbow from '../../../../services/rainbowvis/Rainbowvis';
 import React, {CSSProperties, ChangeEvent, useEffect, useState} from 'react';
-import uuidv4 from 'uuid/v4';
 
 const styles = {
     popover: {
@@ -33,26 +32,10 @@ interface IProps {
     readOnly: boolean;
 }
 
-interface IUploadState {
-    activeInput: null;
-    error: boolean;
-    errorMsg: [];
-    id: string;
-    success: boolean;
-}
-
 const CriteriaReclassificationDiscrete = (props: IProps) => {
     const [criterion, setCriterion] = useState<ICriterion>(props.criterion.toObject());
     const [ruleToPickColorFor, setRuleToPickColorFor] = useState<IRule | null>(null);
     const [showInfo, setShowInfo] = useState<boolean>(true);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [uploadState, setUploadState] = useState<IUploadState>({
-        activeInput: null,
-        error: false,
-        errorMsg: [],
-        id: uuidv4(),
-        success: false
-    });
 
     useEffect(() => {
         const uCriterion = props.criterion;
@@ -129,18 +112,14 @@ const CriteriaReclassificationDiscrete = (props: IProps) => {
         return handleChange();
     };
 
-    const handleCsv = (response: ParseResult<any>) => {
+    const handleCsv = (response: any[][]) => {
         if (!response || props.readOnly) {
             return;
         }
 
-        if (response.errors && response.errors.length > 0) {
-            throw new Error('ERROR HANDLING FILE UPLOAD');
-        }
-
         const uCriterion = Criterion.fromObject(criterion);
 
-        response.data.forEach((row) => {
+        response.forEach((row) => {
             const cRules = uCriterion.rulesCollection.findByValue(row[0]);
             if (cRules.length > 0) {
                 const rule = cRules[0];
@@ -308,11 +287,16 @@ const CriteriaReclassificationDiscrete = (props: IProps) => {
                         <br/>
                         {!props.readOnly &&
                         <div>
-                            <CsvUpload
-                                baseClasses="ui icon button fluid left labeled"
-                                onUploaded={handleCsv}
-                                uploadState={uploadState}
-                            />
+                          <AdvancedCsvUpload
+                            columns={[
+                              {key: 0, value: 'color', text: 'color'},
+                              {key: 1, value: 'name', text: 'name'},
+                              {key: 2, value: 'value', text: 'value', type: ECsvColumnType.NUMBER}
+                            ]}
+                            onCancel={() => null}
+                            onSave={handleCsv}
+                            withoutModal={true}
+                          />
                             <br/>
                             <Dropdown
                                 placeholder="Select predefined colors"
