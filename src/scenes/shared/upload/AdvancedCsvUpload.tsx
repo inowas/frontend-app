@@ -5,12 +5,14 @@ import {
 import {ECsvColumnType} from './types';
 import {ParseResult} from 'papaparse';
 import React, {ChangeEvent, MouseEvent, SyntheticEvent, useEffect, useState} from 'react';
-import moment from 'moment';
+import _ from 'lodash';
+import moment, {Moment} from 'moment';
 
 export type TColumns = Array<{ key: number, value: string, text: string, type?: ECsvColumnType }>;
 
 interface IProps {
   columns: TColumns;
+  fixedDateTimes?: Moment[];
   onSave: (ds: any[][]) => void;
   onCancel: () => void;
   useDateTimes?: boolean;
@@ -20,25 +22,24 @@ interface IProps {
 const AdvancedCsvUpload = (props: IProps) => {
   const [columns, setColumns] = useState<TColumns>(props.columns);
   const [metadata, setMetadata] = useState<ParseResult<any> | null>(null);
-
-  const [dateTimeFormat, setDateTimeFormat] = useState<string>('DD.MM.YYYY H:m:s');
+  const [method, setMethod] = useState<string>(props.useDateTimes ? 'datetime' : 'key');
+  const [dateTimeFormat, setDateTimeFormat] = useState<string>('DD.MM.YYYY');
   const [firstRowIsHeader, setFirstRowIsHeader] = useState<boolean>(true);
-
   const [parameterColumns, setParameterColumns] = useState<{ [name: string]: number } | null>(null);
-
   const [fileToParse, setFileToParse] = useState<File>();
   const [parsingData, setParsingData] = useState<boolean>(false);
   const [processedData, setProcessedData] = useState<any[][] | null>(null);
-
   const [isFetched] = useState<boolean>(false);
   const [isFetching, setIsFetching] = useState<boolean>(false);
-
   const [paginationPage, setPaginationPage] = useState<number>(1);
 
   const rowsPerPage = 50;
 
+  const useDateTimes = method === 'datetime' ||
+    columns.filter((c) => c.type === ECsvColumnType.DATE_TIME).length > 0 || props.useDateTimes;
+
   useEffect(() => {
-    if (props.useDateTimes) {
+    if (props.useDateTimes || method === 'datetime') {
       return setColumns(([{
         key: 0,
         value: 'datetime',
@@ -47,7 +48,7 @@ const AdvancedCsvUpload = (props: IProps) => {
       }] as TColumns).concat(props.columns));
     }
     return setColumns(props.columns);
-  }, [props.columns, props.useDateTimes]);
+  }, [props.columns, props.useDateTimes, method]);
 
   useEffect(() => {
     if (metadata && parameterColumns && Object.keys(parameterColumns).length === columns.length) {
@@ -85,19 +86,25 @@ const AdvancedCsvUpload = (props: IProps) => {
 
   const handleSave = () => {
     if (processedData) {
+      let result = processedData;
+      if (useDateTimes && props.fixedDateTimes) {
+        result = processedData.map((row) => {
+          row.shift()
+          return row;
+        });
+      }
+
       props.onCancel();
-      return props.onSave(processedData);
+      return props.onSave(result);
     }
   };
 
   const handleChange = (f: (v: any) => void) => (e: any, d: any) => {
-    // eslint-disable-next-line no-prototype-builtins
-    if (d.hasOwnProperty('value')) {
+    if ('value' in d) {
       f(d.value);
     }
 
-    // eslint-disable-next-line no-prototype-builtins
-    if (d.hasOwnProperty('checked')) {
+    if ('checked' in d) {
       f(d.checked);
     }
   };
@@ -118,22 +125,48 @@ const AdvancedCsvUpload = (props: IProps) => {
       return;
     }
     const nData: any[][] = [];
-    data.forEach((r, rKey) => {
-      if (!firstRowIsHeader || (firstRowIsHeader && rKey > 0)) {
-        const row = columns.map((c) => {
-          if (c.type === ECsvColumnType.DATE_TIME) {
-            return moment.utc(r[parameterColumns[c.value]], dateTimeFormat);
-          }
-          if (c.type === ECsvColumnType.BOOLEAN) {
-            return r[parameterColumns[c.value]] === 1 || r[parameterColumns[c.value]] === true ||
-              r[parameterColumns[c.value]] === 'true';
-          }
-          return r[parameterColumns[c.value]] || 0;
 
-        });
+    if (props.fixedDateTimes && useDateTimes) {
+      let previousRow: any[] = columns.map(() => 0);
+      props.fixedDateTimes.forEach((dt) => {
+        let row: any[] = _.cloneDeep(previousRow);
+        row[0] = dt;
+        const filteredImportedRow = data.filter((r) => moment.utc(r[0], dateTimeFormat).isSame(dt));
+        if (filteredImportedRow.length >= 1) {
+          const r = filteredImportedRow[0];
+          row = columns.map((c) => {
+            if (c.type === ECsvColumnType.DATE_TIME ) {
+              return dt;
+            }
+            if (c.type === ECsvColumnType.BOOLEAN) {
+              return r[parameterColumns[c.value]] === 1 || r[parameterColumns[c.value]] === true ||
+                r[parameterColumns[c.value]] === 'true';
+            }
+            return r[parameterColumns[c.value]] || 0;
+          });
+        }
+
+        previousRow = row;
         nData.push(row);
-      }
-    });
+      });
+    } else {
+      data.forEach((r, rKey) => {
+        if (!firstRowIsHeader || (firstRowIsHeader && rKey > 0)) {
+          const row = columns.map((c) => {
+            if (c.type === ECsvColumnType.DATE_TIME) {
+              return moment.utc(r[parameterColumns[c.value]], dateTimeFormat);
+            }
+            if (c.type === ECsvColumnType.BOOLEAN) {
+              return r[parameterColumns[c.value]] === 1 || r[parameterColumns[c.value]] === true ||
+                r[parameterColumns[c.value]] === 'true';
+            }
+            return r[parameterColumns[c.value]] || 0;
+          });
+          nData.push(row);
+        }
+      });
+    }
+
     setIsFetching(false);
     setProcessedData(nData);
     if (props.withoutModal) {
@@ -161,6 +194,13 @@ const AdvancedCsvUpload = (props: IProps) => {
       setFileToParse(file);
       setParsingData(true);
     }
+  };
+
+  const handleChangeMethod = (e: SyntheticEvent<HTMLElement>, {value}: DropdownProps) => {
+    if (typeof value !== 'string' || props.useDateTimes) {
+      return null;
+    }
+    setMethod(value);
   };
 
   const handleChangePagination = (e: MouseEvent, {activePage}: PaginationProps) =>
@@ -197,6 +237,32 @@ const AdvancedCsvUpload = (props: IProps) => {
         <Grid.Row>
           <Grid.Column>
             <Form>
+              <Form.Group widths="equal">
+                <Form.Select
+                  disabled={props.useDateTimes || processedData !== null}
+                  label="Import method"
+                  options={[
+                    {key: 0, text: 'Assign rows by key', value: 'key'},
+                    {key: 1, text: 'Assign rows by datetime', value: 'datetime'}
+                  ]}
+                  onChange={handleChangeMethod}
+                  value={method}
+                />
+                <Form.Input
+                  disabled={!useDateTimes}
+                  onBlur={handleBlurDateTimeFormat}
+                  onChange={handleChange(setDateTimeFormat)}
+                  label="Datetime format"
+                  name={'datetimeField'}
+                  value={dateTimeFormat}
+                />
+              </Form.Group>
+            </Form>
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row>
+          <Grid.Column>
+            <Form>
               <Form.Group>
                 <Form.Input
                   onChange={handleUploadFile}
@@ -215,23 +281,6 @@ const AdvancedCsvUpload = (props: IProps) => {
             </Form>
           </Grid.Column>
         </Grid.Row>
-        {(props.useDateTimes || columns.filter((c) => c.type === ECsvColumnType.DATE_TIME).length > 0) &&
-        <Grid.Row>
-          <Grid.Column>
-            <Form>
-              <Form.Group>
-                <Form.Input
-                  onBlur={handleBlurDateTimeFormat}
-                  onChange={handleChange(setDateTimeFormat)}
-                  label="Datetime format"
-                  name={'datetimeField'}
-                  value={dateTimeFormat}
-                />
-              </Form.Group>
-            </Form>
-          </Grid.Column>
-        </Grid.Row>
-        }
         {metadata &&
         <Grid.Row>
           <Grid.Column>
@@ -287,7 +336,7 @@ const AdvancedCsvUpload = (props: IProps) => {
             <Table size={'small'}>
               <Table.Header>
                 <Table.Row>
-                  {props.columns.map((c, cKey) =>
+                  {columns.map((c, cKey) =>
                     <Table.HeaderCell key={cKey}>{c.text}</Table.HeaderCell>
                   )}
                 </Table.Row>
@@ -318,7 +367,13 @@ const AdvancedCsvUpload = (props: IProps) => {
         </Modal.Content>
         <Modal.Actions>
           <Button negative={true} onClick={props.onCancel}>Cancel</Button>
-          <Button positive={true} disabled={!processData} onClick={handleSave}>Apply</Button>
+          <Button
+            positive={true}
+            disabled={!processedData}
+            onClick={handleSave}
+          >
+            Apply
+          </Button>
         </Modal.Actions>
       </Modal>
     );
