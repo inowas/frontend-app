@@ -206,9 +206,9 @@ const BoundaryValuesDataTable = (props: IProps) => {
           <Icon name="upload"/>
           Upload csv
         </Button>
-        {error && <Message error>{error}</Message>}
       </p>
       }
+      {error && <Message error>{error}</Message>}
       {spValues && spValues.length > 20 &&
       <Pagination
         activePage={paginationPage}
