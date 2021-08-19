@@ -1,8 +1,8 @@
-import {AdvancedCsvUpload} from '../simpleTools/upload';
+import {AdvancedCsvUpload} from '../upload';
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
 import {CircleMarker, FeatureGroup, Tooltip} from 'react-leaflet';
 import {DropdownProps, Form, Grid, InputOnChangeData, Segment} from 'semantic-ui-react';
-import {ECsvColumnType} from '../simpleTools/upload/types';
+import {ECsvColumnType} from '../upload/types';
 import {IIdwOptions, distanceWeighting} from '../../../services/geoTools/interpolation';
 import {IRootReducer} from '../../../reducers';
 import {ModflowModel} from '../../../core/model/modflow';

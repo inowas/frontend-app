@@ -1,4 +1,4 @@
-import {AdvancedCsvUpload} from '../../../../shared/simpleTools/upload';
+import {AdvancedCsvUpload} from '../../../../shared/upload';
 import {
     Boundary,
     FlowAndHeadBoundary,
