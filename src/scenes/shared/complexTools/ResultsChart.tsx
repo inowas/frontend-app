@@ -160,14 +160,28 @@ const resultsChart = ({data, selectedModels, row, col, show, yLabel = ''}: IProp
       referenceTo = row;
     }
 
-    const localMin = Math.floor(min(processedData.map((d) => d.value)) || 0);
-    const localMax = Math.ceil(max(processedData.map((d) => d.value)) || 0);
+    const values: number[] = [];
+    processedData.forEach((r) => {
+      Object.keys(r).filter((p) => p !== 'name').forEach((p) => {
+        values.push(r[p]);
+      });
+    });
+
+    const localMin = Math.floor(min(values) || 0);
+    const localMax = Math.ceil(max(values) || 0);
 
     return (
       <ResponsiveContainer aspect={1.5}>
         <LineChart data={processedData}>
-          <XAxis dataKey="name" domain={['dataMin', 'dataMax']}/>
-          <YAxis domain={[localMin, localMax]}/>
+          <XAxis
+            dataKey="name"
+            domain={['dataMin', 'dataMax']}
+            label={getXAxisLabel(show)}
+          />
+          <YAxis
+            domain={[localMin, localMax]}
+            label={getYAxisLabel(yLabel)}
+          />
           <CartesianGrid strokeDasharray="3 3"/>
           <Tooltip/>
           <ReferenceLine x={referenceTo} stroke="#000" strokeDasharray="3 3"/>
