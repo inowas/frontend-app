@@ -143,7 +143,7 @@ export default class FlopyPackages {
     const self = new this();
     self._modelId = modelId;
     self._mf = mf;
-    self._mf.setTransportEnabled(mt.enabled);
+    self._mf.setTransportEnabled(mt.enabled || false);
     self._mp = mp;
     self._mt = mt;
     self._swt = swt;

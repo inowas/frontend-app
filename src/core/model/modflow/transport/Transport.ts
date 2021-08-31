@@ -5,56 +5,59 @@ import SubstanceCollection from './SubstanceCollection';
 
 class Transport extends GenericObject<ITransport> {
 
-    get enabled() {
-        return this._props.enabled;
+  get enabled() {
+    return this._props.enabled;
+  }
+
+  set enabled(value) {
+    this._props.enabled = value;
+  }
+
+  get substances() {
+    return SubstanceCollection.fromObject(this._props.substances);
+  }
+
+  set substances(value) {
+    this._props.substances = value.toObject();
+  }
+
+  public static fromQuery(query: ITransport) {
+    if (Array.isArray(query) && query.length === 0) {
+      return Transport.fromDefault();
     }
+    return new Transport(query);
+  }
 
-    set enabled(value) {
-        this._props.enabled = value;
+  public static fromObject(obj: ITransport): Transport {
+    if (Array.isArray(obj) && obj.length === 0) {
+      return this.fromDefault();
     }
+    return new Transport(obj);
+  }
 
-    get substances() {
-        return SubstanceCollection.fromObject(this._props.substances);
-    }
+  public static fromDefault() {
+    return Transport.fromObject({
+      enabled: false,
+      substances: []
+    });
+  }
 
-    set substances(value) {
-        this._props.substances = value.toObject();
-    }
+  public addSubstance = (substance: Substance) => {
+    this._props.substances.push(substance.toObject());
+  };
 
-    public static fromQuery(query: ITransport) {
-        if (Array.isArray(query) && query.length === 0) {
-            return Transport.fromDefault();
-        }
-        return new Transport(query);
-    }
+  public removeSubstanceById = (substanceId: string) => {
+    this._props.substances = this._props.substances.filter((s) => s.id !== substanceId);
+  };
 
-    public static fromObject(obj: ITransport) {
-        return new Transport(obj);
-    }
-
-    public static fromDefault() {
-        return Transport.fromObject({
-            enabled: false,
-            substances: []
-        });
-    }
-
-    public addSubstance = (substance: Substance) => {
-        this._props.substances.push(substance.toObject());
-    };
-
-    public removeSubstanceById = (substanceId: string) => {
-        this._props.substances =  this._props.substances.filter((s) => s.id !== substanceId);
-    };
-
-    public updateSubstance = (substance: Substance) => {
-        this._props.substances = this._props.substances.map((s) => {
-            if (s.id === substance.id) {
-                return substance.toObject();
-            }
-            return s;
-        });
-    };
+  public updateSubstance = (substance: Substance) => {
+    this._props.substances = this._props.substances.map((s) => {
+      if (s.id === substance.id) {
+        return substance.toObject();
+      }
+      return s;
+    });
+  };
 }
 
 export default Transport;

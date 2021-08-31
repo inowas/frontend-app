@@ -2,6 +2,7 @@ import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 import {Calculation, ModflowModel, Soilmodel, Transport, VariableDensity} from '../../../core/model/modflow';
 import {IRootReducer} from '../../../reducers';
 import {List, Modal} from 'semantic-ui-react';
+import {ReactNode, useEffect, useState} from 'react';
 import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {
   clear,
@@ -17,7 +18,6 @@ import {fetchApiWithToken, fetchCalculationDetails} from '../../../services/api'
 import {loadSoilmodel} from '../../../core/model/modflow/soilmodel/services';
 import {useDispatch, useSelector} from 'react-redux';
 import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
-import React, {ReactNode, useEffect, useState} from 'react';
 
 interface IOwnProps {
   children: ReactNode;
@@ -195,8 +195,9 @@ const DataFetcherWrapper = (props: IProps) => {
   };
 
   const handleError = (dError: any) => {
-    // tslint:disable-next-line:no-console
-    console.log(dError);
+    if (!dError.response || !dError.response.status) {
+      return;
+    }
     const {response} = dError;
     const {status} = response;
     if (status === 422 || status === 403) {
