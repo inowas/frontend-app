@@ -135,7 +135,7 @@ const HeatTransportController = () => {
                                     <Form.Input
                                         disabled={isFetching || readOnly}
                                         name="retardationFactor"
-                                        label="Thermal retardation factor"
+                                        label="Thermal Retardation Factor"
                                         type="number"
                                         onBlur={handleBlurInput}
                                         onChange={handleChangeInput}

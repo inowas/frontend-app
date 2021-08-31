@@ -39,7 +39,7 @@ const HeatTransportInputChart = (props: IProps) => {
     })), 500) as DataPoint[] : [];
   };
 
-  const downsampledData = downSampleData(props.data);
+  const downSampledData = downSampleData(props.data);
 
   const RENDER_NO_SHAPE = () => null;
 
@@ -49,7 +49,7 @@ const HeatTransportInputChart = (props: IProps) => {
         <ScatterChart>
           <XAxis
             dataKey={'x'}
-            domain={[props.data[0].timeStamp, props.data[downsampledData.length - 1].timeStamp]}
+            domain={[props.data[0].timeStamp, props.data[downSampledData.length - 1].timeStamp]}
             name={'x'}
             tickFormatter={formatDateTimeTicks}
             type={'number'}
@@ -62,7 +62,7 @@ const HeatTransportInputChart = (props: IProps) => {
             domain={['auto', 'auto']}
           />
           <Scatter
-            data={downsampledData}
+            data={downSampledData}
             line={{strokeWidth: 2, stroke: '#3498db'}}
             lineType={'joint'}
             name={'p'}
