@@ -1,6 +1,6 @@
 import {Button, Checkbox, Icon, Menu, MenuItemProps, Segment, Table} from 'semantic-ui-react';
 import {IHeatTransportResults} from '../../../core/model/htm/Htm.type';
-import {calculateDomain} from './helpers';
+import {calculateDomain, formatLabel} from './helpers';
 import {downloadFile} from '../../shared/simpleTools/helpers';
 import HeatTransportResultLineChart from './HeatTransportResultLineChart';
 import React, {MouseEvent, useEffect, useState} from 'react';
@@ -210,7 +210,7 @@ const HeatTransportResults = (props: IProps) => {
 
                         return (
                             <Table.Row key={key}>
-                                <Table.Cell>{traveltime.point_type}</Table.Cell>
+                                <Table.Cell>{formatLabel(traveltime.point_type)}</Table.Cell>
                                 <Table.Cell>{keySw.length > 0 ? traveltime[keySw[0]] : 'NULL'}</Table.Cell>
                                 <Table.Cell>{keyGw.length > 0 ? traveltime[keyGw[0]] : 'NULL'}</Table.Cell>
                                 <Table.Cell>{Math.ceil(traveltime.traveltime_thermal_days)}</Table.Cell>

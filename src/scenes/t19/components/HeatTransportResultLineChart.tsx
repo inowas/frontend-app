@@ -9,7 +9,7 @@ import {
 } from 'recharts';
 import {IHeatTransportResults} from '../../../core/model/htm/Htm.type';
 import {SemanticCOLORS} from 'semantic-ui-react/dist/commonjs/generic';
-import {calculateDomain} from './helpers';
+import {calculateDomain, formatLabel} from './helpers';
 import CustomTooltip from './CustomTooltip';
 import React, {useEffect, useState} from 'react';
 import moment from 'moment';
@@ -122,7 +122,7 @@ const HeatTransportResultChart = (props: IProps) => {
                                 fontSize={12}
                                 offset={5}
                                 position="top"
-                                value={point.type}
+                                value={formatLabel(point.type)}
                             />
                         }
                         x={point.x}

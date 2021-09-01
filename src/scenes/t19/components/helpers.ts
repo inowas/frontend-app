@@ -1,4 +1,4 @@
-import {SemanticCOLORS} from 'semantic-ui-react/dist/commonjs/generic';
+import { SemanticCOLORS } from 'semantic-ui-react/dist/commonjs/generic';
 import _ from 'lodash';
 
 interface IReferencePoint {
@@ -21,4 +21,15 @@ export const calculateDomain = (
     const xMax = data[data.length - 1].x > pointsOrderedByX[pointsOrderedByX.length - 1].x ?
         data[data.length - 1].x : pointsOrderedByX[pointsOrderedByX.length - 1].x;
     return [xMin, xMax];
+};
+
+export const formatLabel = (label: string) => {
+    label = label.replace(/_|-/g, ' ');
+    label = label.replace(
+        /\w\S*/g,
+        (txt: string) => {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        }
+    );
+    return label;
 };
