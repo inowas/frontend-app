@@ -9,7 +9,7 @@ import {
 } from 'recharts';
 import {IHeatTransportResults} from '../../../core/model/htm/Htm.type';
 import {SemanticCOLORS} from 'semantic-ui-react/dist/commonjs/generic';
-import {calculateDomain} from './helpers';
+import {calculateDomain, formatLabel} from './helpers';
 import CustomTooltip from './CustomTooltip';
 import React, {useEffect, useState} from 'react';
 import moment from 'moment';
@@ -104,11 +104,11 @@ const HeatTransportResultChart = (props: IProps) => {
                     label={{value: 'T [°C]', angle: -90, position: 'insideLeft'}}
                     tickFormatter={formatTemperatureTicks}
                 />
-                <Line dot={false} type="monotone" dataKey="obs" stroke="#db3434" strokeWidth={2}/>
-                <Line dot={false} type="monotone" dataKey="sim" stroke="#3498DB" strokeWidth={2}/>
+                <Line dot={false} type="monotone" dataKey="obs" stroke="#3498DB" strokeWidth={2}/>
+                <Line dot={false} type="monotone" dataKey="sim" stroke="#db3434" strokeWidth={2}/>
                 <Tooltip content={
                     <CustomTooltip
-                        colors={{obs: '#db3434', sim: '#3498DB'}}
+                        colors={{obs: '#3498DB', sim: '#db3434'}}
                         dateTimeFormat={props.dateTimeFormat}
                     />
                 }
@@ -122,7 +122,7 @@ const HeatTransportResultChart = (props: IProps) => {
                                 fontSize={12}
                                 offset={5}
                                 position="top"
-                                value={point.type}
+                                value={formatLabel(point.type)}
                             />
                         }
                         x={point.x}

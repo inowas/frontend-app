@@ -1,6 +1,6 @@
 import {Button, Checkbox, Icon, Menu, MenuItemProps, Segment, Table} from 'semantic-ui-react';
 import {IHeatTransportResults} from '../../../core/model/htm/Htm.type';
-import {calculateDomain} from './helpers';
+import {calculateDomain, formatLabel} from './helpers';
 import {downloadFile} from '../../shared/simpleTools/helpers';
 import HeatTransportResultLineChart from './HeatTransportResultLineChart';
 import React, {MouseEvent, useEffect, useState} from 'react';
@@ -167,10 +167,8 @@ const HeatTransportResults = (props: IProps) => {
                     {keys.map((name, key) => (
                         <Table.Row key={key}>
                             <Table.Cell>{name}</Table.Cell>
-                            {/* eslint-disable-next-line no-prototype-builtins */}
-                            <Table.Cell>{dataSw[0].hasOwnProperty(name) ? dataSw[0][name].toFixed(digits) : 'NULL'}</Table.Cell>
-                            {/* eslint-disable-next-line no-prototype-builtins */}
-                            <Table.Cell>{dataGw[0].hasOwnProperty(name) ? dataGw[0][name].toFixed(digits) : 'NULL'}</Table.Cell>
+                            <Table.Cell>{name in dataSw[0] ? dataSw[0][name].toFixed(digits) : 'NULL'}</Table.Cell>
+                            <Table.Cell>{name in dataGw[0] ? dataGw[0][name].toFixed(digits) : 'NULL'}</Table.Cell>
                         </Table.Row>
                     ))}
                 </Table.Body>
@@ -212,11 +210,11 @@ const HeatTransportResults = (props: IProps) => {
 
                         return (
                             <Table.Row key={key}>
-                                <Table.Cell>{traveltime.point_type}</Table.Cell>
+                                <Table.Cell>{formatLabel(traveltime.point_type)}</Table.Cell>
                                 <Table.Cell>{keySw.length > 0 ? traveltime[keySw[0]] : 'NULL'}</Table.Cell>
                                 <Table.Cell>{keyGw.length > 0 ? traveltime[keyGw[0]] : 'NULL'}</Table.Cell>
-                                <Table.Cell>{traveltime.traveltime_thermal_days.toFixed(0)}</Table.Cell>
-                                <Table.Cell>{traveltime.traveltime_hydraulic_days.toFixed(0)}</Table.Cell>
+                                <Table.Cell>{Math.ceil(traveltime.traveltime_thermal_days)}</Table.Cell>
+                                <Table.Cell>{Math.ceil(traveltime.traveltime_hydraulic_days)}</Table.Cell>
                             </Table.Row>
                         );
                     })}
@@ -294,7 +292,7 @@ const HeatTransportResults = (props: IProps) => {
                 <Menu.Item
                     active={activeIndex === 3}
                     index={3}
-                    name="Sine Fit Results"
+                    name="Results"
                     onClick={handleClickMenuItem}
                 />
             </Menu>
