@@ -1,18 +1,27 @@
 import { Button, Grid, Icon, Menu, Popup } from 'semantic-ui-react';
-import { Sensor } from '../../../core/model/rtm/monitoring';
+import { Sensor } from '../../../../core/model/rtm/monitoring';
 
 interface IProps {
   onAdd: () => void;
   sensors: Sensor[];
-  selectedSensor: string | null;
-  onChangeSelectedSensor: (id: string | null) => void;
+  selectedSensor: Sensor | null;
+  onChangeSelectedSensor: (id: Sensor | null) => void;
   onClone: (id: string) => void;
   onRemove: (id: string) => void;
   readOnly: boolean;
 }
 
-const SensorList = (props: IProps) => {
-  const handleClick = (id: string) => () => props.onChangeSelectedSensor(id);
+const SensorsList = (props: IProps) => {
+  const handleClick = (id: string) => () => {
+    const s = props.sensors.filter((s) => s.id === id);
+
+    if (s.length > 0) {
+      return props.onChangeSelectedSensor(s[0]);
+    }
+
+    props.onChangeSelectedSensor(null);
+  };
+
   const handleClone = (id: string) => () => props.onClone(id);
   const handleRemove = (id: string) => () => props.onRemove(id);
 
@@ -34,7 +43,7 @@ const SensorList = (props: IProps) => {
       <Grid.Row>
         <Menu fluid={true} vertical={true} tabular={true}>
           {props.sensors.map((s: Sensor) => (
-            <Menu.Item name={s.name} key={s.id} active={s.id === props.selectedSensor} onClick={handleClick(s.id)}>
+            <Menu.Item name={s.name} key={s.id} active={s.id === props.selectedSensor?.id} onClick={handleClick(s.id)}>
               {!props.readOnly && (
                 <Popup
                   trigger={<Icon name="ellipsis horizontal" />}
@@ -69,4 +78,4 @@ const SensorList = (props: IProps) => {
   );
 };
 
-export default SensorList;
+export default SensorsList;

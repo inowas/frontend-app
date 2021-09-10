@@ -1,18 +1,18 @@
-import { AddSensor, SensorList } from './index';
 import { Grid, Segment } from 'semantic-ui-react';
-import { ReactFragment, useState } from 'react';
-import { Rtm, Sensor } from '../../../core/model/rtm/monitoring';
-import ContentToolBar from '../../shared/ContentToolbar';
+import { ReactNode, useState } from 'react';
+import { Rtm, Sensor } from '../../../../core/model/rtm/monitoring';
+import AddSensor from '../setup/addSensor';
+import SensorsList from './sensorsList';
 
 export interface IProps {
   rtm: Rtm;
   isDirty: boolean;
   isError: boolean;
   onChange: (rtm: Rtm) => void;
-  onChangeSelectedSensorId: (id: string | null) => void;
+  onChangeSelectedSensor: (sensor: Sensor | null) => void;
   onSave: (rtm: Rtm) => void;
-  children: ReactFragment;
-  selectedSensorId: string | null;
+  children: ReactNode;
+  selectedSensor: Sensor | null;
 }
 
 const Sensors = (props: IProps) => {
@@ -29,30 +29,28 @@ const Sensors = (props: IProps) => {
   const handleAddSensor = (sensor: Sensor) => {
     const rtm = Rtm.fromObject(props.rtm.toObject());
     rtm.addSensor(sensor);
-    props.onChange(rtm);
     props.onSave(rtm);
     setAddSensor(false);
-    props.onChangeSelectedSensorId(sensor.id);
+    props.onChangeSelectedSensor(sensor);
   };
 
   const handleCloneSensor = (id: string) => {
     const rtm = Rtm.fromObject(props.rtm.toObject());
     rtm.cloneSensor(id);
-    props.onChange(rtm);
+    props.onSave(rtm);
   };
 
   const handleRemoveSensor = (id: string) => {
     const rtm = Rtm.fromObject(props.rtm.toObject());
     rtm.removeSensor(id);
-    props.onChange(rtm);
     props.onSave(rtm);
 
     if (rtm.sensors.length === 0) {
-      props.onChangeSelectedSensorId(null);
+      props.onChangeSelectedSensor(null);
       return;
     }
 
-    props.onChangeSelectedSensorId(rtm.sensors.first.id);
+    props.onChangeSelectedSensor(rtm.sensors.first);
   };
 
   return (
@@ -60,10 +58,10 @@ const Sensors = (props: IProps) => {
       <Grid>
         <Grid.Row>
           <Grid.Column width={4}>
-            <SensorList
+            <SensorsList
               sensors={props.rtm.sensors.all}
-              selectedSensor={props.selectedSensorId}
-              onChangeSelectedSensor={props.onChangeSelectedSensorId}
+              selectedSensor={props.selectedSensor}
+              onChangeSelectedSensor={props.onChangeSelectedSensor}
               onAdd={onAddNewSensor}
               onClone={handleCloneSensor}
               onRemove={handleRemoveSensor}
@@ -73,16 +71,7 @@ const Sensors = (props: IProps) => {
           <Grid.Column width={12}>
             <Grid>
               <Grid.Row>
-                <Grid.Column width={16}>
-                  <ContentToolBar
-                    onSave={props.onSave}
-                    isDirty={props.isDirty}
-                    isError={props.isError}
-                    buttonSave={!props.rtm.readOnly}
-                    buttonImport={false}
-                  />
-                  {props.children}
-                </Grid.Column>
+                <Grid.Column width={16}>{props.children}</Grid.Column>
               </Grid.Row>
             </Grid>
           </Grid.Column>

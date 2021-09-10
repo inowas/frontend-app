@@ -11,20 +11,20 @@ import {
   Table,
 } from 'semantic-ui-react';
 import { ChangeEvent, useState } from 'react';
-import { ISensorParameter } from '../../../core/model/rtm/monitoring/Sensor.type';
-import { ParameterCollection } from '../../../core/model/rtm/monitoring/ParameterCollection';
+import { ISensorParameter } from '../../../../core/model/rtm/monitoring/Sensor.type';
+import { ParameterCollection } from '../../../../core/model/rtm/monitoring/ParameterCollection';
 import { Point } from 'geojson';
-import { Rtm, Sensor } from '../../../core/model/rtm/monitoring';
-import { SensorMap } from './index';
-import { parameterList } from '../defaults';
+import { Rtm, Sensor } from '../../../../core/model/rtm/monitoring';
+import { parameterList } from '../../defaults';
+import SensorMap from './sensorMap';
 import Uuid from 'uuid';
 
 interface IProps {
   rtm: Rtm;
   sensor: Sensor | null;
-  selectedParameterId: string | null;
+  selectedParameter: ISensorParameter | null;
   onChange: (sensor: Sensor) => void;
-  onChangeSelectedParameterId: (id: string) => void;
+  onChangeSelectedParameter: (parameter: ISensorParameter) => void;
 }
 
 interface IActiveInput {
@@ -36,11 +36,8 @@ const SensorMetadata = (props: IProps) => {
   const [activeInput, setActiveInput] = useState<IActiveInput | null>(null);
   const [customParameter, setCustomParameter] = useState<ISensorParameter | null>(null);
 
-  const handleLocalChange = (e: ChangeEvent<HTMLInputElement>, data: InputOnChangeData) =>
-    setActiveInput({
-      name: data.name,
-      value: data.value,
-    });
+  const handleLocalChange = (e: ChangeEvent<HTMLInputElement>, { name, value }: InputOnChangeData) =>
+    setActiveInput({ name, value });
 
   const handleChangeCustomParameter = (e: ChangeEvent<HTMLInputElement>, { name, value }: InputOnChangeData) => {
     if (customParameter) {
@@ -121,7 +118,7 @@ const SensorMetadata = (props: IProps) => {
         params.add({
           id,
           type: pType,
-          description: parameterList.filter((i) => i.type === pType)[0].description,
+          description: parameterList.filter((i: ISensorParameter) => i.type === pType)[0].description,
           dataSources: [],
           processings: [],
         });
@@ -142,17 +139,6 @@ const SensorMetadata = (props: IProps) => {
   };
 
   const handleEditParameter = (param: ISensorParameter) => () => setCustomParameter(param);
-
-  const getDescription = (param: ISensorParameter) => {
-    const defaultParameter = parameterList.filter((i) => i.type === param.type);
-    if (defaultParameter.length > 0) {
-      return defaultParameter[0].description;
-    }
-    if (param.description !== '') {
-      return param.description;
-    }
-    return 'Other';
-  };
 
   if (!props.sensor) {
     return <h1>Please Select or add a Sensor</h1>;
@@ -223,15 +209,15 @@ const SensorMetadata = (props: IProps) => {
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {props.sensor.parameters.all.map((p) => (
-                <Table.Row key={p.id} selected={props.selectedParameterId === p.id}>
-                  <Table.Cell onClick={() => props.onChangeSelectedParameterId(p.id)} style={{ cursor: 'Pointer' }}>
-                    {props.selectedParameterId === p.id ? (
+              {props.sensor.parameters.all.map((p: ISensorParameter) => (
+                <Table.Row key={p.id} selected={props.selectedParameter?.id === p.id}>
+                  <Table.Cell onClick={() => props.onChangeSelectedParameter(p)} style={{ cursor: 'Pointer' }}>
+                    {props.selectedParameter?.id === p.id ? (
                       <Label ribbon={true} color={'red'}>
-                        {getDescription(p)}
+                        {p.description}
                       </Label>
                     ) : (
-                      getDescription(p)
+                      p.description
                     )}
                   </Table.Cell>
                   <Table.Cell>{p.dataSources.length}</Table.Cell>
@@ -262,11 +248,11 @@ const SensorMetadata = (props: IProps) => {
                       >
                         <Dropdown.Menu>
                           <Dropdown.Header>Choose type</Dropdown.Header>
-                          {parameterList.map((o) => (
+                          {parameterList.map((p: ISensorParameter) => (
                             <Dropdown.Item
-                              key={o.id}
-                              text={o.description + (o.unit ? ` (${o.unit})` : '')}
-                              onClick={handleAddParameter(o.id)}
+                              key={p.id}
+                              text={p.description + (p.unit ? ` (${p.unit})` : '')}
+                              onClick={handleAddParameter(p.id)}
                             />
                           ))}
                         </Dropdown.Menu>
