@@ -1,4 +1,5 @@
-import {Array2D} from '../../../../../core/model/geometry/Array2D.type';
+import { Array2D } from '../../../../../core/model/geometry/Array2D.type';
+import { Button, Form, Icon, InputProps } from 'semantic-ui-react';
 import {
   CartesianGrid,
   LabelProps,
@@ -8,12 +9,12 @@ import {
   ResponsiveContainer,
   Tooltip,
   XAxis,
-  YAxis
+  YAxis,
 } from 'recharts';
-import {EResultType} from './flowResults';
-import {Form, InputProps} from 'semantic-ui-react';
-import {misc} from '../../../defaults/colorScales';
-import React, {ChangeEvent, useEffect, useState} from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { EResultType } from './flowResults';
+import { exportData } from '../../../../shared/simpleTools/helpers';
+import { misc } from '../../../defaults/colorScales';
 
 interface IData {
   sp: string;
@@ -36,10 +37,11 @@ const TimeSeriesChart = (props: IProps) => {
     const d: IData[] = [];
     const stressperiods = props.selectedCells[0][2].map((r) => r[0]);
 
-    let min = NaN, max = NaN;
+    let min = NaN,
+      max = NaN;
 
     stressperiods.forEach((sp, key) => {
-      const obj: IData = {sp: sp.toString()};
+      const obj: IData = { sp: sp.toString() };
       props.selectedCells.forEach((c) => {
         if (isNaN(min) || c[2][key][1] < min) {
           min = Math.floor(c[2][key][1]);
@@ -57,11 +59,11 @@ const TimeSeriesChart = (props: IProps) => {
 
   const getYAxisLabel = (): LabelProps => {
     if (props.type === 'head') {
-      return {value: 'Head (m asl)', position: 'insideLeft', angle: -90, fill: '#4C4C4C', fontSize: '13px'};
+      return { value: 'Head (m asl)', position: 'insideLeft', angle: -90, fill: '#4C4C4C', fontSize: '13px' };
     }
 
     if (props.type === 'drawdown') {
-      return {value: 'Drawdown (m)', position: 'insideLeft', angle: -90, fill: '#4C4C4C', fontSize: '13px'};
+      return { value: 'Drawdown (m)', position: 'insideLeft', angle: -90, fill: '#4C4C4C', fontSize: '13px' };
     }
 
     return {};
@@ -75,9 +77,9 @@ const TimeSeriesChart = (props: IProps) => {
       setMinMax([minMax[0], parseFloat(activeValue)]);
     }
     setActiveInput(null);
-  }
+  };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>, {name, value}: InputProps) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>, { name, value }: InputProps) => {
     setActiveInput(name);
     setActiveValue(value);
   };
@@ -106,20 +108,25 @@ const TimeSeriesChart = (props: IProps) => {
           />
         </Form.Group>
       </Form>
+      <div className="downloadButtons">
+        <Button compact={true} basic={true} icon={true} size={'small'} onClick={exportData(data, 'timeSeries')}>
+          <Icon name="download" /> CSV
+        </Button>
+      </div>
       <ResponsiveContainer aspect={1.5}>
         <LineChart data={data}>
-          <XAxis dataKey="sp" domain={['dataMin', 'dataMax']}/>
-          <YAxis label={getYAxisLabel()} domain={minMax}/>
-          <CartesianGrid strokeDasharray="3 3"/>
-          <Tooltip/>
-          <ReferenceLine stroke="#000" strokeDasharray="3 3"/>
+          <XAxis dataKey="sp" domain={['dataMin', 'dataMax']} />
+          <YAxis label={getYAxisLabel()} domain={minMax} />
+          <CartesianGrid strokeDasharray="3 3" />
+          <Tooltip />
+          <ReferenceLine stroke="#000" strokeDasharray="3 3" />
           {props.selectedCells.map((c, key) => (
             <Line
               key={key}
               type="monotone"
               dataKey={`${c[0]}_${c[1]}`}
               stroke={key < misc.length ? misc[key] : misc[misc.length - 1]}
-              activeDot={{r: 8}}
+              activeDot={{ r: 8 }}
             />
           ))}
         </LineChart>
