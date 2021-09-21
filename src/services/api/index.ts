@@ -294,7 +294,7 @@ export const fetchCalculationResultsTransport = (
 ) => {
   const url =
     `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/concentration/substance/${substance}/` +
-    `layers/${layer}/totims/${totim}`;
+    `layers/${layer}/idx/${totim}`;
 
   return axios
     .request({

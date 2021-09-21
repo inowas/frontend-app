@@ -37,6 +37,26 @@ const TransportResults = (props: IProps) => {
 
   const history = useHistory();
 
+  const fetchData = ({ substance, layer, totim }: { substance: number; layer: number; totim: number }) => {
+    if (!calculation) {
+      return null;
+    }
+    const calculationId = calculation.id;
+    setIsLoading(true);
+
+    fetchCalculationResultsTransport(
+      { calculationId, substance: selectedSubstance, layer, totim },
+      (cData: Array2D<number>) => {
+        setSelectedLay(layer);
+        setSelectedSubstance(substance);
+        setSelectedTotim(totim);
+        setData(cData);
+        setIsLoading(false);
+      },
+      () => null
+    );
+  };
+
   useEffect(() => {
     if (model === null) {
       return;
@@ -92,26 +112,6 @@ const TransportResults = (props: IProps) => {
         model.isPublic
       ),
       () => history.push('/tools/T07/' + scenarioAnalysisId),
-      () => null
-    );
-  };
-
-  const fetchData = ({ substance, layer, totim }: { substance: number; layer: number; totim: number }) => {
-    if (!calculation) {
-      return null;
-    }
-    const calculationId = calculation.id;
-    setIsLoading(true);
-
-    fetchCalculationResultsTransport(
-      { calculationId, substance: selectedSubstance, layer, totim },
-      (cData: Array2D<number>) => {
-        setSelectedLay(layer);
-        setSelectedSubstance(substance);
-        setSelectedTotim(totim);
-        setData(cData);
-        setIsLoading(false);
-      },
       () => null
     );
   };
