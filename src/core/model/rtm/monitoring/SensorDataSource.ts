@@ -165,7 +165,7 @@ class SensorDataSource extends GenericObject<ISensorDataSource> {
   get end(): number | null {
     const end = this.urlSearchParams.get('end');
     if (end === null) {
-      return this.data ? this.data[this.data.length - 1].timeStamp : null;
+      return this.data && this.data.length > 0 ? this.data[this.data.length - 1].timeStamp : null;
     }
 
     return parseInt(end, 10);
@@ -321,7 +321,7 @@ class SensorDataSource extends GenericObject<ISensorDataSource> {
 
   public async loadData() {
     if (this._props.data) {
-      return await this._props.data;
+      return this._props.data;
     }
 
     this._props.fetching = true;

@@ -1,8 +1,7 @@
 import { DataPoint, LTOB } from 'downsample';
 import { DataSource, IDateTimeValue } from '../../../../../core/model/rtm/monitoring/Sensor.type';
-import { Header } from 'semantic-ui-react';
+import { FileDataSource, SensorDataSource } from '../../../../../core/model/rtm/monitoring';
 import { ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis } from 'recharts';
-import { SensorDataSource } from '../../../../../core/model/rtm/monitoring';
 import moment from 'moment';
 
 interface IProps {
@@ -16,11 +15,7 @@ const DataSourceChart = ({ dataSource }: IProps) => {
     return moment.unix(dt).format('YYYY/MM/DD');
   };
 
-  if (!(dataSource instanceof SensorDataSource)) {
-    return <Header as={'h2'}>No data</Header>;
-  }
-
-  const { data } = dataSource;
+  const data = dataSource instanceof FileDataSource ? dataSource.filteredData : dataSource.data;
   if (!data) {
     return null;
   }
@@ -32,6 +27,8 @@ const DataSourceChart = ({ dataSource }: IProps) => {
     })),
     200
   ) as DataPoint[];
+
+  const parameter = dataSource instanceof SensorDataSource ? dataSource.parameter : '';
 
   return (
     <ResponsiveContainer height={300}>
@@ -46,12 +43,12 @@ const DataSourceChart = ({ dataSource }: IProps) => {
           tickFormatter={formatDateTimeTicks}
           type={'number'}
         />
-        <YAxis dataKey={'y'} name={dataSource.parameter} domain={['auto', 'auto']} />
+        <YAxis dataKey={'y'} name={parameter} domain={['auto', 'auto']} />
         <Scatter
           data={downSampledDataLTOB}
           line={{ stroke: '#1eb1ed', strokeWidth: 2 }}
           lineType={'joint'}
-          name={dataSource.parameter}
+          name={parameter}
           shape={<RenderNoShape />}
         />
       </ScatterChart>

@@ -49,6 +49,10 @@ export const useSensorDatasource = (ds: SensorDataSource | null) => {
           setDataSource(ds.toObject());
         }
       });
+    } else {
+      fetchMetaData(ds.server, async (d) => {
+        setDataSource(ds.toObject());
+      });
     }
   }, [ds]);
 

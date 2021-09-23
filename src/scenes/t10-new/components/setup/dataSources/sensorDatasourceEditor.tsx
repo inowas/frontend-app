@@ -11,15 +11,14 @@ import {
   Segment,
 } from 'semantic-ui-react';
 import { DatePicker } from '../../../../shared/uiComponents';
-import { MouseEvent, SyntheticEvent, useState } from 'react';
 import { IDatePickerProps } from '../../../../shared/uiComponents/DatePicker';
-import { IDateTimeValue } from '../../../../../core/model/rtm/monitoring/Sensor.type';
 import { ISensorMetaData, useSensorDatasource } from '../../hooks/useSensorDatasource';
+import { MouseEvent, SyntheticEvent, useState } from 'react';
 import { SensorDataSource } from '../../../../../core/model/rtm/monitoring';
-import { maxBy, minBy, uniqBy } from 'lodash';
+import { parseDate } from './helpers';
 import { servers } from '../../../defaults';
+import { uniqBy } from 'lodash';
 import DataSourceChart from './dataSourceChart';
-import moment from 'moment';
 import uuid from 'uuid';
 
 interface IProps {
@@ -53,7 +52,7 @@ const SensorDatasourceEditor = (props: IProps) => {
   };
 
   const handleChangeDate = (e: SyntheticEvent<Element>, { name, value }: IDatePickerProps) => {
-    if (!(dataSource instanceof SensorDataSource)) {
+    if (!dataSource) {
       return;
     }
 
@@ -71,11 +70,10 @@ const SensorDatasourceEditor = (props: IProps) => {
   const handleChange = (e: SyntheticEvent<Element>, { name, value }: InputProps) => {
     setActiveInput(name);
     setActiveValue(value);
-    console.log('HANDLE CHANGE', { name, value });
   };
 
   const handleChangeDropdown = (e: SyntheticEvent<Element>, { name, value }: DropdownProps) => {
-    if (!(dataSource instanceof SensorDataSource) || typeof value !== 'string') {
+    if (!dataSource || typeof value !== 'string') {
       return;
     }
 
@@ -112,7 +110,7 @@ const SensorDatasourceEditor = (props: IProps) => {
   };
 
   const handleReset = (e: MouseEvent, { name }: ButtonProps) => {
-    if (!(dataSource instanceof SensorDataSource)) {
+    if (!dataSource) {
       return;
     }
 
@@ -128,13 +126,11 @@ const SensorDatasourceEditor = (props: IProps) => {
   };
 
   const handleSave = () => {
-    if (!(dataSource instanceof SensorDataSource)) {
+    if (!dataSource) {
       return;
     }
     props.onSave(dataSource);
   };
-
-  const isAdding = () => !(props.dataSource instanceof SensorDataSource);
 
   const getParametersFromMetadata = (ds: SensorDataSource, smd: ISensorMetaData[]) => {
     if (!ds) {
@@ -163,27 +159,10 @@ const SensorDatasourceEditor = (props: IProps) => {
     return ['RAW', '6h', '12h', '1d', '2d', '1w'].map((v) => ({ key: v, value: v, text: v }));
   };
 
-  const parseDate = (ts: number | string | null) => {
-    if (ts === null || (typeof ts === 'number' && isNaN(ts))) {
-      return null;
-    }
-    if (typeof ts === 'string') {
-      ts = parseInt(ts, 10);
-    }
-
-    const d = moment.unix(ts);
-
-    if (d.isValid()) {
-      return d.toDate();
-    }
-
-    return null;
-  };
-
   return (
     <Modal centered={false} open={true} dimmer={'blurring'}>
-      {isAdding() && <Modal.Header>Add Datasource</Modal.Header>}
-      {!isAdding() && <Modal.Header>Edit Datasource</Modal.Header>}
+      {!dataSource && <Modal.Header>Add Datasource</Modal.Header>}
+      {dataSource && <Modal.Header>Edit Datasource</Modal.Header>}
       <Modal.Content>
         <Grid padded={true}>
           <Grid.Row>
