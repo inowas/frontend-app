@@ -5,7 +5,7 @@ import { BoundaryFactory } from '../../../../core/model/modflow/boundaries';
 import { ColorLegend } from '../../../shared/rasterData';
 import { FlopyModflowMfbas } from '../../../../core/model/flopy/packages/mf';
 import { FlopyPackages } from '../../../../core/model/flopy';
-import { GeoJSON, LayerGroup, LayersControl, MapConsumer, MapContainer, MapContainerProps, Pane, useMapEvents } from 'react-leaflet';
+import { GeoJSON, LayerGroup, LayersControl, MapConsumer, MapContainer, MapContainerProps, Pane } from 'react-leaflet';
 import { IReactLeafletHeatMapProps } from '../../../shared/rasterData/ReactLeafletHeatMapCanvasOverlay.type';
 import { IRootReducer } from '../../../../reducers';
 import { LeafletEvent, LeafletMouseEvent, Map } from 'leaflet';
