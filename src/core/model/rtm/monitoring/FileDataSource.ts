@@ -153,6 +153,8 @@ class FileDataSource extends GenericObject<IFileDataSource> {
   }
 
   public resetBegin() {
+    console.log(this.data);
+
     if (this.data && this.data.length > 0) {
       this.begin = this.data[0].timeStamp;
     }

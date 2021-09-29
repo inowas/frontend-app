@@ -66,7 +66,6 @@ const DataSources = ({ rtm, parameter, onChange }: IProps) => {
   };
 
   const handleUpdateDataSource = (ds: DataSource) => {
-    console.log({ ds });
     if (!parameter) {
       return;
     }

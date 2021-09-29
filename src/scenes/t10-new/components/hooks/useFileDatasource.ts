@@ -13,7 +13,7 @@ export const useFileDatasource = (ds: FileDataSource | null) => {
   useEffect(() => {
     if (ds) {
       const ld = async () => {
-        ds.data = await ds.loadData();
+        await ds.loadData();
         setDataSource(ds.toObject());
       };
 
@@ -44,7 +44,6 @@ export const useFileDatasource = (ds: FileDataSource | null) => {
 
     if (!dataSource) {
       const cDataSource = await FileDataSource.fromData(cData);
-      console.log(cDataSource);
       return setDataSource(cDataSource.toObject());
     }
 
@@ -54,7 +53,7 @@ export const useFileDatasource = (ds: FileDataSource | null) => {
   };
 
   const updateDataSource = async (ds: FileDataSource) => {
-    ds.data = await ds.loadData();
+    await ds.loadData();
     setDataSource(ds.toObject());
   };
 

@@ -30,7 +30,7 @@ const FileDatasourceEditor = (props: IProps) => {
   const [activeValue, setActiveValue] = useState<string>('');
   const [dateTimeField, setDateTimeField] = useState<number | null>(null);
   const [dateTimeFormat, setDateTimeFormat] = useState<string>('YYYY/MM/DD');
-  const [firstRowIsHeader, setFirstRowIsHeader] = useState<boolean>(false);
+  const [firstRowIsHeader, setFirstRowIsHeader] = useState<boolean>(true);
   const [parameterField, setParameterField] = useState<number | null>(null);
 
   const { dataSource, isParsing, metadata, updateData, updateDataSource, uploadFile } = useFileDatasource(
@@ -121,12 +121,18 @@ const FileDatasourceEditor = (props: IProps) => {
       cDataSource.resetEnd();
     }
 
+    if (name === 'min') {
+      cDataSource.resetMin();
+    }
+
+    if (name === 'max') {
+      cDataSource.resetMax();
+    }
+
     updateDataSource(cDataSource);
   };
 
   const handleUploadFile = (e: ChangeEvent<HTMLInputElement>) => uploadFile(e);
-
-  console.log({ dataSource });
 
   return (
     <Modal centered={false} open={true} dimmer={'blurring'}>
@@ -163,71 +169,69 @@ const FileDatasourceEditor = (props: IProps) => {
                 </Form>
               </Grid.Column>
             </Grid.Row>
-            <Grid.Row>
-              <Grid.Column>
-                <Segment
-                  raised={true}
-                  loading={isParsing}
-                  color={metadata && metadata.errors.length > 0 ? 'red' : undefined}
-                >
-                  {metadata && metadata.errors.length > 0 && (
-                    <div>
-                      <Label as={'div'} color={'red'} ribbon={true}>
-                        Parsing errors
-                      </Label>
-                      <List divided={true} relaxed={true} />
-                      {metadata.errors.map((e, key) => (
-                        <List.Item key={key}>
-                          <List.Content>
-                            <List.Header>
-                              {e.type}: {e.code}
-                            </List.Header>
-                            <List.Description as="a">
-                              {e.message} in row {e.row}
-                            </List.Description>
-                          </List.Content>
-                        </List.Item>
-                      ))}
-                    </div>
-                  )}
-                  {metadata && metadata.errors.length === 0 && (
-                    <div>
-                      <Label as={'div'} color={'blue'} ribbon={true}>
-                        Metadata
-                      </Label>
-                      <Form>
-                        <Form.Group>
-                          <Form.Dropdown
-                            label={'Datetime'}
-                            name={'dateTimeField'}
-                            selection={true}
-                            value={dateTimeField !== null ? dateTimeField : undefined}
-                            onChange={handleChangeDropdown}
-                            options={metadata.data[0].map((s: string, idx: number) => ({
-                              key: idx,
-                              value: idx,
-                              text: firstRowIsHeader ? s : `Column ${idx + 1}`,
-                            }))}
-                          />
-                          <Form.Dropdown
-                            label={'Parameter'}
-                            name={'parameterField'}
-                            selection={true}
-                            value={parameterField !== null ? parameterField : undefined}
-                            onChange={handleChangeDropdown}
-                            options={metadata.data[0].map((s: string, idx: number) => ({
-                              key: idx,
-                              value: idx,
-                              text: firstRowIsHeader ? s : `Column ${idx + 1}`,
-                            }))}
-                          />
-                        </Form.Group>
-                      </Form>
-                    </div>
-                  )}
-                </Segment>
-              </Grid.Column>
-            </Grid.Row>
+            {metadata && (
+              <Grid.Row>
+                <Grid.Column>
+                  <Segment raised={true} loading={isParsing} color={metadata.errors.length > 0 ? 'red' : undefined}>
+                    {metadata.errors.length > 0 && (
+                      <div>
+                        <Label as={'div'} color={'red'} ribbon={true}>
+                          Parsing errors
+                        </Label>
+                        <List divided={true} relaxed={true} />
+                        {metadata.errors.map((e, key) => (
+                          <List.Item key={key}>
+                            <List.Content>
+                              <List.Header>
+                                {e.type}: {e.code}
+                              </List.Header>
+                              <List.Description as="a">
+                                {e.message} in row {e.row}
+                              </List.Description>
+                            </List.Content>
+                          </List.Item>
+                        ))}
+                      </div>
+                    )}
+                    {metadata.errors.length === 0 && (
+                      <div>
+                        <Label as={'div'} color={'blue'} ribbon={true}>
+                          Metadata
+                        </Label>
+                        <Form>
+                          <Form.Group>
+                            <Form.Dropdown
+                              label={'Datetime'}
+                              name={'dateTimeField'}
+                              selection={true}
+                              value={dateTimeField !== null ? dateTimeField : undefined}
+                              onChange={handleChangeDropdown}
+                              options={metadata.data[0].map((s: string, idx: number) => ({
+                                key: idx,
+                                value: idx,
+                                text: firstRowIsHeader ? s : `Column ${idx + 1}`,
+                              }))}
+                            />
+                            <Form.Dropdown
+                              label={'Parameter'}
+                              name={'parameterField'}
+                              selection={true}
+                              value={parameterField !== null ? parameterField : undefined}
+                              onChange={handleChangeDropdown}
+                              options={metadata.data[0].map((s: string, idx: number) => ({
+                                key: idx,
+                                value: idx,
+                                text: firstRowIsHeader ? s : `Column ${idx + 1}`,
+                              }))}
+                            />
+                          </Form.Group>
+                        </Form>
+                      </div>
+                    )}
+                  </Segment>
+                </Grid.Column>
+              </Grid.Row>
+            )}
             {dataSource?.data && (
               <Grid.Row>
                 <Grid.Column width={8}>
@@ -269,30 +273,38 @@ const FileDatasourceEditor = (props: IProps) => {
                     </Form>
                   </Segment>
                 </Grid.Column>
-                <Grid.Column width={8} loading={isParsing}>
+                <Grid.Column width={8}>
                   <Segment raised={true}>
                     <Label as={'div'} color={'blue'} ribbon={true}>
                       Value range
                     </Label>
                     <Form>
                       <Form.Group>
+                        <Form.Field>
+                          <Button icon onClick={handleReset} size="small" name="max" style={{ marginTop: '22px' }}>
+                            <Icon name="refresh" />
+                          </Button>
+                        </Form.Field>
                         <Form.Input
                           label={'Upper limit'}
                           name={'max'}
                           type={'number'}
                           value={activeInput === 'max' ? activeValue : dataSource.max || undefined}
-                          disabled={dataSource.max === null}
                           onChange={handleChange}
                           onBlur={handleBlur}
                         />
                       </Form.Group>
                       <Form.Group>
+                        <Form.Field>
+                          <Button icon onClick={handleReset} size="small" name="min" style={{ marginTop: '22px' }}>
+                            <Icon name="refresh" />
+                          </Button>
+                        </Form.Field>
                         <Form.Input
                           label={'Lower limit'}
                           name={'min'}
                           type={'number'}
                           value={activeInput === 'min' ? activeValue : dataSource.min || undefined}
-                          disabled={dataSource.min === null}
                           onChange={handleChange}
                           onBlur={handleBlur}
                         />

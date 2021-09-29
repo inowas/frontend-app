@@ -126,6 +126,7 @@ const RtmTool = () => {
 
     const cRtm = Rtm.fromObject(rtm.toObject());
     cRtm.updateSensor(cSensor);
+
     handleSave(cRtm);
   };
 
@@ -164,7 +165,7 @@ const RtmTool = () => {
 
   const handleSave = (r: Rtm) => {
     setIsSaving(true);
-    sendCommand(SimpleToolsCommand.updateToolInstance(r.toObject()), () => {
+    sendCommand(SimpleToolsCommand.updateToolInstance(r.toObjectWithoutData()), () => {
       dispatch(updateRtm(r));
       setIsSaving(false);
     });
