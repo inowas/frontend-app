@@ -122,6 +122,14 @@ const SensorDatasourceEditor = (props: IProps) => {
       dataSource.end = null;
     }
 
+    if (name === 'max') {
+      dataSource.max = null;
+    }
+
+    if (name === 'min') {
+      dataSource.min = null;
+    }
+
     updateDataSource(dataSource);
   };
 
@@ -306,6 +314,11 @@ const SensorDatasourceEditor = (props: IProps) => {
                   </Label>
                   <Form>
                     <Form.Group>
+                      <Form.Field>
+                        <Button icon onClick={handleReset} size="small" name="max" style={{ marginTop: '22px' }}>
+                          <Icon name="refresh" />
+                        </Button>
+                      </Form.Field>
                       <Form.Input
                         label={'Upper limit'}
                         name={'max'}
@@ -317,6 +330,11 @@ const SensorDatasourceEditor = (props: IProps) => {
                       />
                     </Form.Group>
                     <Form.Group>
+                      <Form.Field>
+                        <Button icon onClick={handleReset} size="small" name="min" style={{ marginTop: '22px' }}>
+                          <Icon name="refresh" />
+                        </Button>
+                      </Form.Field>
                       <Form.Input
                         label={'Lower limit'}
                         name={'min'}

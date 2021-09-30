@@ -48,10 +48,12 @@ export const servers = [
     url: 'uit-sensors.inowas.com',
     path: 'sensors',
   },
+];
+
+export const prometheusServers = [
   {
-    protocol: 'xxx',
-    url: 'xxx',
-    path: 'xxx',
+    protocol: 'https',
+    url: 'prometheus.inowas.com',
   },
 ];
 

@@ -92,11 +92,11 @@ export const useSensorDatasource = (ds: SensorDataSource | null) => {
     }
   };
 
-  const updateDataSource = async (ds: SensorDataSource) => {
+  const updateDataSource = async (s: SensorDataSource) => {
     setIsFetching(true);
-    ds.data = await ds.loadData();
+    await s.loadData();
     setIsFetching(false);
-    setDataSource(ds.toObject());
+    setDataSource(s.toObject());
   };
 
   const updateServer = (server: string) => {
