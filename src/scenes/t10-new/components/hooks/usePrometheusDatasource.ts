@@ -41,7 +41,7 @@ export const usePrometheusDatasource = (ds: PrometheusDataSource | null) => {
 
     setAutoUpdate(true);
     cDataSource.end = undefined;
-    setDataSource(ds);
+    setDataSource(cDataSource.toObject());
   };
 
   const updateDataSource = async (s: PrometheusDataSource) => {

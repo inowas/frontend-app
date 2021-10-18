@@ -129,6 +129,7 @@ const PrometheusDatasourceEditor = (props: IProps) => {
                   </Label>
                   <Form>
                     <DatePicker
+                      clearable={false}
                       label="Start"
                       name="start"
                       value={parseDate(dataSource.start)}
@@ -145,6 +146,7 @@ const PrometheusDatasourceEditor = (props: IProps) => {
                     />
                     <Form.Group>
                       <DatePicker
+                        clearable={false}
                         disabled={autoUpdate}
                         label="End"
                         name="end"
