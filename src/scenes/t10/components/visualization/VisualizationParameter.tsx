@@ -5,7 +5,7 @@ import { Line, LineChart, ReferenceArea, ReferenceLine, ResponsiveContainer, Too
 import { ProcessingCollection } from '../../../../core/model/rtm/processing';
 import { downloadFile, exportChartImage } from '../../../shared/simpleTools/helpers';
 import { useEffect, useRef, useState } from 'react';
-import CustomTooltip from './customToolTip';
+import CustomTooltip from './customTooltip';
 import TimeSlider from './timeSlider';
 import Uuid from 'uuid';
 import VisualizationMap from './visualizationMap';

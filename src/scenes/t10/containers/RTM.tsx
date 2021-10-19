@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import DataSources from '../components/setup/dataSources';
-import Navigation from './Navigation';
+import Navigation from './navigation';
 import Processing from '../components/processing/processing';
 import SensorMetaData from '../components/shared/sensorMetaData';
 import Sensors from '../components/shared/sensors';

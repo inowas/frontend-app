@@ -1,4 +1,4 @@
-import CreateRtm from './CreateRtm';
-import RtmTool from './Rtm';
+import CreateRtm from './createRTM';
+import RtmTool from './rtm';
 
 export { CreateRtm, RtmTool };
