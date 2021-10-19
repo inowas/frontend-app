@@ -10,7 +10,7 @@ import { clear, updateRtm } from '../actions/actions';
 import { fetchUrl, sendCommand } from '../../../services/api';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { Redirect, useHistory, useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import DataSources from '../components/setup/dataSources';
 import Navigation from './Navigation';
 import Processing from '../components/processing/processing';
@@ -27,15 +27,9 @@ const navigation = [
   },
 ];
 
-interface IError {
-  id: string;
-  message: string;
-}
-
 const tool = 'T10';
 
 const RtmTool = () => {
-  const [errors, setErrors] = useState<IError[]>([]);
   const [isDirty, setDirty] = useState<boolean>(false);
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState<boolean>(false);
@@ -198,7 +192,7 @@ const RtmTool = () => {
       <Sensors
         rtm={rtm}
         isDirty={isDirty}
-        isError={errors.length > 0}
+        isError={false}
         onChange={handleChange}
         onChangeSelectedSensor={handleChangeSelectedSensor}
         onSave={handleSave}
