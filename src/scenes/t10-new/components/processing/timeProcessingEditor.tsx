@@ -1,5 +1,16 @@
 import 'react-semantic-ui-datepickers/dist/react-semantic-ui-datepickers.css';
-import { Button, DropdownProps, Form, Grid, InputOnChangeData, Label, Modal, Segment } from 'semantic-ui-react';
+import {
+  Button,
+  Dimmer,
+  DropdownProps,
+  Form,
+  Grid,
+  InputOnChangeData,
+  Label,
+  Loader,
+  Modal,
+  Segment,
+} from 'semantic-ui-react';
 import { DataSourceCollection } from '../../../../core/model/rtm/monitoring';
 import { ECutRule } from '../../../../core/model/rtm/processing/Processing.type';
 import { TimeProcessing } from '../../../../core/model/rtm/processing';
@@ -24,7 +35,11 @@ const TimeProcessingEditor = (props: IProps) => {
   const { processedData, processing, updateProcessing } = useTimeProcessing(props.processing || null, props.dsc);
 
   if (!processing) {
-    return null;
+    return (
+      <Dimmer active inverted>
+        <Loader inverted>Loading</Loader>
+      </Dimmer>
+    );
   }
 
   const handleSave = () => {

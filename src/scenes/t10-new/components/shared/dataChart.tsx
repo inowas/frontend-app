@@ -3,15 +3,16 @@ import { DataPoint } from 'downsample';
 import { DataSourceCollection } from '../../../../core/model/rtm/monitoring';
 import { IDateTimeValue } from '../../../../core/model/rtm/monitoring/Sensor.type';
 import { LTOB } from 'downsample';
-import { ProcessingCollection, TimeProcessing } from '../../../../core/model/rtm/processing';
+import { ProcessingCollection, TimeProcessing, ValueProcessing } from '../../../../core/model/rtm/processing';
 import { ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis } from 'recharts';
+import { cloneDeep } from 'lodash';
 import { exportChartData, exportChartImage } from '../../../shared/simpleTools/helpers';
 import { useEffect, useRef, useState } from 'react';
 import moment from 'moment';
 
 interface IProps {
   dataSources: DataSourceCollection;
-  processings?: ProcessingCollection | TimeProcessing;
+  processings?: ProcessingCollection | TimeProcessing | ValueProcessing;
   unit?: string;
 }
 
@@ -22,7 +23,7 @@ const DataChart = (props: IProps) => {
 
   useEffect(() => {
     async function f() {
-      const mergedData = await props.dataSources.mergedData();
+      const mergedData = await cloneDeep(props.dataSources).mergedData();
 
       if (props.processings) {
         const processedData = await props.processings.apply(mergedData);

@@ -50,7 +50,7 @@ export const useTimeProcessing = (tp: TimeProcessing | null, dsc: DataSourceColl
     }
   }, [mergeData, process, tp]);
 
-  const updateProcessing = (tp: TimeProcessing) => process(tp);
+  const updateProcessing = (t: TimeProcessing) => process(t);
 
   return {
     processedData,

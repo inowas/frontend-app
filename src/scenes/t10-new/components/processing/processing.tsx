@@ -43,20 +43,6 @@ const Processing = (props: IProps) => {
   const [addProcessing, setAddProcessing] = useState<string | null>(null);
   const [editProcessing, setEditProcessing] = useState<ValueProcessing | TimeProcessing | null>(null);
 
-  const handleUpdateDataSources = (dsc: DataSourceCollection) => {
-    const { parameter } = props;
-    if (!parameter) {
-      return;
-    }
-
-    parameter.dataSources = dsc.toObject();
-    setEditProcessing(null);
-    props.onChange(parameter);
-  };
-
-  const dsc = DataSourceCollection.fromObject(props.parameter.dataSources);
-  //dsc.mergedData().then(() => handleUpdateDataSources(dsc));
-
   const handleAddProcessing = (p: ValueProcessing | TimeProcessing) => {
     const { parameter } = props;
     if (!parameter) {
@@ -161,7 +147,6 @@ const Processing = (props: IProps) => {
       );
     }
 
-    // noinspection SuspiciousTypeOfGuard
     if (editProcessing && editProcessing instanceof ValueProcessing) {
       return (
         <ValueProcessingEditor
