@@ -1,17 +1,17 @@
-import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
-import {CircleMarker, FeatureGroup, Map} from 'react-leaflet';
-import {DrawEvents} from 'leaflet';
-import {EditControl} from 'react-leaflet-draw';
-import {GeoJson} from '../../../core/model/geometry/Geometry.type';
-import {Geometry} from '../../../core/model/modflow';
-import {Point} from 'geojson';
-import {Rtm, Sensor} from '../../../core/model/rtm/monitoring';
-import {SensorCollection} from '../../../core/model/rtm/monitoring/SensorCollection';
-import {getStyle} from '../../../services/geoTools/mapHelpers';
-import {uniqueId} from 'lodash';
-import {usePrevious} from '../../shared/simpleTools/helpers/customHooks';
-import CenterControl from '../../shared/leaflet/CenterControl';
-import React, {useEffect, useRef, useState} from 'react';
+import { BasicTileLayer } from '../../../../services/geoTools/tileLayers';
+import { CircleMarker, FeatureGroup, Map } from 'react-leaflet';
+import { DrawEvents } from 'leaflet';
+import { EditControl } from 'react-leaflet-draw';
+import { GeoJson } from '../../../../core/model/geometry/Geometry.type';
+import { Geometry } from '../../../../core/model/geometry';
+import { Point } from 'geojson';
+import { Rtm, Sensor } from '../../../../core/model/rtm/monitoring';
+import { SensorCollection } from '../../../../core/model/rtm/monitoring/SensorCollection';
+import { getStyle } from '../../../modflow/components/maps';
+import { uniqueId } from 'lodash';
+import { useEffect, useRef, useState } from 'react';
+import { usePrevious } from '../../../shared/simpleTools/helpers/customHooks';
+import CenterControl from '../../../shared/leaflet/CenterControl';
 import uuidv4 from 'uuid/v4';
 
 interface IProps {
@@ -25,8 +25,8 @@ interface IProps {
 
 const style = {
   map: {
-    height: '400px'
-  }
+    height: '400px',
+  },
 };
 
 const SensorMap = (props: IProps) => {
@@ -35,7 +35,7 @@ const SensorMap = (props: IProps) => {
     props.geometry ? Geometry.fromGeoJson(props.geometry).toObject() : null
   );
   const refMap = useRef<Map>(null);
-  const refPrevSensor = usePrevious<Sensor>(props.sensor);
+  const prevSensor = usePrevious<Sensor>(props.sensor);
 
   const setBoundingBox = () => {
     let bGeometry = props.rtm.geometry;
@@ -44,8 +44,16 @@ const SensorMap = (props: IProps) => {
         type: 'Feature',
         geometry: {
           type: 'Polygon',
-          coordinates: [[[13.74, 51.03], [13.75, 51.03], [13.75, 51.04], [13.74, 51.04], [13.74, 51.03]]]
-        }
+          coordinates: [
+            [
+              [13.74, 51.03],
+              [13.75, 51.03],
+              [13.75, 51.04],
+              [13.74, 51.04],
+              [13.74, 51.03],
+            ],
+          ],
+        },
       });
     }
     return bGeometry.getBoundsLatLng();
@@ -58,23 +66,22 @@ const SensorMap = (props: IProps) => {
     if (props.geometry && refMap.current) {
       refMap.current.leafletElement.panTo({
         lat: props.geometry.coordinates[1],
-        lng: props.geometry.coordinates[0]
+        lng: props.geometry.coordinates[0],
       });
     }
   }, [props.geometry]);
 
   useEffect(() => {
-    if (refPrevSensor && props.sensor && refPrevSensor.id !== props.sensor.id) {
+    if (prevSensor && props.sensor && prevSensor.id !== props.sensor.id) {
       if (refMap && refMap.current) {
         const latLng = {
           lat: props.sensor.geolocation.coordinates[1],
-          lng: props.sensor.geolocation.coordinates[0]
+          lng: props.sensor.geolocation.coordinates[0],
         };
         refMap.current.leafletElement.panTo(latLng);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.sensor]);
+  }, [props.sensor, prevSensor]);
 
   const handleCreated = (e: DrawEvents.Created) => {
     const cGeometry = Geometry.fromGeoJson(e.layer.toGeoJSON()).toObject() as Point;
@@ -102,11 +109,11 @@ const SensorMap = (props: IProps) => {
             marker: false,
             polyline: false,
             rectangle: false,
-            polygon: false
+            polygon: false,
           }}
           edit={{
             edit: !!geometry && !props.readOnly,
-            remove: false
+            remove: false,
           }}
           onCreated={handleCreated}
           onEdited={handleEdited}
@@ -124,49 +131,33 @@ const SensorMap = (props: IProps) => {
     return (
       <CircleMarker
         key={uniqueId(rGeometry.hash())}
-        center={[
-          rGeometry.coordinates[1],
-          rGeometry.coordinates[0]
-        ]}
+        center={[rGeometry.coordinates[1], rGeometry.coordinates[0]]}
         {...getStyle('sensor_active')}
       />
     );
   };
 
   const renderSensors = (sensors: SensorCollection) => {
-    return sensors.all.filter((s) => !props.sensor || (props.sensor && s.id !== props.sensor.id)).map((s) => {
-      const rGeometry = Geometry.fromGeoJson(s.geolocation);
-      return (
-        <CircleMarker
-          key={uniqueId(rGeometry.hash())}
-          center={[
-            rGeometry.coordinates[1],
-            rGeometry.coordinates[0]
-          ]}
-          {...getStyle('sensor')}
-        />
-      );
-    });
+    return sensors.all
+      .filter((s) => !props.sensor || (props.sensor && s.id !== props.sensor.id))
+      .map((s) => {
+        const rGeometry = Geometry.fromGeoJson(s.geolocation);
+        return (
+          <CircleMarker
+            key={uniqueId(rGeometry.hash())}
+            center={[rGeometry.coordinates[1], rGeometry.coordinates[0]]}
+            {...getStyle('sensor')}
+          />
+        );
+      });
   };
 
   return (
-    <Map
-      style={style.map}
-      bounds={boundingBox}
-      ref={refMap}
-      key={mapKey}
-    >
-      {refMap && refMap.current &&
-      <CenterControl
-        map={refMap.current}
-        bounds={boundingBox}
-      />
-      }
-      <BasicTileLayer/>
+    <Map style={style.map} bounds={boundingBox} ref={refMap} key={mapKey}>
+      {refMap && refMap.current && <CenterControl map={refMap.current} bounds={boundingBox} />}
+      <BasicTileLayer />
       {editControl()}
-      <FeatureGroup>
-        {renderSensors(props.rtm.sensors)}
-      </FeatureGroup>
+      <FeatureGroup>{renderSensors(props.rtm.sensors)}</FeatureGroup>
     </Map>
   );
 };

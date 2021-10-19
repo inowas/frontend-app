@@ -1,7 +1,4 @@
-import CreateRTM from './CreateRTM';
-import RTM from './RTM';
+import CreateRtm from './CreateRtm';
+import RtmTool from './Rtm';
 
-export {
-    CreateRTM,
-    RTM
-};
+export { CreateRtm, RtmTool };

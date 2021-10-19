@@ -1,283 +1,248 @@
-import {DataSources, Processing, SensorMetaData, Sensors, Visualization} from '../components/index';
-import {Grid, Icon, Message} from 'semantic-ui-react';
-import {IRtm} from '../../../core/model/rtm/monitoring/Rtm.type';
-import {ISensorParameter} from '../../../core/model/rtm/monitoring/Sensor.type';
-import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
-import {Redirect, useLocation, useParams, useRouteMatch} from 'react-router-dom';
-import {Rtm, Sensor} from '../../../core/model/rtm/monitoring';
-import {fetchUrl, sendCommand} from '../../../services/api';
-import AppContainer from '../../shared/AppContainer';
-import React, {useEffect, useState} from 'react';
+import { AppContainer } from '../../shared';
+import { DataSourceCollection, Rtm, Sensor } from '../../../core/model/rtm/monitoring';
+import { Dimmer, Grid, Icon, Loader } from 'semantic-ui-react';
+import { IRootReducer } from '../../../reducers';
+import { IRtm } from '../../../core/model/rtm/monitoring/Rtm.type';
+import { ISensor, ISensorParameter } from '../../../core/model/rtm/monitoring/Sensor.type';
+import { IToolMetaDataEdit } from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
+import { ToolMetaData } from '../../shared/simpleTools';
+import { clear, updateRtm } from '../actions/actions';
+import { fetchUrl, sendCommand } from '../../../services/api';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
+import DataSources from '../components/setup/dataSources';
+import Navigation from './Navigation';
+import Processing from '../components/processing/processing';
+import SensorMetaData from '../components/shared/sensorMetaData';
+import Sensors from '../components/shared/sensors';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
-import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import ToolNavigation from '../../shared/complexTools/toolNavigation';
+import Visualization from '../components/visualization/visualization';
 
-interface IRouterProps {
-    id: string;
-    property: string;
-    type?: string;
-}
-
-const menuItems = [
-    {
-        header: 'Sensors',
-        items: [
-            {
-                name: 'Setup',
-                property: 'sensor-setup',
-                icon: <Icon name="calendar alternate outline"/>
-            },
-            {
-                name: 'Processing',
-                property: 'sensor-processing',
-                icon: <Icon name="cube"/>
-            },
-            {
-                name: 'Visualization',
-                property: 'sensor-visualization',
-                icon: <Icon name="expand"/>
-            }
-        ]
-    }
-];
-
-const navigation = [{
+const navigation = [
+  {
     name: 'Documentation',
     path: 'https://inowas.com/tools',
-    icon: <Icon name="file"/>
-}];
+    icon: <Icon name="file" />,
+  },
+];
 
 const tool = 'T10';
 
-const RTM = () => {
+const RtmTool = () => {
+  const [isDirty, setDirty] = useState<boolean>(false);
+  const [isFetching, setIsFetching] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [selectedParameter, setSelectedParameter] = useState<ISensorParameter | null>(null);
+  const [selectedSensor, setSelectedSensor] = useState<ISensor | null>(null);
 
-    const params: IRouterProps = useParams();
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const { id, property } = useParams<{ id: string; property: string }>();
 
-    const {id} = params;
-    const match = useRouteMatch();
-    const location = useLocation();
+  const T10 = useSelector((state: IRootReducer) => state.T10);
+  const rtm = T10.rtm ? Rtm.fromObject(T10.rtm) : null;
 
-    const [isDirty, setDirty] = useState<boolean>(false);
-    const [isError, setError] = useState<boolean>(false);
-    const [fetching, setFetching] = useState<boolean>(false);
-    const [rtm, setRtm] = useState<IRtm | null>(null);
-    const [selectedSensorId, setSelectedSensorId] = useState<string | null>(null);
-    const [selectedParameterId, setSelectedParameterId] = useState<string | null>(null);
-
-    useEffect(() => {
-        setFetching(true);
-        fetchUrl(`tools/${tool}/${id}`,
-            (m: IRtm) => {
-                setRtm(m);
-                setFetching(false);
-                setDirty(false);
-            },
-            () => {
-                setFetching(false);
-                setError(false);
-            }
-        );
-    }, [id]);
-
-    useEffect(() => {
-        setDirty(true);
-    }, [rtm]);
-
-    useEffect(() => {
-        if (rtm === null || selectedSensorId === null) {
-            return setSelectedParameterId(null);
-        }
-
-        const sensor = Rtm.fromObject(rtm).sensors.findById(selectedSensorId);
-        if (sensor === null) {
-            return setSelectedParameterId(null);
-        }
-
-        if (sensor.parameters.length === 0) {
-            return setSelectedParameterId(null);
-        }
-
-        setSelectedParameterId(sensor.parameters.first.id);
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedSensorId]);
-
-    const handleUpdateSensor = (sensor: Sensor) => {
-        if (!rtm) {
-            return;
-        }
-
-        const lRtm = Rtm.fromObject(rtm);
-        lRtm.updateSensor(sensor);
-        setRtm(lRtm.toObject());
-        onSave(lRtm);
+  useEffect(() => {
+    return function () {
+      dispatch(clear());
     };
+  }, [dispatch]);
 
-    const handleUpdateParameter = (parameter: ISensorParameter) => {
-        if (!rtm) {
-            return;
+  useEffect(() => {
+    if (id) {
+      setIsFetching(true);
+      fetchUrl(
+        `tools/${tool}/${id}`,
+        (r: IRtm) => {
+          dispatch(updateRtm(Rtm.fromObject(r)));
+
+          if (r.data.sensors.length > 0) {
+            const cSensor = Sensor.fromObject(r.data.sensors[0]);
+            setSelectedSensor(cSensor.toObject());
+            setSelectedParameter(cSensor.parameters.first);
+          }
+
+          setIsFetching(false);
+          setDirty(false);
+        },
+        () => {
+          setIsFetching(false);
         }
+      );
+      return;
+    }
+  }, [dispatch, history, id]);
 
-        if (!selectedSensorId) {
-            return;
-        }
+  useEffect(() => {
+    if (id && !property) {
+      history.push(`/tools/${tool}/${id}/sensor-setup`);
+    }
+  }, [history, id, property]);
 
-        const sensor = Rtm.fromObject(rtm).sensors.findById(selectedSensorId);
+  const handleChange = () => {
+    console.log('CHANGE');
+  };
 
-        if (!sensor) {
-            return;
-        }
+  const handleChangeSelectedParameter = (p: ISensorParameter | null) => {
+    if (!p) {
+      setSelectedParameter(null);
+      return;
+    }
+    const dsc = DataSourceCollection.fromObject(p.dataSources);
+    dsc.mergedData().then(() => {
+      p.dataSources = dsc.toObject();
+      setSelectedParameter(p);
+    });
+  };
 
-        sensor.parameters = sensor.parameters.update(parameter, false);
-
-        const lRtm = Rtm.fromObject(rtm);
-        lRtm.updateSensor(sensor);
-        setRtm(lRtm.toObject());
-        onSave(lRtm);
-    };
-
-    const handleSaveMetaData = (metaData: IToolMetaDataEdit) => {
-        if (rtm) {
-            const cRtm = Rtm.fromObject({
-                ...rtm,
-                name: metaData.name, description: metaData.description, public: metaData.public
-            });
-            setRtm(cRtm.toObject());
-            onSave(cRtm);
-        }
-    };
-
-    const onchange = (r: Rtm) => {
-        setSelectedParameterId(null);
-        return setRtm(r.toObject());
-    };
-
-    const onSave = (r: Rtm | any) => {
-        if (!(r instanceof Rtm) && rtm) {
-            r = Rtm.fromObject(rtm);
-        }
-
-        sendCommand(
-            SimpleToolsCommand.updateToolInstance(r.toObjectWithoutData()),
-            () => setDirty(false)
-        );
-    };
-
-    const renderContent = (property: string) => {
-        if (!rtm) {
-            return null;
-        }
-
-        const sensor = selectedSensorId ? Rtm.fromObject(rtm).sensors.findById(selectedSensorId) : null;
-        let parameter = null;
-        if (sensor && selectedParameterId) {
-            parameter = sensor.parameters.findById(selectedParameterId);
-        }
-
-        if (sensor && !selectedParameterId) {
-            if (sensor.parameters.length > 0) {
-                parameter = sensor.parameters.first;
-                setSelectedParameterId(parameter.id);
-            }
-        }
-
-        if (property === 'sensor-visualization') {
-            return (
-                <Visualization
-                    rtm={Rtm.fromObject(rtm)}
-                />
-            );
-        }
-
-        if (!['sensor-parameters', 'sensor-setup', 'sensor-processing'].includes(property)) {
-            const path = match.path;
-            const basePath = path.split(':')[0];
-            return (
-                <Redirect
-                    to={basePath + params.id + '/sensor-setup' + location.search}
-                />
-            );
-        }
-
-        return (
-            <Sensors
-                rtm={Rtm.fromObject(rtm)}
-                isDirty={isDirty}
-                isError={isError}
-                onChange={onchange}
-                onChangeSelectedSensorId={setSelectedSensorId}
-                onSave={onSave}
-            >
-                <SensorMetaData
-                    rtm={Rtm.fromObject(rtm)}
-                    sensor={sensor}
-                    selectedParameterId={selectedParameterId}
-                    onChange={handleUpdateSensor}
-                    onChangeSelectedParameterId={setSelectedParameterId}
-                />
-                {parameter && property === 'sensor-processing' &&
-                <Processing
-                    rtm={Rtm.fromObject(rtm)}
-                    parameter={parameter}
-                    onChange={handleUpdateParameter}
-                />
-                }
-                {parameter && property === 'sensor-setup' &&
-                <DataSources
-                    rtm={Rtm.fromObject(rtm)}
-                    parameter={parameter}
-                    onChange={handleUpdateParameter}
-                />
-                }
-            </Sensors>
-        );
-    };
-
-    if (fetching) {
-        return (
-            <AppContainer navbarItems={navigation}>
-                <Message icon={true}>
-                    <Icon name={'circle notched'} loading={true}/>
-                </Message>
-            </AppContainer>
-        );
+  const handleChangeSelectedSensor = (s: Sensor | null) => {
+    if (s?.id === selectedSensor?.id) {
+      return null;
     }
 
-    if (isError || !rtm) {
-        return (
-            <AppContainer navbarItems={navigation}>
-                <Message icon={true}>
-                    ERROR!
-                </Message>
-            </AppContainer>
-        );
+    if (s && s?.parameters.length > 0) {
+      setSelectedParameter(s.parameters.first);
+    } else {
+      setSelectedParameter(null);
+    }
+
+    setSelectedSensor(s ? s.toObject() : null);
+  };
+
+  const handleUpdateParameter = (p: ISensorParameter) => {
+    if (!rtm || !selectedSensor) {
+      return null;
+    }
+
+    handleChangeSelectedParameter(p);
+
+    const cSensor = Sensor.fromObject(selectedSensor);
+    cSensor.parameters = cSensor.parameters.update(p);
+
+    const cRtm = Rtm.fromObject(rtm.toObject());
+    cRtm.updateSensor(cSensor);
+
+    handleSave(cRtm);
+  };
+
+  const handleUpdateSensor = (s: Sensor) => {
+    if (!rtm) {
+      return null;
+    }
+
+    setSelectedSensor(s.toObject());
+
+    let sParameter = selectedParameter;
+    if (selectedParameter && !s.parameters.findById(selectedParameter.id)) {
+      sParameter = null;
+    }
+    if (!sParameter && s.parameters.length > 0) {
+      sParameter = s.parameters.first;
+    }
+    handleChangeSelectedParameter(sParameter);
+
+    const cRtm = Rtm.fromObject(rtm.toObject());
+    cRtm.updateSensor(s);
+    handleSave(cRtm);
+  };
+
+  const handleSaveMetaData = (tool: IToolMetaDataEdit) => {
+    if (!rtm) {
+      return;
+    }
+    const { name, description } = tool;
+    const cRtm = rtm.toObject();
+    cRtm.public = tool.public;
+    cRtm.name = name;
+    cRtm.description = description;
+    handleSave(Rtm.fromObject(cRtm));
+  };
+
+  const handleSave = (r: Rtm) => {
+    setIsSaving(true);
+    sendCommand(SimpleToolsCommand.updateToolInstance(r.toObjectWithoutData()), () => {
+      dispatch(updateRtm(r));
+      setIsSaving(false);
+    });
+    if (selectedSensor && !r.sensors.findById(selectedSensor.id)) {
+      setSelectedParameter(null);
+      setSelectedSensor(null);
+    }
+  };
+
+  if (!rtm) {
+    return (
+      <AppContainer navbarItems={navigation}>
+        <Loader inverted={true}>Loading</Loader>
+      </AppContainer>
+    );
+  }
+
+  const renderContent = () => {
+    if (!rtm) {
+      return null;
+    }
+
+    if (property === 'sensor-visualization') {
+      return <Visualization rtm={rtm} />;
     }
 
     return (
-        <AppContainer navbarItems={navigation}>
-            <ToolMetaData
-                isDirty={isDirty}
-                readOnly={false}
-                tool={{
-                    tool: 'T10',
-                    name: rtm.name,
-                    description: rtm.description,
-                    public: rtm.public
-                }}
-                onSave={handleSaveMetaData}
-            />
-            <Grid padded={true}>
-                <Grid.Row>
-                    <Grid.Column width={3}>
-                        <ToolNavigation navigationItems={menuItems}/>
-                    </Grid.Column>
-                    <Grid.Column width={13}>
-                        {renderContent(params.property)}
-                    </Grid.Column>
-                </Grid.Row>
-            </Grid>
-        </AppContainer>
+      <Sensors
+        rtm={rtm}
+        isDirty={isDirty}
+        isError={false}
+        onChange={handleChange}
+        onChangeSelectedSensor={handleChangeSelectedSensor}
+        onSave={handleSave}
+        selectedSensor={selectedSensor ? Sensor.fromObject(selectedSensor) : null}
+      >
+        <SensorMetaData
+          rtm={rtm}
+          sensor={selectedSensor ? Sensor.fromObject(selectedSensor) : null}
+          selectedParameter={selectedParameter}
+          onChange={handleUpdateSensor}
+          onChangeSelectedParameter={handleChangeSelectedParameter}
+        />
+        {selectedParameter && property === 'sensor-setup' && (
+          <DataSources rtm={rtm} parameter={selectedParameter} onChange={handleUpdateParameter} />
+        )}
+        {selectedParameter && property === 'sensor-processing' && (
+          <Processing rtm={rtm} parameter={selectedParameter} onChange={handleUpdateParameter} />
+        )}
+      </Sensors>
     );
+  };
+
+  return (
+    <AppContainer navbarItems={navigation} loading={isFetching}>
+      {isSaving && (
+        <Dimmer active inverted>
+          <Loader inverted>Saving</Loader>
+        </Dimmer>
+      )}
+      <ToolMetaData
+        isDirty={isDirty}
+        readOnly={false}
+        tool={{
+          tool: 'T10',
+          name: rtm.name,
+          description: rtm.description,
+          public: rtm.public,
+        }}
+        onSave={handleSaveMetaData}
+      />
+      <Grid padded={true}>
+        <Grid.Row>
+          <Grid.Column width={3}>
+            <Navigation isSaving={isSaving} property={property} />
+          </Grid.Column>
+          <Grid.Column width={13}>{renderContent()}</Grid.Column>
+        </Grid.Row>
+      </Grid>
+    </AppContainer>
+  );
 };
 
-export default RTM;
+export default RtmTool;
