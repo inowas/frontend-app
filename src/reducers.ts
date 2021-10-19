@@ -4,7 +4,7 @@ import { combineReducers } from 'redux';
 import { session, user } from './scenes/user/reducers';
 import T03, { IT03Reducer } from './scenes/t03/reducers';
 import T07, { IT07Reducer } from './scenes/t07/reducers';
-import T10, { IT10Reducer } from './scenes/t10-new/reducers';
+import T10, { IT10Reducer } from './scenes/t10/reducers';
 import T15, { IT15Reducer } from './scenes/t15/reducers';
 import T19, { IT19Reducer } from './scenes/t19/reducers';
 import T20, { IT20Reducer } from './scenes/t20/reducers';

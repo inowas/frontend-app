@@ -13,7 +13,7 @@ import { colors, dataSourceList } from '../../defaults';
 import { useState } from 'react';
 import DataSourceTimeRange from './dataSourceTimeRange';
 import DataSourcesChart from '../shared/dataChart';
-import TinyLineChart from '../shared/tineLineChart';
+import TinyLineChart from '../shared/tinyLineChart';
 
 interface IProps {
   rtm: Rtm;
