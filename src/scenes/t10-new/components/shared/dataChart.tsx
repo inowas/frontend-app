@@ -3,7 +3,7 @@ import { DataPoint } from 'downsample';
 import { DataSourceCollection } from '../../../../core/model/rtm/monitoring';
 import { IDateTimeValue } from '../../../../core/model/rtm/monitoring/Sensor.type';
 import { LTOB } from 'downsample';
-import { ProcessingCollection } from '../../../../core/model/rtm/processing';
+import { ProcessingCollection, TimeProcessing } from '../../../../core/model/rtm/processing';
 import { ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis } from 'recharts';
 import { exportChartData, exportChartImage } from '../../../shared/simpleTools/helpers';
 import { useEffect, useRef, useState } from 'react';
@@ -11,11 +11,11 @@ import moment from 'moment';
 
 interface IProps {
   dataSources: DataSourceCollection;
-  processings?: ProcessingCollection;
+  processings?: ProcessingCollection | TimeProcessing;
   unit?: string;
 }
 
-const DataSourcesChart = (props: IProps) => {
+const DataChart = (props: IProps) => {
   const [data, setData] = useState<IDateTimeValue[] | null>(null);
   const chartRef = useRef(null);
   const [isFetching, setIsFetching] = useState<boolean>(false);
@@ -24,7 +24,7 @@ const DataSourcesChart = (props: IProps) => {
     async function f() {
       const mergedData = await props.dataSources.mergedData();
 
-      if (props.processings instanceof ProcessingCollection) {
+      if (props.processings) {
         const processedData = await props.processings.apply(mergedData);
         setIsFetching(false);
         return setData(processedData);
@@ -103,4 +103,4 @@ const DataSourcesChart = (props: IProps) => {
   );
 };
 
-export default DataSourcesChart;
+export default DataChart;

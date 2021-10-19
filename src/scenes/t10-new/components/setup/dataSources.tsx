@@ -12,7 +12,7 @@ import { FileDatasourceEditor, PrometheusDatasourceEditor, SensorDatasourceEdito
 import { colors, dataSourceList } from '../../defaults';
 import { useState } from 'react';
 import DataSourceTimeRange from './dataSourceTimeRange';
-import DataSourcesChart from './dataSourcesChart';
+import DataSourcesChart from '../shared/dataChart';
 import TinyLineChart from '../shared/tineLineChart';
 
 interface IProps {

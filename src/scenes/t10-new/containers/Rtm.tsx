@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import DataSources from '../components/setup/dataSources';
 import Navigation from './Navigation';
+import Processing from '../components/processing/processing';
 import SensorMetaData from '../components/shared/sensorMetaData';
 import Sensors from '../components/shared/sensors';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
@@ -207,6 +208,9 @@ const RtmTool = () => {
         />
         {selectedParameter && property === 'sensor-setup' && (
           <DataSources rtm={rtm} parameter={selectedParameter} onChange={handleUpdateParameter} />
+        )}
+        {selectedParameter && property === 'sensor-processing' && (
+          <Processing rtm={rtm} parameter={selectedParameter} onChange={handleUpdateParameter} />
         )}
       </Sensors>
     );
