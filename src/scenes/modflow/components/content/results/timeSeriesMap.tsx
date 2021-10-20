@@ -1,6 +1,7 @@
 import { Array2D } from '../../../../../core/model/geometry/Array2D.type';
 import { BasicTileLayer } from '../../../../../services/geoTools/tileLayers';
 import { BoundaryCollection, ModflowModel } from '../../../../../core/model/modflow';
+import { EBoundaryType } from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import { FullscreenControl } from '../../../../shared/complexTools';
 import { LayersControl, Map, Rectangle } from 'react-leaflet';
 import { LeafletMouseEvent } from 'leaflet';
@@ -8,6 +9,7 @@ import { getCellFromClick } from '../../../../../services/geoTools/getCellFromCl
 import { misc } from '../../../defaults/colorScales';
 import {
   renderAreaLayer,
+  renderBoundaryOverlay,
   renderBoundaryOverlays,
   renderBoundingBoxLayer,
 } from '../../../../t03/components/maps/mapLayers';
@@ -21,6 +23,7 @@ const style = {
 };
 
 interface IProps {
+  headObservationWells: BoundaryCollection;
   boundaries: BoundaryCollection;
   model: ModflowModel;
   onClick: (latlng: [number, number]) => void;
@@ -87,6 +90,8 @@ const TimeSeriesMap = (props: IProps) => {
         </LayersControl.Overlay>
         {renderBoundingBoxLayer(props.model.boundingBox, props.model.rotation, props.model.geometry)}
         {renderBoundaryOverlays(props.boundaries)}
+        {props.headObservationWells.length > 0 &&
+          renderBoundaryOverlay(props.headObservationWells, 'Active HOB', EBoundaryType.HOB, true)}
         {props.selectedCells.map((c, key) => renderCell(c, key))}
       </LayersControl>
     </Map>

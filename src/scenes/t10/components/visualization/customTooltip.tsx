@@ -23,7 +23,7 @@ const styles = {
   },
 };
 
-type IProps = TooltipProps<any, any> & {
+type IProps = TooltipProps & {
   legend: {
     [key: string]: ILegendRowProps;
   };

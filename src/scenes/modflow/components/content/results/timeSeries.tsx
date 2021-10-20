@@ -2,9 +2,10 @@ import { Array2D } from '../../../../../core/model/geometry/Array2D.type';
 import { BoundaryCollection, Calculation, ModflowModel, Soilmodel } from '../../../../../core/model/modflow';
 import { DropdownProps, Form, Grid, Icon, Label, Segment } from 'semantic-ui-react';
 import { EResultType } from './flowResults';
+import { HeadObservationWell } from '../../../../../core/model/modflow/boundaries';
+import { IHeadObservationWell } from '../../../../../core/model/modflow/boundaries/HeadObservationWell.type';
 import { MODFLOW_CALCULATION_URL, fetchApiWithToken } from '../../../../../services/api';
-import { flatten, uniq, upperFirst } from 'lodash';
-import { getActiveCellFromCoordinate } from '../../../../../services/geoTools';
+import { cloneDeep, flatten, uniq, upperFirst } from 'lodash';
 import { misc } from '../../../defaults/colorScales';
 import React, { SyntheticEvent, useEffect, useState } from 'react';
 import TimeSeriesChart from './timeSeriesChart';
@@ -19,6 +20,7 @@ interface IProps {
 }
 
 const TimeSeries = (props: IProps) => {
+  const [activeHobs, setActiveHobs] = useState<IHeadObservationWell[]>([]);
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [layerValues, setLayerValues] = useState<string[][] | null>(null);
   const [selectedCells, setSelectedCells] = useState<Array<[number, number, Array2D<number>]>>([]);
@@ -27,11 +29,13 @@ const TimeSeries = (props: IProps) => {
 
   const { boundaries, calculation, model, soilmodel } = props;
 
+  const hobs = props.boundaries.all.filter((b) => b instanceof HeadObservationWell);
+
   useEffect(() => {
     if (calculation) {
       setLayerValues(calculation.layer_values);
     }
-  }, [calculation]);
+  }, [calculation, model.calculationId]);
 
   useEffect(() => {
     setSelectedCells([]);
@@ -69,6 +73,19 @@ const TimeSeries = (props: IProps) => {
   const handleClickDelete = (cell: [number, number]) => () => {
     const cSelectedCells = selectedCells.filter((c) => !(c[0] === cell[0] && c[1] === cell[1]));
     setSelectedCells(cSelectedCells);
+  };
+
+  const handleToggleHob = (h: string) => () => {
+    if (activeHobs.filter((hob) => hob.id === h).length > 0) {
+      setActiveHobs(activeHobs.filter((hob) => hob.id !== h));
+      return;
+    }
+    const hobToAdd = hobs.filter((hob) => hob.id === h);
+    if (hobToAdd.length > 0) {
+      const cActiveHobs = cloneDeep(activeHobs);
+      cActiveHobs.push(hobToAdd[0].toObject() as IHeadObservationWell);
+      setActiveHobs(cActiveHobs);
+    }
   };
 
   const handleClickMap = (cell: [number, number]) => {
@@ -143,16 +160,50 @@ const TimeSeries = (props: IProps) => {
                   <Icon name="delete" onClick={handleClickDelete([c[0], c[1]])} />
                 </Label>
               ))}
+              {hobs.length > 0 && (
+                <>
+                  <p style={{ marginTop: '10px' }}>Selected Head Observations</p>
+                  {hobs.map((h, key) => (
+                    <Label
+                      key={h.id}
+                      style={{
+                        background: '#ffffff',
+                        border:
+                          activeHobs.filter((hob) => hob.id === h.id).length > 0
+                            ? `1px solid ${key < misc.length ? misc[key] : misc[misc.length - 1]}`
+                            : '0',
+                        color: '#000',
+                        marginBottom: '1px',
+                      }}
+                      as="a"
+                      onClick={handleToggleHob(h.id)}
+                    >
+                      {h.name}
+                    </Label>
+                  ))}
+                </>
+              )}
             </Segment>
           </Grid.Column>
         </Grid.Row>
       </Grid>
       <Segment color={'grey'}>
-        <TimeSeriesMap boundaries={boundaries} model={model} onClick={handleClickMap} selectedCells={selectedCells} />
+        <TimeSeriesMap
+          headObservationWells={BoundaryCollection.fromObject(activeHobs)}
+          boundaries={boundaries}
+          model={model}
+          onClick={handleClickMap}
+          selectedCells={selectedCells}
+        />
       </Segment>
       {selectedCells.length > 0 && (
         <Segment color={'blue'}>
-          <TimeSeriesChart selectedCells={selectedCells} type={selectedType} />
+          <TimeSeriesChart
+            headObservationWells={activeHobs.map((h) => HeadObservationWell.fromObject(h))}
+            selectedCells={selectedCells}
+            stressperiods={props.model.stressperiods}
+            type={selectedType}
+          />
         </Segment>
       )}
     </React.Fragment>
