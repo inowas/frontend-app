@@ -1,23 +1,24 @@
 import {
-    AdvPackageProperties,
-    BtnPackageProperties,
-    DspPackageProperties,
-    GcgPackageProperties,
-    MtPackageProperties,
-    RctPackageProperties,
-    SsmPackageProperties
+  AdvPackageProperties,
+  BtnPackageProperties,
+  DspPackageProperties,
+  GcgPackageProperties,
+  MtPackageProperties,
+  RctPackageProperties,
+  SsmPackageProperties,
 } from './mt';
-import {EMessageState} from '../../../../../core/model/messages/Message.type';
-import {FlopyMt3d} from '../../../../../core/model/flopy/packages/mt';
-import {Grid, Menu, Segment} from 'semantic-ui-react';
-import {IEditingState, initialEditingState, messageDirty, messageSaving} from '../../../defaults/messages';
-import {IFlopyMt3d} from '../../../../../core/model/flopy/packages/mt/FlopyMt3d';
-import {IRootReducer} from '../../../../../reducers';
-import {ModflowModel, Soilmodel, Transport as TransportAlias} from '../../../../../core/model/modflow';
-import {addMessage, removeMessage, updateMessage, updatePackages} from '../../../actions/actions';
-import {sendCommand} from '../../../../../services/api';
-import {useDispatch, useSelector} from 'react-redux';
-import {useHistory, useRouteMatch} from 'react-router-dom';
+import { EMessageState } from '../../../../../core/model/messages/Message.type';
+import { FlopyMt3d } from '../../../../../core/model/flopy/packages/mt';
+import { Grid, Menu, Segment } from 'semantic-ui-react';
+import { IEditingState, initialEditingState, messageDirty, messageSaving } from '../../../defaults/messages';
+import { IFlopyMt3d } from '../../../../../core/model/flopy/packages/mt/FlopyMt3d';
+import { IRootReducer } from '../../../../../reducers';
+import { ModflowModel, Soilmodel, Transport as TransportAlias } from '../../../../../core/model/modflow';
+import { addMessage, removeMessage, updateMessage, updatePackages } from '../../../actions/actions';
+import { sendCommand } from '../../../../../services/api';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useRef, useState } from 'react';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 import ContentToolBar from '../../../../shared/ContentToolbar2';
 import FlopyMt3dMt from '../../../../../core/model/flopy/packages/mt/FlopyMt3dMt';
 import FlopyMt3dMtadv from '../../../../../core/model/flopy/packages/mt/FlopyMt3dMtadv';
@@ -30,214 +31,201 @@ import FlopyMt3dPackage from '../../../../../core/model/flopy/packages/mt/FlopyM
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
-import React, {useEffect, useRef, useState} from 'react';
 
 const sideBar = [
-    {id: undefined, name: 'Overview Transport'},
-    {id: 'btn', name: 'Basic package'},
-    {id: 'adv', name: 'Advection package'},
-    {id: 'dsp', name: 'Dispersion package'},
-    {id: 'rct', name: 'Reaction package'},
-    {id: 'ssm', name: 'Source/Sink Package'},
-    {id: 'gcg', name: 'Matrix solver package'}
+  { id: undefined, name: 'Overview Transport' },
+  { id: 'btn', name: 'Basic package' },
+  { id: 'adv', name: 'Advection package' },
+  { id: 'dsp', name: 'Dispersion package' },
+  { id: 'rct', name: 'Reaction package' },
+  { id: 'ssm', name: 'Source/Sink Package' },
+  { id: 'gcg', name: 'Matrix solver package' },
 ];
 
 interface IProps {
-    model: ModflowModel;
-    packages: FlopyPackages;
-    soilmodel: Soilmodel;
-    transport: TransportAlias;
+  model: ModflowModel;
+  packages: FlopyPackages;
+  soilmodel: Soilmodel;
+  transport: TransportAlias;
 }
 
 const Transport = (props: IProps) => {
-    const [mt, setMt] = useState<IFlopyMt3d>(props.packages.mt.toObject());
+  const [mt, setMt] = useState<IFlopyMt3d>(props.packages.mt.toObject());
 
-    const mtRef = useRef<IFlopyMt3d>();
-    const editingState = useRef<IEditingState>(initialEditingState);
+  const mtRef = useRef<IFlopyMt3d>();
+  const editingState = useRef<IEditingState>(initialEditingState);
 
-    const T03 = useSelector((state: IRootReducer) => state.T03);
-    const messages = MessagesCollection.fromObject(T03.messages);
+  const T03 = useSelector((state: IRootReducer) => state.T03);
+  const messages = MessagesCollection.fromObject(T03.messages);
 
-    const dispatch = useDispatch();
-    const history = useHistory();
-    const match = useRouteMatch();
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const match = useRouteMatch();
 
-    useEffect(() => {
-        return function cleanup() {
-            handleSave();
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    useEffect(() => {
-        editingState.current = messages.getEditingState('mt3d');
-    }, [messages]);
-
-    useEffect(() => {
-        if (mt) {
-            mtRef.current = mt;
-        }
-    }, [mt]);
-
-    const handleSave = () => {
-        if (!editingState.current.dirty || !mtRef.current) {
-            return null;
-        }
-        const message = messageSaving('mt3d');
-        dispatch(addMessage(message));
-        const packages = props.packages;
-        packages.modelId = props.model.id;
-        packages.mt = FlopyMt3d.fromObject(mt);
-        sendCommand(
-            ModflowModelCommand.updateFlopyPackages(props.model.id, packages),
-            () => {
-                if (editingState.current.dirty) {
-                    dispatch(removeMessage(editingState.current.dirty));
-                }
-                dispatch(updatePackages(packages));
-                dispatch(updateMessage({...message, state: EMessageState.SUCCESS}));
-            }
-        );
+  useEffect(() => {
+    return function cleanup() {
+      handleSave();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    const handleUndo = () => {
-        if (!editingState.current.dirty) {
-            return null;
-        }
-        setMt(props.packages.mt.toObject());
+  useEffect(() => {
+    editingState.current = messages.getEditingState('mt3d');
+  }, [messages]);
+
+  useEffect(() => {
+    if (mt) {
+      mtRef.current = mt;
+    }
+  }, [mt]);
+
+  const handleSave = () => {
+    if (!editingState.current.dirty || !mtRef.current) {
+      return null;
+    }
+    const message = messageSaving('mt3d');
+    dispatch(addMessage(message));
+    const packages = props.packages;
+    packages.modelId = props.model.id;
+    packages.mt = FlopyMt3d.fromObject(mt);
+    sendCommand(ModflowModelCommand.updateFlopyPackages(props.model.id, packages), () => {
+      if (editingState.current.dirty) {
         dispatch(removeMessage(editingState.current.dirty));
-    };
+      }
+      dispatch(updatePackages(packages));
+      dispatch(updateMessage({ ...message, state: EMessageState.SUCCESS }));
+    });
+  };
 
-    const handleChangePackage = (p: FlopyMt3dPackage<any>) => {
-        const cMt = FlopyMt3d.fromObject(mt);
-        cMt.setPackage(p);
-        setMt(cMt.toObject());
-        if (!editingState.current.dirty) {
-            dispatch(addMessage(messageDirty('mt3d')));
-        }
-    };
+  const handleUndo = () => {
+    if (!editingState.current.dirty) {
+      return null;
+    }
+    setMt(props.packages.mt.toObject());
+    dispatch(removeMessage(editingState.current.dirty));
+  };
 
-    const handleMenuClick = (type: string | undefined) => () => {
-        const path = match.path;
-        const basePath = path.split(':')[0];
-        handleSave();
+  const handleChangePackage = (p: FlopyMt3dPackage<any>) => {
+    const cMt = FlopyMt3d.fromObject(mt);
+    cMt.setPackage(p);
+    setMt(cMt.toObject());
+    if (!editingState.current.dirty) {
+      dispatch(addMessage(messageDirty('mt3d')));
+    }
+  };
 
-        if (!type) {
-            return history.push(basePath + props.model.id + '/mt3d');
-        }
+  const handleMenuClick = (type: string | undefined) => () => {
+    const path = match.path;
+    const basePath = path.split(':')[0];
+    handleSave();
 
-        return history.push(basePath + props.model.id + '/mt3d/' + type);
-    };
+    if (!type) {
+      return history.push(basePath + props.model.id + '/mt3d');
+    }
 
-    const renderProperties = () => {
-        const mt3d = FlopyMt3d.fromObject(mt);
-        const readOnly = props.model.readOnly;
+    return history.push(basePath + props.model.id + '/mt3d/' + type);
+  };
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore todo
-        const {type} = match.params;
-        const {packages} = props;
+  const renderProperties = () => {
+    const mt3d = FlopyMt3d.fromObject(mt);
+    const readOnly = props.model.readOnly;
 
-        switch (type) {
-            case 'adv':
-                return (
-                    <AdvPackageProperties
-                        mtPackage={mt3d.getPackage(type) as FlopyMt3dMtadv}
-                        onChange={handleChangePackage}
-                        readOnly={readOnly}
-                    />
-                );
-            case 'btn':
-                return (
-                    <BtnPackageProperties
-                        mtPackage={mt3d.getPackage(type) as FlopyMt3dMtbtn}
-                        onChange={handleChangePackage}
-                        readOnly={readOnly}
-                    />
-                );
-            case 'dsp':
-                return (
-                    <DspPackageProperties
-                        mtPackage={mt3d.getPackage(type) as FlopyMt3dMtdsp}
-                        onChange={handleChangePackage}
-                        readOnly={readOnly}
-                    />
-                );
-            case 'gcg':
-                return (
-                    <GcgPackageProperties
-                        mtPackage={mt3d.getPackage(type) as FlopyMt3dMtgcg}
-                        onChange={handleChangePackage}
-                        readOnly={readOnly}
-                    />
-                );
-            case 'rct':
-                return (
-                    <RctPackageProperties
-                        mtPackage={mt3d.getPackage(type) as FlopyMt3dMtrct}
-                        onChange={handleChangePackage}
-                        readOnly={readOnly}
-                    />
-                );
-            case 'ssm':
-                return (
-                    <SsmPackageProperties
-                        mtPackage={mt3d.getPackage(type) as FlopyMt3dMtssm}
-                        mfPackages={packages.mf}
-                        onChange={handleChangePackage}
-                        readOnly={readOnly}
-                    />
-                );
-            default:
-                return (
-                    <MtPackageProperties
-                        mtPackage={mt3d.getPackage('mt') as FlopyMt3dMt}
-                        onChange={handleChangePackage}
-                        readOnly={readOnly}
-                    />
-                );
-        }
-    };
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore todo
+    const { type } = match.params;
+    const { packages } = props;
 
-    const renderSidebar = () => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore todo
-        const {type} = match.params;
-
+    switch (type) {
+      case 'adv':
         return (
-            <Menu fluid={true} vertical={true} tabular={true}>
-                {sideBar.map((item, key) => (
-                    <Menu.Item
-                        key={key}
-                        name={item.name}
-                        active={type === item.id}
-                        onClick={handleMenuClick(item.id)}
-                    />
-                ))}
-            </Menu>
+          <AdvPackageProperties
+            mtPackage={mt3d.getPackage(type) as FlopyMt3dMtadv}
+            onChange={handleChangePackage}
+            readOnly={readOnly}
+          />
         );
-    };
+      case 'btn':
+        return (
+          <BtnPackageProperties
+            mtPackage={mt3d.getPackage(type) as FlopyMt3dMtbtn}
+            onChange={handleChangePackage}
+            readOnly={readOnly}
+          />
+        );
+      case 'dsp':
+        return (
+          <DspPackageProperties
+            mtPackage={mt3d.getPackage(type) as FlopyMt3dMtdsp}
+            onChange={handleChangePackage}
+            readOnly={readOnly}
+          />
+        );
+      case 'gcg':
+        return (
+          <GcgPackageProperties
+            mtPackage={mt3d.getPackage(type) as FlopyMt3dMtgcg}
+            onChange={handleChangePackage}
+            readOnly={readOnly}
+          />
+        );
+      case 'rct':
+        return (
+          <RctPackageProperties
+            mtPackage={mt3d.getPackage(type) as FlopyMt3dMtrct}
+            onChange={handleChangePackage}
+            readOnly={readOnly}
+          />
+        );
+      case 'ssm':
+        return (
+          <SsmPackageProperties
+            mtPackage={mt3d.getPackage(type) as FlopyMt3dMtssm}
+            mfPackages={packages.mf}
+            onChange={handleChangePackage}
+            readOnly={readOnly}
+          />
+        );
+      default:
+        return (
+          <MtPackageProperties
+            mtPackage={mt3d.getPackage('mt') as FlopyMt3dMt}
+            onChange={handleChangePackage}
+            readOnly={readOnly}
+          />
+        );
+    }
+  };
+
+  const renderSidebar = () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore todo
+    const { type } = match.params;
 
     return (
-        <Segment color={'grey'}>
-            <Grid>
-                <Grid.Row>
-                    <Grid.Column width={4}/>
-                    <Grid.Column width={12}>
-                        <ContentToolBar buttonSave={true} onUndo={handleUndo} onSave={handleSave}/>
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row>
-                    <Grid.Column width={4}>
-                        {renderSidebar()}
-                    </Grid.Column>
-                    <Grid.Column width={12}>
-                        {renderProperties()}
-                    </Grid.Column>
-                </Grid.Row>
-            </Grid>
-        </Segment>
+      <Menu fluid={true} vertical={true} tabular={true}>
+        {sideBar.map((item, key) => (
+          <Menu.Item key={key} name={item.name} active={type === item.id} onClick={handleMenuClick(item.id)} />
+        ))}
+      </Menu>
     );
+  };
+
+  return (
+    <Segment color={'grey'}>
+      <Grid>
+        <Grid.Row>
+          <Grid.Column width={4} />
+          <Grid.Column width={12}>
+            <ContentToolBar buttonSave={true} onUndo={handleUndo} onSave={handleSave} />
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row>
+          <Grid.Column width={4}>{renderSidebar()}</Grid.Column>
+          <Grid.Column width={12}>{renderProperties()}</Grid.Column>
+        </Grid.Row>
+      </Grid>
+    </Segment>
+  );
 };
 
 export default Transport;

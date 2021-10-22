@@ -4,9 +4,11 @@ import {
   Geometry,
   GridSize,
   ModflowModel,
-  Soilmodel, Transport, VariableDensity
+  Soilmodel,
+  Transport,
+  VariableDensity,
 } from '../../../core/model/modflow';
-import {IBoundary} from '../../../core/model/modflow/boundaries/Boundary.type';
+import { IBoundary } from '../../../core/model/modflow/boundaries/Boundary.type';
 
 import {
   ICalculateBoundaryImportInputData,
@@ -15,12 +17,12 @@ import {
   ICalculatePackagesInputData,
   IObservationInputData,
   IWorkerInput,
-  IWorkerResult
+  IWorkerResult,
 } from './t03.worker.type';
-import {ICells} from '../../../core/model/geometry/Cells.type';
-import {IFlopyPackages} from '../../../core/model/flopy/packages/FlopyPackages.type';
-import {IStatistics} from '../../t03/components/content/observation/statistics';
-import {calculateActiveCells} from '../../../services/geoTools';
+import { ICells } from '../../../core/model/geometry/Cells.type';
+import { IFlopyPackages } from '../../../core/model/flopy/packages/FlopyPackages.type';
+import { IStatistics } from '../../t03/components/content/observation/statistics';
+import { calculateActiveCells } from '../../../services/geoTools';
 import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
 import calculateStatistics from '../../../services/statistics/calculateStatistics';
 
@@ -51,7 +53,7 @@ const calculateCells = (input: IWorkerInput<ICalculateCellsInputData>) => {
   if (geometry && boundingBox && gridSize) {
     return {
       type: CALCULATE_CELLS_RESULT,
-      data: calculateActiveCells(geometry, boundingBox, gridSize, intersection).toObject()
+      data: calculateActiveCells(geometry, boundingBox, gridSize, intersection).toObject(),
     } as IWorkerResult<ICells>;
   }
 
@@ -59,7 +61,6 @@ const calculateCells = (input: IWorkerInput<ICalculateCellsInputData>) => {
 };
 
 const calculatePackages = (input: IWorkerInput<ICalculatePackagesInputData>) => {
-
   let packages = input.data.packages ? FlopyPackages.fromObject(input.data.packages) : null;
   const model = ModflowModel.fromObject(input.data.model);
   const soilmodel = Soilmodel.fromObject(input.data.soilmodel);
@@ -69,23 +70,19 @@ const calculatePackages = (input: IWorkerInput<ICalculatePackagesInputData>) => 
 
   if (packages instanceof FlopyPackages) {
     try {
-      packages.update(
-        model, soilmodel, boundaries, transport, variableDensity
-      );
+      packages = packages.update(model, soilmodel, boundaries, transport, variableDensity);
     } catch (e) {
       packages = null;
     }
   }
 
   if (packages === null) {
-    packages = FlopyPackages.createFromModelInstances(
-      model, soilmodel, boundaries, transport, variableDensity
-    );
+    packages = FlopyPackages.createFromModelInstances(model, soilmodel, boundaries, transport, variableDensity);
   }
 
   return {
     type: CALCULATE_PACKAGES_RESULT,
-    data: packages.toObject()
+    data: packages.toObject(),
   } as IWorkerResult<IFlopyPackages>;
 };
 
@@ -100,7 +97,7 @@ const calculateMfPackages = (input: IWorkerInput<ICalculateMfPackagesInputData>)
 
   return {
     type: CALCULATE_MF_PACKAGES_RESULT,
-    data: packages.toObject()
+    data: packages.toObject(),
   } as IWorkerResult<IFlopyPackages>;
 };
 
@@ -112,7 +109,7 @@ const calculateBoundaryImport = (input: IWorkerInput<ICalculateBoundaryImportInp
 
   return {
     type: CALCULATE_BOUNDARIES_IMPORT_RESULT,
-    data: bc.toObject()
+    data: bc.toObject(),
   } as IWorkerResult<IBoundary[]>;
 };
 
@@ -131,7 +128,7 @@ ctx.addEventListener('message', (e) => {
       input = e.data as IWorkerInput<IObservationInputData>;
       result = {
         type: CALCULATE_STATISTICS_RESULT,
-        data: calculateStatistics(input.data.data, input.data.exclude)
+        data: calculateStatistics(input.data.data, input.data.exclude),
       } as IWorkerResult<IStatistics>;
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment

@@ -58,6 +58,7 @@ const TransportResults = (props: IProps) => {
   };
 
   useEffect(() => {
+    console.log('MODEL CHANGED');
     if (model === null) {
       return;
     }
@@ -67,7 +68,7 @@ const TransportResults = (props: IProps) => {
 
     fetchData({ substance: selectedSubstance, layer: selectedLay, totim: selectedTotim });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [model]);
+  }, [props.reducer.model]);
 
   useEffect(() => {
     if (calculation && calculation.times) {
@@ -76,7 +77,8 @@ const TransportResults = (props: IProps) => {
       setSelectedTotim(times.idx.slice(-1)[0]);
       setTotalTimes(times.total_times);
     }
-  }, [calculation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.reducer.calculation]);
 
   if (!boundaries || !calculation || !model || !soilmodel || !transport) {
     return (
