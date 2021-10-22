@@ -1,8 +1,7 @@
 import { DropdownProps, Form, Grid, Header, Segment } from 'semantic-ui-react';
 import { IPropertyValueObject } from '../../../core/model/types';
-import { Soilmodel, Stressperiods } from '../../../core/model/modflow';
+import { Soilmodel, Stressperiods, Transport } from '../../../core/model/modflow';
 import { SyntheticEvent, useState } from 'react';
-import { flatten, uniq, upperFirst } from 'lodash';
 import Moment from 'moment';
 import SliderWithTooltip from './SliderWithTooltip';
 
@@ -18,25 +17,21 @@ const styles = {
   },
 };
 
-enum EResultType {
-  DRAWDOWN = 'drawdown',
-  HEAD = 'head',
-}
-
 interface IProps {
   data: {
-    type: EResultType;
     layer: number;
-    totim: number; // ID
+    substance: number;
+    totim: number;
   };
-  onChange: (result: { type: EResultType; layer: number; totim: number }) => any;
+  onChange: (result: { layer: number; substance: number; totim: number }) => any;
   layerValues: string[][];
   totalTimes: number[];
   soilmodel: Soilmodel;
   stressperiods: Stressperiods;
+  transport: Transport;
 }
 
-const ResultsSelectorFlow = (props: IProps) => {
+const ResultsSelectorTransport = (props: IProps) => {
   const [temporaryTotim, setTemporaryTotim] = useState<number>(props.totalTimes[props.data.totim]);
 
   const sliderMarks = () => {
@@ -62,34 +57,29 @@ const ResultsSelectorFlow = (props: IProps) => {
   const layerOptions = () =>
     props.soilmodel.layersCollection.reorder().all.map((l, idx) => ({ key: l.id, value: idx, text: l.name }));
 
-  const typeOptions = () => {
-    const { layerValues } = props;
-    if (!layerValues) {
-      return [];
-    }
-
-    const types = uniq(flatten(layerValues));
-    return types
-      .filter((t) => t === EResultType.HEAD || t === EResultType.DRAWDOWN)
-      .map((v, id) => ({ key: id, value: v, text: upperFirst(v) }));
+  const substanceOptions = () => {
+    const { transport } = props;
+    return transport.substances.all.map((s, idx) => ({ key: idx, value: idx, text: s.name }));
   };
 
   const formatTimestamp = (key: number) => () => {
     return Moment.utc(props.stressperiods.dateTimes[0]).add(props.totalTimes[key], 'days').format('L');
   };
 
-  const handleChangeType = (e: SyntheticEvent, { value }: DropdownProps) =>
-    props.onChange({
-      layer: props.data.layer,
-      totim: props.data.totim,
-      type: value as EResultType,
+  const handleChangeSubstance = (e: SyntheticEvent, { value }: DropdownProps) => {
+    const { layer, totim } = props.data;
+    return props.onChange({
+      substance: typeof value === 'number' ? value : 0,
+      layer,
+      totim,
     });
+  };
 
   const handleChangeLayer = (e: SyntheticEvent, { value }: DropdownProps) =>
     props.onChange({
       layer: value as number,
+      substance: props.data.substance,
       totim: props.data.totim,
-      type: props.data.type,
     });
 
   const handleChangeSlider = (value: number) => {
@@ -101,31 +91,33 @@ const ResultsSelectorFlow = (props: IProps) => {
 
   const handleAfterChangeSlider = () => {
     const totim = props.totalTimes.indexOf(temporaryTotim);
-    return props.onChange({ layer: props.data.layer, totim: totim > -1 ? totim : 0, type: props.data.type });
+    return props.onChange({ layer: props.data.layer, totim: totim > -1 ? totim : 0, substance: props.data.substance });
   };
+
+  const { substance, layer } = props.data;
 
   return (
     <Grid columns={2}>
-      <Grid.Row stretched={true}>
+      <Grid.Row stretched>
         <Grid.Column width={6}>
           <Segment color={'grey'}>
             <Form>
-              <Form.Group inline={true}>
-                <label>Select type</label>
+              <Form.Group inline>
+                <label>Select substance:</label>
                 <Form.Dropdown
-                  selection={true}
+                  selection
                   style={{ zIndex: 1002, minWidth: '8em' }}
-                  options={typeOptions()}
-                  value={props.data.type}
-                  onChange={handleChangeType}
+                  options={substanceOptions()}
+                  value={substance}
+                  onChange={handleChangeSubstance}
                 />
               </Form.Group>
               <Form.Select
                 loading={!props.soilmodel}
                 style={{ zIndex: 1001 }}
-                fluid={true}
+                fluid
                 options={layerOptions()}
-                value={props.data.layer}
+                value={layer}
                 name={'affectedLayers'}
                 onChange={handleChangeLayer}
               />
@@ -138,17 +130,17 @@ const ResultsSelectorFlow = (props: IProps) => {
               Select total time [days]
             </Header>
             <SliderWithTooltip
-              dots={false}
+              dots={props.totalTimes.length < 20}
               dotStyle={styles.dot}
               trackStyle={styles.track}
-              defaultValue={props.totalTimes[props.data.totim]}
-              min={Math.floor(props.totalTimes[0])}
-              max={Math.ceil(props.totalTimes[props.totalTimes.length - 1])}
+              defaultValue={temporaryTotim}
+              min={props.totalTimes[0]}
+              max={props.totalTimes[props.totalTimes.length - 1]}
               marks={sliderMarks()}
               value={temporaryTotim}
               onAfterChange={handleAfterChangeSlider}
               onChange={handleChangeSlider}
-              tipFormatter={formatTimestamp(props.totalTimes.indexOf(temporaryTotim))}
+              tipFormatter={() => formatTimestamp(props.totalTimes.indexOf(temporaryTotim))}
             />
           </Segment>
         </Grid.Column>
@@ -157,4 +149,4 @@ const ResultsSelectorFlow = (props: IProps) => {
   );
 };
 
-export default ResultsSelectorFlow;
+export default ResultsSelectorTransport;

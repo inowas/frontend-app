@@ -1,8 +1,7 @@
-import {Calculation} from '../../../modflow/components/content';
-import {Modpath} from './modpath';
-import {Statistics} from './observation';
-import {Transport} from './transport';
-import {TransportResults} from './results';
+import { Calculation } from '../../../modflow/components/content';
+import { Modpath } from './modpath';
+import { Statistics } from './observation';
+import { Transport } from './transport';
 import Boundaries from './boundaries/boundaries';
 import ContentWrapper from './ContentWrapper';
 import CreateBoundary from './boundaries/createBoundary';
@@ -30,8 +29,7 @@ export {
   PackageActualizationWrapper,
   Seawat,
   Transport,
-  TransportResults,
   SoilmodelEditor,
   Statistics,
-  VariableDensityProperties
+  VariableDensityProperties,
 };

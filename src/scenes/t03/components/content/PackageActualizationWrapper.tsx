@@ -1,12 +1,12 @@
 import * as Content from './index';
 import { CALCULATE_PACKAGES_INPUT } from '../../../modflow/worker/t03.worker';
-import {Calculation} from '../../../../core/model/modflow';
+import { Calculation } from '../../../../core/model/modflow';
 import { ICalculatePackagesInputData } from '../../../modflow/worker/t03.worker.type';
 import { IFlopyPackages } from '../../../../core/model/flopy/packages/FlopyPackages.type';
 import { IRootReducer } from '../../../../reducers';
 import { Loader, Segment } from 'semantic-ui-react';
 import { asyncWorker } from '../../../modflow/worker/worker';
-import {startCalculation, updatePackages } from '../../actions/actions';
+import { startCalculation, updatePackages } from '../../actions/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import BoundaryCollection from '../../../../core/model/modflow/boundaries/BoundaryCollection';
 import FlopyPackages from '../../../../core/model/flopy/packages/FlopyPackages';
@@ -55,15 +55,17 @@ const PackageActualizationWrapper = (props: IProps) => {
         soilmodel: soilmodel.toObject(),
         boundaries: boundaries.toObject(),
         transport: transport.toObject(),
-        variableDensity: variableDensity.toObject()
-      } as ICalculatePackagesInputData
-    }).then((data: IFlopyPackages) => {
-      setIsCalculating(false);
-      dispatch(updatePackages(FlopyPackages.fromObject(data)));
-    }).catch(() => {
-      setError(true);
-      setIsCalculating(false);
-    });
+        variableDensity: variableDensity.toObject(),
+      } as ICalculatePackagesInputData,
+    })
+      .then((data: IFlopyPackages) => {
+        setIsCalculating(false);
+        dispatch(updatePackages(FlopyPackages.fromObject(data)));
+      })
+      .catch(() => {
+        setError(true);
+        setIsCalculating(false);
+      });
   };
 
   if (!model) {
@@ -101,25 +103,11 @@ const PackageActualizationWrapper = (props: IProps) => {
   const { property } = props;
 
   if (property === 'modflow' && packages instanceof FlopyPackages) {
-    return (
-      <Content.Modflow
-        boundaries={boundaries}
-        model={model}
-        packages={packages}
-        soilmodel={soilmodel}
-      />
-    );
+    return <Content.Modflow boundaries={boundaries} model={model} packages={packages} soilmodel={soilmodel} />;
   }
 
   if (property === 'mt3d' && packages instanceof FlopyPackages) {
-    return (
-      <Content.Mt3d
-        model={model}
-        packages={packages}
-        soilmodel={soilmodel}
-        transport={transport}
-      />
-    );
+    return <Content.Mt3d model={model} packages={packages} soilmodel={soilmodel} transport={transport} />;
   }
 
   if (property === 'seawat' && packages instanceof FlopyPackages) {
@@ -135,12 +123,14 @@ const PackageActualizationWrapper = (props: IProps) => {
   }
 
   if (property === 'calculation') {
-    return (<Content.Calculation
-      calculation={calculation}
-      model={model}
-      packages={packages}
-      startCalculation={startCalculation}
-    />);
+    return (
+      <Content.Calculation
+        calculation={calculation}
+        model={model}
+        packages={packages}
+        startCalculation={startCalculation}
+      />
+    );
   }
 
   return null;
