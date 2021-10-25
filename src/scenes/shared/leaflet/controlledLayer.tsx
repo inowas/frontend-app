@@ -1,103 +1,89 @@
-import { Layer, LayerGroup } from 'leaflet';
+import { Layer } from 'leaflet';
 import { LeafletProvider, useLeafletContext } from '@react-leaflet/core';
+import { ReactNode } from 'react';
 import { useLayerControlContext } from './layerControlContext';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react';
-import _Object$assign from '@babel/runtime-corejs3/core-js-stable/object/assign';
-import _mapInstanceProperty from '@babel/runtime-corejs3/core-js-stable/instance/map';
+import { useMap } from 'react-leaflet';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-const createControlledLayer = (addLayerToControl: (a: LayersControlProps, b: Layer, c: string, d: string) => any) => {
-  return function ControlledLayer(props) {
+interface IProps {
+  checked?: boolean;
+  name: string;
+  group: string;
+  children: ReactNode[] | ReactNode;
+}
+
+const createControlledLayer = (
+  addLayerToControl: (layerContext: any, layer: Layer, name: string, group: string) => any
+) => {
+  const ControlledLayer = (props: IProps) => {
     const context = useLeafletContext();
     const layerContext = useLayerControlContext();
     const propsRef = useRef(props);
+    const parentMap = useMap();
 
-    const _useState = useState(null);
-    const layer = _useState[0];
-    const setLayer = _useState[1];
+    const [layer, setLayer] = useState<Layer | null>(null);
 
     const addLayer = useCallback(
-      function addLayerCallback(layerToAdd) {
+      (layerToAdd) => {
         if (propsRef.current.checked) {
-          _mapInstanceProperty(context).addLayer(layerToAdd);
+          parentMap.addLayer(layerToAdd);
         }
 
-        addLayerToControl(
-          layerContext,
-          layerToAdd,
-          propsRef.current.name,
-          propsRef.current.group
-        );
+        addLayerToControl(layerContext, layerToAdd, propsRef.current.name, propsRef.current.group);
         setLayer(layerToAdd);
       },
       [context]
     );
+
     const removeLayer = useCallback(
-      function removeLayerCallback(layerToRemove) {
-        const _context$layersContro =
-          context.layersControl == null
-            ? 0
-            : _context$layersContro.removeLayer(layerToRemove);
+      (layerToRemove) => {
+        context.layersControl?.removeLayer(layerToRemove);
         setLayer(null);
       },
       [context]
     );
 
-    const newContext = useMemo(
-      function makeNewContext() {
-        return context
-          ? _Object$assign({}, context, {
+    const newContext = useMemo(() => {
+      return context
+        ? Object.assign({}, context, {
             layerContainer: {
               addLayer,
-              removeLayer
-            }
+              removeLayer,
+            },
           })
-          : null;
-      },
-      [context, addLayer, removeLayer]
-    );
-    useEffect(function update() {
+        : null;
+    }, [context, addLayer, removeLayer]);
+
+    useEffect(() => {
       if (layer !== null && propsRef.current !== props) {
-        if (
-          props.checked === true &&
-          (propsRef.current.checked == null ||
-            propsRef.current.checked === false)
-        ) {
-          _mapInstanceProperty(context).addLayer(layer);
-        } else if (
-          propsRef.current.checked === true &&
-          (props.checked == null || props.checked === false)
-        ) {
-          _mapInstanceProperty(context).removeLayer(layer);
+        if (props.checked === true && (propsRef.current.checked == null || propsRef.current.checked === false)) {
+          parentMap.addLayer(layer);
+        } else if (propsRef.current.checked === true && (props.checked == null || props.checked === false)) {
+          parentMap.removeLayer(layer);
         }
 
         propsRef.current = props;
       }
 
-      return function checker() {
+      return () => {
         if (layer !== null) {
-          const _context$layersContro2 =
-            context.layersControl == null
-              ? 0
-              : _context$layersContro2.removeLayer(layer);
+          context.layersControl = context.layersControl?.removeLayer(layer);
         }
       };
     });
+
     return props.children
       ? React.createElement(
-        LeafletProvider,
-        {
-          value: newContext
-        },
-        props.children
-      )
+          LeafletProvider,
+          {
+            value: newContext,
+          },
+          props.children
+        )
       : null;
   };
-}
+
+  return ControlledLayer;
+};
 
 export default createControlledLayer;

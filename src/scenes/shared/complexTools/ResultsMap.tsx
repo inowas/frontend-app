@@ -9,27 +9,28 @@ import { getCellFromClick } from '../../../services/geoTools/getCellFromClick';
 import MapWithControls, { IMapWithControlsOptions } from '../../t03/components/maps/mapWithControls';
 import React, { useEffect, useState } from 'react';
 import uuid from 'uuid';
+import { getActiveCellFromCoordinate } from '../../../services/geoTools';
 
 const style = {
   map: {
     height: '400px',
     width: '100%',
-    cursor: 'pointer'
+    cursor: 'pointer',
   },
   selectedRow: {
     color: '#000',
     weight: 0.5,
     opacity: 0.5,
     fillColor: '#000',
-    fillOpacity: 0.5
+    fillOpacity: 0.5,
   },
   selectedCol: {
     color: '#000',
     weight: 0.5,
     opacity: 0.5,
     fillColor: '#000',
-    fillOpacity: 0.5
-  }
+    fillOpacity: 0.5,
+  },
 };
 
 interface IProps {
@@ -55,12 +56,13 @@ const ResultsMap = (props: IProps) => {
   const [state, setState] = useState<IState>({ viewport: null });
   const [renderKey, setRenderKey] = useState<string>(uuid.v4());
 
-  useEffect(() => {
-    const { viewport } = props;
-    if (viewport) {
-      setState({ viewport });
-    }
-  },
+  useEffect(
+    () => {
+      const { viewport } = props;
+      if (viewport) {
+        setState({ viewport });
+      }
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
@@ -84,7 +86,7 @@ const ResultsMap = (props: IProps) => {
       props.model.geometry.centerOfMass
     );
 
-    if (!props.model.gridSize.isWithIn(activeCell[0], activeCell[1])) {
+    if (!activeCell) {
       return;
     }
 
@@ -110,10 +112,10 @@ const ResultsMap = (props: IProps) => {
             [rowXMax, rowYMin],
             [rowXMax, rowYMax],
             [rowXMin, rowYMax],
-            [rowXMin, rowYMax]
-          ]
-        ]
-      }
+            [rowXMin, rowYMax],
+          ],
+        ],
+      },
     });
 
     const colXMin = boundingBox.xMin + gridSize.getDistanceXStart(selectedCol) * boundingBox.dX;
@@ -131,24 +133,20 @@ const ResultsMap = (props: IProps) => {
             [colXMax, colYMin],
             [colXMax, colYMax],
             [colXMin, colYMax],
-            [colXMin, colYMax]
-          ]
-        ]
-      }
+            [colXMin, colYMax],
+          ],
+        ],
+      },
     });
 
     return (
       <FeatureGroup key={renderKey}>
         <GeoJSON
-          data={selectedColJson.toGeoJSONWithRotation(
-            -1 * props.model.rotation, props.model.geometry.centerOfMass
-          )}
+          data={selectedColJson.toGeoJSONWithRotation(-1 * props.model.rotation, props.model.geometry.centerOfMass)}
           style={style.selectedCol}
         />
         <GeoJSON
-          data={selectedRowJson.toGeoJSONWithRotation(
-            -1 * props.model.rotation, props.model.geometry.centerOfMass
-          )}
+          data={selectedRowJson.toGeoJSONWithRotation(-1 * props.model.rotation, props.model.geometry.centerOfMass)}
           style={style.selectedCol}
         />
       </FeatureGroup>
@@ -169,8 +167,8 @@ const ResultsMap = (props: IProps) => {
       enabled: true,
       globalMinMax: props.globalMinMax,
       layer: 0,
-      quantile: 1
-    }
+      quantile: 1,
+    },
   };
 
   return (

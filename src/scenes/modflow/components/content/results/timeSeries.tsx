@@ -1,12 +1,12 @@
-import {Array2D} from '../../../../../core/model/geometry/Array2D.type';
-import {BoundaryCollection, Calculation, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
-import {DropdownProps, Form, Grid, Icon, Label, Segment} from 'semantic-ui-react';
-import {EResultType} from './flowResults';
-import {MODFLOW_CALCULATION_URL, fetchApiWithToken} from '../../../../../services/api';
-import {flatten, uniq, upperFirst} from 'lodash';
-import {getActiveCellFromCoordinate} from '../../../../../services/geoTools';
-import {misc} from '../../../defaults/colorScales';
-import React, {SyntheticEvent, useEffect, useState} from 'react';
+import { Array2D } from '../../../../../core/model/geometry/Array2D.type';
+import { BoundaryCollection, Calculation, ModflowModel, Soilmodel } from '../../../../../core/model/modflow';
+import { DropdownProps, Form, Grid, Icon, Label, Segment } from 'semantic-ui-react';
+import { EResultType } from './flowResults';
+import { MODFLOW_CALCULATION_URL, fetchApiWithToken } from '../../../../../services/api';
+import { flatten, uniq, upperFirst } from 'lodash';
+import { getActiveCellFromCoordinate } from '../../../../../services/geoTools';
+import { misc } from '../../../defaults/colorScales';
+import React, { SyntheticEvent, useEffect, useState } from 'react';
 import TimeSeriesChart from './timeSeriesChart';
 import TimeSeriesMap from './timeSeriesMap';
 import _ from 'lodash';
@@ -25,7 +25,7 @@ const TimeSeries = (props: IProps) => {
   const [selectedLayer, setSelectedLayer] = useState<number>(0);
   const [selectedType, setSelectedType] = useState<EResultType>(EResultType.HEAD);
 
-  const {boundaries, calculation, model, soilmodel} = props;
+  const { boundaries, calculation, model, soilmodel } = props;
 
   useEffect(() => {
     if (calculation) {
@@ -39,7 +39,9 @@ const TimeSeries = (props: IProps) => {
 
   const fetchCellData = async (row: number, col: number) => {
     try {
-      const c = (await fetchApiWithToken(`${MODFLOW_CALCULATION_URL}/${calculation.id}/timeseries/types/${selectedType}/layers/${selectedLayer}/rows/${row}/columns/${col}`));
+      const c = await fetchApiWithToken(
+        `${MODFLOW_CALCULATION_URL}/${calculation.id}/timeseries/types/${selectedType}/layers/${selectedLayer}/rows/${row}/columns/${col}`
+      );
       if (c.data && Array.isArray(c.data)) {
         const cSelectedCells = _.cloneDeep(selectedCells);
         cSelectedCells.push([row, col, c.data]);
@@ -52,13 +54,13 @@ const TimeSeries = (props: IProps) => {
     }
   };
 
-  const handleChangeLayer = (e: SyntheticEvent, {value}: DropdownProps) => {
+  const handleChangeLayer = (e: SyntheticEvent, { value }: DropdownProps) => {
     if (typeof value === 'number') {
       setSelectedLayer(value);
     }
   };
 
-  const handleChangeType = (e: SyntheticEvent, {value}: DropdownProps) => {
+  const handleChangeType = (e: SyntheticEvent, { value }: DropdownProps) => {
     if (typeof value === 'string') {
       setSelectedType(value as EResultType);
     }
@@ -71,9 +73,7 @@ const TimeSeries = (props: IProps) => {
 
   const handleClickMap = (latlng: [number, number]) => {
     const cell = getActiveCellFromCoordinate(latlng, model.boundingBox, model.gridSize);
-    if (
-      cell[0] < 0 || cell[0] > (props.model.gridSize.nX - 1) || cell[1] < 0 || cell[1] > (props.model.gridSize.nY - 1)
-    ) {
+    if (!cell) {
       return;
     }
     const f = selectedCells.filter((c) => c[1] === cell[0] && c[0] === cell[1]);
@@ -86,9 +86,8 @@ const TimeSeries = (props: IProps) => {
     }
   };
 
-  const layerOptions = () => soilmodel.layersCollection.reorder().all.map((l, idx) => (
-    {key: l.id, value: idx, text: l.name}
-  ));
+  const layerOptions = () =>
+    soilmodel.layersCollection.reorder().all.map((l, idx) => ({ key: l.id, value: idx, text: l.name }));
 
   const typeOptions = () => {
     if (!layerValues) {
@@ -96,8 +95,9 @@ const TimeSeries = (props: IProps) => {
     }
 
     const types = uniq(flatten(layerValues));
-    return types.filter((t) => t === EResultType.HEAD || t === EResultType.DRAWDOWN)
-      .map((v, id) => ({key: id, value: v, text: upperFirst(v)}));
+    return types
+      .filter((t) => t === EResultType.HEAD || t === EResultType.DRAWDOWN)
+      .map((v, id) => ({ key: id, value: v, text: upperFirst(v) }));
   };
 
   return (
@@ -111,7 +111,7 @@ const TimeSeries = (props: IProps) => {
                   <label>Select type</label>
                   <Form.Dropdown
                     selection={true}
-                    style={{zIndex: 1002, minWidth: '8em'}}
+                    style={{ zIndex: 1002, minWidth: '8em' }}
                     options={typeOptions()}
                     value={selectedType}
                     onChange={handleChangeType}
@@ -120,7 +120,7 @@ const TimeSeries = (props: IProps) => {
                 </Form.Group>
                 <Form.Select
                   loading={!soilmodel}
-                  style={{zIndex: 1001}}
+                  style={{ zIndex: 1001 }}
                   fluid={true}
                   options={layerOptions()}
                   value={selectedLayer}
@@ -139,12 +139,12 @@ const TimeSeries = (props: IProps) => {
                   style={{
                     background: key < misc.length ? misc[key] : misc[misc.length - 1],
                     color: '#fff',
-                    marginBottom: '1px'
+                    marginBottom: '1px',
                   }}
                   key={key}
                 >
                   {c[0]} {c[1]}
-                  <Icon name='delete' onClick={handleClickDelete([c[0], c[1]])}/>
+                  <Icon name="delete" onClick={handleClickDelete([c[0], c[1]])} />
                 </Label>
               ))}
             </Segment>
@@ -152,18 +152,13 @@ const TimeSeries = (props: IProps) => {
         </Grid.Row>
       </Grid>
       <Segment color={'grey'}>
-        <TimeSeriesMap
-          boundaries={boundaries}
-          model={model}
-          onClick={handleClickMap}
-          selectedCells={selectedCells}
-        />
+        <TimeSeriesMap boundaries={boundaries} model={model} onClick={handleClickMap} selectedCells={selectedCells} />
       </Segment>
-      {selectedCells.length > 0 &&
-      <Segment color={'blue'}>
-        <TimeSeriesChart selectedCells={selectedCells} type={selectedType}/>
-      </Segment>
-      }
+      {selectedCells.length > 0 && (
+        <Segment color={'blue'}>
+          <TimeSeriesChart selectedCells={selectedCells} type={selectedType} />
+        </Segment>
+      )}
     </React.Fragment>
   );
 };

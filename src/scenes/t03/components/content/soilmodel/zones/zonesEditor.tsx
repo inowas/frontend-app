@@ -1,30 +1,31 @@
 import {
   Accordion,
-  AccordionTitleProps, Button,
+  AccordionTitleProps,
+  Button,
   Form,
   Header,
   Icon,
   InputOnChangeData,
-  Loader
+  Loader,
 } from 'semantic-ui-react';
-import {Array2D} from '../../../../../../core/model/geometry/Array2D.type';
-import {GeoJson} from '../../../../../../core/model/geometry/Geometry.type';
-import {ICell} from '../../../../../../core/model/geometry/Cells.type';
-import {ILayerParameterZone} from '../../../../../../core/model/modflow/soilmodel/LayerParameterZone.type';
-import {IRasterFileMetadata} from '../../../../../../services/api/types';
+import { Array2D } from '../../../../../../core/model/geometry/Array2D.type';
+import { GeoJson } from '../../../../../../core/model/geometry/Geometry.type';
+import { ICell } from '../../../../../../core/model/geometry/Cells.type';
+import { ILayerParameterZone } from '../../../../../../core/model/modflow/soilmodel/LayerParameterZone.type';
+import { IRasterFileMetadata } from '../../../../../../services/api/types';
 import {
   LayerParameterZonesCollection,
   RasterParameter,
-  ZonesCollection
+  ZonesCollection,
 } from '../../../../../../core/model/modflow/soilmodel';
-import {ModflowModel} from '../../../../../../core/model/modflow';
-import {RasterDataMap, RasterfileUploadModal} from '../../../../../shared/rasterData';
-import {distinct} from '../../../../../modflow/defaults/colorScales';
-import {getActiveCellFromCoordinate} from '../../../../../../services/geoTools';
-import {rasterDownload} from '../../../../../shared/rasterData/helpers';
+import { ModflowModel } from '../../../../../../core/model/modflow';
+import { RasterDataMap, RasterfileUploadModal } from '../../../../../shared/rasterData';
+import { distinct } from '../../../../../modflow/defaults/colorScales';
+import { getActiveCellFromCoordinate } from '../../../../../../services/geoTools';
+import { rasterDownload } from '../../../../../shared/rasterData/helpers';
 import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
-import CellAnalyzer, {CellAnalyzerParameters} from '../../../../../shared/rasterData/CellAnalyzer';
-import React, {ChangeEvent, MouseEvent, useEffect, useState} from 'react';
+import CellAnalyzer, { CellAnalyzerParameters } from '../../../../../shared/rasterData/CellAnalyzer';
+import React, { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
 import SoilmodelLayer from '../../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
 import ZonesTable from './zonesTable';
 import uuid from 'uuid';
@@ -75,7 +76,7 @@ const ZonesEditor = (props: IProps) => {
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [activeZones, setActiveZones] = useState<IActiveZone[]>([]);
   const [cellInfo, setCellInfo] = useState<ICellInformation | null>(null);
-  const [smoothParams, setSmoothParams] = useState<ISmoothParameters>({cycles: 1, distance: 1});
+  const [smoothParams, setSmoothParams] = useState<ISmoothParameters>({ cycles: 1, distance: 1 });
   const [rasterUploadModal, setRasterUploadModal] = useState<boolean>(false);
   const [rerenderKey, setRerenderKey] = useState<string>(uuid.v4());
 
@@ -89,7 +90,7 @@ const ZonesEditor = (props: IProps) => {
         az.push({
           color: k < distinct.length ? distinct[k] : distinct[0],
           geometry: z.geometry as GeoJson,
-          name: z.name
+          name: z.name,
         });
       }
     });
@@ -101,27 +102,27 @@ const ZonesEditor = (props: IProps) => {
 
   const recalculateMap = () => props.onChange(relations, props.parameter.id);
 
-  const smoothMap = () => props.onSmoothLayer({
-    ...smoothParams,
-    parameterId: props.parameter.id
-  });
+  const smoothMap = () =>
+    props.onSmoothLayer({
+      ...smoothParams,
+      parameterId: props.parameter.id,
+    });
 
   const handleAddRelation = (relation: ILayerParameterZone) => props.onAddRelation(relation, props.parameter.id);
 
   const handleChangeRelation = (cRelations: LayerParameterZonesCollection) =>
     props.onChange(cRelations, props.parameter.id);
 
-  const handleChangeSmoothParams = (e: ChangeEvent<HTMLInputElement>, {name, value}: InputOnChangeData) => {
+  const handleChangeSmoothParams = (e: ChangeEvent<HTMLInputElement>, { name, value }: InputOnChangeData) => {
     const cSmoothParams = {
       ...smoothParams,
-      [name]: parseInt(value, 10)
+      [name]: parseInt(value, 10),
     };
 
     return setSmoothParams(cSmoothParams);
   };
 
-  const handleRemoveRelation = (relation: ILayerParameterZone) =>
-    props.onRemoveRelation(relation, props.parameter.id);
+  const handleRemoveRelation = (relation: ILayerParameterZone) => props.onRemoveRelation(relation, props.parameter.id);
 
   const handleUploadRaster = (result: IUploadData) => {
     const cRelations = relations.all.map((r) => {
@@ -136,9 +137,7 @@ const ZonesEditor = (props: IProps) => {
 
   const handleClickCell = (latlng: [number, number]) => {
     const cell = getActiveCellFromCoordinate(latlng, props.model.boundingBox, props.model.gridSize);
-    if (
-      cell[0] < 0 || cell[0] > (props.model.gridSize.nX - 1) || cell[1] < 0 || cell[1] > (props.model.gridSize.nY - 1)
-    ) {
+    if (!cell) {
       setCellInfo(null);
       return;
     }
@@ -146,15 +145,15 @@ const ZonesEditor = (props: IProps) => {
     const params = props.layer.parameters.map((p) => {
       const value = props.layer.getValueOfParameter(p.id);
       if (typeof value === 'number') {
-        return {name: p.id, value};
+        return { name: p.id, value };
       }
       if (Array.isArray(value) && value.length >= cell[1] && value[cell[1]].length >= cell[0]) {
-        return {name: p.id, value: value[cell[1]][cell[0]]}
+        return { name: p.id, value: value[cell[1]][cell[0]] };
       }
-      return {name: p.id, value: NaN};
-    })
+      return { name: p.id, value: NaN };
+    });
 
-    setCellInfo({latlng, cell, parameters: params});
+    setCellInfo({ latlng, cell, parameters: params });
   };
 
   const handleCancelUploadModal = () => setRasterUploadModal(false);
@@ -162,7 +161,7 @@ const ZonesEditor = (props: IProps) => {
   const handleClickUpload = () => setRasterUploadModal(true);
 
   const handleClick = (e: MouseEvent, titleProps: AccordionTitleProps) => {
-    const {index} = titleProps;
+    const { index } = titleProps;
     if (index) {
       const newIndex = activeIndex === index ? -1 : index;
       return setActiveIndex(typeof newIndex === 'string' ? parseInt(newIndex, 10) : newIndex);
@@ -173,8 +172,10 @@ const ZonesEditor = (props: IProps) => {
 
   const renderRasterDownload = () => {
     const rParameter = props.layer.parameters.filter((p) => p.id === props.parameter.id);
-    const data = (rParameter[0].value === null || rParameter[0].value === undefined) &&
-    rParameter[0].data.file ? rParameter[0].data.data : rParameter[0].value;
+    const data =
+      (rParameter[0].value === null || rParameter[0].value === undefined) && rParameter[0].data.file
+        ? rParameter[0].data.data
+        : rParameter[0].value;
 
     if (data === null || !Array.isArray(data) || data === undefined) {
       return;
@@ -182,22 +183,16 @@ const ZonesEditor = (props: IProps) => {
 
     const handleDownload = () => {
       rasterDownload(data, props.model.boundingBox, props.model.gridSize);
-    }
+    };
 
     return (
       <React.Fragment>
         <Accordion.Title active={activeIndex === 2} index={2} onClick={handleClick}>
-          <Icon name="dropdown"/> Export
+          <Icon name="dropdown" /> Export
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 2}>
-          <Button
-            fluid={true}
-            primary={true}
-            icon={true}
-            labelPosition="left"
-            onClick={handleDownload}
-          >
-            <Icon name="download"/>
+          <Button fluid={true} primary={true} icon={true} labelPosition="left" onClick={handleDownload}>
+            <Icon name="download" />
             Download Raster
           </Button>
         </Accordion.Content>
@@ -209,14 +204,16 @@ const ZonesEditor = (props: IProps) => {
     const rParameter = props.layer.parameters.filter((p) => p.id === props.parameter.id);
 
     if (rParameter.length === 0) {
-      return <Loader active={true} inline="centered"/>;
+      return <Loader active={true} inline="centered" />;
     }
 
-    const data = (rParameter[0].value === null || rParameter[0].value === undefined) &&
-    rParameter[0].data.file ? rParameter[0].data.data : rParameter[0].value;
+    const data =
+      (rParameter[0].value === null || rParameter[0].value === undefined) && rParameter[0].data.file
+        ? rParameter[0].data.data
+        : rParameter[0].value;
 
     if (data === null || data === undefined) {
-      return <Loader active={true} inline="centered"/>;
+      return <Loader active={true} inline="centered" />;
     }
 
     return (
@@ -242,15 +239,15 @@ const ZonesEditor = (props: IProps) => {
 
   return (
     <div>
-      {props.showHeadline &&
-      <Header as="h4">
-        {props.parameter.title}, {props.parameter.id} [{props.parameter.unit}]
-      </Header>
-      }
+      {props.showHeadline && (
+        <Header as="h4">
+          {props.parameter.title}, {props.parameter.id} [{props.parameter.unit}]
+        </Header>
+      )}
       {renderMap()}
       <Accordion styled={true} fluid={true}>
         <Accordion.Title active={activeIndex === 1} index={1} onClick={handleClick}>
-          <Icon name="dropdown"/>
+          <Icon name="dropdown" />
           <label>Smoothing</label>
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 1}>
@@ -282,7 +279,7 @@ const ZonesEditor = (props: IProps) => {
               onClick={smoothMap}
               content={'Start Smoothing'}
               width={8}
-              style={{marginTop: '23px'}}
+              style={{ marginTop: '23px' }}
               disabled={props.readOnly}
             />
             <Form.Button
@@ -292,7 +289,7 @@ const ZonesEditor = (props: IProps) => {
               onClick={recalculateMap}
               content={'Remove Smoothing'}
               width={9}
-              style={{marginTop: '23px'}}
+              style={{ marginTop: '23px' }}
               disabled={props.readOnly}
             />
           </Form.Group>
@@ -309,16 +306,16 @@ const ZonesEditor = (props: IProps) => {
         zones={props.zones}
         relations={relations}
       />
-      {rasterUploadModal && !props.readOnly &&
-      <RasterfileUploadModal
-        gridSize={props.model.gridSize}
-        parameter={props.parameter}
-        onCancel={handleCancelUploadModal}
-        onChange={handleUploadRaster}
-      />
-      }
+      {rasterUploadModal && !props.readOnly && (
+        <RasterfileUploadModal
+          gridSize={props.model.gridSize}
+          parameter={props.parameter}
+          onCancel={handleCancelUploadModal}
+          onChange={handleUploadRaster}
+        />
+      )}
     </div>
   );
 };
 
-export default (ZonesEditor);
+export default ZonesEditor;

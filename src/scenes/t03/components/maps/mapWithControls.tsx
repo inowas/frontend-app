@@ -1,21 +1,21 @@
-import * as React from 'react';
 import { Array2D } from '../../../../core/model/geometry/Array2D.type';
 import { BoundaryCollection, ModflowModel } from '../../../../core/model/modflow';
 import { BoundaryFactory } from '../../../../core/model/modflow/boundaries';
 import { ColorLegend } from '../../../shared/rasterData';
 import { FlopyModflowMfbas } from '../../../../core/model/flopy/packages/mf';
 import { FlopyPackages } from '../../../../core/model/flopy';
-import { GeoJSON, LayerGroup, LayersControl, MapConsumer, MapContainer, MapContainerProps, Pane } from 'react-leaflet';
+import { GeoJSON, MapConsumer, MapContainer, MapContainerProps, Pane } from 'react-leaflet';
 import { IReactLeafletHeatMapProps } from '../../../shared/rasterData/ReactLeafletHeatMapCanvasOverlay.type';
 import { IRootReducer } from '../../../../reducers';
 import { LeafletEvent, LeafletMouseEvent, Map } from 'leaflet';
 import { ReactNode } from 'react';
 import { createGridData, rainbowFactory } from '../../../shared/rasterData/helpers';
 import { getStyle } from '../../../../services/geoTools/mapHelpers';
-import { renderBoundaryOverlays } from './mapLayers';
+import { renderBoundaryOverlays, renderBoundingBoxLayer } from './mapLayers';
 import { useSelector } from 'react-redux';
 import ContourLayer from '../../../shared/rasterData/contourLayer';
 import GridRefinement from '../content/discretization/gridRefinement';
+import LayerControl, { GroupedLayer } from '../../../shared/leaflet/LayerControl';
 import Rainbow from '../../../../services/rainbowvis/Rainbowvis';
 import ReactLeafletHeatMapCanvasOverlay from '../../../shared/rasterData/ReactLeafletHeatMapCanvasOverlay';
 import _ from 'lodash';
@@ -24,11 +24,15 @@ export interface IMapWithControlsOptions {
   area?: {
     checked: boolean;
     enabled: boolean;
-  }
+  };
   boundaries?: {
     checked: boolean;
     enabled: boolean;
     excluded: string[];
+  };
+  boundingBox?: {
+    checked: boolean;
+    enabled: boolean;
   };
   fullScreenControl?: boolean;
   grid?: {
@@ -41,7 +45,7 @@ export interface IMapWithControlsOptions {
     layer: number;
     globalMinMax?: [number, number];
     quantile: number;
-  }
+  };
 }
 
 interface IProps {
@@ -57,12 +61,16 @@ type TProps = IProps & MapContainerProps;
 const defaultOptions: IMapWithControlsOptions = {
   area: {
     checked: true,
-    enabled: true
+    enabled: true,
   },
   boundaries: {
     checked: false,
     enabled: true,
-    excluded: []
+    excluded: [],
+  },
+  boundingBox: {
+    checked: false,
+    enabled: false,
   },
   fullScreenControl: true,
   grid: {
@@ -72,8 +80,8 @@ const defaultOptions: IMapWithControlsOptions = {
   raster: {
     enabled: true,
     layer: 0,
-    quantile: 1
-  }
+    quantile: 1,
+  },
 };
 
 const MapWithControls = (props: TProps) => {
@@ -82,7 +90,7 @@ const MapWithControls = (props: TProps) => {
   if (props.options) {
     options = {
       ...options,
-      ...props.options
+      ...props.options,
     };
   }
 
@@ -94,7 +102,7 @@ const MapWithControls = (props: TProps) => {
   if (boundaries && options.boundaries) {
     boundaries = BoundaryCollection.fromObject(
       T03.boundaries.filter((b) => {
-        return options.boundaries && !options.boundaries.excluded.includes(BoundaryFactory.fromObject(b).type)
+        return options.boundaries && !options.boundaries.excluded.includes(BoundaryFactory.fromObject(b).type);
       })
     );
   }
@@ -104,12 +112,12 @@ const MapWithControls = (props: TProps) => {
     const lastGradient = gradients[gradients.length - 1];
     const legend = gradients.map((gradient) => ({
       color: '#' + gradient.endColor,
-      value: Number(gradient.maxNum).toExponential(2)
+      value: Number(gradient.maxNum).toExponential(2),
     }));
 
     legend.push({
       color: '#' + lastGradient.startColor,
-      value: Number(lastGradient.minNum).toExponential(2)
+      value: Number(lastGradient.minNum).toExponential(2),
     });
 
     return <ColorLegend legend={legend} unit="m" />;
@@ -121,7 +129,7 @@ const MapWithControls = (props: TProps) => {
     }
 
     const filteredData = _.sortBy(_.flatten(props.raster).filter((n) => n !== null));
-    const q = Math.floor(options.raster.quantile / 100 * filteredData.length);
+    const q = Math.floor((options.raster.quantile / 100) * filteredData.length);
 
     let minData = filteredData[q];
     let maxData = filteredData[filteredData.length - q];
@@ -156,87 +164,74 @@ const MapWithControls = (props: TProps) => {
       bounds: model.boundingBox.getBoundsLatLng(),
       opacity: 0.75,
       sharpening: 10,
-      zIndex: 1
+      zIndex: 1,
     } as IReactLeafletHeatMapProps;
 
     return (
-      <LayersControl position="topright">
+      <>
+        <GroupedLayer name="Raster" group="Data">
+          <ReactLeafletHeatMapCanvasOverlay
+            nX={mapProps.nX}
+            nY={mapProps.nY}
+            data={mapProps.data}
+            bounds={mapProps.bounds}
+            rainbow={mapProps.rainbow}
+            sharpening={mapProps.sharpening}
+          />
+        </GroupedLayer>
+        <GroupedLayer checked name="Contours" group="Data">
+          <ContourLayer
+            boundingBox={model.boundingBox}
+            data={props.raster}
+            geometry={model.geometry}
+            gridSize={model.gridSize}
+            ibound={ibound}
+            rainbow={rainbowVis}
+            rotation={model.rotation}
+          />
+        </GroupedLayer>
         {renderLegend(rainbowVis)}
-        <LayersControl.Overlay checked={true} name="Raster">
-          <LayerGroup>
-            <ReactLeafletHeatMapCanvasOverlay
-              nX={mapProps.nX}
-              nY={mapProps.nY}
-              data={mapProps.data}
-              bounds={mapProps.bounds}
-              rainbow={mapProps.rainbow}
-              sharpening={mapProps.sharpening}
-            />
-          </LayerGroup>
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Contours">
-          <LayerGroup>
-            <ContourLayer
-              boundingBox={model.boundingBox}
-              data={props.raster}
-              geometry={model.geometry}
-              gridSize={model.gridSize}
-              ibound={ibound}
-              rainbow={rainbowVis}
-              rotation={model.rotation}
-            />
-          </LayerGroup>
-        </LayersControl.Overlay>
-      </LayersControl>
+      </>
     );
-  }
+  };
 
   return (
-    <MapContainer
-      zoomControl={false}
-      {...props}
-    >
+    <MapContainer zoomControl={false} {...props}>
       <MapConsumer>
         {(map: Map) => {
-          map.on('click', (e: LeafletMouseEvent) => props.onClick ? props.onClick(e) : null);
-          map.on('moveend', (e: LeafletEvent) => props.onMoveEnd ? props.onMoveEnd(e) : null);
+          map.on('click', (e: LeafletMouseEvent) => (props.onClick ? props.onClick(e) : null));
+          map.on('moveend', (e: LeafletEvent) => (props.onMoveEnd ? props.onMoveEnd(e) : null));
           return null;
         }}
       </MapConsumer>
-      {props.raster &&
-        <Pane name="back" style={{ zIndex: 499 }}>
-          {renderRaster()}
+      <LayerControl position="topright">
+        {props.raster ? (
+          <Pane name="back" style={{ zIndex: 499 }}>
+            {renderRaster()}
+          </Pane>
+        ) : null}
+        <Pane name="middle" style={{ zIndex: 500 }}>
+          {model && options.area && options.area.enabled ? (
+            <GroupedLayer checked={options.area.checked} name="Model Area" group="Objects">
+              <GeoJSON key={model.geometry.hash()} data={model.geometry.toGeoJSON()} style={getStyle('area')} />
+            </GroupedLayer>
+          ) : null}
+          {model && options.boundingBox && options.boundingBox.enabled ? (
+            <GroupedLayer checked={options.boundingBox.checked} name="Bounding Box" group="Objects">
+              {renderBoundingBoxLayer(model.boundingBox)}
+            </GroupedLayer>
+          ) : null}
+          {model && options.grid && options.grid.enabled ? (
+            <GroupedLayer name="Grid" group="Objects">
+              <GridRefinement boundingBox={model.boundingBox} gridSize={model.gridSize} selectedRowsAndColumns={null} />
+            </GroupedLayer>
+          ) : null}
+          {boundaries && options.boundaries && options.boundaries.enabled
+            ? renderBoundaryOverlays(boundaries, options.boundaries?.checked)
+            : null}
         </Pane>
-      }
-      <Pane name="middle" style={{ zIndex: 500 }}>
-        <LayersControl position="topright">
-          {model && options.grid && options.grid.enabled &&
-            <LayersControl.Overlay checked={options.grid.checked} name="Grid">
-              <LayerGroup>
-                <GridRefinement
-                  boundingBox={model.boundingBox}
-                  gridSize={model.gridSize}
-                  selectedRowsAndColumns={null}
-                />
-              </LayerGroup>
-            </LayersControl.Overlay>
-          }
-          {model && options.area && options.area.enabled &&
-            <LayersControl.Overlay checked={options.area.checked} name="Model Area">
-              <LayerGroup>
-                <GeoJSON
-                  key={model.geometry.hash()}
-                  data={model.geometry.toGeoJSON()}
-                  style={getStyle('area')}
-                />
-              </LayerGroup>
-            </LayersControl.Overlay>
-          }
-          {boundaries && options.boundaries && options.boundaries.enabled &&
-            renderBoundaryOverlays(boundaries, options.boundaries?.checked)
-          }
-        </LayersControl>
-      </Pane>
+      </LayerControl>
+
       {props.children}
     </MapContainer>
   );

@@ -1,18 +1,18 @@
 import * as GeoJson from 'geojson';
-import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
+import { BasicTileLayer } from '../../../../services/geoTools/tileLayers';
 import {
   Boundary,
   BoundaryCollection,
   HeadObservationWell,
-  LineBoundary
+  LineBoundary,
 } from '../../../../core/model/modflow/boundaries';
-import {CircleMarker, Polygon, Polyline, Tooltip} from 'react-leaflet';
-import {Geometry} from '../../../../core/model/modflow';
-import {LatLngExpression} from 'leaflet';
-import {getStyle} from './index';
-import {uniqueId} from 'lodash';
-import MapWithControls, {IMapWithControlsOptions} from './mapWithControls';
-import React, {Component} from 'react';
+import { CircleMarker, Polygon, Polyline, Tooltip } from 'react-leaflet';
+import { Geometry } from '../../../../core/model/modflow';
+import { LatLngExpression } from 'leaflet';
+import { getStyle } from './index';
+import { uniqueId } from 'lodash';
+import MapWithControls, { IMapWithControlsOptions } from './mapWithControls';
+import React, { Component } from 'react';
 import WellBoundary from '../../../../core/model/modflow/boundaries/WellBoundary';
 
 interface IProps {
@@ -27,7 +27,7 @@ interface IProps {
 const style = {
   map: {
     height: '400px',
-  }
+  },
 };
 
 class BoundaryMap extends Component<IProps> {
@@ -41,31 +41,31 @@ class BoundaryMap extends Component<IProps> {
     }
 
     const observationPoints = b.observationPoints;
-    return observationPoints.map((op) => {
-      if (op.geometry) {
-        const selected = (op.id === this.props.selectedObservationPointId) ? '_selected' : '';
-        return (
-          <CircleMarker
-            key={uniqueId(op.id)}
-            center={[
-              op.geometry.coordinates[1],
-              op.geometry.coordinates[0]
-            ]}
-            onClick={this.handleClickObservationPoint(op.id)}
-            {...getStyle('op' + selected)}
-          >
-            <Tooltip offset={[0, 0]} opacity={1} sticky={true}>
-              <b>{op.name}</b><br/>
-              {op.geometry.coordinates[1] >= 0 ? 'N ' : 'S '}
-              {op.geometry.coordinates[1].toFixed(3)}
-              {op.geometry.coordinates[0] >= 0 ? ' E ' : ' W '}
-              {op.geometry.coordinates[0].toFixed(3)}
-            </Tooltip>
-          </CircleMarker>
-        );
-      }
-      return null;
-    }).filter(x => x);
+    return observationPoints
+      .map((op) => {
+        if (op.geometry) {
+          const selected = op.id === this.props.selectedObservationPointId ? '_selected' : '';
+          return (
+            <CircleMarker
+              key={uniqueId(op.id)}
+              center={[op.geometry.coordinates[1], op.geometry.coordinates[0]]}
+              onClick={this.handleClickObservationPoint(op.id)}
+              {...getStyle('op' + selected)}
+            >
+              <Tooltip offset={[0, 0]} opacity={1} sticky={true}>
+                <b>{op.name}</b>
+                <br />
+                {op.geometry.coordinates[1] >= 0 ? 'N ' : 'S '}
+                {op.geometry.coordinates[1].toFixed(3)}
+                {op.geometry.coordinates[0] >= 0 ? ' E ' : ' W '}
+                {op.geometry.coordinates[0].toFixed(3)}
+              </Tooltip>
+            </CircleMarker>
+          );
+        }
+        return null;
+      })
+      .filter((x) => x);
   }
 
   // noinspection JSMethodCanBeStatic
@@ -82,10 +82,7 @@ class BoundaryMap extends Component<IProps> {
           return (
             <CircleMarker
               key={uniqueId(Geometry.fromObject(geometry as GeoJson.Point).hash())}
-              center={[
-                geometry.coordinates[1],
-                geometry.coordinates[0]
-              ]}
+              center={[geometry.coordinates[1], geometry.coordinates[0]]}
               {...getStyle('underlay')}
               onClick={this.handleClickBoundary(b.id)}
             />
@@ -106,13 +103,10 @@ class BoundaryMap extends Component<IProps> {
 
     switch (geometry.type.toLowerCase()) {
       case 'point':
-        return (b instanceof WellBoundary || b instanceof HeadObservationWell) ? (
+        return b instanceof WellBoundary || b instanceof HeadObservationWell ? (
           <CircleMarker
             key={uniqueId(Geometry.fromObject(geometry as GeoJson.Point).hash())}
-            center={[
-              geometry.coordinates[1],
-              geometry.coordinates[0]
-            ]}
+            center={[geometry.coordinates[1], geometry.coordinates[0]]}
             {...getStyle(b.type, b instanceof WellBoundary ? b.wellType : undefined)}
           />
         ) : null;
@@ -120,18 +114,14 @@ class BoundaryMap extends Component<IProps> {
         return (
           <Polyline
             key={uniqueId(Geometry.fromObject(geometry as GeoJson.LineString).hash())}
-            positions={
-              Geometry.fromObject(geometry as GeoJson.LineString).coordinatesLatLng as LatLngExpression[]
-            }
+            positions={Geometry.fromObject(geometry as GeoJson.LineString).coordinatesLatLng as LatLngExpression[]}
           />
         );
       case 'polygon':
         return (
           <Polygon
             key={uniqueId(Geometry.fromObject(geometry as GeoJson.Polygon).hash())}
-            positions={
-              Geometry.fromObject(geometry as GeoJson.Polygon).coordinatesLatLng as LatLngExpression[]
-            }
+            positions={Geometry.fromObject(geometry as GeoJson.Polygon).coordinatesLatLng as LatLngExpression[]}
           />
         );
       default:
@@ -146,33 +136,31 @@ class BoundaryMap extends Component<IProps> {
   }
 
   public render() {
-    const {geometry, boundary, boundaries} = this.props;
+    const { geometry, boundary, boundaries } = this.props;
 
     const mapOptions: IMapWithControlsOptions = {
       area: {
         checked: true,
-        enabled: true
+        enabled: true,
       },
       boundaries: {
         checked: false,
         enabled: true,
-        excluded: [boundary.type]
+        excluded: [boundary.type],
+      },
+      boundingBox: {
+        checked: true,
+        enabled: true,
       },
       grid: {
         checked: false,
-        enabled: true
-      }
-    }
-
-    console.log({mapOptions});
+        enabled: true,
+      },
+    };
 
     return (
-      <MapWithControls
-        style={style.map}
-        bounds={geometry.getBoundsLatLng()}
-        options={mapOptions}
-      >
-        <BasicTileLayer/>
+      <MapWithControls style={style.map} bounds={geometry.getBoundsLatLng()} options={mapOptions}>
+        <BasicTileLayer />
         {boundaries.length > 0 && this.renderOtherBoundaries(boundaries)}
         {this.renderBoundaryGeometry(boundary)}
         {this.renderObservationPoints(boundary)}

@@ -18,7 +18,7 @@ import RasterDataImage from '../../../shared/rasterData/rasterDataImage';
 
 const options = {
   edit: {
-    remove: false
+    remove: false,
   },
   draw: {
     polyline: false,
@@ -28,9 +28,9 @@ const options = {
     circlemarker: false,
     marker: false,
     poly: {
-      allowIntersection: false
-    }
-  }
+      allowIntersection: false,
+    },
+  },
 };
 
 const maximumGridCells = 10000;
@@ -38,7 +38,7 @@ const maximumGridCells = 10000;
 interface IProps {
   gridSize: GridSize;
   onChange?: (raster: RasterLayer) => any;
-  onClickCell?: ({ x, y }: { x: number, y: number }) => any;
+  onClickCell?: ({ x, y }: { x: number; y: number }) => any;
   raster: RasterLayer;
   showBasicLayer: boolean;
   showButton: boolean;
@@ -48,9 +48,7 @@ interface IProps {
 }
 
 const CriteriaRasterMap = (props: IProps) => {
-  const [showMap, setShowMap] = useState<boolean>(
-    props.gridSize.nX * props.gridSize.nY <= maximumGridCells
-  );
+  const [showMap, setShowMap] = useState<boolean>(props.gridSize.nX * props.gridSize.nY <= maximumGridCells);
 
   useEffect(() => {
     setShowMap(props.showBasicLayer || props.gridSize.nX * props.gridSize.nY <= maximumGridCells);
@@ -62,13 +60,9 @@ const CriteriaRasterMap = (props: IProps) => {
     if (latlng && props.onClickCell !== undefined) {
       const cRaster = props.raster;
 
-      const cell = getActiveCellFromCoordinate(
-        [latlng.lng, latlng.lat],
-        cRaster.boundingBox,
-        props.gridSize
-      );
+      const cell = getActiveCellFromCoordinate([latlng.lng, latlng.lat], cRaster.boundingBox, props.gridSize);
 
-      if (cell[0] < 0 || cell[1] < 0 || cell[0] >= props.gridSize.nX || cell[1] >= props.gridSize.nY) {
+      if (!cell) {
         return;
       }
 
@@ -95,12 +89,12 @@ const CriteriaRasterMap = (props: IProps) => {
       const lastGradient = gradients[gradients.length - 1];
       const legend = gradients.map((gradient) => ({
         color: '#' + gradient.endColor,
-        value: Number(gradient.maxNum).toFixed(2)
+        value: Number(gradient.maxNum).toFixed(2),
       }));
 
       legend.push({
         color: '#' + lastGradient.startColor,
-        value: Number(lastGradient.minNum).toFixed(2)
+        value: Number(lastGradient.minNum).toFixed(2),
       });
       return <ColorLegend legend={legend} unit={''} />;
     }
@@ -113,17 +107,12 @@ const CriteriaRasterMap = (props: IProps) => {
   if (!showMap) {
     return (
       <div>
-        {showButton &&
-          <Button
-            icon={true}
-            fluid={true}
-            onClick={handleToggleShowMap}
-            labelPosition="left"
-          >
+        {showButton && (
+          <Button icon={true} fluid={true} onClick={handleToggleShowMap} labelPosition="left">
             <Icon name="map" />
             Show on map (might take a while to render because of big grid size)
           </Button>
-        }
+        )}
         <RasterDataImage
           onClickCell={props.onClickCell}
           data={raster.data}
@@ -139,47 +128,33 @@ const CriteriaRasterMap = (props: IProps) => {
 
   return (
     <div>
-      {showButton && gridSize.nX * gridSize.nY > maximumGridCells &&
-        <Button
-          icon={true}
-          fluid={true}
-          onClick={handleToggleShowMap}
-          labelPosition="left"
-        >
+      {showButton && gridSize.nX * gridSize.nY > maximumGridCells && (
+        <Button icon={true} fluid={true} onClick={handleToggleShowMap} labelPosition="left">
           <Icon name="image" />
           Show as Image (better performance)
         </Button>
-      }
+      )}
       <MapContainer
         style={{
           width: '100%',
-          height: props.mapHeight || '600px'
+          height: props.mapHeight || '600px',
         }}
         bounds={boundingBox.getBoundsLatLng()}
         onClick={handleClickMap}
       >
-        {props.showBasicLayer &&
-          <BasicTileLayer />
-        }
-        {!!props.onChange &&
+        {props.showBasicLayer && <BasicTileLayer />}
+        {!!props.onChange && (
           <FeatureGroup>
-            <EditControl
-              position="bottomright"
-              onEdited={handleEditPath}
-              {...options}
-            />
-            <Rectangle
-              bounds={boundingBox.getBoundsLatLng()}
-              {...getStyle('bounding_box')}
-            />
+            <EditControl position="bottomright" onEdited={handleEditPath} {...options} />
+            <Rectangle bounds={boundingBox.getBoundsLatLng()} {...getStyle('bounding_box')} />
           </FeatureGroup>
-        }
-        {props.legend && data && data.length > 0 &&
+        )}
+        {props.legend && data && data.length > 0 && (
           <div>
             {CanvasHeatMapOverlay(gridSize.nX, gridSize.nY, data, boundingBox.getBoundsLatLng(), props.legend, 10)}
             {props.legend && props.showLegend && renderLegend(props.legend)}
           </div>
-        }
+        )}
       </MapContainer>
     </div>
   );

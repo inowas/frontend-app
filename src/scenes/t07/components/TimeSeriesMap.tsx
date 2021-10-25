@@ -22,22 +22,22 @@ const TimeSeriesMap = (props: IProps) => {
     map: {
       height: '400px',
       width: '100%',
-      cursor: 'pointer'
+      cursor: 'pointer',
     },
     selectedRow: {
       color: '#000',
       weight: 0.5,
       opacity: 0.5,
       fillColor: '#000',
-      fillOpacity: 0.5
+      fillOpacity: 0.5,
     },
     selectedCol: {
       color: '#000',
       weight: 0.5,
       opacity: 0.5,
       fillColor: '#000',
-      fillOpacity: 0.5
-    }
+      fillOpacity: 0.5,
+    },
   };
 
   const handleClickOnMap = ({ latlng }: LeafletMouseEvent) => {
@@ -45,7 +45,7 @@ const TimeSeriesMap = (props: IProps) => {
     const y = latlng.lat;
     const activeCell = getActiveCellFromCoordinate([x, y], props.model.boundingBox, props.model.gridSize);
 
-    if (!props.model.gridSize.isWithIn(activeCell[0], activeCell[1])) {
+    if (!activeCell) {
       return;
     }
 
@@ -60,12 +60,12 @@ const TimeSeriesMap = (props: IProps) => {
 
     const selectedRowBoundsLatLng: Array<[number, number]> = [
       [props.model.boundingBox.yMax - selectedRow * dY, props.model.boundingBox.xMin],
-      [props.model.boundingBox.yMax - (selectedRow + 1) * dY, props.model.boundingBox.xMax]
+      [props.model.boundingBox.yMax - (selectedRow + 1) * dY, props.model.boundingBox.xMax],
     ];
 
     const selectedColBoundsLatLng: Array<[number, number]> = [
       [props.model.boundingBox.yMin, props.model.boundingBox.xMin + selectedCol * dX],
-      [props.model.boundingBox.yMax, props.model.boundingBox.xMin + (selectedCol + 1) * dX]
+      [props.model.boundingBox.yMax, props.model.boundingBox.xMin + (selectedCol + 1) * dX],
     ];
 
     return (
@@ -97,16 +97,11 @@ const TimeSeriesMap = (props: IProps) => {
       onclick={handleClickOnMap}
       ref={mapRef}
     >
-      {mapRef && mapRef.current &&
-        <CenterControl
-          map={mapRef.current}
-          bounds={props.model.boundingBox.getBoundsLatLng()}
-        />
-      }
+      {mapRef && mapRef.current && (
+        <CenterControl map={mapRef.current} bounds={props.model.boundingBox.getBoundsLatLng()} />
+      )}
       <BasicTileLayer />
-      <LayersControl position="topright">
-        {renderBoundaryOverlays(props.boundaries)}
-      </LayersControl>
+      <LayersControl position="topright">{renderBoundaryOverlays(props.boundaries)}</LayersControl>
       {renderBoundingBoxLayer(props.model.boundingBox, props.model.rotation, props.model.geometry)}
       {renderAreaLayer(props.model.geometry)}
       {renderSelectedRowAndCol()}

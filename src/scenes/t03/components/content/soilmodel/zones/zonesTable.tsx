@@ -1,22 +1,31 @@
 import {
   Button,
-  ButtonProps, Header, Icon, Input, InputOnChangeData, Label, LabelProps, Popup, Segment, Table
+  ButtonProps,
+  Header,
+  Icon,
+  Input,
+  InputOnChangeData,
+  Label,
+  LabelProps,
+  Popup,
+  Segment,
+  Table,
 } from 'semantic-ui-react';
-import {ILayerParameterZone} from '../../../../../../core/model/modflow/soilmodel/LayerParameterZone.type';
+import { ILayerParameterZone } from '../../../../../../core/model/modflow/soilmodel/LayerParameterZone.type';
 import {
   LayerParameterZonesCollection,
   RasterParameter,
-  ZonesCollection
+  ZonesCollection,
 } from '../../../../../../core/model/modflow/soilmodel';
-import {distinct} from '../../../../../modflow/defaults/colorScales';
-import React, {ChangeEvent, MouseEvent, useState} from 'react';
+import { distinct } from '../../../../../modflow/defaults/colorScales';
+import React, { ChangeEvent, MouseEvent, useState } from 'react';
 import uuidv4 from 'uuid/v4';
 
 const styles = {
   input: {
     border: 0,
-    width: 'auto'
-  }
+    width: 'auto',
+  },
 };
 
 interface IProps {
@@ -49,12 +58,12 @@ const ZonesTable = (props: IProps) => {
 
   const handleClickUpload = () => props.onClickUpload();
 
-  const handleLocalChange = (e: ChangeEvent<HTMLInputElement>, {name, value}: InputOnChangeData) => {
+  const handleLocalChange = (e: ChangeEvent<HTMLInputElement>, { name, value }: InputOnChangeData) => {
     setActiveRow(name);
     setActiveValue(value);
   };
 
-  const handleReorder = (e: MouseEvent, {order, relation}: ButtonProps) => {
+  const handleReorder = (e: MouseEvent, { order, relation }: ButtonProps) => {
     const reordered = props.relations.changeOrder(relation, order);
     if (reordered) {
       return props.onChange(reordered);
@@ -65,12 +74,10 @@ const ZonesTable = (props: IProps) => {
     const relation = LayerParameterZonesCollection.fromObject(relations).findById(id);
     if (relation) {
       relation.data = {
-        file: null
+        file: null,
       };
       relation.value = props.parameter.defaultValue || 0;
-      return props.onChange(
-        LayerParameterZonesCollection.fromObject(relations).update(relation)
-      );
+      return props.onChange(LayerParameterZonesCollection.fromObject(relations).update(relation));
     }
   };
 
@@ -102,13 +109,13 @@ const ZonesTable = (props: IProps) => {
 
     const relation: ILayerParameterZone = {
       data: {
-        file: null
+        file: null,
       },
       id: uuidv4(),
       parameter: props.parameter.id,
       priority: relations.length,
       value: props.parameter.defaultValue,
-      zoneId: data.value
+      zoneId: data.value,
     };
 
     return handleAddRelation(relation);
@@ -156,66 +163,49 @@ const ZonesTable = (props: IProps) => {
           <Table.Cell>{relation.priority}</Table.Cell>
           <Table.Cell>
             {relation.priority === 0 && renderDefaultInput(relation)}
-            {relation.priority > 0 &&
-            <Input
-              name={relation.id}
-              onBlur={handleChange}
-              onChange={handleLocalChange}
-              readOnly={props.readOnly}
-              style={styles.input}
-              type={'number'}
-              value={relation.id === activeRow ? activeValue : relation.value}
-              onKeyPress={handlePressEnter}
-            />
-            }
+            {relation.priority > 0 && (
+              <Input
+                name={relation.id}
+                onBlur={handleChange}
+                onChange={handleLocalChange}
+                readOnly={props.readOnly}
+                style={styles.input}
+                type={'number'}
+                value={relation.id === activeRow ? activeValue : relation.value}
+                onKeyPress={handlePressEnter}
+              />
+            )}
           </Table.Cell>
           <Table.Cell>
-            {relation.priority === 0 &&
-            <Button.Group floated="right" size="small">
-              <Button
-                icon={true}
-                primary={true}
-                onClick={handleClickUpload}
-                disabled={props.readOnly}
-              >
-                <Popup
-                  trigger={<Icon name="upload"/>}
-                  content="Upload Raster"
-                  size="mini"
-                />
-              </Button>
-            </Button.Group>
-            }
-            {!props.readOnly && relation.priority > 0 &&
-            <Button.Group floated="right" size="small">
-              <Button
-                disabled={props.readOnly || !(relation.priority < props.relations.length - 1)}
-                icon={true}
-                relation={relation}
-                order="up"
-                onClick={handleReorder}
-              >
-                <Popup
-                  trigger={<Icon name="arrow up"/>}
-                  content="Move Up"
-                  size="mini"
-                />
-              </Button>
-              <Button
-                disabled={props.readOnly || !(relation.priority > 1)}
-                icon={true}
-                relation={relation}
-                order="down"
-                onClick={handleReorder}
-              >
-                <Popup
-                  trigger={<Icon name="arrow down"/>}
-                  content="Move Down"
-                  size="mini"
-                />
-              </Button>
-            </Button.Group>
-            }
+            {relation.priority === 0 && (
+              <Button.Group floated="right" size="small">
+                <Button icon={true} primary={true} onClick={handleClickUpload} disabled={props.readOnly}>
+                  <Popup trigger={<Icon name="globe" />} content="Upload Raster" size="mini" />
+                </Button>
+              </Button.Group>
+            )}
+            {!props.readOnly && relation.priority > 0 && (
+              <Button.Group floated="right" size="small">
+                <Button
+                  disabled={props.readOnly || !(relation.priority < props.relations.length - 1)}
+                  icon={true}
+                  relation={relation}
+                  order="up"
+                  onClick={handleReorder}
+                >
+                  <Popup trigger={<Icon name="arrow up" />} content="Move Up" size="mini" />
+                </Button>
+                <Button
+                  disabled={props.readOnly || !(relation.priority > 1)}
+                  icon={true}
+                  relation={relation}
+                  order="down"
+                  onClick={handleReorder}
+                >
+                  <Popup trigger={<Icon name="arrow down" />} content="Move Down" size="mini" />
+                </Button>
+              </Button.Group>
+            )}
           </Table.Cell>
         </Table.Row>
       );
@@ -224,40 +214,48 @@ const ZonesTable = (props: IProps) => {
 
   return (
     <React.Fragment>
-      {props.zones.all.length > 1 &&
-      <Segment className={'selectZones'}>
-        <Header as={'h5'}>Select Zones</Header>
-        {props.zones.all.map((zone, key) => {
-          const relation = props.relations.findFirstBy('zoneId', zone.id);
+      {props.zones.all.length > 1 && (
+        <Segment className={'selectZones'}>
+          <Header as={'h5'}>Select Zones</Header>
+          {props.zones.all
+            .map((zone, key) => {
+              const relation = props.relations.findFirstBy('zoneId', zone.id);
 
-          if (!relation || (relation.priority !== 0)) {
-            return (
-              <Label
-                as={'a'}
-                style={relation ? {
-                  backgroundColor: key < distinct.length ? distinct[key] : distinct[0],
-                  color: '#fff'
-                } : undefined}
-                value={zone.id}
-                onClick={!props.readOnly ? handleToggleZone : undefined}
-                key={key}
-              >
-                {zone.name}
-              </Label>
-            );
-          }
+              if (!relation || relation.priority !== 0) {
+                return (
+                  <Label
+                    as={'a'}
+                    style={
+                      relation
+                        ? {
+                            backgroundColor: key < distinct.length ? distinct[key] : distinct[0],
+                            color: '#fff',
+                          }
+                        : undefined
+                    }
+                    value={zone.id}
+                    onClick={!props.readOnly ? handleToggleZone : undefined}
+                    key={key}
+                  >
+                    {zone.name}
+                  </Label>
+                );
+              }
 
-          return null;
-        }).filter(x => x)}
-      </Segment>
-      }
+              return null;
+            })
+            .filter((x) => x)}
+        </Segment>
+      )}
       <Table>
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell width={3}>Zone</Table.HeaderCell>
             <Table.HeaderCell width={2}>Priority</Table.HeaderCell>
-            <Table.HeaderCell width={8}>{props.parameter.title} [{props.parameter.unit}]</Table.HeaderCell>
-            <Table.HeaderCell width={3}/>
+            <Table.HeaderCell width={8}>
+              {props.parameter.title} [{props.parameter.unit}]
+            </Table.HeaderCell>
+            <Table.HeaderCell width={3} />
           </Table.Row>
         </Table.Header>
         <Table.Body>
