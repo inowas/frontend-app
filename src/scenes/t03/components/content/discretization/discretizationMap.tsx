@@ -1,31 +1,24 @@
 import * as turf from '@turf/turf';
-import { BasicTileLayer } from '../../../../../services/geoTools/tileLayers';
 import { BoundingBox, Cells, Geometry, GridSize } from '../../../../../core/model/geometry';
 import { Button } from 'semantic-ui-react';
 import { CALCULATE_CELLS_INPUT } from '../../../../modflow/worker/t03.worker';
-import { Control, LatLngBoundsExpression, LatLngExpression } from 'leaflet';
+import { Control, LatLngBoundsExpression } from 'leaflet';
 import { EditControl } from 'react-leaflet-draw';
-import { FeatureGroup, LayersControl, MapContainer } from 'react-leaflet';
+import { FeatureGroup } from 'react-leaflet';
 import { ICalculateCellsInputData } from '../../../../modflow/worker/t03.worker.type';
 import { ICells } from '../../../../../core/model/geometry/Cells.type';
 import { IGeometry } from '../../../../../core/model/geometry/Geometry.type';
-import {
-  IRowsAndColumns,
-  getRowsAndColumnsFromGeoJson
-} from '../../../../../services/geoTools';
-import { Polygon } from 'react-leaflet';
+import { IRowsAndColumns, getRowsAndColumnsFromGeoJson } from '../../../../../services/geoTools';
 import { addMessage } from '../../../actions/actions';
 import { asyncWorker } from '../../../../modflow/worker/worker';
 import { getCellFromClick, rotateCoordinateAroundPoint } from '../../../../../services/geoTools/getCellFromClick';
 import { messageError } from '../../../defaults/messages';
-import { renderBoundaryOverlays, renderBoundingBoxLayer } from '../../maps/mapLayers';
 import { useDispatch } from 'react-redux';
-import AffectedCellsLayer from '../../../../../services/geoTools/affectedCellsLayer';
 import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
-import GridRefinement from './gridRefinement';
 import GridRefinementPopup from './gridRefinementPopup';
+import MapWithControls, { IMapWithControlsOptions } from '../../maps/mapWithControls';
 import React, { useEffect, useRef, useState } from 'react';
-import _, { uniqueId } from 'lodash';
+import _ from 'lodash';
 
 interface IProps {
   boundingBox: BoundingBox;
@@ -40,13 +33,6 @@ interface IProps {
   onChangeGeometry?: (geometry: Geometry) => void;
   onChangeGridSize?: (gridSize: GridSize) => void;
 }
-
-const style = {
-  map: {
-    height: '400px',
-    width: '100%'
-  }
-};
 
 const DiscretizationMap = (props: IProps) => {
   const cellsRef = useRef<Cells | null>(null);
@@ -110,9 +96,7 @@ const DiscretizationMap = (props: IProps) => {
 
       let g = Geometry.fromGeoJson(e.layer.toGeoJSON()).toGeoJSON();
       if (props.geometry && props.rotation && props.rotation % 360 !== 0) {
-        g = turf.transformRotate(
-          g, -1 * props.rotation, { pivot: props.geometry.centerOfMass }
-        );
+        g = turf.transformRotate(g, -1 * props.rotation, { pivot: props.geometry.centerOfMass });
       }
 
       asyncWorker({
@@ -121,20 +105,22 @@ const DiscretizationMap = (props: IProps) => {
           geometry: g,
           boundingBox: props.boundingBox.toObject(),
           gridSize: props.gridSize.toObject(),
-          intersection: props.intersection || 0
-        } as ICalculateCellsInputData
-      }).then((rCells: ICells) => {
-        const cCells: Cells | null = cellsRef.current;
-        if (cCells) {
-          rCells.forEach((rC) => {
-            cCells.toggle([rC[0], rC[1]], props.boundingBox, props.gridSize, false);
-          });
-          cellsRef.current = cCells;
-          return props.onChangeCells(cCells);
-        }
-      }).catch(() => {
-        dispatch(addMessage(messageError('discretizationMap', 'Calculating cells failed.')));
-      });
+          intersection: props.intersection || 0,
+        } as ICalculateCellsInputData,
+      })
+        .then((rCells: ICells) => {
+          const cCells: Cells | null = cellsRef.current;
+          if (cCells) {
+            rCells.forEach((rC) => {
+              cCells.toggle([rC[0], rC[1]], props.boundingBox, props.gridSize, false);
+            });
+            cellsRef.current = cCells;
+            return props.onChangeCells(cCells);
+          }
+        })
+        .catch(() => {
+          dispatch(addMessage(messageError('discretizationMap', 'Calculating cells failed.')));
+        });
       return;
     }
     if (!props.onChangeGeometry) {
@@ -166,32 +152,49 @@ const DiscretizationMap = (props: IProps) => {
       return Geometry.fromObject(geometry).getBoundsLatLng();
     }
 
-    return [[60, 10], [45, 30]];
+    return [
+      [60, 10],
+      [45, 30],
+    ];
   };
 
   const handleCancelSelection = () => {
     setSelected(null);
-  }
+  };
 
   const handleChangeGridRefinement = (gridSize?: GridSize) => {
     if (gridSize && props.onChangeGridSize) {
       props.onChangeGridSize(gridSize);
     }
     setSelected(null);
-  }
+  };
 
   const handleClickOnMap = ({ latlng }: { latlng: any }) => {
-    if (mode !== 'single' || readOnlyRef.current || !cellsRef.current || !props.boundingBox ||
-      !props.gridSize || !props.geometry || latlng.lat < props.boundingBox.yMin || latlng.lat > props.boundingBox.yMax
-      || latlng.lng < props.boundingBox.xMin || latlng.lng > props.boundingBox.xMax) {
+    if (
+      mode !== 'single' ||
+      readOnlyRef.current ||
+      !cellsRef.current ||
+      !props.boundingBox ||
+      !props.gridSize ||
+      !props.geometry ||
+      latlng.lat < props.boundingBox.yMin ||
+      latlng.lat > props.boundingBox.yMax ||
+      latlng.lng < props.boundingBox.xMin ||
+      latlng.lng > props.boundingBox.xMax
+    ) {
       return null;
     }
 
-    const latlngRot = props.rotation ?
-      rotateCoordinateAroundPoint(latlng, props.geometry.centerOfMass, props.rotation) : latlng;
+    const latlngRot = props.rotation
+      ? rotateCoordinateAroundPoint(latlng, props.geometry.centerOfMass, props.rotation)
+      : latlng;
 
     const clickedCell = getCellFromClick(
-      props.boundingBox, props.gridSize, latlngRot, props.rotation, props.geometry.centerOfMass
+      props.boundingBox,
+      props.gridSize,
+      latlngRot,
+      props.rotation,
+      props.geometry.centerOfMass
     );
 
     const c: Cells = cellsRef.current;
@@ -202,95 +205,91 @@ const DiscretizationMap = (props: IProps) => {
 
   const handleToggleDrawing = (m: string) => () => setMode(m);
 
-  const renderActiveCellsLayer = () => {
-    if (!props.cells) {
-      return null;
-    }
-    if (props.geometry && props.rotation && props.rotation % 360 !== 0) {
-      return (
-        <AffectedCellsLayer
-          boundingBox={props.boundingBox}
-          gridSize={props.gridSize}
-          cells={props.cells}
-          rotation={{ geometry: props.geometry, angle: props.rotation }}
-        />
-      );
-    }
-    return (
-      <AffectedCellsLayer
-        boundingBox={props.boundingBox}
-        gridSize={props.gridSize}
-        cells={props.cells}
-      />
-    );
+  const mapOptions: IMapWithControlsOptions = {
+    area: {
+      checked: true,
+      enabled: !!geometry,
+    },
+    boundaries: {
+      checked: true,
+      enabled: props.boundaries.length > 0,
+      excluded: [],
+    },
+    boundingBox: {
+      checked: true,
+      enabled: true,
+    },
+    inactiveCells: {
+      enabled: !!props.cells,
+      checked: true,
+    },
+    fullScreenControl: true,
+    grid: {
+      checked: mode === 'refinement',
+      enabled: !!props.cells,
+    },
+  };
+
+  const style = {
+    height: '400px',
+    width: '100%',
+    cursor: 'pointer',
   };
 
   return (
     <React.Fragment>
-      {!props.readOnly &&
+      {!props.readOnly && (
         <Button.Group attached="top">
-          <Button primary={mode === 'single'} onClick={handleToggleDrawing('single')}>Single Selection</Button>
-          <Button primary={mode === 'multi'} onClick={handleToggleDrawing('multi')}>Multi-Selection</Button>
-          <Button primary={mode === 'refinement'} onClick={handleToggleDrawing('refinement')}>Grid Refinement</Button>
+          <Button primary={mode === 'single'} onClick={handleToggleDrawing('single')}>
+            Single Selection
+          </Button>
+          <Button primary={mode === 'multi'} onClick={handleToggleDrawing('multi')}>
+            Multi-Selection
+          </Button>
+          <Button primary={mode === 'refinement'} onClick={handleToggleDrawing('refinement')}>
+            Grid Refinement
+          </Button>
         </Button.Group>
-      }
-      <MapContainer
-        style={style.map}
+      )}
+      <MapWithControls
         bounds={getBoundsLatLng() as LatLngBoundsExpression}
         maxZoom={16}
-        onclick={handleClickOnMap}
-        ref={mapRef}
+        style={style}
+        onClick={handleClickOnMap}
+        options={mapOptions}
       >
-        <BasicTileLayer />
-        {!props.readOnly && <FeatureGroup>
-          <EditControl
-            position="topright"
-            draw={{
-              circle: false,
-              circlemarker: false,
-              marker: false,
-              polyline: mode === 'multi' && geometry !== null,
-              rectangle: mode === 'refinement' && geometry !== null,
-              polygon: geometry === null || mode === 'multi'
-            }}
-            edit={{
-              edit: mode !== 'refinement' && geometry !== null && !!props.onChangeGeometry,
-              remove: false
-            }}
-            onCreated={onCreated}
-            onEdited={onEdited}
-            ref={refDrawControl}
-          />
-          {geometry &&
-            <Polygon
-              key={uniqueId()}
-              positions={Geometry.fromObject(geometry).coordinatesLatLng as LatLngExpression[]}
+        {!props.readOnly && (
+          <FeatureGroup>
+            <EditControl
+              position="topleft"
+              draw={{
+                circle: false,
+                circlemarker: false,
+                marker: false,
+                polyline: mode === 'multi' && geometry !== null,
+                rectangle: mode === 'refinement' && geometry !== null,
+                polygon: geometry === null || mode === 'multi',
+              }}
+              edit={{
+                edit: mode !== 'refinement' && geometry !== null && !!props.onChangeGeometry,
+                remove: false,
+              }}
+              onCreated={onCreated}
+              onEdited={onEdited}
+              style={{ marginTop: '10px' }}
             />
-          }
-        </FeatureGroup>
-        }
-        {props.boundaries.length > 0 &&
-          <LayersControl position="topright">
-            {renderBoundaryOverlays(props.boundaries)}
-          </LayersControl>
-        }
-        {mode !== 'refinement' && renderActiveCellsLayer()}
-        {renderBoundingBoxLayer(props.boundingBox, props.rotation, props.geometry || undefined)}
-        {mode === 'refinement' && <GridRefinement
-          boundingBox={props.boundingBox}
-          geometry={props.geometry || undefined}
-          gridSize={props.gridSize}
-          rotation={props.rotation}
-          selectedRowsAndColumns={selected}
-        />}
-      </MapContainer>
-      {selected &&
-        <div style={{
-          bottom: '110px',
-          position: 'absolute',
-          right: '25px',
-          zIndex: 1000
-        }}>
+          </FeatureGroup>
+        )}
+      </MapWithControls>
+      {selected && (
+        <div
+          style={{
+            bottom: '110px',
+            position: 'absolute',
+            right: '25px',
+            zIndex: 1000,
+          }}
+        >
           <GridRefinementPopup
             gridSize={props.gridSize}
             onCancel={handleCancelSelection}
@@ -299,7 +298,7 @@ const DiscretizationMap = (props: IProps) => {
             selectedRows={selected && selected.rows ? selected.rows : []}
           />
         </div>
-      }
+      )}
     </React.Fragment>
   );
 };

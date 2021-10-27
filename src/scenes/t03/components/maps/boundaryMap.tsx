@@ -68,7 +68,6 @@ class BoundaryMap extends Component<IProps> {
       .filter((x) => x);
   }
 
-  // noinspection JSMethodCanBeStatic
   public renderBoundaryGeometry(b: Boundary, underlay = false) {
     const geometry = b.geometry;
 
@@ -131,7 +130,7 @@ class BoundaryMap extends Component<IProps> {
 
   public renderOtherBoundaries(boundaries: BoundaryCollection) {
     return boundaries.boundaries
-      .filter((b: Boundary) => b.id !== this.props.boundary.id)
+      .filter((b: Boundary) => b.id !== this.props.boundary.id && b.type === this.props.boundary.type)
       .map((b: Boundary) => this.renderBoundaryGeometry(b, true));
   }
 

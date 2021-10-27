@@ -1,15 +1,13 @@
 import { Array2D } from '../../../core/model/geometry/Array2D.type';
-import { BasicTileLayer } from '../../../services/geoTools/tileLayers';
 import { BoundaryCollection } from '../../../core/model/modflow/boundaries';
 import { FeatureGroup, GeoJSON, Pane } from 'react-leaflet';
 import { Geometry, ModflowModel } from '../../../core/model/modflow';
 import { ICell } from '../../../core/model/geometry/Cells.type';
 import { LeafletMouseEvent } from 'leaflet';
 import { getCellFromClick } from '../../../services/geoTools/getCellFromClick';
+import { useEffect, useState } from 'react';
 import MapWithControls, { IMapWithControlsOptions } from '../../t03/components/maps/mapWithControls';
-import React, { useEffect, useState } from 'react';
 import uuid from 'uuid';
-import { getActiveCellFromCoordinate } from '../../../services/geoTools';
 
 const style = {
   map: {
@@ -162,6 +160,10 @@ const ResultsMap = (props: IProps) => {
   };
 
   const options: IMapWithControlsOptions = {
+    boundingBox: {
+      checked: true,
+      enabled: true,
+    },
     raster: {
       colors: props.colors || ['#800080', '#ff2200', '#fcff00', '#45ff8e', '#15d6ff', '#0000FF'],
       enabled: true,
@@ -183,7 +185,6 @@ const ResultsMap = (props: IProps) => {
       options={options}
       raster={props.data}
     >
-      <BasicTileLayer />
       <Pane name="front" style={{ zIndex: 501 }}>
         {renderSelectedRowAndCol()}
       </Pane>

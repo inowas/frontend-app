@@ -1,11 +1,14 @@
 import {
   Bounds,
   DomUtil,
-  LatLngExpression, Layer,
-  default as Leaflet, Util,
-  latLngBounds as toLatLngBounds
+  LatLngExpression,
+  Layer,
+  default as Leaflet,
+  Util,
+  latLngBounds as toLatLngBounds,
+  Map,
 } from 'leaflet';
-import { IData } from './ReactLeafletHeatMapCanvasOverlay.type';
+import { IData, IReactLeafletHeatMapProps } from './ReactLeafletHeatMapCanvasOverlay.type';
 import { ILegendItemContinuous, ILegendItemDiscrete, RainbowOrLegend } from '../../../services/rainbowvis/types';
 import Rainbow from '../../../services/rainbowvis/Rainbowvis';
 
@@ -14,11 +17,20 @@ export const canvasHeatMapOverlayClass = Layer.extend({
     opacity: 1,
     interactive: false,
     zIndex: 1,
-    className: ''
+    className: '',
   },
 
-  initialize(nX: number, nY: number, data: IData[], bounds: LatLngExpression[], rainbow: RainbowOrLegend,
-    rotationAngle?: number, rotationCenter?: number, sharpening?: number, options?: any) {
+  initialize(
+    nX: number,
+    nY: number,
+    data: IData[],
+    bounds: LatLngExpression[],
+    rainbow: RainbowOrLegend,
+    rotationAngle?: number,
+    rotationCenter?: number,
+    sharpening?: number,
+    options?: any
+  ) {
     this._nX = nX;
     this._nY = nY;
     this._dataArray = data;
@@ -55,6 +67,18 @@ export const canvasHeatMapOverlayClass = Layer.extend({
     if (this.options.interactive) {
       this.removeInteractiveTarget(this._canvas);
     }
+  },
+
+  _update(props: IReactLeafletHeatMapProps, map: Map) {
+    this.x = props.nX;
+    this.y = props.nY;
+    this.dataArray = props.data;
+    this.bounds = props.bounds;
+    this.rainbow = props.rainbow;
+    this.sharpening = props.sharpening || 1;
+    this.rotationAngle = props.rotationAngle || 0;
+    this.rotationCenter = props.rotationCenter || [0, 0];
+    this._runDraw();
   },
 
   setOpacity(opacity: number) {
@@ -165,7 +189,7 @@ export const canvasHeatMapOverlayClass = Layer.extend({
     return {
       zoom: this._reset,
       zoomanim: this._zoomAnimated ? this._animateZoom : undefined,
-      viewreset: this._reset
+      viewreset: this._reset,
     };
   },
 
@@ -186,9 +210,7 @@ export const canvasHeatMapOverlayClass = Layer.extend({
   _initCanvas() {
     const canvas = (this._canvas = DomUtil.create(
       'canvas',
-      'leaflet-layer ' +
-      (this._zoomAnimated ? 'leaflet-zoom-animated' : '') +
-      (this.options.className || '')
+      'leaflet-layer ' + (this._zoomAnimated ? 'leaflet-zoom-animated' : '') + (this.options.className || '')
     )) as HTMLCanvasElement;
 
     this._ctx = canvas.getContext('2d');
@@ -216,11 +238,7 @@ export const canvasHeatMapOverlayClass = Layer.extend({
 
   _animateZoom(e: Leaflet.ZoomAnimEvent) {
     const scale = this._map.getZoomScale(e.zoom);
-    const offset = this._map._latLngBoundsToNewLayerBounds(
-      this._bounds,
-      e.zoom,
-      e.center
-    ).min;
+    const offset = this._map._latLngBoundsToNewLayerBounds(this._bounds, e.zoom, e.center).min;
 
     DomUtil.setTransform(this._canvas, offset, scale);
   },
@@ -253,18 +271,16 @@ export const canvasHeatMapOverlayClass = Layer.extend({
         if (isNaN(d.value)) {
           this._ctx.clearRect(d.x, d.y, this._canvas.width, this._canvas.height);
         } else if (this._rainbow instanceof Rainbow) {
-          this._drawRasterCell(
-            d.x, d.y, this._sharpening, this._sharpening, '#' + this._rainbow.colorAt(d.value)
-          );
+          this._drawRasterCell(d.x, d.y, this._sharpening, this._sharpening, '#' + this._rainbow.colorAt(d.value));
         } else {
-          const data = this._rainbow[0].isContinuous ?
-            (this._rainbow as ILegendItemContinuous[])
-              .filter((row) => (row.fromOperator === '>' ? d.value > row.from :
-                d.value >= row.from) && (row.toOperator === '<' ? d.value < row.to : d.value <= row.to))
+          const data = this._rainbow[0].isContinuous
+            ? (this._rainbow as ILegendItemContinuous[]).filter(
+                (row) =>
+                  (row.fromOperator === '>' ? d.value > row.from : d.value >= row.from) &&
+                  (row.toOperator === '<' ? d.value < row.to : d.value <= row.to)
+              )
             : (this._rainbow as ILegendItemDiscrete[]).filter((row) => row.value === d.value);
-          this._drawRasterCell(
-            d.x, d.y, this._sharpening, this._sharpening, data.length > 0 ? data[0].color : '#fff'
-          );
+          this._drawRasterCell(d.x, d.y, this._sharpening, this._sharpening, data.length > 0 ? data[0].color : '#fff');
         }
       });
     }
@@ -275,11 +291,7 @@ export const canvasHeatMapOverlayClass = Layer.extend({
   },
 
   _updateZIndex() {
-    if (
-      this._canvas &&
-      this.options.zIndex !== undefined &&
-      this.options.zIndex !== null
-    ) {
+    if (this._canvas && this.options.zIndex !== undefined && this.options.zIndex !== null) {
       this._canvas.style.zIndex = this.options.zIndex;
     }
   },
@@ -292,7 +304,7 @@ export const canvasHeatMapOverlayClass = Layer.extend({
       this._url = errorUrl;
       this._canvas.src = errorUrl;
     }
-  }
+  },
 });
 
 const canvasHeatMapOverlay = (

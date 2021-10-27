@@ -1,5 +1,5 @@
 import { BoundingBox, Geometry, GridSize } from '../../../../../core/model/geometry';
-import { FeatureGroup, GeoJSON, LayerGroup } from 'react-leaflet';
+import { FeatureGroup, GeoJSON } from 'react-leaflet';
 import {
   IBoundingBoxWithDist,
   IRowsAndColumns,
@@ -7,7 +7,7 @@ import {
   calculateRows,
 } from '../../../../../services/geoTools';
 import { useEffect, useState } from 'react';
-import uuid from 'uuid';
+import md5 from 'md5';
 
 interface IProps {
   boundingBox: BoundingBox;
@@ -24,50 +24,38 @@ const GridRefinement = (props: IProps) => {
   const [rows, setRows] = useState<IBoundingBoxWithDist[]>(
     calculateRows(props.boundingBox, props.gridSize).map((b) => b)
   );
-  const [renderKey, setRenderKey] = useState<string>(uuid.v4());
+  //TODO: const [renderKey, setRenderKey] = useState<string>(uuid.v4());
 
   useEffect(() => {
     setColumns(calculateColumns(props.boundingBox, props.gridSize).map((b) => b));
     setRows(calculateRows(props.boundingBox, props.gridSize).map((b) => b));
-    setRenderKey(uuid.v4());
+    //setRenderKey(uuid.v4());
   }, [props.boundingBox, props.gridSize]);
 
+  const renderGeoJSON = (p: IBoundingBoxWithDist) => {
+    const data =
+      props.geometry && props.rotation
+        ? BoundingBox.fromObject(p.boundingBox).geoJsonWithRotation(props.rotation, props.geometry.centerOfMass)
+        : BoundingBox.fromObject(p.boundingBox).geoJson;
+
+    return (
+      <GeoJSON
+        key={md5(JSON.stringify(data))}
+        data={data}
+        style={{
+          color: '#000000',
+          fill: props.selectedRowsAndColumns ? props.selectedRowsAndColumns.columns.includes(p.dist) : false,
+          fillColor: 'blue',
+          weight: 1,
+        }}
+      />
+    );
+  };
+
   return (
-    <FeatureGroup key={renderKey}>
-      {columns &&
-        columns.map((c) => (
-          <GeoJSON
-            key={`columns_${c.dist}`}
-            data={
-              props.geometry && props.rotation
-                ? BoundingBox.fromObject(c.boundingBox).geoJsonWithRotation(props.rotation, props.geometry.centerOfMass)
-                : BoundingBox.fromObject(c.boundingBox).geoJson
-            }
-            style={{
-              color: '#000000',
-              fill: props.selectedRowsAndColumns ? props.selectedRowsAndColumns.columns.includes(c.dist) : false,
-              fillColor: 'blue',
-              weight: 1,
-            }}
-          />
-        ))}
-      {rows &&
-        rows.map((r) => (
-          <GeoJSON
-            key={`rows_${r.dist}`}
-            data={
-              props.geometry && props.rotation
-                ? BoundingBox.fromObject(r.boundingBox).geoJsonWithRotation(props.rotation, props.geometry.centerOfMass)
-                : BoundingBox.fromObject(r.boundingBox).geoJson
-            }
-            style={{
-              color: '#000000',
-              fill: props.selectedRowsAndColumns ? props.selectedRowsAndColumns.rows.includes(r.dist) : false,
-              fillColor: 'red',
-              weight: 1,
-            }}
-          />
-        ))}
+    <FeatureGroup>
+      {columns && columns.map((c) => renderGeoJSON(c))}
+      {rows && rows.map((r) => renderGeoJSON(r))}
     </FeatureGroup>
   );
 };

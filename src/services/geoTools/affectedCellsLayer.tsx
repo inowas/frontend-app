@@ -1,12 +1,13 @@
 import * as turf from '@turf/turf';
 import { Boundary, BoundaryCollection } from '../../core/model/modflow/boundaries';
 import { BoundingBox, Cells, Geometry, GridSize } from '../../core/model/geometry';
-import { FeatureGroup, GeoJSON, LayersControl } from 'react-leaflet';
+import { GeoJSON } from 'react-leaflet';
+import { GroupedLayer } from '../../scenes/shared/leaflet/LayerControl';
 import { IBoundingBox } from '../../core/model/geometry/BoundingBox.type';
 import { IRootReducer } from '../../reducers';
 import { IRotationProperties } from '../../core/model/geometry/Geometry.type';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import React, { useEffect, useState } from 'react';
 import uuid from 'uuid';
 
 interface IProps {
@@ -22,32 +23,32 @@ const styles = {
     stroke: false,
     fill: true,
     fillColor: '#393B89',
-    fillOpacity: 0.6
+    fillOpacity: 0.6,
   },
   inactive: {
     stroke: false,
     fill: true,
     fillColor: '#888888',
-    fillOpacity: 0.6
+    fillOpacity: 0.6,
   },
   other: {
     stroke: false,
     fill: true,
     fillColor: '#9C9EDE',
-    fillOpacity: 0.6
+    fillOpacity: 0.6,
   },
   selected: {
     color: '#ded340',
     stroke: true,
-    fill: false
-  }
+    fill: false,
+  },
 };
 
 const AffectedCellsLayer = (props: IProps) => {
   const [iBoundLayer, setIBoundLayer] = useState();
   const [boundingBox, setBoundingBox] = useState<IBoundingBox>(props.boundingBox.toObject());
   const [boundaryLayer, setBoundaryLayer] = useState();
-  const [boundaryLayers, setBoundaryLayers] = useState();
+  const [boundaryLayers, setBoundaryLayers] = useState<any>();
   const [boundaryKey, setBoundaryKey] = useState<string>(uuid.v4());
   const [iBoundKey, setIBoundKey] = useState<string>(uuid.v4());
 
@@ -82,7 +83,10 @@ const AffectedCellsLayer = (props: IProps) => {
   useEffect(() => {
     if (props.boundary) {
       const polygon = createPolygon(
-        BoundingBox.fromObject(boundingBox), props.gridSize, props.boundary.cells, styles.affected
+        BoundingBox.fromObject(boundingBox),
+        props.gridSize,
+        props.boundary.cells,
+        styles.affected
       );
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore TODO!
@@ -106,11 +110,12 @@ const AffectedCellsLayer = (props: IProps) => {
     const sameTypeBoundaries = boundaries.all.filter(
       (b) => props.boundary && b.type === props.boundary.type && b.id !== props.boundary.id
     );
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore Todo
-    setBoundaryLayers(sameTypeBoundaries.length > 0 ? sameTypeBoundaries.map(
-      (b, key) => createPolygon(props.boundingBox, props.gridSize, b.cells, styles.other, key)
-      ) : null
+    setBoundaryLayers(
+      sameTypeBoundaries.length > 0
+        ? sameTypeBoundaries.map((b, key) =>
+            createPolygon(props.boundingBox, props.gridSize, b.cells, styles.other, key)
+          )
+        : null
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [T03.boundaries]);
@@ -120,7 +125,6 @@ const AffectedCellsLayer = (props: IProps) => {
   }
 
   const createPolygon = (bbox: BoundingBox, gridSize: GridSize, cells: Cells, style: any, key?: number) => {
-
     const mergedCells: Array<[number, number, number, number]> = [];
     const grid = cells.calculateIBound(gridSize.nY, gridSize.nX);
 
@@ -129,26 +133,24 @@ const AffectedCellsLayer = (props: IProps) => {
       const endIdx: number[] = [];
 
       row.forEach((v, cIdx) => {
+        if (v === 1) {
+          if (cIdx === 0) {
+            startIdx.push(cIdx);
+          }
 
-          if (v === 1) {
-            if (cIdx === 0) {
-              startIdx.push(cIdx);
-            }
+          if (cIdx > 0 && grid[rIdx][cIdx - 1] === 0) {
+            startIdx.push(cIdx);
+          }
 
-            if (cIdx > 0 && grid[rIdx][cIdx - 1] === 0) {
-              startIdx.push(cIdx);
-            }
+          if (cIdx === row.length - 1) {
+            endIdx.push(cIdx);
+          }
 
-            if (cIdx === row.length - 1) {
-              endIdx.push(cIdx);
-            }
-
-            if (cIdx < row.length - 1 && grid[rIdx][cIdx + 1] === 0) {
-              endIdx.push(cIdx);
-            }
+          if (cIdx < row.length - 1 && grid[rIdx][cIdx + 1] === 0) {
+            endIdx.push(cIdx);
           }
         }
-      );
+      });
 
       if (startIdx.length !== endIdx.length) {
         throw new Error('startIdx.length !== endIdx.length');
@@ -172,15 +174,15 @@ const AffectedCellsLayer = (props: IProps) => {
 
     const turfPolygons = mergedCells.map((c) => {
       const [xMin, xMax, yMin, yMax] = c;
-      return (
-        turf.polygon([[
+      return turf.polygon([
+        [
           [xMin, yMin],
           [xMin, yMax],
           [xMax, yMax],
           [xMax, yMin],
-          [xMin, yMin]
-        ]])
-      );
+          [xMin, yMin],
+        ],
+      ]);
     });
 
     let turfPolygon: turf.helpers.Feature<turf.helpers.Polygon> | null = null;
@@ -199,47 +201,33 @@ const AffectedCellsLayer = (props: IProps) => {
     }
 
     if (props.rotation && props.rotation.angle % 360 !== 0) {
-      turfPolygon = turf.transformRotate(
-        turfPolygon,
-        props.rotation.angle,
-        { pivot: props.rotation.geometry.centerOfMass }
-      );
+      turfPolygon = turf.transformRotate(turfPolygon, props.rotation.angle, {
+        pivot: props.rotation.geometry.centerOfMass,
+      });
     }
 
     const geometry = Geometry.fromGeoJson(turfPolygon.geometry);
-    return (
-      <GeoJSON
-        key={key}
-        data={geometry}
-        {...style}
-      />
-    );
+    return <GeoJSON key={key} data={geometry} {...style} />;
   };
 
   return (
-    <LayersControl position="topright">
-      {!!iBoundLayer &&
-      <LayersControl.Overlay name="Inactive cells" checked={true} key={iBoundKey}>
-        <FeatureGroup>
+    <>
+      {!!iBoundLayer && (
+        <GroupedLayer checked name="Inactive cells" group="Discretization">
           {iBoundLayer}
-        </FeatureGroup>
-      </LayersControl.Overlay>
-      }
-      {!!boundaryLayer &&
-      <LayersControl.Overlay name="Affected cells" checked={true} key={boundaryKey}>
-        <FeatureGroup>
+        </GroupedLayer>
+      )}
+      {!!boundaryLayer && (
+        <GroupedLayer checked name="Affected cells" group="Cells">
           {boundaryLayer}
-        </FeatureGroup>
-      </LayersControl.Overlay>
-      }
-      {!!boundaryLayers && !!props.boundary &&
-      <LayersControl.Overlay name={`Cells of other ${props.boundary.type} boundaries`} checked={true}>
-        <FeatureGroup>
+        </GroupedLayer>
+      )}
+      {!!boundaryLayers && !!props.boundary && (
+        <GroupedLayer checked name={`Cells of other ${props.boundary.type} boundaries`} group="Cells">
           {boundaryLayers}
-        </FeatureGroup>
-      </LayersControl.Overlay>
-      }
-    </LayersControl>
+        </GroupedLayer>
+      )}
+    </>
   );
 };
 

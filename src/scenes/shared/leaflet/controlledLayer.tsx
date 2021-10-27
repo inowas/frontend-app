@@ -4,6 +4,7 @@ import { ReactNode } from 'react';
 import { useLayerControlContext } from './layerControlContext';
 import { useMap } from 'react-leaflet';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import md5 from 'md5';
 
 interface IProps {
   checked?: boolean;
@@ -32,6 +33,7 @@ const createControlledLayer = (
         addLayerToControl(layerContext, layerToAdd, propsRef.current.name, propsRef.current.group);
         setLayer(layerToAdd);
       },
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       [context]
     );
 
@@ -72,15 +74,18 @@ const createControlledLayer = (
       };
     });
 
-    return props.children
+    const x = props.children
       ? React.createElement(
           LeafletProvider,
           {
+            key: md5(propsRef.current.group + propsRef.current.name + propsRef.current.children?.toString()),
             value: newContext,
           },
           props.children
         )
       : null;
+
+    return x;
   };
 
   return ControlledLayer;

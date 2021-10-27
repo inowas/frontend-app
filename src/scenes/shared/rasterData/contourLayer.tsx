@@ -5,7 +5,6 @@ import { FeatureGroup, GeoJSON } from 'react-leaflet';
 import { rasterToContour } from '../../../services/geoTools/contours';
 import { useEffect, useState } from 'react';
 import Rainbow from '../../../services/rainbowvis/Rainbowvis';
-import uuid from 'uuid';
 
 interface IProps {
   boundingBox: BoundingBox;
@@ -20,7 +19,7 @@ interface IProps {
 
 const ContourLayer = (props: IProps) => {
   const [contours, setContours] = useState<ContourMultiPolygon[]>([]);
-  const [renderKey, setRenderKey] = useState<string>(uuid.v4());
+  //const [renderKey, setRenderKey] = useState<string>(uuid.v4());
   const [thresholds, setThresholds] = useState<number[]>([]);
 
   useEffect(() => {
@@ -57,12 +56,12 @@ const ContourLayer = (props: IProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.data, props.steps]);
 
-  useEffect(() => {
+  /*TODO: useEffect(() => {
     setRenderKey(uuid.v4());
-  }, [contours, thresholds]);
+  }, [contours, thresholds]);*/
 
   return (
-    <FeatureGroup key={renderKey}>
+    <FeatureGroup>
       {contours.map((mp, key) => (
         <GeoJSON
           key={key}

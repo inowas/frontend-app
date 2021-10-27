@@ -1,11 +1,12 @@
-import { Accordion, AccordionProps, Form, Icon, Menu, Segment } from 'semantic-ui-react';
-import { Layer, LayerGroup, Util } from 'leaflet';
+import { Accordion, AccordionProps, Form, Icon, Menu, Segment, SemanticICONS } from 'semantic-ui-react';
+import { Layer, Util } from 'leaflet';
 import { LayersControlProvider } from './layerControlContext';
+import { MouseEvent } from 'react';
 import { ReactElement, useState } from 'react';
-import { groupBy, isEmpty, uniqBy } from 'lodash';
+import { groupBy } from 'lodash';
 import { useMapEvents } from 'react-leaflet';
-import React, { MouseEvent } from 'react';
 import createControlledLayer from './controlledLayer';
+import md5 from 'md5';
 
 const POSITION_CLASSES: { [key: string]: string } = {
   bottomleft: 'leaflet-bottom leaflet-left',
@@ -27,6 +28,15 @@ interface ILayerObj {
   id: number;
 }
 
+const groupIcons: { [key: string]: SemanticICONS } = {
+  Boundaries: 'point',
+  Cells: 'block layout',
+  Data: 'area chart',
+  Default: 'question circle',
+  Discretization: 'thumb tack',
+  Grid: 'grid layout',
+};
+
 const LayerControl = ({ position, children }: IProps) => {
   const [activeGroup, setActiveGroup] = useState<number>(0);
   const [collapsed, setCollapsed] = useState(true);
@@ -35,10 +45,10 @@ const LayerControl = ({ position, children }: IProps) => {
 
   const map = useMapEvents({
     layerremove: () => {
-      //console.log('layer removed');
+      //console.log(add);
     },
     layeradd: () => {
-      //console.log('layer add');
+      //console.log(e);
     },
     overlayadd: () => {
       //console.log(layers);
@@ -50,11 +60,12 @@ const LayerControl = ({ position, children }: IProps) => {
       map.removeLayer(layerObj.layer);
       setLayers(
         layers.map((layer) => {
-          if (layer.id === layerObj.id)
+          if (layer.id === layerObj.id) {
             return {
               ...layer,
               checked: false,
             };
+          }
           return layer;
         })
       );
@@ -62,11 +73,12 @@ const LayerControl = ({ position, children }: IProps) => {
       map.addLayer(layerObj.layer);
       setLayers(
         layers.map((layer) => {
-          if (layer.id === layerObj.id)
+          if (layer.id === layerObj.id) {
             return {
               ...layer,
               checked: true,
             };
+          }
           return layer;
         })
       );
@@ -99,24 +111,52 @@ const LayerControl = ({ position, children }: IProps) => {
       value={{
         layers,
         addGroup: onGroupAdd,
+        interactive: true,
       }}
     >
       <div className={positionClass}>
         <div className="leaflet-control leaflet-bar">
-          <Segment onMouseEnter={() => setCollapsed(false)} onMouseLeave={() => setCollapsed(true)}>
-            {collapsed && <Icon link name="bars" fontSize="default" />}
+          <div onMouseEnter={() => setCollapsed(false)} onMouseLeave={() => setCollapsed(true)}>
+            {collapsed && (
+              <div className="leaflet-draw leaflet-draw-toolbar-top">
+                <span
+                  style={{
+                    display: 'block',
+                    textAlign: 'center',
+                    textDecoration: 'none',
+                    backgroundImage: 'none',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundSize: '300px 30px',
+                    backgroundClip: 'padding-box',
+                    backgroundColor: '#fff',
+                    borderBottom: '1px solid #ccc',
+                    width: '30px',
+                    height: '30px',
+                    lineHeight: '30px',
+                    color: 'black',
+                  }}
+                >
+                  <Icon link name="bars" fontSize="default" style={{ margin: '0' }} />
+                </span>
+              </div>
+            )}
             {!collapsed && (
               <Accordion as={Menu} vertical>
                 {Object.keys(groupedLayers).map((section, index) => (
-                  <Menu.Item key={`${section} ${index}`}>
-                    <Accordion.Title active={activeGroup === index} onClick={handleClickGroup} index={index}>
+                  <Menu.Item key={md5(`${section} ${index}`)}>
+                    <Accordion.Title
+                      as={Menu.Header}
+                      active={activeGroup === index}
+                      onClick={handleClickGroup}
+                      index={index}
+                    >
                       <Icon name="dropdown" />
-                      {section}
+                      <Icon name={groupIcons[section] || groupIcons.Default} /> {section}
                     </Accordion.Title>
-                    <Accordion.Content active={activeGroup === index} key={`accDetails_${index}`}>
+                    <Accordion.Content as={Menu.Menu} active={activeGroup === index} key={`accDetails_${index}`}>
                       <Form>
                         {groupedLayers[section]?.map((layerObj, index) => (
-                          <Form.Field key={`${layerObj} ${index}`}>
+                          <Form.Field as={Menu.Item} key={md5(`${layerObj} ${index}`)}>
                             <Form.Checkbox
                               checked={layerObj.checked}
                               onChange={() => onLayerClick(layerObj)}
@@ -132,7 +172,7 @@ const LayerControl = ({ position, children }: IProps) => {
                 ))}
               </Accordion>
             )}
-          </Segment>
+          </div>
         </div>
         {children}
       </div>

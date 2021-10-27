@@ -1,152 +1,158 @@
-import {ILegendItem} from '../../../services/rainbowvis/types';
+import { ILegendItem } from '../../../services/rainbowvis/types';
 import React from 'react';
 
 const styles: { [name: string]: React.CSSProperties } = {
-    horizontal: {
-        height: '12px'
-    },
-    label: {
-        height: '20px',
-        display: 'flex',
-        alignItems: 'center'
-    },
-    labels: {
-        marginLeft: '0.5em'
-    },
-    legend: {
-        margin: '5px',
-        padding: 0,
-        listStyle: 'none'
-    },
-    legendLi: {
-        float: 'left',
-        marginRight: '10px'
-    },
-    legendSpan: {
-        float: 'left',
-        width: '20px',
-        height: '12px',
-        margin: '2px'
-    },
-    stripe: {
-        width: '20px',
-        height: '80px',
-        transform: 'translateY(10px)',
-        opacity: 0.5
-    },
-    vertical: {
-        position: 'relative',
-        display: 'flex',
-        zIndex: 1000,
-        bottom: 0,
-        left: 0,
-        marginLeft: '0.5em'
-    },
-    vertical_unit: {
-        position: 'absolute',
-        zIndex: 1000,
-        marginTop: '-1.1em'
-    },
-    vertical_container: {
-        position: 'absolute',
-        bottom: 0
-    }
+  horizontal: {
+    height: '12px',
+  },
+  label: {
+    height: '20px',
+    display: 'flex',
+    alignItems: 'center',
+  },
+  labels: {
+    marginLeft: '0.5em',
+  },
+  legend: {
+    margin: '5px',
+    padding: 0,
+    listStyle: 'none',
+  },
+  legendLi: {
+    float: 'left',
+    marginRight: '10px',
+  },
+  legendSpan: {
+    float: 'left',
+    width: '20px',
+    height: '12px',
+    margin: '2px',
+  },
+  stripe: {
+    width: '20px',
+    height: '80px',
+    transform: 'translateY(10px)',
+    opacity: 0.5,
+  },
+  vertical: {
+    position: 'relative',
+    display: 'flex',
+    zIndex: 1000,
+    bottom: 0,
+    left: 0,
+    marginLeft: '0.5em',
+  },
+  vertical_unit: {
+    position: 'absolute',
+    zIndex: 1000,
+    marginTop: '-1.1em',
+  },
+  vertical_container: {
+    position: 'absolute',
+    bottom: 0,
+  },
 };
 
 interface IProps {
-    legend: ILegendItem[];
-    orientation?: 'vertical' | 'horizontal';
-    unit?: string;
+  legend: ILegendItem[];
+  orientation?: 'vertical' | 'horizontal';
+  unit?: string;
 }
 
 const ColorLegend = (props: IProps) => {
-    const {legend, orientation, unit} = props;
+  const { legend, orientation, unit } = props;
 
-    const renderVerticalLabels = () => {
-        return legend.map((l, index) => {
-            return (
-                <div style={styles.label} key={index}>{l.value}</div>
-            );
-        });
-    };
+  const renderVerticalLabels = () => {
+    return legend.map((l, index) => {
+      return (
+        <div style={styles.label} key={index}>
+          {l.value}
+        </div>
+      );
+    });
+  };
 
-    const renderVerticalGradients = () => {
-        let gradient = 'linear-gradient(to bottom';
-        legend.forEach((l, index) => {
-            gradient += ', ' + l.color + ' ' + ((index + 1) / legend.length * 100) + '%';
-        });
+  const renderVerticalGradients = () => {
+    let gradient = 'linear-gradient(to bottom';
+    legend.forEach((l, index) => {
+      gradient += ', ' + l.color + ' ' + ((index + 1) / legend.length) * 100 + '%';
+    });
 
-        gradient += ')';
+    gradient += ')';
 
-        return gradient;
-    };
+    return gradient;
+  };
 
-    const renderVerticalColorLegend = () => {
-        const gradient = renderVerticalGradients();
-        const labels = renderVerticalLabels();
+  const renderVerticalColorLegend = () => {
+    const gradient = renderVerticalGradients();
+    const labels = renderVerticalLabels();
 
-        return (
-            <div style={styles.vertical_container}>
-                <div style={styles.vertical}>
-                    <div style={styles.vertical_unit}>{unit}</div>
-                    <div
-                        style={{
-                            ...styles.stripe,
-                            backgroundImage: gradient,
-                            height: (legend.length - 1) * 20,
-                            lineHeight: '20px'
-                        }}
-                    />
-                    <div style={styles.labels}>
-                        {labels}
-                    </div>
-                </div>
-            </div>
-        );
-    };
+    return (
+      <div style={styles.vertical_container}>
+        <div style={styles.vertical}>
+          <div style={styles.vertical_unit}>{unit}</div>
+          <div
+            style={{
+              ...styles.stripe,
+              backgroundImage: gradient,
+              height: (legend.length - 1) * 20,
+              lineHeight: '20px',
+            }}
+          />
+          <div style={styles.labels}>{labels}</div>
+        </div>
+      </div>
+    );
+  };
 
-    const renderHorizontalColorLegend = () => {
-        const reducedLegend = [];
-        reducedLegend.push(legend[legend.length - 1]);
-        reducedLegend.push(legend[Math.floor(legend.length / 2)]);
-        reducedLegend.push(legend[0]);
+  const renderHorizontalColorLegend = () => {
+    const reducedLegend = [];
+    reducedLegend.push(legend[legend.length - 1]);
+    reducedLegend.push(legend[Math.floor(legend.length / 2)]);
+    reducedLegend.push(legend[0]);
 
-        return (
-            <div>
-                <div style={styles.horizontal}>
-                    <ul style={styles.legend}>
-                        <li style={styles.legendLi}><span
-                            style={{
-                                ...styles.legendSpan,
-                                backgroundColor: reducedLegend[0].color
-                            }}
-                        /> {reducedLegend[0].value} {unit}
-                        </li>
-                        <li style={styles.legendLi}><span
-                            style={{
-                                ...styles.legendSpan,
-                                backgroundColor: reducedLegend[1].color
-                            }}
-                        /> {reducedLegend[1].value} {unit}
-                        </li>
-                        <li style={styles.legendLi}><span
-                            style={{
-                                ...styles.legendSpan,
-                                backgroundColor: reducedLegend[2].color
-                            }}
-                        /> {reducedLegend[2].value} {unit}
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        );
-    };
+    return (
+      <div>
+        <div style={styles.horizontal}>
+          <ul style={styles.legend}>
+            <li style={styles.legendLi}>
+              <span
+                style={{
+                  ...styles.legendSpan,
+                  backgroundColor: reducedLegend[0].color,
+                }}
+              />{' '}
+              {reducedLegend[0].value} {unit}
+            </li>
+            <li style={styles.legendLi}>
+              <span
+                style={{
+                  ...styles.legendSpan,
+                  backgroundColor: reducedLegend[1].color,
+                }}
+              />{' '}
+              {reducedLegend[1].value} {unit}
+            </li>
+            <li style={styles.legendLi}>
+              <span
+                style={{
+                  ...styles.legendSpan,
+                  backgroundColor: reducedLegend[2].color,
+                }}
+              />{' '}
+              {reducedLegend[2].value} {unit}
+            </li>
+          </ul>
+        </div>
+      </div>
+    );
+  };
 
-    if (!orientation || orientation === 'vertical') {
-        return renderVerticalColorLegend();
-    }
+  if (!orientation || orientation === 'vertical') {
+    return renderVerticalColorLegend();
+  }
 
-    return renderHorizontalColorLegend();
+  return renderHorizontalColorLegend();
 };
 
 export default ColorLegend;
