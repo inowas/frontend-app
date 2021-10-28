@@ -2,23 +2,25 @@ import * as turf from '@turf/turf';
 import { BoundingBox, Cells, Geometry, GridSize } from '../../../../../core/model/geometry';
 import { Button } from 'semantic-ui-react';
 import { CALCULATE_CELLS_INPUT } from '../../../../modflow/worker/t03.worker';
-import { Control, LatLngBoundsExpression } from 'leaflet';
+import { Control, LatLngBoundsExpression, LatLngExpression } from 'leaflet';
 import { EditControl } from 'react-leaflet-draw';
-import { FeatureGroup } from 'react-leaflet';
+import { FeatureGroup, Polygon } from 'react-leaflet';
 import { ICalculateCellsInputData } from '../../../../modflow/worker/t03.worker.type';
 import { ICells } from '../../../../../core/model/geometry/Cells.type';
 import { IGeometry } from '../../../../../core/model/geometry/Geometry.type';
-import { IRowsAndColumns, getRowsAndColumnsFromGeoJson } from '../../../../../services/geoTools';
+import { IMapWithControlsOptions } from '../../../../shared/leaflet/types';
+import { IRowsAndColumns, getRowsAndColumnsFromGeoJson, calculateActiveCells } from '../../../../../services/geoTools';
 import { addMessage } from '../../../actions/actions';
 import { asyncWorker } from '../../../../modflow/worker/worker';
 import { getCellFromClick, rotateCoordinateAroundPoint } from '../../../../../services/geoTools/getCellFromClick';
 import { messageError } from '../../../defaults/messages';
 import { useDispatch } from 'react-redux';
+import AffectedCellsLayer from '../../../../../services/geoTools/AffectedCellsLayer';
 import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import GridRefinementPopup from './gridRefinementPopup';
-import MapWithControls, { IMapWithControlsOptions } from '../../maps/mapWithControls';
+import MapWithControls from '../../maps/mapWithControls';
 import React, { useEffect, useRef, useState } from 'react';
-import _ from 'lodash';
+import _, { uniqueId } from 'lodash';
 
 interface IProps {
   boundingBox: BoundingBox;
@@ -205,10 +207,26 @@ const DiscretizationMap = (props: IProps) => {
 
   const handleToggleDrawing = (m: string) => () => setMode(m);
 
+  const renderActiveCellsLayer = () => {
+    if (!props.cells) {
+      return null;
+    }
+    if (props.geometry && props.rotation && props.rotation % 360 !== 0) {
+      return (
+        <AffectedCellsLayer
+          boundingBox={props.boundingBox}
+          gridSize={props.gridSize}
+          cells={props.cells}
+          rotation={{ geometry: props.geometry, angle: props.rotation }}
+        />
+      );
+    }
+    return <AffectedCellsLayer boundingBox={props.boundingBox} gridSize={props.gridSize} cells={props.cells} />;
+  };
+
   const mapOptions: IMapWithControlsOptions = {
     area: {
-      checked: true,
-      enabled: !!geometry,
+      enabled: false,
     },
     boundaries: {
       checked: true,
@@ -218,10 +236,6 @@ const DiscretizationMap = (props: IProps) => {
     boundingBox: {
       checked: true,
       enabled: true,
-    },
-    inactiveCells: {
-      enabled: !!props.cells,
-      checked: true,
     },
     fullScreenControl: true,
     grid: {
@@ -255,30 +269,40 @@ const DiscretizationMap = (props: IProps) => {
         bounds={getBoundsLatLng() as LatLngBoundsExpression}
         maxZoom={16}
         style={style}
-        onClick={handleClickOnMap}
+        onClick={mode === 'single' ? handleClickOnMap : undefined}
         options={mapOptions}
       >
         {!props.readOnly && (
-          <FeatureGroup>
-            <EditControl
-              position="topleft"
-              draw={{
-                circle: false,
-                circlemarker: false,
-                marker: false,
-                polyline: mode === 'multi' && geometry !== null,
-                rectangle: mode === 'refinement' && geometry !== null,
-                polygon: geometry === null || mode === 'multi',
-              }}
-              edit={{
-                edit: mode !== 'refinement' && geometry !== null && !!props.onChangeGeometry,
-                remove: false,
-              }}
-              onCreated={onCreated}
-              onEdited={onEdited}
-              style={{ marginTop: '10px' }}
-            />
-          </FeatureGroup>
+          <>
+            <FeatureGroup>
+              <EditControl
+                ref={refDrawControl}
+                position="topleft"
+                draw={{
+                  circle: false,
+                  circlemarker: false,
+                  marker: false,
+                  polyline: mode === 'multi' && geometry !== null,
+                  rectangle: mode === 'refinement' && geometry !== null,
+                  polygon: geometry === null || mode === 'multi',
+                }}
+                edit={{
+                  edit: mode !== 'refinement' && geometry !== null && !!props.onChangeGeometry,
+                  remove: false,
+                }}
+                onCreated={onCreated}
+                onEdited={onEdited}
+                style={{ marginTop: '10px' }}
+              />
+              {geometry && (
+                <Polygon
+                  key={uniqueId()}
+                  positions={Geometry.fromObject(geometry).coordinatesLatLng as LatLngExpression[]}
+                />
+              )}
+            </FeatureGroup>
+            {mode !== 'refinement' && renderActiveCellsLayer()}
+          </>
         )}
       </MapWithControls>
       {selected && (

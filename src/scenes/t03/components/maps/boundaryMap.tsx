@@ -8,10 +8,11 @@ import {
 } from '../../../../core/model/modflow/boundaries';
 import { CircleMarker, Polygon, Polyline, Tooltip } from 'react-leaflet';
 import { Geometry } from '../../../../core/model/modflow';
+import { IMapWithControlsOptions } from '../../../shared/leaflet/types';
 import { LatLngExpression } from 'leaflet';
 import { getStyle } from './index';
 import { uniqueId } from 'lodash';
-import MapWithControls, { IMapWithControlsOptions } from './mapWithControls';
+import MapWithControls from './mapWithControls';
 import React, { Component } from 'react';
 import WellBoundary from '../../../../core/model/modflow/boundaries/WellBoundary';
 

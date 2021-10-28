@@ -1,3 +1,4 @@
+import { IDrawEvents } from './types';
 import { Layer } from 'leaflet';
 import { LeafletProvider, useLeafletContext } from '@react-leaflet/core';
 import { ReactNode } from 'react';
@@ -11,10 +12,19 @@ interface IProps {
   name: string;
   group: string;
   children: ReactNode[] | ReactNode;
+  radio?: boolean;
+  events?: IDrawEvents;
 }
 
 const createControlledLayer = (
-  addLayerToControl: (layerContext: any, layer: Layer, name: string, group: string) => any
+  addLayerToControl: (
+    layerContext: any,
+    layer: Layer,
+    name: string,
+    group: string,
+    radio?: boolean,
+    events?: IDrawEvents
+  ) => any
 ) => {
   const ControlledLayer = (props: IProps) => {
     const context = useLeafletContext();
@@ -30,7 +40,14 @@ const createControlledLayer = (
           parentMap.addLayer(layerToAdd);
         }
 
-        addLayerToControl(layerContext, layerToAdd, propsRef.current.name, propsRef.current.group);
+        addLayerToControl(
+          layerContext,
+          layerToAdd,
+          propsRef.current.name,
+          propsRef.current.group,
+          propsRef.current.radio,
+          propsRef.current.events
+        );
         setLayer(layerToAdd);
       },
       // eslint-disable-next-line react-hooks/exhaustive-deps

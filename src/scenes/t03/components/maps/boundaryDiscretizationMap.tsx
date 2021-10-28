@@ -1,11 +1,7 @@
 import * as turf from '@turf/turf';
 import { Array2D } from '../../../../core/model/geometry/Array2D.type';
 import { BasicTileLayer } from '../../../../services/geoTools/tileLayers';
-import {
-  Boundary,
-  BoundaryCollection,
-  LineBoundary, WellBoundary,
-} from '../../../../core/model/modflow/boundaries';
+import { Boundary, BoundaryCollection, LineBoundary, WellBoundary } from '../../../../core/model/modflow/boundaries';
 import { CALCULATE_CELLS_INPUT } from '../../../modflow/worker/t03.worker';
 import { Cells, Geometry, ModflowModel } from '../../../../core/model/modflow';
 import { CircleMarker, FeatureGroup, GeoJSON, MapContainer, Polygon, Polyline } from 'react-leaflet';
@@ -24,7 +20,7 @@ import { getStyle } from './index';
 import { messageError } from '../../defaults/messages';
 import { uniqueId } from 'lodash';
 import { useDispatch } from 'react-redux';
-import AffectedCellsLayer from '../../../../services/geoTools/affectedCellsLayer';
+import AffectedCellsLayer from '../../../../services/geoTools/groupedAffectedCellsLayer';
 import BoundingBox from '../../../../core/model/geometry/BoundingBox';
 import GridSize from '../../../../core/model/geometry/GridSize';
 import React, { useState } from 'react';
@@ -34,8 +30,8 @@ import math from 'mathjs';
 const style = {
   map: {
     height: '500px',
-    width: '100%'
-  }
+    width: '100%',
+  },
 };
 
 interface IProps {
@@ -57,9 +53,9 @@ const BoundaryDiscretizationMap = (props: IProps) => {
     setIsLoading(true);
     let g = geometry.toGeoJSON();
     if (props.model.rotation % 360 !== 0) {
-      g = turf.transformRotate(
-        geometry.toGeoJSON(), -1 * props.model.rotation, { pivot: props.model.geometry.centerOfMass }
-      );
+      g = turf.transformRotate(geometry.toGeoJSON(), -1 * props.model.rotation, {
+        pivot: props.model.geometry.centerOfMass,
+      });
     }
     asyncWorker({
       type: CALCULATE_CELLS_INPUT,
@@ -67,17 +63,19 @@ const BoundaryDiscretizationMap = (props: IProps) => {
         geometry: g,
         boundingBox: boundingBox.toObject(),
         gridSize: gridSize.toObject(),
-        intersection: props.model.intersection
-      } as ICalculateCellsInputData
-    }).then((c: ICells) => {
-      boundary.cells = Cells.fromObject(Cells.fromObject(c).removeCells(props.model.inactiveCells));
-      boundary.geometry = geometry;
-      props.onChange(boundary);
-      setIsLoading(false);
-    }).catch(() => {
-      dispatch(addMessage(messageError('boundaries', 'Calculating cells failed.')));
-      setIsLoading(false);
-    });
+        intersection: props.model.intersection,
+      } as ICalculateCellsInputData,
+    })
+      .then((c: ICells) => {
+        boundary.cells = Cells.fromObject(Cells.fromObject(c).removeCells(props.model.inactiveCells));
+        boundary.geometry = geometry;
+        props.onChange(boundary);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        dispatch(addMessage(messageError('boundaries', 'Calculating cells failed.')));
+        setIsLoading(false);
+      });
   };
 
   const handleOnEdited = (e: any) => {
@@ -99,10 +97,7 @@ const BoundaryDiscretizationMap = (props: IProps) => {
           return (
             <CircleMarker
               key={uniqueId(Geometry.fromObject(b.geometry as Point).hash())}
-              center={[
-                b.geometry.coordinates[1],
-                b.geometry.coordinates[0]
-              ]}
+              center={[b.geometry.coordinates[1], b.geometry.coordinates[0]]}
               {...getStyle('underlay')}
             />
           );
@@ -124,10 +119,7 @@ const BoundaryDiscretizationMap = (props: IProps) => {
         return (
           <CircleMarker
             key={uniqueId(Geometry.fromObject(b.geometry as Point).hash())}
-            center={[
-              b.geometry.coordinates[1],
-              b.geometry.coordinates[0]
-            ]}
+            center={[b.geometry.coordinates[1], b.geometry.coordinates[0]]}
             {...getStyle(b.type, (b as WellBoundary).wellType)}
           />
         );
@@ -135,18 +127,14 @@ const BoundaryDiscretizationMap = (props: IProps) => {
         return (
           <Polyline
             key={uniqueId(Geometry.fromObject(b.geometry as GeoJson).hash())}
-            positions={
-              Geometry.fromObject(b.geometry as LineString).coordinatesLatLng as LatLngExpression[]
-            }
+            positions={Geometry.fromObject(b.geometry as LineString).coordinatesLatLng as LatLngExpression[]}
           />
         );
       case 'polygon':
         return (
           <Polygon
             key={Geometry.fromObject(b.geometry as GeoJson).hash()}
-            positions={
-              Geometry.fromObject(b.geometry as GeoJSON.Polygon).coordinatesLatLng as LatLngExpression[][]
-            }
+            positions={Geometry.fromObject(b.geometry as GeoJSON.Polygon).coordinatesLatLng as LatLngExpression[][]}
           />
         );
       default:
@@ -155,9 +143,7 @@ const BoundaryDiscretizationMap = (props: IProps) => {
   };
 
   const renderOtherBoundaries = (boundaries: BoundaryCollection) => {
-    return boundaries.boundaries
-      .filter((b) => b.id !== props.boundary.id)
-      .map((b) => renderBoundaryGeometry(b, true));
+    return boundaries.boundaries.filter((b) => b.id !== props.boundary.id).map((b) => renderBoundaryGeometry(b, true));
   };
 
   const showBoundaryGeometry = () => {
@@ -165,7 +151,7 @@ const BoundaryDiscretizationMap = (props: IProps) => {
 
     // When rendering Cells, the geometry should not be editable
     if (readOnly || showActiveCells) {
-      return (renderBoundaryGeometry(boundary));
+      return renderBoundaryGeometry(boundary);
     }
 
     return (
@@ -178,11 +164,11 @@ const BoundaryDiscretizationMap = (props: IProps) => {
             marker: false,
             polyline: false,
             rectangle: false,
-            polygon: false
+            polygon: false,
           }}
           edit={{
             edit: true,
-            remove: false
+            remove: false,
           }}
           onEdited={handleOnEdited}
         />
@@ -193,13 +179,7 @@ const BoundaryDiscretizationMap = (props: IProps) => {
 
   const modelGeometryLayer = () => {
     const { geometry } = props.model;
-    return (
-      <GeoJSON
-        key={geometry.hash()}
-        data={geometry.toGeoJSON()}
-        style={getStyle('area')}
-      />
-    );
+    return <GeoJSON key={geometry.hash()} data={geometry.toGeoJSON()} style={getStyle('area')} />;
   };
 
   const affectedCellsLayer = () => {
@@ -222,13 +202,13 @@ const BoundaryDiscretizationMap = (props: IProps) => {
         cells={Cells.fromRaster(cells)}
         rotation={{
           geometry: props.model.geometry,
-          angle: props.model.rotation
+          angle: props.model.rotation,
         }}
       />
     );
   };
 
-  const handleClickOnMap = ({ latlng }: { latlng: { lng: number, lat: number } }) => {
+  const handleClickOnMap = ({ latlng }: { latlng: { lng: number; lat: number } }) => {
     if (!props.showActiveCells || props.readOnly) {
       return null;
     }
@@ -238,11 +218,16 @@ const BoundaryDiscretizationMap = (props: IProps) => {
     const boundingBox = props.model.boundingBox;
     const gridSize = props.model.gridSize;
 
-    const latlngRot = props.model.rotation ?
-      rotateCoordinateAroundPoint(latlng, props.model.geometry.centerOfMass, props.model.rotation) : latlng;
+    const latlngRot = props.model.rotation
+      ? rotateCoordinateAroundPoint(latlng, props.model.geometry.centerOfMass, props.model.rotation)
+      : latlng;
 
     const clickedCell = getCellFromClick(
-      props.model.boundingBox, props.model.gridSize, latlngRot, props.model.rotation, props.model.geometry.centerOfMass
+      props.model.boundingBox,
+      props.model.gridSize,
+      latlngRot,
+      props.model.rotation,
+      props.model.geometry.centerOfMass
     );
 
     cells.toggle(clickedCell, boundingBox, gridSize, false);
@@ -258,7 +243,7 @@ const BoundaryDiscretizationMap = (props: IProps) => {
   const legend = [
     { active: true, name: 'AFFECTED', color: '#393B89' },
     { active: true, name: 'INACTIVE', color: '#888888' },
-    { active: true, name: 'OTHER', color: '#9C9EDE' }
+    { active: true, name: 'OTHER', color: '#9C9EDE' },
   ];
 
   return (
@@ -279,27 +264,25 @@ const BoundaryDiscretizationMap = (props: IProps) => {
           {props.showActiveCells && affectedCellsLayer()}
         </MapContainer>
       </Grid.Column>
-      {props.showActiveCells &&
+      {props.showActiveCells && (
         <Grid.Column width={3}>
           <List>
             <List.Item>
-              {legend.map((c, key) =>
-                <List.Item
-                  key={key}
-                >
+              {legend.map((c, key) => (
+                <List.Item key={key}>
                   <Icon
                     style={{
-                      color: c.color
+                      color: c.color,
                     }}
                     name="square"
                   />
                   {c.name}
                 </List.Item>
-              )}
+              ))}
             </List.Item>
           </List>
         </Grid.Column>
-      }
+      )}
     </Grid>
   );
 };

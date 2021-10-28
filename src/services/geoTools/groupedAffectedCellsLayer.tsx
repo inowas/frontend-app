@@ -1,7 +1,8 @@
 import * as turf from '@turf/turf';
 import { Boundary, BoundaryCollection } from '../../core/model/modflow/boundaries';
 import { BoundingBox, Cells, Geometry, GridSize } from '../../core/model/geometry';
-import { FeatureGroup, GeoJSON, LayersControl } from 'react-leaflet';
+import { GeoJSON } from 'react-leaflet';
+import { GroupedLayer } from '../../scenes/shared/leaflet/LayerControl';
 import { IBoundingBox } from '../../core/model/geometry/BoundingBox.type';
 import { IRootReducer } from '../../reducers';
 import { IRotationProperties } from '../../core/model/geometry/Geometry.type';
@@ -106,11 +107,9 @@ const AffectedCellsLayer = (props: IProps) => {
     if (!props.boundary || !T03.boundaries || !boundaries) {
       return;
     }
-
     const sameTypeBoundaries = boundaries.all.filter(
       (b) => props.boundary && b.type === props.boundary.type && b.id !== props.boundary.id
     );
-
     setBoundaryLayers(
       sameTypeBoundaries.length > 0
         ? sameTypeBoundaries.map((b, key) =>
@@ -212,23 +211,23 @@ const AffectedCellsLayer = (props: IProps) => {
   };
 
   return (
-    <LayersControl position="bottomright">
+    <>
       {!!iBoundLayer && (
-        <LayersControl.Overlay name="Inactive cells" checked={true} key={iBoundKey}>
-          <FeatureGroup>{iBoundLayer}</FeatureGroup>
-        </LayersControl.Overlay>
+        <GroupedLayer checked name="Inactive cells" group="Discretization">
+          {iBoundLayer}
+        </GroupedLayer>
       )}
       {!!boundaryLayer && (
-        <LayersControl.Overlay name="Affected cells" checked={true} key={boundaryKey}>
-          <FeatureGroup>{boundaryLayer}</FeatureGroup>
-        </LayersControl.Overlay>
+        <GroupedLayer checked name="Affected cells" group="Cells">
+          {boundaryLayer}
+        </GroupedLayer>
       )}
       {!!boundaryLayers && !!props.boundary && (
-        <LayersControl.Overlay name={`Cells of other ${props.boundary.type} boundaries`} checked={true}>
-          <FeatureGroup>{boundaryLayers}</FeatureGroup>
-        </LayersControl.Overlay>
+        <GroupedLayer checked name={`Cells of other ${props.boundary.type} boundaries`} group="Cells">
+          {boundaryLayers}
+        </GroupedLayer>
       )}
-    </LayersControl>
+    </>
   );
 };
 

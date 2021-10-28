@@ -1,11 +1,12 @@
 import { Array2D } from '../../../../core/model/geometry/Array2D.type';
 import { BasicTileLayer } from '../../../../services/geoTools/tileLayers';
-import { BoundaryCollection, Geometry, ModflowModel } from '../../../../core/model/modflow';
+import { BoundaryCollection, ModflowModel } from '../../../../core/model/modflow';
 import { BoundaryFactory } from '../../../../core/model/modflow/boundaries';
 import { ColorLegend } from '../../../shared/rasterData';
 import { FlopyModflowMfbas } from '../../../../core/model/flopy/packages/mf';
 import { FlopyPackages } from '../../../../core/model/flopy';
 import { GeoJSON, MapConsumer, MapContainer, MapContainerProps, Pane } from 'react-leaflet';
+import { IMapWithControlsOptions } from '../../../shared/leaflet/types';
 import { IReactLeafletHeatMapProps } from '../../../shared/rasterData/ReactLeafletHeatMapCanvasOverlay.type';
 import { IRootReducer } from '../../../../reducers';
 import { LeafletEvent, LeafletMouseEvent, Map } from 'leaflet';
@@ -16,43 +17,11 @@ import { renderBoundaryOverlays, renderBoundingBoxLayer } from './mapLayers';
 import { useSelector } from 'react-redux';
 import ContourLayer from '../../../shared/rasterData/contourLayer';
 import GridRefinement from '../content/discretization/gridRefinement';
+import GroupedAffectedCellsLayer from '../../../../services/geoTools/groupedAffectedCellsLayer';
 import LayerControl, { GroupedLayer } from '../../../shared/leaflet/LayerControl';
 import Rainbow from '../../../../services/rainbowvis/Rainbowvis';
 import ReactLeafletHeatMapCanvasOverlay from '../../../shared/rasterData/ReactLeafletHeatMapCanvasOverlay';
 import _ from 'lodash';
-import AffectedCellsLayer from '../../../../services/geoTools/affectedCellsLayer';
-
-export interface IMapWithControlsOptions {
-  area?: {
-    checked?: boolean;
-    enabled: boolean;
-  };
-  boundaries?: {
-    checked?: boolean;
-    enabled: boolean;
-    excluded: string[];
-  };
-  boundingBox?: {
-    checked?: boolean;
-    enabled: boolean;
-  };
-  fullScreenControl?: boolean;
-  grid?: {
-    checked?: boolean;
-    enabled: boolean;
-  };
-  inactiveCells?: {
-    checked?: boolean;
-    enabled: boolean;
-  };
-  raster?: {
-    colors?: string[];
-    enabled: boolean;
-    layer: number;
-    globalMinMax?: [number, number];
-    quantile: number;
-  };
-}
 
 interface IProps {
   children: ReactNode;
@@ -180,7 +149,7 @@ const MapWithControls = (props: TProps) => {
     return (
       <>
         <Pane name="back" style={{ zIndex: 499 }}>
-          <GroupedLayer name="Raster" group="Data">
+          <GroupedLayer name="Raster" group="Data" radio>
             <ReactLeafletHeatMapCanvasOverlay
               key="HEATMAP"
               nX={mapProps.nX}
@@ -191,7 +160,7 @@ const MapWithControls = (props: TProps) => {
               sharpening={mapProps.sharpening}
             />
           </GroupedLayer>
-          <GroupedLayer checked name="Contours" group="Data">
+          <GroupedLayer checked name="Contours" group="Data" radio>
             <ContourLayer
               boundingBox={model.boundingBox}
               data={props.raster}
@@ -218,7 +187,7 @@ const MapWithControls = (props: TProps) => {
       </MapConsumer>
       <BasicTileLayer />
       {props.raster ? renderLegend(getRainbow()) : null}
-      <LayerControl position="topright">
+      <LayerControl events={options.events} position="topright">
         {props.raster ? renderRaster() : null}
         <Pane name="middle" style={{ zIndex: 500 }}>
           {model && options.area && options.area.enabled ? (
@@ -237,7 +206,7 @@ const MapWithControls = (props: TProps) => {
             </GroupedLayer>
           ) : null}
           {model && options.inactiveCells && options.inactiveCells ? (
-            <AffectedCellsLayer
+            <GroupedAffectedCellsLayer
               boundingBox={model.boundingBox}
               gridSize={model.gridSize}
               cells={model.cells}
@@ -249,7 +218,6 @@ const MapWithControls = (props: TProps) => {
             : null}
         </Pane>
       </LayerControl>
-
       {props.children}
     </MapContainer>
   );

@@ -265,6 +265,9 @@ export const canvasHeatMapOverlayClass = Layer.extend({
   },
 
   _runDraw() {
+    if (!this._ctx) {
+      return null;
+    }
     this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
     if (Array.isArray(this._dataArray)) {
       this._dataArray.forEach((d: IData) => {

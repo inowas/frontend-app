@@ -3,7 +3,7 @@ import { GeoJSON, MapContainer } from 'react-leaflet';
 import { ModflowModel } from '../../../../core/model/modflow';
 import { disableMap, getStyle, invalidateSize } from './index';
 import { uniqueId } from 'lodash';
-import AffectedCellsLayer from '../../../../services/geoTools/affectedCellsLayer';
+import AffectedCellsLayer from '../../../../services/geoTools/groupedAffectedCellsLayer';
 import React from 'react';
 
 interface IProps {
@@ -12,8 +12,8 @@ interface IProps {
 
 const styles = {
   map: {
-    minHeight: 300
-  }
+    minHeight: 300,
+  },
 };
 
 const runModelOverviewMap = (props: IProps) => {
@@ -24,16 +24,8 @@ const runModelOverviewMap = (props: IProps) => {
   };
 
   const renderBoundingBox = () => {
-    const data = rotation ?
-      boundingBox.geoJsonWithRotation(rotation, geometry.centerOfMass) :
-      boundingBox.geoJson;
-    return (
-      <GeoJSON
-        key={uniqueId()}
-        data={data}
-        style={getStyle('bounding_box')}
-      />
-    );
+    const data = rotation ? boundingBox.geoJsonWithRotation(rotation, geometry.centerOfMass) : boundingBox.geoJson;
+    return <GeoJSON key={uniqueId()} data={data} style={getStyle('bounding_box')} />;
   };
 
   return (
@@ -47,11 +39,7 @@ const runModelOverviewMap = (props: IProps) => {
       bounds={getBoundsLatLng()}
     >
       <BasicTileLayer />
-      <GeoJSON
-        key={geometry.hash()}
-        data={geometry.toGeoJSON()}
-        style={getStyle('area')}
-      />
+      <GeoJSON key={geometry.hash()} data={geometry.toGeoJSON()} style={getStyle('area')} />
       {renderBoundingBox()}
       <AffectedCellsLayer
         boundingBox={boundingBox}

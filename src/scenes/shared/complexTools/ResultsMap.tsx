@@ -3,10 +3,12 @@ import { BoundaryCollection } from '../../../core/model/modflow/boundaries';
 import { FeatureGroup, GeoJSON, Pane } from 'react-leaflet';
 import { Geometry, ModflowModel } from '../../../core/model/modflow';
 import { ICell } from '../../../core/model/geometry/Cells.type';
+import { IMapWithControlsOptions } from '../leaflet/types';
 import { LeafletMouseEvent } from 'leaflet';
 import { getCellFromClick } from '../../../services/geoTools/getCellFromClick';
 import { useEffect, useState } from 'react';
-import MapWithControls, { IMapWithControlsOptions } from '../../t03/components/maps/mapWithControls';
+import MapWithControls from '../../t03/components/maps/mapWithControls';
+import md5 from 'md5';
 import uuid from 'uuid';
 
 const style = {
@@ -53,6 +55,7 @@ interface IState {
 const ResultsMap = (props: IProps) => {
   const [state, setState] = useState<IState>({ viewport: null });
   const [renderKey, setRenderKey] = useState<string>(uuid.v4());
+  const [dataKey, setDataKey] = useState<string>(md5(JSON.stringify(props.data)));
 
   useEffect(
     () => {
@@ -74,6 +77,13 @@ const ResultsMap = (props: IProps) => {
   useEffect(() => {
     setRenderKey(uuid.v4());
   }, [props.activeCell]);
+
+  useEffect(() => {
+    const hash = md5(JSON.stringify(props.data));
+    if (hash !== dataKey) {
+      setDataKey(hash);
+    }
+  }, [dataKey, props.data]);
 
   const handleClickOnMap = ({ latlng }: LeafletMouseEvent) => {
     const activeCell = getCellFromClick(
@@ -175,6 +185,7 @@ const ResultsMap = (props: IProps) => {
 
   return (
     <MapWithControls
+      key={dataKey}
       style={style.map}
       bounds={state.viewport ? undefined : props.model.geometry.getBoundsLatLng()}
       zoom={state.viewport && state.viewport.zoom ? state.viewport.zoom : undefined}

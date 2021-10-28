@@ -1,7 +1,9 @@
-import { Accordion, AccordionProps, Form, Icon, Menu, Segment, SemanticICONS } from 'semantic-ui-react';
-import { Layer, Util } from 'leaflet';
+import { Accordion, AccordionProps, Button, Form, Icon, Menu, SemanticICONS } from 'semantic-ui-react';
+import { DomEvent, Layer, Util } from 'leaflet';
+import { EditControl } from 'react-leaflet-draw';
+import { IDrawEvents } from './types';
 import { LayersControlProvider } from './layerControlContext';
-import { MouseEvent } from 'react';
+import { MouseEvent, useEffect, useRef } from 'react';
 import { ReactElement, useState } from 'react';
 import { groupBy } from 'lodash';
 import { useMapEvents } from 'react-leaflet';
@@ -17,6 +19,7 @@ const POSITION_CLASSES: { [key: string]: string } = {
 
 interface IProps {
   children: Array<ReactElement | null> | ReactElement;
+  events?: IDrawEvents;
   position: string;
 }
 
@@ -26,6 +29,7 @@ interface ILayerObj {
   name: string;
   checked: boolean;
   id: number;
+  radio?: boolean;
 }
 
 const groupIcons: { [key: string]: SemanticICONS } = {
@@ -37,11 +41,19 @@ const groupIcons: { [key: string]: SemanticICONS } = {
   Grid: 'grid layout',
 };
 
-const LayerControl = ({ position, children }: IProps) => {
+const LayerControl = ({ position, children, events }: IProps) => {
   const [activeGroup, setActiveGroup] = useState<number>(0);
   const [collapsed, setCollapsed] = useState(true);
   const [layers, setLayers] = useState<ILayerObj[]>([]);
   const positionClass = (position && POSITION_CLASSES[position]) || POSITION_CLASSES.topright;
+
+  const divRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (divRef && divRef.current) {
+      DomEvent.disableClickPropagation(divRef.current);
+    }
+  });
 
   const map = useMapEvents({
     layerremove: () => {
@@ -85,7 +97,35 @@ const LayerControl = ({ position, children }: IProps) => {
     }
   };
 
-  const onGroupAdd = (layer: any, name: string, group: string) => {
+  const onRadioClick = (layerObj: ILayerObj) => {
+    const layersInGroup = layers.filter((l) => l.id !== layerObj.id && l.group === layerObj.group);
+    layersInGroup.forEach((l) => {
+      map?.removeLayer(l.layer);
+    });
+
+    if (!map?.hasLayer(layerObj.layer)) {
+      map.addLayer(layerObj.layer);
+      setLayers(
+        layers.map((layer) => {
+          if (layer.group === layerObj.group && layer.id !== layerObj.id) {
+            return {
+              ...layer,
+              checked: false,
+            };
+          }
+          if (layer.id === layerObj.id) {
+            return {
+              ...layer,
+              checked: true,
+            };
+          }
+          return layer;
+        })
+      );
+    }
+  };
+
+  const onGroupAdd = (layer: any, name: string, group: string, radio?: boolean) => {
     const cLayers = layers;
     cLayers.push({
       layer,
@@ -93,12 +133,33 @@ const LayerControl = ({ position, children }: IProps) => {
       name,
       checked: map?.hasLayer(layer),
       id: Util.stamp(layer),
+      radio,
     });
 
     setLayers(cLayers);
   };
 
   const groupedLayers = groupBy(layers, 'group');
+
+  const handleClickEdit = () => {
+    console.log(groupedLayers);
+    const filteredLayer = groupedLayers.Discretization?.filter((l) => l.name === 'Model Area');
+
+    console.log(map);
+
+    if (map && filteredLayer.length > 0) {
+      const toolbar = (
+        <EditControl
+          edit={true}
+          leaflet={{
+            map,
+            layerContainer: filteredLayer[0].layer,
+          }}
+        />
+      );
+      console.log(toolbar);
+    }
+  };
 
   const handleClickGroup = (e: MouseEvent, titleProps: AccordionProps) => {
     const { index } = titleProps;
@@ -111,10 +172,9 @@ const LayerControl = ({ position, children }: IProps) => {
       value={{
         layers,
         addGroup: onGroupAdd,
-        interactive: true,
       }}
     >
-      <div className={positionClass}>
+      <div className={positionClass} ref={divRef}>
         <div className="leaflet-control leaflet-bar">
           <div onMouseEnter={() => setCollapsed(false)} onMouseLeave={() => setCollapsed(true)}>
             {collapsed && (
@@ -142,6 +202,13 @@ const LayerControl = ({ position, children }: IProps) => {
             )}
             {!collapsed && (
               <Accordion as={Menu} vertical>
+                {events && events.onEdited && (
+                  <Menu.Item>
+                    <Button onClick={handleClickEdit} labelPosition="left" fluid icon>
+                      <Icon name="edit" /> Edit
+                    </Button>
+                  </Menu.Item>
+                )}
                 {Object.keys(groupedLayers).map((section, index) => (
                   <Menu.Item key={md5(`${section} ${index}`)}>
                     <Accordion.Title
@@ -157,13 +224,23 @@ const LayerControl = ({ position, children }: IProps) => {
                       <Form>
                         {groupedLayers[section]?.map((layerObj, index) => (
                           <Form.Field as={Menu.Item} key={md5(`${layerObj} ${index}`)}>
-                            <Form.Checkbox
-                              checked={layerObj.checked}
-                              onChange={() => onLayerClick(layerObj)}
-                              name="checkedB"
-                              color="primary"
-                              label={layerObj.name}
-                            />
+                            {layerObj.radio ? (
+                              <Form.Radio
+                                checked={layerObj.checked}
+                                onChange={() => onRadioClick(layerObj)}
+                                name="checkedB"
+                                color="primary"
+                                label={layerObj.name}
+                              />
+                            ) : (
+                              <Form.Checkbox
+                                checked={layerObj.checked}
+                                onChange={() => onLayerClick(layerObj)}
+                                name="checkedB"
+                                color="primary"
+                                label={layerObj.name}
+                              />
+                            )}
                           </Form.Field>
                         ))}
                       </Form>
@@ -180,8 +257,8 @@ const LayerControl = ({ position, children }: IProps) => {
   );
 };
 
-const GroupedLayer = createControlledLayer((layersControl, layer, name, group) => {
-  layersControl.addGroup(layer, name, group);
+const GroupedLayer = createControlledLayer((layersControl, layer, name, group, radio) => {
+  layersControl.addGroup(layer, name, group, radio);
 });
 
 export default LayerControl;
