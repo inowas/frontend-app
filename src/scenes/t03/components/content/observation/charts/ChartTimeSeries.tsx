@@ -1,8 +1,8 @@
-import { Array2D } from '../../../../../../core/model/geometry/Array2D.type';
-import { Button, Form, Icon, InputProps } from 'semantic-ui-react';
+import { BoundaryCollection, ModflowModel } from '../../../../../../core/model/modflow';
 import {
   CartesianGrid,
   LabelProps,
+  Legend,
   Line,
   LineChart,
   ReferenceLine,
@@ -11,82 +11,91 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { DropdownProps, Form, InputProps, Segment } from 'semantic-ui-react';
+import { EBoundaryType } from '../../../../../../core/model/modflow/boundaries/Boundary.type';
+import { EResultType } from '../../../../../modflow/components/content/results/flowResults';
 import { HeadObservationWell } from '../../../../../../core/model/modflow/boundaries';
-import { Stressperiods } from '../../../../../../core/model/modflow';
-import { cloneDeep } from 'lodash';
-import { exportData } from '../../../../../shared/simpleTools/helpers';
+import { IHeadObservationWell } from '../../../../../../core/model/modflow/boundaries/HeadObservationWell.type';
+import { IRootReducer } from '../../../../../../reducers';
+import { MODFLOW_CALCULATION_URL, fetchApiWithToken } from '../../../../../../services/api';
+import { SyntheticEvent } from 'react-router/node_modules/@types/react';
 import { misc } from '../../../../defaults/colorScales';
+import { useSelector } from 'react-redux';
 
 interface IData {
   sp: string;
   [cell: string]: number | string;
 }
 
-interface IProps {
-  headObservationWells: HeadObservationWell[];
-  selectedCells: Array<[number, number, Array2D<number>]>;
-  stressperiods: Stressperiods;
-}
-
-const ChartTimeSeries = (props: IProps) => {
+const ChartTimeSeries = () => {
   const [activeInput, setActiveInput] = useState<string | null>(null);
   const [activeValue, setActiveValue] = useState<string>('');
   const [data, setData] = useState<IData[]>([]);
+  const [isFetching, setIsFetching] = useState<boolean>(false);
   const [minMax, setMinMax] = useState<[number, number]>([0, 0]);
+  const [selectedWell, setSelectedWell] = useState<IHeadObservationWell | null>(null);
+
+  const T03 = useSelector((state: IRootReducer) => state.T03);
+  const boundaries = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
+
+  const fetchCellData = useCallback(async () => {
+    const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
+    if (!model || !selectedWell) {
+      return;
+    }
+
+    const hob = HeadObservationWell.fromObject(selectedWell);
+
+    setIsFetching(true);
+    try {
+      const c = await fetchApiWithToken(
+        `${MODFLOW_CALCULATION_URL}/${model?.calculationId}/timeseries/types/${EResultType.HEAD}/layers/0/rows/${hob.row}/columns/${hob.column}`
+      );
+      if (c.data && Array.isArray(c.data)) {
+        const d: IData[] = [];
+        model.stressperiods.totims.forEach((totim) => {
+          const obj: IData = { sp: totim.toString() };
+          const keys = hob.getDateTimes(model.stressperiods).map((d) => model.stressperiods.totimFromDate(d));
+          const keyOfStressperiod = keys.indexOf(totim);
+          if (keyOfStressperiod > -1) {
+            obj.observed = hob.getSpValues(model.stressperiods)[keyOfStressperiod][0];
+          }
+
+          const obs = c.data.filter((row: number[]) => row[0] === totim);
+          if (obs.length > 0) {
+            obj.simulated = obs[0][1];
+          }
+
+          d.push(obj);
+        });
+
+        const observed = [...d.map((r) => r.observed)].filter((n) => typeof n === 'number') as number[];
+        const simulated = [...d.map((r) => r.simulated)].filter((n) => typeof n === 'number') as number[];
+
+        const max = Math.ceil(Math.max(...observed.concat(simulated)));
+        const min = Math.floor(Math.min(...observed.concat(simulated)));
+
+        setMinMax([min, max]);
+        setData(d);
+        return c.data;
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setIsFetching(false);
+    }
+  }, [T03.model, selectedWell]);
 
   useEffect(() => {
-    const d: IData[] = [];
-    const stressperiods = props.selectedCells[0][2].map((r) => r[0]);
-    const combinedStressperiods = cloneDeep(stressperiods);
+    fetchCellData();
+  }, [fetchCellData, selectedWell]);
 
-    props.headObservationWells.forEach((hob) => {
-      hob
-        .getDateTimes(props.stressperiods)
-        .map((d) => props.stressperiods.totimFromDate(d))
-        .forEach((dt) => {
-          if (!combinedStressperiods.includes(dt)) {
-            combinedStressperiods.push(dt);
-          }
-        });
-    });
+  if (!boundaries) {
+    return null;
+  }
 
-    let min = NaN,
-      max = NaN;
-
-    combinedStressperiods
-      .sort((a, b) => a - b)
-      .forEach((sp) => {
-        const obj: IData = { sp: sp.toString() };
-        if (stressperiods.includes(sp)) {
-          const key = stressperiods.indexOf(sp);
-          props.selectedCells.forEach((c) => {
-            if (isNaN(min) || c[2][key][1] < min) {
-              min = Math.floor(c[2][key][1]);
-            }
-            if (isNaN(max) || c[2][key][1] > max) {
-              max = Math.ceil(c[2][key][1]);
-            }
-            obj[`${c[0]}_${c[1]}`] = c[2][key][1];
-          });
-        }
-
-        props.headObservationWells.forEach((hob: HeadObservationWell) => {
-          const keys = hob.getDateTimes(props.stressperiods).map((d) => props.stressperiods.totimFromDate(d));
-          const keyOfStressperiod = keys.indexOf(sp);
-
-          if (keyOfStressperiod > -1) {
-            obj[hob.name] = hob.getSpValues(props.stressperiods)[keyOfStressperiod][0];
-          }
-        });
-
-        d.push(obj);
-      });
-
-    setData(d);
-    setMinMax([min, max]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.selectedCells, props.headObservationWells]);
+  const hobs = boundaries.findBy('type', EBoundaryType.HOB);
 
   const getYAxisLabel = (): LabelProps => {
     return { value: 'Head (m asl)', position: 'insideLeft', angle: -90, fill: '#4C4C4C', fontSize: '13px' };
@@ -107,64 +116,67 @@ const ChartTimeSeries = (props: IProps) => {
     setActiveValue(value);
   };
 
+  const handleChangeSelectedWell = (e: SyntheticEvent, { value }: DropdownProps) => {
+    if (typeof value === 'string') {
+      const hob = boundaries.findById(value);
+      if (hob instanceof HeadObservationWell) {
+        setSelectedWell(hob.toObject());
+      }
+    }
+  };
+
   return (
-    <>
+    <Segment raised={true} loading={isFetching}>
       <Form>
-        <Form.Group widths="equal">
-          <Form.Input
-            fluid
-            label="Min Head"
-            name="min"
-            onBlur={handleBlur}
-            onChange={handleChange}
-            value={activeInput === 'min' ? activeValue : minMax[0]}
-            type="number"
-          />
-          <Form.Input
-            fluid
-            label="Max Head"
-            name="max"
-            onBlur={handleBlur}
-            onChange={handleChange}
-            value={activeInput === 'max' ? activeValue : minMax[1]}
-            type="number"
-          />
-        </Form.Group>
+        <Form.Select
+          label="Head observation well"
+          onChange={handleChangeSelectedWell}
+          options={hobs.map((hob) => {
+            return {
+              key: hob.id,
+              value: hob.id,
+              text: hob.name,
+            };
+          })}
+        />
+        {data.length > 0 && (
+          <Form.Group widths="equal">
+            <Form.Input
+              fluid
+              label="Min Head"
+              name="min"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={activeInput === 'min' ? activeValue : minMax[0]}
+              type="number"
+            />
+            <Form.Input
+              fluid
+              label="Max Head"
+              name="max"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={activeInput === 'max' ? activeValue : minMax[1]}
+              type="number"
+            />
+          </Form.Group>
+        )}
       </Form>
-      <div className="downloadButtons">
-        <Button compact={true} basic={true} icon={true} size={'small'} onClick={exportData(data, 'timeSeries')}>
-          <Icon name="download" /> CSV
-        </Button>
-      </div>
-      <ResponsiveContainer aspect={1.5}>
-        <LineChart data={data}>
-          <XAxis dataKey="sp" domain={['dataMin', 'dataMax']} />
-          <YAxis label={getYAxisLabel()} domain={minMax} />
-          <CartesianGrid strokeDasharray="3 3" />
-          <Tooltip />
-          <ReferenceLine stroke="#000" strokeDasharray="3 3" />
-          {props.selectedCells.map((c, key) => (
-            <Line
-              key={key}
-              type="monotone"
-              dataKey={`${c[0]}_${c[1]}`}
-              stroke={key < misc.length ? misc[key] : misc[misc.length - 1]}
-              activeDot={{ r: 8 }}
-            />
-          ))}
-          {props.headObservationWells.map((hob, key) => (
-            <Line
-              key={`${hob.name}_${key}`}
-              type="monotone"
-              dataKey={hob.name}
-              stroke="#000000"
-              strokeDasharray="2"
-              activeDot={{ r: 8 }}
-            />
-          ))}
-        </LineChart>
-      </ResponsiveContainer>
-    </>
+      {data.length > 0 && (
+        <ResponsiveContainer aspect={1.5}>
+          <LineChart data={data}>
+            <XAxis dataKey="sp" domain={['dataMin', 'dataMax']} />
+            <YAxis label={getYAxisLabel()} domain={minMax} />
+            <CartesianGrid strokeDasharray="3 3" />
+            <Tooltip />
+            <ReferenceLine stroke="#000" strokeDasharray="3 3" />
+            <Line type="monotone" dataKey="simulated" stroke={misc[0]} activeDot={{ r: 8 }} />
+            <Line type="monotone" dataKey="observed" stroke={misc[0]} strokeDasharray="2" activeDot={{ r: 8 }} />
+            <Legend iconType="plainline" iconSize={30} verticalAlign="middle" wrapperStyle={{ top: 0, left: 350 }} />
+          </LineChart>
+        </ResponsiveContainer>
+      )}
+    </Segment>
   );
 };
 

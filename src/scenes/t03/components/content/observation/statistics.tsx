@@ -1,32 +1,24 @@
 import { CALCULATE_STATISTICS_INPUT } from '../../../../modflow/worker/t03.worker';
-import { Container, DropdownProps, Form, Grid, Header, Message, Segment, Table } from 'semantic-ui-react';
-import { ILinearRegression } from '../../../../../services/statistics/calculateStatistics';
-import { IRootReducer } from '../../../../../reducers';
-import { BoundaryCollection, ModflowModel } from '../../../../../core/model/modflow';
-import { asyncWorker } from '../../../../modflow/worker/worker';
-import { fetchCalculationObservations } from '../../../../../services/api';
-import { useSelector } from 'react-redux';
-import React, { SyntheticEvent, useEffect, useMemo, useState } from 'react';
-
 import {
   ChartObservedVsCalculatedHeads,
   ChartRankedResidualsAgainstNormalProbability,
+  ChartTimeSeries,
   ChartWeightedResidualsVsSimulatedHeads,
 } from './charts';
-import ChartTimeSeries from './charts/ChartTimeSeries';
-import { EBoundaryType } from '../../../../../core/model/modflow/boundaries/Boundary.type';
-import { HeadObservationWell } from '../../../../../core/model/modflow/boundaries';
+import { Container, DropdownProps, Form, Grid, Header, Message, Segment, Table } from 'semantic-ui-react';
+import { ILinearRegression } from '../../../../../services/statistics/calculateStatistics';
+import { IRootReducer } from '../../../../../reducers';
+import { ModflowModel } from '../../../../../core/model/modflow';
+import { SyntheticEvent, useEffect, useMemo, useState } from 'react';
+import { asyncWorker } from '../../../../modflow/worker/worker';
+import { fetchCalculationObservations } from '../../../../../services/api';
+import { useSelector } from 'react-redux';
 
 export type IHobData = Array<{
   simulated: number;
   observed: number;
   name: string;
 }>;
-
-interface IData {
-  sp: string;
-  [cell: string]: number | string;
-}
 
 export interface IStatistics {
   names: string[];
@@ -77,7 +69,6 @@ const ObservationStatistics = () => {
   const [excludedWells, setExcludedWells] = useState<string[]>([]);
 
   const T03 = useSelector((state: IRootReducer) => state.T03);
-  const boundaries = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
   const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
 
   useEffect(
@@ -121,54 +112,13 @@ const ObservationStatistics = () => {
     }
   }, [hobData, excludedWells]);
 
-  const prepareTimeSeriesData = () => {
-    if (!boundaries || !model) {
-      return null;
-    }
-
-    const hobs = boundaries.filterBy('type', EBoundaryType.HOB) as HeadObservationWell[];
-
-    const d: IData[] = [];
-    model.stressperiods.totims.forEach((totim, key) => {
-      const obj: IData = { sp: totim.toString() };
-      hobs.forEach((hob) => {
-        console.log({ h: hob.toObject() });
-        const keys = hob.getDateTimes(model.stressperiods).map((d) => model.stressperiods.totimFromDate(d));
-        const keyOfStressperiod = keys.indexOf(totim);
-
-        if (keyOfStressperiod > -1) {
-          obj[hob.name] = hob.getSpValues(model.stressperiods)[keyOfStressperiod][0];
-        }
-      });
-      d.push(obj);
-    });
-
-    console.log(d);
-  };
-
   const memoizedCharts = useMemo(() => {
     if (!statistics || !model) {
       return null;
     }
 
-    console.log({ statistics, hobData });
-    // <ChartTimeSeries headObservationWells={} selectedCells={} stressperiods={model?.stressperiods} />
-
-    /*
-      stressPeriod
-      well_1 sim
-      well_1 obs
-      well_2 sim
-      well_2 obs
-
-
-    */
-
     return (
       <div>
-        <Header size="large">Time series</Header>
-        {prepareTimeSeriesData()}
-
         <Header size={'large'}>Simulated vs. Observed Values</Header>
         <ChartObservedVsCalculatedHeads statistics={statistics} />
 
@@ -177,8 +127,12 @@ const ObservationStatistics = () => {
 
         <Header size={'large'}>Ranked residuals against normal probability</Header>
         <ChartRankedResidualsAgainstNormalProbability statistics={statistics} />
+
+        <Header size="large">Time series</Header>
+        <ChartTimeSeries />
       </div>
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statistics]);
 
   const handleChangeExcludesWells = (e: SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {

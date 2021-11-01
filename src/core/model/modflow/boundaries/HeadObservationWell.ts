@@ -1,17 +1,33 @@
-import {Cells, Geometry} from '../index';
-import {ICells} from '../../geometry/Cells.type';
-import {IHeadObservationWell, IHeadObservationWellExport} from './HeadObservationWell.type';
-import {ISpValues, IValueProperty} from './Boundary.type';
-import {Point} from 'geojson';
-import {cloneDeep, orderBy} from 'lodash';
+import { Cells, Geometry } from '../index';
+import { ICell, ICells } from '../../geometry/Cells.type';
+import { IHeadObservationWell, IHeadObservationWellExport } from './HeadObservationWell.type';
+import { ISpValues, IValueProperty } from './Boundary.type';
+import { Point } from 'geojson';
+import { cloneDeep, orderBy } from 'lodash';
 import BoundingBox from '../../geometry/BoundingBox';
 import GridSize from '../../geometry/GridSize';
 import PointBoundary from './PointBoundary';
 import Stressperiods from '../Stressperiods';
 import Uuid from 'uuid';
-import moment, {DurationInputArg1, DurationInputArg2, Moment} from 'moment';
+import moment, { DurationInputArg1, DurationInputArg2, Moment } from 'moment';
 
 export default class HeadObservationWell extends PointBoundary {
+  get cell() {
+    return this._props.properties.cells[0];
+  }
+
+  set cell(value: ICell) {
+    this._props.properties.cells = value;
+  }
+
+  get column() {
+    return this.cell[1];
+  }
+
+  get row() {
+    return this.cell[0];
+  }
+
   set dateTimes(value: Moment[]) {
     this._props.properties.date_times = value.map((dt) => dt.format('YYYY-MM-DD'));
   }
@@ -51,13 +67,20 @@ export default class HeadObservationWell extends PointBoundary {
         description: 'Observed head',
         unit: 'm',
         decimals: 2,
-        default: 0
+        default: 0,
       },
     ];
   }
 
-  public static create(id: string, geometry: Point, name: string, layers: number[], cells: ICells,
-                       dateTimes: string[], spValues: ISpValues) {
+  public static create(
+    id: string,
+    geometry: Point,
+    name: string,
+    layers: number[],
+    cells: ICells,
+    dateTimes: string[],
+    spValues: ISpValues
+  ) {
     return new this({
       id,
       type: 'Feature',
@@ -68,8 +91,8 @@ export default class HeadObservationWell extends PointBoundary {
         layers,
         cells,
         date_times: dateTimes,
-        sp_values: spValues
-      }
+        sp_values: spValues,
+      },
     });
   }
 
@@ -94,13 +117,13 @@ export default class HeadObservationWell extends PointBoundary {
   public getDateTimes = (stressperiods: Stressperiods): Moment[] => {
     if (!this._props.properties.date_times) {
       this._props.properties.date_times = stressperiods.stressperiods.map((sp) =>
-        sp.startDateTime.format('YYYY-MM-DD'));
+        sp.startDateTime.format('YYYY-MM-DD')
+      );
     }
     return this._props.properties.date_times.map((dt: string) => moment.utc(dt));
   };
 
-  public addDateTime(amount: DurationInputArg1, unit: DurationInputArg2, opId?: string,
-                     stressperiods?: Stressperiods) {
+  public addDateTime(amount: DurationInputArg1, unit: DurationInputArg2, opId?: string, stressperiods?: Stressperiods) {
     if (stressperiods) {
       const dateTimes = this._props.properties.date_times;
       if (this._props.properties.date_times.length > 0) {
@@ -166,7 +189,7 @@ export default class HeadObservationWell extends PointBoundary {
     geometry: this.geometry.toObject() as Point,
     layers: this.layers,
     date_times: this.getDateTimes(stressPeriods).map((dt: Moment) => dt.format('YYYY-MM-DD')),
-    sp_values: this.getSpValues(stressPeriods)
+    sp_values: this.getSpValues(stressPeriods),
   });
 
   public toObject(): IHeadObservationWell {
