@@ -7,7 +7,6 @@ import Stressperiod from './Stressperiod';
 import moment, { Moment } from 'moment/moment';
 
 class Stressperiods {
-
   get startDateTime(): Moment {
     return moment.utc(this._props.start_date_time);
   }
@@ -89,16 +88,18 @@ class Stressperiods {
       start_date_time: startDate.toISOString(),
       end_date_time: endDate.toISOString(),
       time_unit: timeUnit.toInt(),
-      stressperiods: stressperiods.map((s) => s.toObject())
+      stressperiods: stressperiods.map((s) => s.toObject()),
     });
 
     if (stressperiods.length === 0) {
-      stressPeriods.addStressPeriod(new Stressperiod({
-        start_date_time: startDate.toISOString(),
-        nstp: 1,
-        tsmult: 1,
-        steady: true
-      }));
+      stressPeriods.addStressPeriod(
+        new Stressperiod({
+          start_date_time: startDate.toISOString(),
+          nstp: 1,
+          tsmult: 1,
+          steady: true,
+        })
+      );
     }
 
     return stressPeriods;
@@ -117,14 +118,16 @@ class Stressperiods {
       }
 
       if ('totim_start' in sp) {
-        return ({
+        return {
           start_date_time: Stressperiods.dateTimeFromTotim(
-            moment(obj.start_date_time), sp.totim_start, TimeUnit.fromInt(obj.time_unit)
+            moment(obj.start_date_time),
+            sp.totim_start,
+            TimeUnit.fromInt(obj.time_unit)
           ),
           nstp: sp.nstp,
           tsmult: sp.tsmult,
-          steady: sp.steady
-        });
+          steady: sp.steady,
+        };
       }
 
       return sp;
@@ -140,7 +143,7 @@ class Stressperiods {
 
   public static dateTimeFromTotim(startDateTime: Moment, totim: number, timeUnit: TimeUnit) {
     if (timeUnit.toInt() === ITimeUnit.days) {
-      return moment.utc(startDateTime).add(totim, 'days').format();
+      return moment.utc(startDateTime).add(totim, 'days');
     }
 
     throw new Error(`TimeUnit ${timeUnit.toInt()} not implemented yet.`);

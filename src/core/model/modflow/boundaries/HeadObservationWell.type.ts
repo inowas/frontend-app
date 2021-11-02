@@ -1,15 +1,15 @@
-import {IPointBoundary, IPointBoundaryExport, IPointBoundaryProperties} from './PointBoundary.type';
+import { IPointBoundary, IPointBoundaryExport, IPointBoundaryProperties } from './PointBoundary.type';
 
 export interface IHeadObservationWell extends IPointBoundary {
-    properties: IHeadObservationWellProperties;
+  properties: IHeadObservationWellProperties;
 }
 
 export interface IHeadObservationWellProperties extends IPointBoundaryProperties {
-    date_times: string[];
-    type: 'hob';
+  date_times: string[];
+  type: 'hob';
 }
 
 export interface IHeadObservationWellExport extends IPointBoundaryExport {
-    date_times: string[];
-    type: 'hob';
+  date_times: string[];
+  type: 'hob';
 }
