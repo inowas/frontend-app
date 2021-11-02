@@ -191,7 +191,7 @@ const ChartTimeSeries = () => {
                     dataKey={`${hob.id}_observed`}
                     stroke={key < distinct.length ? distinct[key] : distinct[misc.length - 1]}
                     strokeDasharray="2"
-                    activeDot={{ r: 8 }}
+                    activeDot={{ r: 4 }}
                   />
                 </React.Fragment>
               ))}
