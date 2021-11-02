@@ -1,13 +1,17 @@
 import { BasicTileLayer } from '../../../services/geoTools/tileLayers';
 import {
   Button,
-  Checkbox, CheckboxProps,
+  Checkbox,
+  CheckboxProps,
   DropdownProps,
   Form,
   Grid,
-  Icon, InputOnChangeData,
-  Loader, Message,
-  Segment, TextAreaProps
+  Icon,
+  InputOnChangeData,
+  Loader,
+  Message,
+  Segment,
+  TextAreaProps,
 } from 'semantic-ui-react';
 import { DatePicker } from '../../shared/uiComponents';
 import { ETimeResolution } from '../../../core/model/rtm/modelling/RTModelling.type';
@@ -27,24 +31,25 @@ import RTModelling from '../../../core/model/rtm/modelling/RTModelling';
 import React, { FormEvent, SyntheticEvent, useEffect, useState } from 'react';
 import uuid from 'uuid';
 
-const navigation = [{
-  name: 'Documentation',
-  path: 'https://inowas.com/tools/t03-modflow-model-setup-and-editor/',
-  icon: <Icon name="file" />
-}];
+const navigation = [
+  {
+    name: 'Documentation',
+    path: 'https://inowas.com/tools/t03-modflow-model-setup-and-editor/',
+    icon: <Icon name="file" />,
+  },
+];
 
 const style = {
   map: {
     height: '250px',
-    width: '100%'
-  }
+    width: '100%',
+  },
 };
 
 const CreateRealTimeModelling = () => {
   const [activeInput, setActiveInput] = useState<string>();
   const [activeValue, setActiveValue] = useState<string>('');
-  const [automaticCalculation, setAutomaticCalculation] = useState<boolean>(true);
-  const [errors, setErrors] = useState<Array<{ id: string; message: string; }>>([]);
+  const [errors, setErrors] = useState<Array<{ id: string; message: string }>>([]);
   const [description, setDescription] = useState<string>('');
   const [instanceName, setInstanceName] = useState<string>('New real time modelling');
   const [isFetching, setIsFetching] = useState<boolean>(false);
@@ -113,10 +118,10 @@ const CreateRealTimeModelling = () => {
         rtm.public = isPublic;
         rtm.data = {
           model_id: clonedModelId,
-          automatic_calculation: automaticCalculation,
+          automatic_calculation: true,
           simulated_times: [],
           start_date_time: startDateTime.toDateString(),
-          time_resolution: timeResolution
+          time_resolution: timeResolution,
         };
 
         await sendCommandAsync(createToolInstance(rtm.tool, rtm.toObject()));
@@ -140,9 +145,6 @@ const CreateRealTimeModelling = () => {
   };
 
   const handleChangeCheckbox = (e: FormEvent<HTMLInputElement>, { name }: CheckboxProps) => {
-    if (name === 'automaticCalculation') {
-      setAutomaticCalculation(!automaticCalculation);
-    }
     if (name === 'isPublic') {
       setIsPublic(!isPublic);
     }
@@ -179,10 +181,7 @@ const CreateRealTimeModelling = () => {
     return (
       <Segment>
         <p>{selectedModel.description}</p>
-        <Map
-          style={style.map}
-          bounds={model.boundingBox.getBoundsLatLng()}
-        >
+        <Map style={style.map} bounds={model.boundingBox.getBoundsLatLng()}>
           <BasicTileLayer />
           {renderAreaLayer(model.geometry)}
         </Map>
@@ -200,22 +199,20 @@ const CreateRealTimeModelling = () => {
                 <Segment>
                   <Form.Field>
                     <label>Model</label>
-                    {t03Instances &&
-                    <Form.Select
-                      options={t03Instances.map((i, key) => {
-                        return {
-                          key,
-                          value: i.id,
-                          text: i.name
-                        };
-                      })}
-                      onChange={handleChangeModel}
-                      value={selectedId}
-                    />
-                    }
-                    {isFetching &&
-                    <Loader active={true} inline="centered" />
-                    }
+                    {t03Instances && (
+                      <Form.Select
+                        options={t03Instances.map((i, key) => {
+                          return {
+                            key,
+                            value: i.id,
+                            text: i.name,
+                          };
+                        })}
+                        onChange={handleChangeModel}
+                        value={selectedId}
+                      />
+                    )}
+                    {isFetching && <Loader active={true} inline="centered" />}
                   </Form.Field>
                 </Segment>
                 {renderMap()}
@@ -255,9 +252,7 @@ const CreateRealTimeModelling = () => {
                 <Segment>
                   <Form.Select
                     label="Time resolution"
-                    options={[
-                      { key: 'daily', value: ETimeResolution.DAILY, text: 'Daily' }
-                    ]}
+                    options={[{ key: 'daily', value: ETimeResolution.DAILY, text: 'Daily' }]}
                     onChange={handleChangeResolution}
                     value={timeResolution}
                   />
@@ -267,17 +262,6 @@ const CreateRealTimeModelling = () => {
                         <Form.Field>
                           <label>Start date</label>
                           <DatePicker value={startDateTime} onChange={handleChangeStartDate} />
-                        </Form.Field>
-                      </Grid.Column>
-                      <Grid.Column width={6}>
-                        <Form.Field>
-                          <label>Automatic calculation</label>
-                          <Checkbox
-                            toggle={true}
-                            checked={automaticCalculation}
-                            name="automaticCalculation"
-                            onChange={handleChangeCheckbox}
-                          />
                         </Form.Field>
                       </Grid.Column>
                     </Grid.Row>
@@ -299,18 +283,18 @@ const CreateRealTimeModelling = () => {
                 </Segment>
               </Grid.Column>
             </Grid.Row>
-            {errors.length > 0 &&
-            <Grid.Row>
-              <Grid.Column width={16}>
-                {errors.map((error) => (
-                  <Message negative={true} key={error.id}>
-                    <Message.Header>Error</Message.Header>
-                    <p>{error.message}</p>
-                  </Message>
-                ))}
-              </Grid.Column>
-            </Grid.Row>
-            }
+            {errors.length > 0 && (
+              <Grid.Row>
+                <Grid.Column width={16}>
+                  {errors.map((error) => (
+                    <Message negative={true} key={error.id}>
+                      <Message.Header>Error</Message.Header>
+                      <p>{error.message}</p>
+                    </Message>
+                  ))}
+                </Grid.Column>
+              </Grid.Row>
+            )}
           </Grid>
         </Form>
       </Segment>
