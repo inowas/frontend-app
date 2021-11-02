@@ -190,7 +190,6 @@ class Stressperiods {
   }
 
   public addStressPeriodsByNumberOfDays(days: number[]) {
-    console.log({ days });
     const stressperiods = this.stressperiods;
     const lastSp = stressperiods[stressperiods.length - 1];
     const newStressperiods = days.map((d) => {
@@ -198,7 +197,7 @@ class Stressperiods {
         start_date_time: lastSp.startDateTime.add(d, 'days').toISOString(),
         nstp: lastSp.nstp,
         tsmult: lastSp.tsmult,
-        steady: lastSp.steady,
+        steady: lastSp.steady
       });
     });
     const s = stressperiods.concat(newStressperiods);
@@ -230,9 +229,9 @@ class Stressperiods {
   public toCsv = () => {
     let text = 'start_date_time;nstp;tsmult;steady\n';
     this.stressperiods.forEach((sp) => {
-      text += `${sp.startDateTime.format('YYYY-MM-DD')};${sp.nstp};${sp.tsmult};${sp.steady ? 1 : 0}\n`;
+      text += (`${sp.startDateTime.format('YYYY-MM-DD')};${sp.nstp};${sp.tsmult};${sp.steady ? 1 : 0}\n`);
     });
-    text += `${this.endDateTime.format('YYYY-MM-DD')};;;`;
+    text += (`${this.endDateTime.format('YYYY-MM-DD')};;;`);
     return text;
   };
 
