@@ -8,7 +8,6 @@ export interface IProps {
   rtm: Rtm;
   isDirty: boolean;
   isError: boolean;
-  onChange: (rtm: Rtm) => void;
   onChangeSelectedSensor: (sensor: Sensor | null) => void;
   onSave: (rtm: Rtm) => void;
   children: ReactNode;
