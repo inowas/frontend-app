@@ -80,10 +80,6 @@ const RtmTool = () => {
     }
   }, [history, id, property]);
 
-  const handleChange = () => {
-    console.log('CHANGE');
-  };
-
   const handleChangeSelectedParameter = (p: ISensorParameter | null) => {
     if (!p) {
       setSelectedParameter(null);
@@ -119,6 +115,7 @@ const RtmTool = () => {
 
     const cSensor = Sensor.fromObject(selectedSensor);
     cSensor.parameters = cSensor.parameters.update(p);
+    setSelectedSensor(cSensor.toObject());
 
     const cRtm = Rtm.fromObject(rtm.toObject());
     cRtm.updateSensor(cSensor);
@@ -133,10 +130,7 @@ const RtmTool = () => {
 
     setSelectedSensor(s.toObject());
 
-    let sParameter = selectedParameter;
-    if (selectedParameter && !s.parameters.findById(selectedParameter.id)) {
-      sParameter = null;
-    }
+    let sParameter = selectedParameter ? s.parameters.findById(selectedParameter.id) : null;
     if (!sParameter && s.parameters.length > 0) {
       sParameter = s.parameters.first;
     }
@@ -193,7 +187,6 @@ const RtmTool = () => {
         rtm={rtm}
         isDirty={isDirty}
         isError={false}
-        onChange={handleChange}
         onChangeSelectedSensor={handleChangeSelectedSensor}
         onSave={handleSave}
         selectedSensor={selectedSensor ? Sensor.fromObject(selectedSensor) : null}
