@@ -68,6 +68,8 @@ const ModflowModelImport = (props: RouteComponentProps) => {
       const gridSize = Array.isArray(data.discretization.grid_size)
         ? GridSize.fromArray(data.discretization.grid_size)
         : GridSize.fromObject(data.discretization.grid_size);
+      const packages = FlopyPackages.fromObject(data.packages);
+      packages.modelId = id;
       const stressperiods = Stressperiods.fromImport(data.discretization.stressperiods);
 
       const nPayload: IPayload = {
@@ -87,7 +89,7 @@ const ModflowModelImport = (props: RouteComponentProps) => {
         permissions: 'rwx',
         calculation_id: '',
         boundaries: BoundaryCollection.fromExport(data.boundaries, boundingBox, gridSize).toObject(),
-        packages: FlopyPackages.fromObject(data.packages).toObject(),
+        packages: packages.toObject(),
         soilmodel: Soilmodel.fromExport(data.soilmodel).toObject(),
         transport: Transport.fromObject(data.transport).toObject(),
         variableDensity: VariableDensity.fromObject(data.variableDensity).toObject(),
