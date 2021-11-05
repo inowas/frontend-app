@@ -16,7 +16,7 @@ const Tools = () => {
       setIsLoading(true);
       setErrorLoading(false);
       try {
-        const tools: IToolInstance[] = (await fetchApiWithToken('tools')).data;
+        const tools: IToolInstance[] = (await fetchApiWithToken('tools?tool=all')).data;
         setTools(tools);
       } catch (e) {
         setErrorLoading(true);
