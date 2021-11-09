@@ -22,6 +22,7 @@ import LayerControl, { GroupedLayer } from '../../../shared/leaflet/LayerControl
 import Rainbow from '../../../../services/rainbowvis/Rainbowvis';
 import ReactLeafletHeatMapCanvasOverlay from '../../../shared/rasterData/ReactLeafletHeatMapCanvasOverlay';
 import _ from 'lodash';
+import RasterDataImageV2 from '../../../shared/rasterData/rasterDataImageV2';
 
 interface IProps {
   children: ReactNode;
@@ -146,11 +147,11 @@ const MapWithControls = (props: TProps) => {
       zIndex: 1,
     } as IReactLeafletHeatMapProps;
 
-    return (
-      <>
-        <Pane name="back" style={{ zIndex: 499 }}>
-          <GroupedLayer name="Raster" group="Data" radio>
-            <ReactLeafletHeatMapCanvasOverlay
+    /*
+
+bounds: model.boundingBox.getBoundsLatLng(),
+
+<ReactLeafletHeatMapCanvasOverlay
               key="HEATMAP"
               nX={mapProps.nX}
               nY={mapProps.nY}
@@ -158,6 +159,20 @@ const MapWithControls = (props: TProps) => {
               bounds={mapProps.bounds}
               rainbow={mapProps.rainbow}
               sharpening={mapProps.sharpening}
+            />
+    */
+
+    return (
+      <>
+        <Pane name="back" style={{ zIndex: 499 }}>
+          <GroupedLayer name="Raster" group="Data" radio>
+            <RasterDataImageV2
+              boundingBox={model.boundingBox}
+              width={mapProps.nX}
+              height={mapProps.nY}
+              data={mapProps.data}
+              rainbow={mapProps.rainbow}
+              sharpening={mapProps.sharpening || 1}
             />
           </GroupedLayer>
           <GroupedLayer checked name="Contours" group="Data" radio>
@@ -177,49 +192,55 @@ const MapWithControls = (props: TProps) => {
   };
 
   return (
-    <MapContainer zoomControl={false} {...props}>
-      <MapConsumer>
-        {(map: Map) => {
-          map.on('click', (e: LeafletMouseEvent) => (props.onClick ? props.onClick(e) : null));
-          map.on('moveend', (e: LeafletEvent) => (props.onMoveEnd ? props.onMoveEnd(e) : null));
-          return null;
-        }}
-      </MapConsumer>
-      <BasicTileLayer />
-      {props.raster ? renderLegend(getRainbow()) : null}
-      <LayerControl events={options.events} position="topright">
-        {props.raster ? renderRaster() : null}
-        <Pane name="middle" style={{ zIndex: 500 }}>
-          {model && options.area && options.area.enabled ? (
-            <GroupedLayer checked={options.area.checked} name="Model Area" group="Discretization">
-              <GeoJSON key={model.geometry.hash()} data={model.geometry.toGeoJSON()} style={getStyle('area')} />
-            </GroupedLayer>
-          ) : null}
-          {model && options.boundingBox && options.boundingBox.enabled ? (
-            <GroupedLayer checked={options.boundingBox.checked} name="Bounding Box" group="Discretization">
-              {renderBoundingBoxLayer(model.boundingBox)}
-            </GroupedLayer>
-          ) : null}
-          {model && options.grid && options.grid.enabled ? (
-            <GroupedLayer name="Grid" group="Discretization">
-              <GridRefinement boundingBox={model.boundingBox} gridSize={model.gridSize} selectedRowsAndColumns={null} />
-            </GroupedLayer>
-          ) : null}
-          {model && options.inactiveCells && options.inactiveCells ? (
-            <GroupedAffectedCellsLayer
-              boundingBox={model.boundingBox}
-              gridSize={model.gridSize}
-              cells={model.cells}
-              rotation={{ geometry: model.geometry, angle: model.rotation }}
-            />
-          ) : null}
-          {boundaries && options.boundaries && options.boundaries.enabled
-            ? renderBoundaryOverlays(boundaries, options.boundaries?.checked)
-            : null}
-        </Pane>
-      </LayerControl>
-      {props.children}
-    </MapContainer>
+    <>
+      <MapContainer zoomControl={false} {...props}>
+        <MapConsumer>
+          {(map: Map) => {
+            map.on('click', (e: LeafletMouseEvent) => (props.onClick ? props.onClick(e) : null));
+            map.on('moveend', (e: LeafletEvent) => (props.onMoveEnd ? props.onMoveEnd(e) : null));
+            return null;
+          }}
+        </MapConsumer>
+        <BasicTileLayer />
+        {props.raster ? renderLegend(getRainbow()) : null}
+        <LayerControl events={options.events} position="topright">
+          {props.raster ? renderRaster() : null}
+          <Pane name="middle" style={{ zIndex: 500 }}>
+            {model && options.area && options.area.enabled ? (
+              <GroupedLayer checked={options.area.checked} name="Model Area" group="Discretization">
+                <GeoJSON key={model.geometry.hash()} data={model.geometry.toGeoJSON()} style={getStyle('area')} />
+              </GroupedLayer>
+            ) : null}
+            {model && options.boundingBox && options.boundingBox.enabled ? (
+              <GroupedLayer checked={options.boundingBox.checked} name="Bounding Box" group="Discretization">
+                {renderBoundingBoxLayer(model.boundingBox)}
+              </GroupedLayer>
+            ) : null}
+            {model && options.grid && options.grid.enabled ? (
+              <GroupedLayer name="Grid" group="Discretization">
+                <GridRefinement
+                  boundingBox={model.boundingBox}
+                  gridSize={model.gridSize}
+                  selectedRowsAndColumns={null}
+                />
+              </GroupedLayer>
+            ) : null}
+            {model && options.inactiveCells && options.inactiveCells ? (
+              <GroupedAffectedCellsLayer
+                boundingBox={model.boundingBox}
+                gridSize={model.gridSize}
+                cells={model.cells}
+                rotation={{ geometry: model.geometry, angle: model.rotation }}
+              />
+            ) : null}
+            {boundaries && options.boundaries && options.boundaries.enabled
+              ? renderBoundaryOverlays(boundaries, options.boundaries?.checked)
+              : null}
+          </Pane>
+        </LayerControl>
+        {props.children}
+      </MapContainer>
+    </>
   );
 };
 

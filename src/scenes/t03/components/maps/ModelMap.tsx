@@ -7,7 +7,7 @@ import { LatLngExpression } from 'leaflet';
 import { getStyle } from '../../../../services/geoTools/mapHelpers';
 import { renderAreaLayer } from './mapLayers';
 import { uniqueId } from 'lodash';
-import AffectedCellsLayer from '../../../../services/geoTools/AffectedCellsLayer';
+import AffectedCellsLayer from '../../../../services/geoTools/affectedCellsLayer';
 import BoundingBox from '../../../../core/model/geometry/BoundingBox';
 import GridSize from '../../../../core/model/geometry/GridSize';
 import React from 'react';

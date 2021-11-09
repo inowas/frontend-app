@@ -9,13 +9,13 @@ import { ICalculateCellsInputData } from '../../../../modflow/worker/t03.worker.
 import { ICells } from '../../../../../core/model/geometry/Cells.type';
 import { IGeometry } from '../../../../../core/model/geometry/Geometry.type';
 import { IMapWithControlsOptions } from '../../../../shared/leaflet/types';
-import { IRowsAndColumns, getRowsAndColumnsFromGeoJson, calculateActiveCells } from '../../../../../services/geoTools';
+import { IRowsAndColumns, getRowsAndColumnsFromGeoJson } from '../../../../../services/geoTools';
 import { addMessage } from '../../../actions/actions';
 import { asyncWorker } from '../../../../modflow/worker/worker';
 import { getCellFromClick, rotateCoordinateAroundPoint } from '../../../../../services/geoTools/getCellFromClick';
 import { messageError } from '../../../defaults/messages';
 import { useDispatch } from 'react-redux';
-import AffectedCellsLayer from '../../../../../services/geoTools/AffectedCellsLayer';
+import AffectedCellsLayer from '../../../../../services/geoTools/affectedCellsLayer';
 import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import GridRefinementPopup from './gridRefinementPopup';
 import MapWithControls from '../../maps/mapWithControls';

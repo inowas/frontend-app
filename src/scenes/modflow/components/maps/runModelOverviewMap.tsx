@@ -3,8 +3,7 @@ import { GeoJSON, MapContainer } from 'react-leaflet';
 import { ModflowModel } from '../../../../core/model/modflow';
 import { disableMap, getStyle, invalidateSize } from './index';
 import { uniqueId } from 'lodash';
-import AffectedCellsLayer from '../../../../services/geoTools/groupedAffectedCellsLayer';
-import React from 'react';
+import AffectedCellsLayer from '../../../../services/geoTools/affectedCellsLayer';
 
 interface IProps {
   model: ModflowModel;
