@@ -109,6 +109,14 @@ const SensorDatasourceEditor = (props: IProps) => {
     updateDataSource(dataSource);
   };
 
+  const handleClearEnd = () => {
+    if (!dataSource) {
+      return;
+    }
+    dataSource.end = null;
+    updateDataSource(dataSource);
+  };
+
   const handleReset = (e: MouseEvent, { name }: ButtonProps) => {
     if (!dataSource) {
       return;
@@ -303,6 +311,20 @@ const SensorDatasourceEditor = (props: IProps) => {
                         onChange={handleChangeDate}
                         size={'small'}
                       />
+                      <Form.Field>
+                        <Button
+                          basic
+                          labelPosition="left"
+                          primary={!dataSource.end}
+                          icon
+                          onClick={handleClearEnd}
+                          size="small"
+                          style={{ marginTop: '22px', width: '100px' }}
+                        >
+                          <Icon name={!dataSource.end ? 'check circle outline' : 'circle outline'} />
+                          Today
+                        </Button>
+                      </Form.Field>
                     </Form.Group>
                   </Form>
                 </Segment>

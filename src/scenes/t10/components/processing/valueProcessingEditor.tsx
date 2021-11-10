@@ -4,6 +4,7 @@ import {
   DropdownProps,
   Form,
   Grid,
+  Icon,
   InputOnChangeData,
   Label,
   Loader,
@@ -14,6 +15,7 @@ import { DataSourceCollection } from '../../../../core/model/rtm/monitoring';
 import { IValueProcessingOperator } from '../../../../core/model/rtm/processing/Processing.type';
 import { ValueProcessing } from '../../../../core/model/rtm/processing';
 import { operators } from '../../../../core/model/rtm/processing/ValueProcessing';
+import { parseDate } from '../setup/dataSources/helpers';
 import { useValueProcessing } from '../hooks/useValueProcessing';
 import DataChart from '../shared/dataChart';
 import DatePicker, { IDatePickerProps } from '../../../shared/uiComponents/DatePicker';
@@ -47,6 +49,12 @@ const ValueProcessingEditor = (props: IProps) => {
     }
   };
 
+  const handleClearEnd = () => {
+    const cProcessing = processing.toObject();
+    cProcessing.end = null;
+    updateProcessing(ValueProcessing.fromObject(cProcessing));
+  };
+
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>, { name, value }: InputOnChangeData) => {
     setActiveInput(name);
     setActiveValue(value);
@@ -71,10 +79,12 @@ const ValueProcessingEditor = (props: IProps) => {
       return;
     }
 
+    console.log(p.name, p.value);
+
     const cProcessing = processing.toObject();
     const value = moment(p.value.toDateString()).unix();
     if (p.name === 'start') {
-      cProcessing.begin = value < processing.end ? value : processing.begin;
+      cProcessing.begin = processing.end && value < processing.end ? value : processing.begin;
     }
     if (p.name === 'end') {
       cProcessing.end = value > processing.begin ? value : processing.end;
@@ -96,23 +106,39 @@ const ValueProcessingEditor = (props: IProps) => {
                     Time range
                   </Label>
                   <Form>
-                    <Form.Group widths={'equal'}>
+                    <Form.Group>
                       <DatePicker
+                        clearable={false}
                         onChange={handleBlurDate}
                         label={'Start'}
                         name="start"
-                        value={
-                          isNaN(processing.begin) ? moment.unix(0).toDate() : moment.unix(processing.begin).toDate()
-                        }
+                        value={parseDate(processing.begin)}
                         size={'small'}
                       />
+                    </Form.Group>
+                    <Form.Group>
                       <DatePicker
+                        clearable={false}
                         onChange={handleBlurDate}
                         label={'End'}
                         name="end"
-                        value={isNaN(processing.end) ? moment.utc().toDate() : moment.unix(processing.end).toDate()}
+                        value={parseDate(processing.end)}
                         size={'small'}
                       />
+                      <Form.Field>
+                        <Button
+                          basic
+                          labelPosition="left"
+                          primary={!processing.end}
+                          icon
+                          onClick={handleClearEnd}
+                          size="small"
+                          style={{ marginTop: '22px', width: '100px' }}
+                        >
+                          <Icon name={!processing.end ? 'check circle outline' : 'circle outline'} />
+                          Today
+                        </Button>
+                      </Form.Field>
                     </Form.Group>
                   </Form>
                 </Segment>
