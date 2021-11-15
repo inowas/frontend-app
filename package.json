@@ -8,7 +8,7 @@
     "@testing-library/user-event": "^13.1.9",
     "@turf/turf": "^5.1.6",
     "@types/recharts": "^1.8.21",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "d3": "^6.7.0",
     "downsample": "^1.4.0",
     "gaussian": "^1.2.0",
