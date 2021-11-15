@@ -25,7 +25,7 @@ class ValueProcessing extends GenericObject<IValueProcessing> {
     this._props.begin = value;
   }
 
-  get end(): number {
+  get end(): number | null {
     return this._props.end;
   }
 
@@ -52,7 +52,7 @@ class ValueProcessing extends GenericObject<IValueProcessing> {
   public async apply(input: IDateTimeValue[]) {
     return input
       .map((i) => {
-        if (i.timeStamp < this.begin || i.timeStamp > this.end) {
+        if (i.timeStamp < this.begin || (this.end && i.timeStamp > this.end)) {
           return i;
         }
 

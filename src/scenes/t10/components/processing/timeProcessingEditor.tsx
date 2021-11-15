@@ -15,6 +15,7 @@ import { DataSourceCollection } from '../../../../core/model/rtm/monitoring';
 import { ECutRule } from '../../../../core/model/rtm/processing/Processing.type';
 import { TimeProcessing } from '../../../../core/model/rtm/processing';
 import { methods } from '../../../../core/model/rtm/processing/TimeProcessing';
+import { parseDate } from '../setup/dataSources/helpers';
 import { useTimeProcessing } from '../hooks/useTimeProcessing';
 import DataChart from '../shared/dataChart';
 import DatePicker, { IDatePickerProps } from '../../../shared/uiComponents/DatePicker';
@@ -84,7 +85,7 @@ const TimeProcessingEditor = (props: IProps) => {
     const cProcessing = processing.toObject();
     const value = moment(p.value.toDateString()).unix();
     if (p.name === 'start') {
-      cProcessing.begin = value < processing.end ? value : processing.begin;
+      cProcessing.begin = processing.end && value < processing.end ? value : processing.begin;
     }
     if (p.name === 'end') {
       cProcessing.end = value > processing.begin ? value : processing.end;
@@ -155,9 +156,7 @@ const TimeProcessingEditor = (props: IProps) => {
                           <DatePicker
                             onChange={handleBlurDate}
                             label="Start"
-                            value={
-                              isNaN(processing.begin) ? moment.unix(0).toDate() : moment.unix(processing.begin).toDate()
-                            }
+                            value={parseDate(processing.begin)}
                             size="small"
                             name="start"
                           />
@@ -165,7 +164,7 @@ const TimeProcessingEditor = (props: IProps) => {
                             disabled={processing.cut === ECutRule.UNTIL_TODAY}
                             onChange={handleBlurDate}
                             label="End"
-                            value={isNaN(processing.end) ? moment.utc().toDate() : moment.unix(processing.end).toDate()}
+                            value={parseDate(processing.end)}
                             size="small"
                             name="end"
                           />

@@ -1,4 +1,4 @@
-import { Button, Dropdown, Grid, Header, Icon, Label, Message, Segment, Table } from 'semantic-ui-react';
+import { Button, Dropdown, Grid, Header, Icon, Label, Message, Popup, Segment, Table } from 'semantic-ui-react';
 import { DataSourceCollection, Rtm } from '../../../../core/model/rtm/monitoring';
 import { ECutRule, IProcessing } from '../../../../core/model/rtm/processing/Processing.type';
 import { ISensorParameter } from '../../../../core/model/rtm/monitoring/Sensor.type';
@@ -206,6 +206,7 @@ const Processing = (props: IProps) => {
                 <Table.Row>
                   <Table.HeaderCell>Type</Table.HeaderCell>
                   <Table.HeaderCell>Time range</Table.HeaderCell>
+                  <Table.HeaderCell />
                   <Table.HeaderCell textAlign={'center'}>Method</Table.HeaderCell>
                   <Table.HeaderCell textAlign={'center'}>Value</Table.HeaderCell>
                   <Table.HeaderCell />
@@ -223,6 +224,11 @@ const Processing = (props: IProps) => {
                       <Table.Cell>{pInst.type}</Table.Cell>
                       <Table.Cell>
                         <ProcessingTimeRange processing={pInst} />
+                      </Table.Cell>
+                      <Table.Cell>
+                        {!pInst.end && (
+                          <Popup content={'Automatic update'} trigger={<Icon name={'circle'} color={'red'} />} />
+                        )}
                       </Table.Cell>
                       <Table.Cell textAlign={'center'}>{renderMethod(pInst)}</Table.Cell>
                       <Table.Cell textAlign={'center'}>{renderValue(pInst)}</Table.Cell>
@@ -264,7 +270,7 @@ const Processing = (props: IProps) => {
               {!props.rtm.readOnly && (
                 <Table.Footer>
                   <Table.Row>
-                    <Table.HeaderCell colSpan={5}>
+                    <Table.HeaderCell colSpan={6}>
                       <Button as="div" labelPosition="left" floated={'right'}>
                         <Dropdown
                           text="Add"
