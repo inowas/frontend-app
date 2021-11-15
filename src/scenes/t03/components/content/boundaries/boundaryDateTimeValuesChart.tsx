@@ -1,16 +1,19 @@
-import { Boundary } from '../../../../../core/model/modflow/boundaries';
 import {
+  Bar,
+  BarChart,
   CartesianGrid,
   LabelFormatter,
   LabelProps,
   Legend,
   Line,
   LineChart,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from 'recharts';
+import { Boundary, WellBoundary } from '../../../../../core/model/modflow/boundaries';
 import { IPropertyValueObject } from '../../../../../core/model/types';
 import { IRootReducer } from '../../../../../reducers';
 import { Stressperiods } from '../../../../../core/model/modflow';
@@ -64,6 +67,32 @@ const BoundaryDateTimeValuesChart = (props: IProps) => {
       props.stressperiods.timeUnit
     ).format(user.settings.dateFormat);
   };
+
+  if (props.boundary instanceof WellBoundary) {
+    return (
+      <ResponsiveContainer aspect={1.5}>
+        <BarChart data={data}>
+          <XAxis dataKey="sp" domain={['dataMin', 'dataMax']} />
+          <YAxis yAxisId="left" label={getYAxisLabel(differentUnits[0], 'left')} />
+          {differentUnits.length > 1 && (
+            <YAxis label={getYAxisLabel(differentUnits[1], 'right')} yAxisId="right" orientation="right" />
+          )}
+          <CartesianGrid strokeDasharray="3 3" />
+          <Legend iconType="plainline" iconSize={30} verticalAlign="bottom" wrapperStyle={{ bottom: -10, left: 0 }} />
+          <ReferenceLine y={0} yAxisId="left" stroke="#000" />
+          <Tooltip labelFormatter={labelFormatter} />
+          {properties.map((p, k) => (
+            <Bar
+              key={md5(p.name + k)}
+              fill={distinct[k]}
+              dataKey={p.name}
+              yAxisId={p.unit === differentUnits[0] ? 'left' : 'right'}
+            />
+          ))}
+        </BarChart>
+      </ResponsiveContainer>
+    );
+  }
 
   return (
     <ResponsiveContainer aspect={1.5}>
