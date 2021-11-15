@@ -94,8 +94,8 @@ const ValueProcessingEditor = (props: IProps) => {
 
   return (
     <Modal centered={false} open={true} dimmer={'blurring'}>
-      {!props.processing && <Modal.Header>Add Time Processing</Modal.Header>}
-      {props.processing && <Modal.Header>Edit Time Processing</Modal.Header>}
+      {!props.processing && <Modal.Header>Add Value Processing</Modal.Header>}
+      {props.processing && <Modal.Header>Edit Value Processing</Modal.Header>}
       <Modal.Content>
         <Grid padded={true}>
           <React.Fragment>
