@@ -141,20 +141,16 @@ class BoundaryMap extends Component<IProps> {
     const mapOptions: IMapWithControlsOptions = {
       area: {
         checked: true,
-        enabled: true,
       },
       boundaries: {
         checked: false,
-        enabled: true,
         excluded: [boundary.type],
       },
       boundingBox: {
         checked: true,
-        enabled: true,
       },
       grid: {
         checked: false,
-        enabled: true,
       },
     };
 

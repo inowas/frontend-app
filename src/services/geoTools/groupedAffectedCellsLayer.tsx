@@ -6,9 +6,11 @@ import { GroupedLayer } from '../../scenes/shared/leaflet/LayerControl';
 import { IBoundingBox } from '../../core/model/geometry/BoundingBox.type';
 import { IRootReducer } from '../../reducers';
 import { IRotationProperties } from '../../core/model/geometry/Geometry.type';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import uuid from 'uuid';
+import { GeoJSON as LeafletGeoJSON } from 'leaflet';
+import md5 from 'md5';
 
 interface IProps {
   boundary?: Boundary;
@@ -49,8 +51,8 @@ const AffectedCellsLayer = (props: IProps) => {
   const [boundingBox, setBoundingBox] = useState<IBoundingBox>(props.boundingBox.toObject());
   const [boundaryLayer, setBoundaryLayer] = useState();
   const [boundaryLayers, setBoundaryLayers] = useState<any>();
-  const [boundaryKey, setBoundaryKey] = useState<string>(uuid.v4());
-  const [iBoundKey, setIBoundKey] = useState<string>(uuid.v4());
+
+  const iBoundLayerRef = useRef<LeafletGeoJSON | null>(null);
 
   const T03 = useSelector((state: IRootReducer) => state.T03);
   const boundaries = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
@@ -74,6 +76,8 @@ const AffectedCellsLayer = (props: IProps) => {
       styles.inactive
     );
 
+    console.log('POLYGON');
+
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore Todo
     setIBoundLayer(polygon);
@@ -96,14 +100,6 @@ const AffectedCellsLayer = (props: IProps) => {
   }, [props.boundary]);
 
   useEffect(() => {
-    setBoundaryKey(uuid.v4());
-  }, [boundaryLayer]);
-
-  useEffect(() => {
-    setIBoundKey(uuid.v4());
-  }, [iBoundLayer]);
-
-  useEffect(() => {
     if (!props.boundary || !T03.boundaries || !boundaries) {
       return;
     }
@@ -112,9 +108,7 @@ const AffectedCellsLayer = (props: IProps) => {
     );
     setBoundaryLayers(
       sameTypeBoundaries.length > 0
-        ? sameTypeBoundaries.map((b, key) =>
-            createPolygon(props.boundingBox, props.gridSize, b.cells, styles.other, key)
-          )
+        ? sameTypeBoundaries.map((b, key) => createPolygon(props.boundingBox, props.gridSize, b.cells, styles.other))
         : null
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -124,7 +118,7 @@ const AffectedCellsLayer = (props: IProps) => {
     return null;
   }
 
-  const createPolygon = (bbox: BoundingBox, gridSize: GridSize, cells: Cells, style: any, key?: number) => {
+  const createPolygon = (bbox: BoundingBox, gridSize: GridSize, cells: Cells, style: any) => {
     const mergedCells: Array<[number, number, number, number]> = [];
     const grid = cells.calculateIBound(gridSize.nY, gridSize.nX);
 
@@ -207,14 +201,42 @@ const AffectedCellsLayer = (props: IProps) => {
     }
 
     const geometry = Geometry.fromGeoJson(turfPolygon.geometry);
-    return <GeoJSON key={key} data={geometry} {...style} />;
+
+    console.log('LAYERS', iBoundLayerRef.current);
+
+    const layer = iBoundLayerRef.current;
+    if (layer) {
+      layer.clearLayers().addData(geometry);
+      layer.setStyle(style);
+    }
+
+    //return <GeoJSON key={md5(JSON.stringify(geometry))} data={geometry} {...style} />;
   };
+
+  /* useEffect(() => {
+    const layer = geoJsonLayerRef.current;
+    if (layer) {
+      layer.clearLayers().addData(props.data);
+      // clearLayers() seems to remove the `pathOptions`, `style` and `interactive` prop as well
+      // Resetting it here
+      if (props.pathOptions) {
+        layer.setStyle(props.pathOptions);
+      } else if (props.style) {
+        layer.setStyle(props.style);
+      }
+    }
+  }, [props.data, props.pathOptions, props.style]);*/
+
+  console.log('iBound', iBoundLayerRef);
 
   return (
     <>
+      <GroupedLayer checked name="Inactive cells" group="Discretization">
+        <GeoJSON ref={iBoundLayerRef} data={props.boundingBox.geoJson} />
+      </GroupedLayer>
       {!!iBoundLayer && (
         <GroupedLayer checked name="Inactive cells" group="Discretization">
-          {iBoundLayer}
+          <GeoJSON ref={iBoundLayerRef} data={props.boundingBox.geoJson} />
         </GroupedLayer>
       )}
       {!!boundaryLayer && (

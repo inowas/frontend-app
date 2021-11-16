@@ -5,11 +5,11 @@ import { BoundaryFactory } from '../../../../core/model/modflow/boundaries';
 import { ColorLegend } from '../../../shared/rasterData';
 import { FlopyModflowMfbas } from '../../../../core/model/flopy/packages/mf';
 import { FlopyPackages } from '../../../../core/model/flopy';
-import { GeoJSON, MapConsumer, MapContainer, MapContainerProps, Pane } from 'react-leaflet';
+import { GeoJSON, MapContainer, MapContainerProps, Pane, useMapEvents } from 'react-leaflet';
 import { IMapWithControlsOptions } from '../../../shared/leaflet/types';
 import { IReactLeafletHeatMapProps } from '../../../shared/rasterData/ReactLeafletHeatMapCanvasOverlay.type';
 import { IRootReducer } from '../../../../reducers';
-import { LeafletEvent, LeafletMouseEvent, Map } from 'leaflet';
+import { LeafletEvent, LeafletMouseEvent } from 'leaflet';
 import { ReactNode } from 'react';
 import { createGridData, rainbowFactory } from '../../../shared/rasterData/helpers';
 import { getStyle } from '../../../../services/geoTools/mapHelpers';
@@ -18,11 +18,13 @@ import { useSelector } from 'react-redux';
 import ContourLayer from '../../../shared/rasterData/contourLayer';
 import GridRefinement from '../content/discretization/gridRefinement';
 import GroupedAffectedCellsLayer from '../../../../services/geoTools/groupedAffectedCellsLayer';
+import IBoundLayer from '../../../../services/geoTools/iBoundLayer';
 import LayerControl, { GroupedLayer } from '../../../shared/leaflet/LayerControl';
 import Rainbow from '../../../../services/rainbowvis/Rainbowvis';
+import RasterDataImageV2 from '../../../shared/rasterData/rasterDataImageV2';
 import ReactLeafletHeatMapCanvasOverlay from '../../../shared/rasterData/ReactLeafletHeatMapCanvasOverlay';
 import _ from 'lodash';
-import RasterDataImageV2 from '../../../shared/rasterData/rasterDataImageV2';
+import uuid from 'uuid';
 
 interface IProps {
   children: ReactNode;
@@ -37,26 +39,14 @@ type TProps = IProps & MapContainerProps;
 const defaultOptions: IMapWithControlsOptions = {
   area: {
     checked: true,
-    enabled: true,
   },
   boundaries: {
     checked: false,
-    enabled: true,
     excluded: [],
-  },
-  boundingBox: {
-    checked: false,
-    enabled: false,
   },
   fullScreenControl: true,
   grid: {
     checked: true,
-    enabled: true,
-  },
-  raster: {
-    enabled: false,
-    layer: 0,
-    quantile: 1,
   },
 };
 
@@ -117,7 +107,7 @@ const MapWithControls = (props: TProps) => {
   };
 
   const renderRaster = () => {
-    if (!model || !props.raster || !options.raster || !options.raster.enabled) {
+    if (!model || !props.raster || !options.raster) {
       return null;
     }
 
@@ -191,32 +181,34 @@ bounds: model.boundingBox.getBoundsLatLng(),
     );
   };
 
+  const MapEvents = () => {
+    useMapEvents({
+      click: (e: LeafletMouseEvent) => (props.onClick ? props.onClick(e) : null),
+      moveend: (e: LeafletEvent) => (props.onMoveEnd ? props.onMoveEnd(e) : null),
+    });
+    return null;
+  };
+
   return (
     <>
-      <MapContainer zoomControl={false} {...props}>
-        <MapConsumer>
-          {(map: Map) => {
-            map.on('click', (e: LeafletMouseEvent) => (props.onClick ? props.onClick(e) : null));
-            map.on('moveend', (e: LeafletEvent) => (props.onMoveEnd ? props.onMoveEnd(e) : null));
-            return null;
-          }}
-        </MapConsumer>
+      <MapContainer tap={false} zoomControl={false} {...props}>
+        <MapEvents />
         <BasicTileLayer />
         {props.raster ? renderLegend(getRainbow()) : null}
         <LayerControl events={options.events} position="topright">
           {props.raster ? renderRaster() : null}
           <Pane name="middle" style={{ zIndex: 500 }}>
-            {model && options.area && options.area.enabled ? (
+            {model && options.area ? (
               <GroupedLayer checked={options.area.checked} name="Model Area" group="Discretization">
                 <GeoJSON key={model.geometry.hash()} data={model.geometry.toGeoJSON()} style={getStyle('area')} />
               </GroupedLayer>
             ) : null}
-            {model && options.boundingBox && options.boundingBox.enabled ? (
+            {model && options.boundingBox ? (
               <GroupedLayer checked={options.boundingBox.checked} name="Bounding Box" group="Discretization">
                 {renderBoundingBoxLayer(model.boundingBox)}
               </GroupedLayer>
             ) : null}
-            {model && options.grid && options.grid.enabled ? (
+            {model && options.grid ? (
               <GroupedLayer name="Grid" group="Discretization">
                 <GridRefinement
                   boundingBox={model.boundingBox}
@@ -226,16 +218,14 @@ bounds: model.boundingBox.getBoundsLatLng(),
               </GroupedLayer>
             ) : null}
             {model && options.inactiveCells && options.inactiveCells ? (
-              <GroupedAffectedCellsLayer
+              <IBoundLayer
                 boundingBox={model.boundingBox}
                 gridSize={model.gridSize}
-                cells={model.cells}
+                cells={options.inactiveCells.state || model.cells}
                 rotation={{ geometry: model.geometry, angle: model.rotation }}
               />
             ) : null}
-            {boundaries && options.boundaries && options.boundaries.enabled
-              ? renderBoundaryOverlays(boundaries, options.boundaries?.checked)
-              : null}
+            {boundaries && options.boundaries ? renderBoundaryOverlays(boundaries, options.boundaries?.checked) : null}
           </Pane>
         </LayerControl>
         {props.children}

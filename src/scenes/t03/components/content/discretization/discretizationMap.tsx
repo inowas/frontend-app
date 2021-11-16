@@ -15,7 +15,6 @@ import { asyncWorker } from '../../../../modflow/worker/worker';
 import { getCellFromClick, rotateCoordinateAroundPoint } from '../../../../../services/geoTools/getCellFromClick';
 import { messageError } from '../../../defaults/messages';
 import { useDispatch } from 'react-redux';
-import AffectedCellsLayer from '../../../../../services/geoTools/affectedCellsLayer';
 import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import GridRefinementPopup from './gridRefinementPopup';
 import MapWithControls from '../../maps/mapWithControls';
@@ -207,40 +206,29 @@ const DiscretizationMap = (props: IProps) => {
 
   const handleToggleDrawing = (m: string) => () => setMode(m);
 
-  const renderActiveCellsLayer = () => {
-    if (!props.cells) {
-      return null;
-    }
-    if (props.geometry && props.rotation && props.rotation % 360 !== 0) {
-      return (
-        <AffectedCellsLayer
-          boundingBox={props.boundingBox}
-          gridSize={props.gridSize}
-          cells={props.cells}
-          rotation={{ geometry: props.geometry, angle: props.rotation }}
-        />
-      );
-    }
-    return <AffectedCellsLayer boundingBox={props.boundingBox} gridSize={props.gridSize} cells={props.cells} />;
-  };
-
   const mapOptions: IMapWithControlsOptions = {
     area: {
-      enabled: false,
+      checked: false,
     },
-    boundaries: {
-      checked: true,
-      enabled: props.boundaries.length > 0,
-      excluded: [],
-    },
+    boundaries:
+      props.boundaries.length > 0
+        ? {
+            checked: true,
+            excluded: [],
+          }
+        : undefined,
     boundingBox: {
       checked: true,
-      enabled: true,
     },
     fullScreenControl: true,
-    grid: {
-      checked: mode === 'refinement',
-      enabled: !!props.cells,
+    grid: props.cells
+      ? {
+          checked: mode === 'refinement',
+        }
+      : undefined,
+    inactiveCells: {
+      checked: true,
+      state: props.cells || undefined,
     },
   };
 
@@ -301,7 +289,6 @@ const DiscretizationMap = (props: IProps) => {
                 />
               )}
             </FeatureGroup>
-            {mode !== 'refinement' && renderActiveCellsLayer()}
           </>
         )}
       </MapWithControls>

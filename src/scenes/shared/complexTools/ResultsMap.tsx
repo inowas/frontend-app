@@ -172,11 +172,9 @@ const ResultsMap = (props: IProps) => {
   const options: IMapWithControlsOptions = {
     boundingBox: {
       checked: true,
-      enabled: true,
     },
     raster: {
       colors: props.colors || ['#800080', '#ff2200', '#fcff00', '#45ff8e', '#15d6ff', '#0000FF'],
-      enabled: true,
       globalMinMax: props.globalMinMax,
       layer: 0,
       quantile: 1,
