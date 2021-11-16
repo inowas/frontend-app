@@ -10,6 +10,7 @@ import {
   ReferenceLine,
   ResponsiveContainer,
   Tooltip,
+  TooltipFormatter,
   XAxis,
   YAxis,
 } from 'recharts';
@@ -68,6 +69,14 @@ const BoundaryDateTimeValuesChart = (props: IProps) => {
     ).format(user.settings.dateFormat);
   };
 
+  const tooltipFormatter: TooltipFormatter = (value, name) => {
+    const p = properties.filter((prop) => prop.name === name);
+    if (p.length > 0) {
+      return `${value} ${p[0].unit}`;
+    }
+    return `${value} ${name}`;
+  };
+
   if (props.boundary instanceof WellBoundary) {
     return (
       <ResponsiveContainer aspect={1.5}>
@@ -80,7 +89,7 @@ const BoundaryDateTimeValuesChart = (props: IProps) => {
           <CartesianGrid strokeDasharray="3 3" />
           <Legend iconType="plainline" iconSize={30} verticalAlign="bottom" wrapperStyle={{ bottom: -10, left: 0 }} />
           <ReferenceLine y={0} yAxisId="left" stroke="#000" />
-          <Tooltip labelFormatter={labelFormatter} />
+          <Tooltip labelFormatter={labelFormatter} formatter={tooltipFormatter} />
           {properties.map((p, k) => (
             <Bar
               key={md5(p.name + k)}
@@ -104,11 +113,11 @@ const BoundaryDateTimeValuesChart = (props: IProps) => {
         )}
         <CartesianGrid strokeDasharray="3 3" />
         <Legend iconType="plainline" iconSize={30} verticalAlign="bottom" wrapperStyle={{ bottom: -10, left: 0 }} />
-        <Tooltip labelFormatter={labelFormatter} />
+        <Tooltip labelFormatter={labelFormatter} formatter={tooltipFormatter} />
         {properties.map((p, k) => (
           <Line
             key={md5(p.name + k)}
-            type="monotone"
+            type="linear"
             dataKey={p.name}
             dot={false}
             stroke={distinct[k]}
