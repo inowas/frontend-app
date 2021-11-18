@@ -1,10 +1,11 @@
 import { AdvancedCsvUpload } from '../../../../shared/upload';
 import { Boundary, FlowAndHeadBoundary, HeadObservationWell } from '../../../../../core/model/modflow/boundaries';
 import { Button, Checkbox, Icon, Input, InputOnChangeData, Table } from 'semantic-ui-react';
+import { ChangeEvent, useState } from 'react';
 import { ISpValues } from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import { Stressperiods } from '../../../../../core/model/modflow';
 import { cloneDeep } from 'lodash';
-import React, { ChangeEvent, useState } from 'react';
+import BoundaryDateTimeImporter from './boundaryDateTimeImporter';
 import moment, { DurationInputArg1, DurationInputArg2 } from 'moment';
 
 interface IActiveInput {
@@ -222,17 +223,18 @@ const BoundaryDateTimeValuesDataTable = (props: IProps) => {
       {!props.readOnly && (
         <p style={{ marginTop: '10px' }}>
           <b>Time dependent boundary values{boundary instanceof FlowAndHeadBoundary ? ' observation point' : ''}</b>
-          <Button
-            icon={true}
-            labelPosition="left"
-            onClick={handleToggleUploadModal}
-            primary={true}
-            floated="right"
-            size="mini"
-          >
-            <Icon name="upload" />
-            Upload csv
-          </Button>
+          <Button.Group floated="right" size="mini">
+            <Button icon={true} labelPosition="left" onClick={handleToggleUploadModal} primary={true}>
+              <Icon name="upload" />
+              Upload csv
+            </Button>
+            <BoundaryDateTimeImporter
+              boundary={boundary}
+              onChange={props.onChange}
+              selectedOP={props.selectedOP}
+              stressPeriods={props.stressperiods}
+            />
+          </Button.Group>
         </p>
       )}
       <Table size={'small'} singleLine={true}>
