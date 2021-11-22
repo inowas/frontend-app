@@ -228,12 +228,14 @@ const BoundaryDateTimeValuesDataTable = (props: IProps) => {
               <Icon name="upload" />
               Upload csv
             </Button>
-            <BoundaryDateTimeImporter
-              boundary={boundary}
-              onChange={props.onChange}
-              selectedOP={props.selectedOP}
-              stressPeriods={props.stressperiods}
-            />
+            {boundary instanceof HeadObservationWell && (
+              <BoundaryDateTimeImporter
+                boundary={boundary}
+                onChange={props.onChange}
+                selectedOP={props.selectedOP}
+                stressPeriods={props.stressperiods}
+              />
+            )}
           </Button.Group>
         </p>
       )}

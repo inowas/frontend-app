@@ -1,6 +1,7 @@
 import {
   Boundary,
   BoundaryFactory,
+  FlowAndHeadBoundary,
   HeadObservationWell,
   WellBoundary,
 } from '../../../../../core/model/modflow/boundaries';
@@ -13,8 +14,8 @@ import { IValueProperty } from '../../../../../core/model/modflow/boundaries/Bou
 import { ProcessingCollection } from '../../../../../core/model/rtm/processing';
 import { Stressperiods } from '../../../../../core/model/modflow';
 import { SyntheticEvent, useEffect, useState } from 'react';
+import { cloneDeep, uniqBy } from 'lodash';
 import { fetchApiWithToken } from '../../../../../services/api';
-import { uniqBy } from 'lodash';
 import BoundaryDateTimeValuesPreviewChart from './boundaryDateTimeValuesPreviewChart';
 import DatePicker, { IDatePickerProps } from '../../../../shared/uiComponents/DatePicker';
 import moment from 'moment';
@@ -49,7 +50,7 @@ const BoundaryDateTimeImporter = (props: IProps) => {
         const tools = uniqBy(privateT10Tools.concat(publicT10Tools), (t: IToolInstance) => t.id);
         setT10Instances(tools);
       } catch (err) {
-        setErrors([{ id: uuid.v4(), message: 'Fetching t10 instances failed.' }]);
+        setErrors([{ id: uuid.v4(), message: 'Fetching t10 instances failed. Refresh the website and try again!' }]);
       } finally {
         setIsFetching(false);
       }
@@ -67,14 +68,14 @@ const BoundaryDateTimeImporter = (props: IProps) => {
       setData(null);
       setSelectedInstance(Rtm.fromObject(i).toObject());
     } catch (err) {
-      setErrors([{ id: uuid.v4(), message: 'Fetching t10 instances failed.' }]);
+      setErrors([{ id: uuid.v4(), message: 'Fetching Real Time Monitoring failed.' }]);
     } finally {
       setIsFetching(false);
     }
   };
 
   const handleChangeDate = (e: SyntheticEvent<Element>, { name, value }: IDatePickerProps) => {
-    if (!domain || !value) {
+    if (!domain || !value || isFetching) {
       return null;
     }
     if (name === 'begin') {
@@ -123,17 +124,44 @@ const BoundaryDateTimeImporter = (props: IProps) => {
       return null;
     }
     const cBoundary = BoundaryFactory.fromObject(props.boundary.toObject());
+    const keyOfParameter = cBoundary.valueProperties.findIndex((vp) => vp.name === parameter.name);
 
     if (cBoundary instanceof HeadObservationWell) {
       cBoundary.dateTimes = data.map((row) => moment.unix(row.timeStamp));
       cBoundary.setSpValues(data.map((row) => [row.value]));
     }
 
+    if (cBoundary instanceof FlowAndHeadBoundary) {
+      //TODO
+      throw new Error('Sensor import for FlowAndHeadBoundary has not been implemented yet.');
+    }
+
+    if (
+      props.stressPeriods &&
+      !(cBoundary instanceof HeadObservationWell) &&
+      !(cBoundary instanceof FlowAndHeadBoundary)
+    ) {
+      const spValues: number[][] = [];
+      const s = cloneDeep(cBoundary.getSpValues(props.stressPeriods, props.selectedOP));
+      props.stressPeriods.stressperiods.forEach((sp, spKey) => {
+        const unix = sp.startDateTime.unix();
+        if (s.length > spKey) {
+          const v = cloneDeep(s)[spKey];
+          const filteredData = data.filter((row) => row.timeStamp === sp.startDateTime.unix());
+          if (filteredData.length > 0 && (!domain || (domain && unix >= domain[0] && unix <= domain[1]))) {
+            v[keyOfParameter] = filteredData[0].value;
+          }
+          spValues.push(v);
+        }
+      });
+      cBoundary.setSpValues(spValues, props.selectedOP);
+    }
+
     props.onChange(cBoundary);
     setShowModal(false);
   };
 
-  const handleResetDomain = () => (data ? resetDomain(data) : null);
+  const handleResetDomain = () => (data && !isFetching ? resetDomain(data) : null);
 
   const resetDomain = (d: IDateTimeValue[]) => {
     if (!d) {
@@ -173,6 +201,7 @@ const BoundaryDateTimeImporter = (props: IProps) => {
             <Form.Select
               fluid
               label="T10 Instance"
+              loading={isFetching}
               selection
               options={t10Instances.map((i, key) => {
                 return {
@@ -190,6 +219,7 @@ const BoundaryDateTimeImporter = (props: IProps) => {
             <Form.Select
               fluid
               label="Sensor"
+              loading={isFetching}
               selection
               options={selectedInstance.data.sensors.map((s, key) => {
                 return {
@@ -207,6 +237,7 @@ const BoundaryDateTimeImporter = (props: IProps) => {
             <Form.Select
               fluid
               label="Parameter"
+              loading={isFetching}
               selection
               options={selectedSensor.parameters.map((p, key) => {
                 return {
@@ -261,6 +292,7 @@ const BoundaryDateTimeImporter = (props: IProps) => {
             <BoundaryDateTimeValuesPreviewChart
               data={data}
               domain={domain}
+              stressPeriods={props.stressPeriods}
               type={props.boundary instanceof WellBoundary ? 'bar' : 'line'}
             />
           </Segment>

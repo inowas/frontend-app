@@ -14,6 +14,7 @@ import {
 import { IDateTimeValue } from '../../../../../core/model/rtm/monitoring/Sensor.type';
 import { IRootReducer } from '../../../../../reducers';
 import { IValueProperty } from '../../../../../core/model/modflow/boundaries/Boundary.type';
+import { Stressperiods } from '../../../../../core/model/modflow';
 import { distinct } from '../../../../modflow/defaults/colorScales';
 import { useSelector } from 'react-redux';
 import md5 from 'md5';
@@ -22,6 +23,7 @@ import moment from 'moment';
 interface IProps {
   data: IDateTimeValue[];
   domain?: [number, number];
+  stressPeriods?: Stressperiods;
   type: 'line' | 'bar';
 }
 
@@ -62,10 +64,13 @@ const BoundaryDateTimeValuesPreviewChart = (props: IProps) => {
         <BarChart data={filteredData}>
           <XAxis dataKey="timeStamp" tickFormatter={(dt) => moment.unix(dt).utc().format(user.settings.dateFormat)} />
           <YAxis domain={['dataMin', 'dataMax']} />
-          <ReferenceLine y={0} yAxisId="left" stroke="#000" />
+          <ReferenceLine y={0} stroke="#000" />
           <Tooltip labelFormatter={labelFormatter} formatter={tooltipFormatter} />
           {properties.map((p, k) => (
             <Bar key={md5(p.name + k)} fill={distinct[k]} dataKey={p.name} />
+          ))}
+          {props.stressPeriods?.stressperiods.map((sp, k) => (
+            <ReferenceLine key={`sp_${k}`} x={sp.startDateTime.unix()} stroke="green" label={`SP ${k + 1}`} />
           ))}
         </BarChart>
       </ResponsiveContainer>
@@ -87,6 +92,9 @@ const BoundaryDateTimeValuesPreviewChart = (props: IProps) => {
             stroke={distinct[k]}
             activeDot={{ r: 8 }}
           />
+        ))}
+        {props.stressPeriods?.stressperiods.map((sp, k) => (
+          <ReferenceLine key={`sp_${k}`} x={sp.startDateTime.unix()} stroke="green" label={`SP ${k + 1}`} />
         ))}
       </LineChart>
     </ResponsiveContainer>
