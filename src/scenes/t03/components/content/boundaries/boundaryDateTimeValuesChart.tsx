@@ -113,11 +113,11 @@ const BoundaryDateTimeValuesChart = (props: IProps) => {
         )}
         <CartesianGrid strokeDasharray="3 3" />
         <Legend iconType="plainline" iconSize={30} verticalAlign="bottom" wrapperStyle={{ bottom: -10, left: 0 }} />
-        <Tooltip labelFormatter={labelFormatter} formatter={tooltipFormatter} />
+        <Tooltip labelFormatter={labelFormatter} />
         {properties.map((p, k) => (
           <Line
             key={md5(p.name + k)}
-            type="linear"
+            type="monotone"
             dataKey={p.name}
             dot={false}
             stroke={distinct[k]}

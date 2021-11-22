@@ -1,11 +1,12 @@
-import {AdvancedCsvUpload} from '../../../../shared/upload';
-import {Boundary, LineBoundary} from '../../../../../core/model/modflow/boundaries';
-import {Button, Icon, Input, Message, Pagination, PaginationProps, Table} from 'semantic-ui-react';
-import {ISpValues} from '../../../../../core/model/modflow/boundaries/Boundary.type';
-import {Stressperiods} from '../../../../../core/model/modflow';
-import {cloneDeep} from 'lodash';
+import { AdvancedCsvUpload } from '../../../../shared/upload';
+import { Boundary, LineBoundary } from '../../../../../core/model/modflow/boundaries';
+import { Button, Icon, Input, Message, Pagination, PaginationProps, Table } from 'semantic-ui-react';
+import { ChangeEvent, MouseEvent, useState } from 'react';
+import { ISpValues } from '../../../../../core/model/modflow/boundaries/Boundary.type';
+import { Stressperiods } from '../../../../../core/model/modflow';
+import { cloneDeep } from 'lodash';
+import BoundaryDateTimeImporter from './boundaryDateTimeImporter';
 import CalculationModal from './calculationModal';
-import React, {ChangeEvent, MouseEvent, useState} from 'react';
 import moment from 'moment';
 
 interface IActiveInput {
@@ -31,7 +32,7 @@ const BoundaryValuesDataTable = (props: IProps) => {
   const [showUploadModal, setShowUploadModal] = useState<boolean>(false);
   const [showCalculationModal, setShowCalculationModal] = useState<boolean>(false);
 
-  const {boundary, selectedOP} = props;
+  const { boundary, selectedOP } = props;
 
   const getSpValues = () => {
     if (boundary instanceof LineBoundary) {
@@ -46,33 +47,35 @@ const BoundaryValuesDataTable = (props: IProps) => {
 
   const handleToggleCalculationModal = () => setShowCalculationModal(!showCalculationModal);
 
-  const handleChangePagination = (e: MouseEvent, {activePage}: PaginationProps) =>
+  const handleChangePagination = (e: MouseEvent, { activePage }: PaginationProps) =>
     setPaginationPage(typeof activePage === 'number' ? activePage : 1);
 
-  const handleLocalChange = (row: number, col: number) => (e: ChangeEvent<HTMLInputElement>) => setActiveInput({
-    col,
-    name: e.target.name,
-    row,
-    value: e.target.value
-  });
+  const handleLocalChange = (row: number, col: number) => (e: ChangeEvent<HTMLInputElement>) =>
+    setActiveInput({
+      col,
+      name: e.target.name,
+      row,
+      value: e.target.value,
+    });
 
   const handleSpValuesChange = () => {
     if (!activeInput) {
       return;
     }
-    const {value, row, col} = activeInput;
+    const { value, row, col } = activeInput;
     setActiveInput(null);
 
     if (spValues) {
-      const updatedSpValues = Boundary.mergeStressperiodsWithSpValues(props.stressperiods, spValues)
-        .map((spv, spvIdx) => {
+      const updatedSpValues = Boundary.mergeStressperiodsWithSpValues(props.stressperiods, spValues).map(
+        (spv, spvIdx) => {
           const newRow = cloneDeep(spv);
           if (row === spvIdx) {
             newRow[col] = parseFloat(value) || 0;
             return newRow;
           }
           return newRow;
-        });
+        }
+      );
       boundary.setSpValues(updatedSpValues as ISpValues, selectedOP);
     }
     return props.onChange(boundary);
@@ -80,8 +83,10 @@ const BoundaryValuesDataTable = (props: IProps) => {
 
   const handleImportCsv = (data: any[][]) => {
     if (spValues && data.length !== spValues.length) {
-      setError('Number of rows in file must be equal to number of stressperiods, when assigning by keys. ' +
-        'Try to assign rows by datetime.');
+      setError(
+        'Number of rows in file must be equal to number of stressperiods, when assigning by keys. ' +
+          'Try to assign rows by datetime.'
+      );
       return null;
     }
     if (spValues) {
@@ -100,25 +105,25 @@ const BoundaryValuesDataTable = (props: IProps) => {
         return {
           maxWidth: '130px',
           padding: 0,
-          border: 0
+          border: 0,
         };
       case 3:
         return {
           maxWidth: '130px',
           padding: 0,
-          border: 0
+          border: 0,
         };
       default:
         return {
           maxWidth: '150px',
           padding: 0,
-          border: 0
+          border: 0,
         };
     }
   };
 
   const body = () => {
-    const {stressperiods} = props;
+    const { stressperiods } = props;
 
     const dateTimes = stressperiods.dateTimes;
 
@@ -156,8 +161,11 @@ const BoundaryValuesDataTable = (props: IProps) => {
               onBlur={handleSpValuesChange}
               onChange={handleLocalChange(startingIndex + spIdx, vIdx)}
               type={'number'}
-              value={activeInput && activeInput.col === vIdx &&
-              activeInput.row === (startingIndex + spIdx) ? activeInput.value : v}
+              value={
+                activeInput && activeInput.col === vIdx && activeInput.row === startingIndex + spIdx
+                  ? activeInput.value
+                  : v
+              }
             />
           </Table.Cell>
         ))}
@@ -167,62 +175,70 @@ const BoundaryValuesDataTable = (props: IProps) => {
 
   return (
     <div>
-      {showUploadModal &&
-      <AdvancedCsvUpload
-        columns={
-          boundary.valueProperties.map((p, key) => {
+      {showUploadModal && (
+        <AdvancedCsvUpload
+          columns={boundary.valueProperties.map((p, key) => {
             return {
               key: key + 1,
               value: p.name.toLowerCase(),
-              text: p.name
+              text: p.name,
             };
-          })
-        }
-        fixedDateTimes={props.stressperiods.dateTimes}
-        onCancel={handleToggleUploadModal}
-        onSave={handleImportCsv}
-        useDateTimes={false}
-      />
-      }
-      {showCalculationModal && spValues &&
-      <CalculationModal
-        onCancel={handleToggleCalculationModal}
-        onSave={() => null}
-        spValues={spValues}
-        valueProperties={boundary.valueProperties}
-      />
-      }
-      {!props.readOnly &&
-      <p style={{marginTop: '10px'}}>
-        <b>Time dependent boundary values{boundary instanceof LineBoundary ? ' observation point' : ''}</b>
-        <Button
-          icon={true}
-          labelPosition="left"
-          onClick={handleToggleUploadModal}
-          primary={true}
-          floated="right"
-          size="mini"
-        >
-          <Icon name="upload"/>
-          Upload csv
-        </Button>
-      </p>
-      }
+          })}
+          fixedDateTimes={props.stressperiods.dateTimes}
+          onCancel={handleToggleUploadModal}
+          onSave={handleImportCsv}
+          useDateTimes={false}
+        />
+      )}
+      {showCalculationModal && spValues && (
+        <CalculationModal
+          onCancel={handleToggleCalculationModal}
+          onSave={() => null}
+          spValues={spValues}
+          valueProperties={boundary.valueProperties}
+        />
+      )}
+      {!props.readOnly && (
+        <p style={{ marginTop: '10px' }}>
+          <b>Time dependent boundary values{boundary instanceof LineBoundary ? ' observation point' : ''}</b>
+          <Button.Group floated="right" size="mini">
+            <Button
+              icon={true}
+              labelPosition="left"
+              onClick={handleToggleUploadModal}
+              primary={true}
+              floated="right"
+              size="mini"
+            >
+              <Icon name="upload" />
+              Upload csv
+            </Button>
+            <BoundaryDateTimeImporter
+              boundary={boundary}
+              onChange={props.onChange}
+              selectedOP={props.selectedOP}
+              stressPeriods={props.stressperiods}
+            />
+          </Button.Group>
+        </p>
+      )}
       {error && <Message error>{error}</Message>}
-      {spValues && spValues.length > 20 &&
-      <Pagination
-        activePage={paginationPage}
-        onPageChange={handleChangePagination}
-        size="mini"
-        totalPages={Math.ceil(spValues.length / stressperiodsPerPage)}
-      />
-      }
+      {spValues && spValues.length > 20 && (
+        <Pagination
+          activePage={paginationPage}
+          onPageChange={handleChangePagination}
+          size="mini"
+          totalPages={Math.ceil(spValues.length / stressperiodsPerPage)}
+        />
+      )}
       <Table size={'small'} singleLine={true}>
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell>Start Date</Table.HeaderCell>
             {boundary.valueProperties.map((p, idx) => (
-              <Table.HeaderCell key={idx}>{p.name} ({p.unit})</Table.HeaderCell>
+              <Table.HeaderCell key={idx}>
+                {p.name} ({p.unit})
+              </Table.HeaderCell>
             ))}
           </Table.Row>
         </Table.Header>
