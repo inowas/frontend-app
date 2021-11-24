@@ -1,6 +1,6 @@
 import { AdvancedCsvUpload } from '../../../../shared/upload';
 import { Boundary, LineBoundary } from '../../../../../core/model/modflow/boundaries';
-import { Button, Icon, Input, InputProps, Message, Pagination, PaginationProps, Table } from 'semantic-ui-react';
+import { Button, Icon, Input, InputProps, Label, Message, Pagination, PaginationProps, Table } from 'semantic-ui-react';
 import { ChangeEvent, FormEvent, MouseEvent, useState } from 'react';
 import { ISpValues } from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import { Stressperiods } from '../../../../../core/model/modflow';
@@ -60,10 +60,12 @@ const BoundaryValuesDataTable = (props: IProps) => {
       row[id] += (row[id] * parseFloat(activeInput.value)) / 100;
       return row;
     });
-    boundary.setSpValues(cSpValues as ISpValues, selectedOP);
 
-    setActiveInput(null);
-    return props.onChange(boundary);
+    if (cSpValues) {
+      boundary.setSpValues(cSpValues as ISpValues, selectedOP);
+      setActiveInput(null);
+      return props.onChange(boundary);
+    }
   };
 
   const handleChangePercentage = (e: FormEvent<HTMLInputElement>, { name, value }: InputProps) =>
@@ -262,9 +264,11 @@ const BoundaryValuesDataTable = (props: IProps) => {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {props.isScenario && (
+          {props.isScenario && !props.readOnly && (
             <Table.Row>
-              <Table.Cell>% Change</Table.Cell>
+              <Table.Cell>
+                <Label>Change by %</Label>
+              </Table.Cell>
               {boundary.valueProperties.map((p, idx) => (
                 <Table.Cell key={`percentage_chance_${idx}`} width={2}>
                   <Input
