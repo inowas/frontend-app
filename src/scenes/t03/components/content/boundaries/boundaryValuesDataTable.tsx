@@ -1,7 +1,7 @@
 import { AdvancedCsvUpload } from '../../../../shared/upload';
 import { Boundary, LineBoundary } from '../../../../../core/model/modflow/boundaries';
-import { Button, Icon, Input, Message, Pagination, PaginationProps, Table } from 'semantic-ui-react';
-import { ChangeEvent, MouseEvent, useState } from 'react';
+import { Button, Icon, Input, InputProps, Label, Message, Pagination, PaginationProps, Table } from 'semantic-ui-react';
+import { ChangeEvent, FormEvent, MouseEvent, useState } from 'react';
 import { ISpValues } from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import { Stressperiods } from '../../../../../core/model/modflow';
 import { cloneDeep } from 'lodash';
@@ -18,6 +18,7 @@ interface IActiveInput {
 
 interface IProps {
   boundary: Boundary;
+  isScenario: boolean;
   onChange: (boundary: Boundary) => any;
   readOnly: boolean;
   selectedOP?: string;
@@ -49,6 +50,26 @@ const BoundaryValuesDataTable = (props: IProps) => {
 
   const handleChangePagination = (e: MouseEvent, { activePage }: PaginationProps) =>
     setPaginationPage(typeof activePage === 'number' ? activePage : 1);
+
+  const handleBlurPercentage = (id: number) => () => {
+    if (!activeInput) {
+      return null;
+    }
+
+    const cSpValues = getSpValues()?.map((row) => {
+      row[id] += (row[id] * parseFloat(activeInput.value)) / 100;
+      return row;
+    });
+
+    if (cSpValues) {
+      boundary.setSpValues(cSpValues as ISpValues, selectedOP);
+      setActiveInput(null);
+      return props.onChange(boundary);
+    }
+  };
+
+  const handleChangePercentage = (e: FormEvent<HTMLInputElement>, { name, value }: InputProps) =>
+    setActiveInput({ col: -1, name, row: -1, value });
 
   const handleLocalChange = (row: number, col: number) => (e: ChangeEvent<HTMLInputElement>) =>
     setActiveInput({
@@ -242,7 +263,31 @@ const BoundaryValuesDataTable = (props: IProps) => {
             ))}
           </Table.Row>
         </Table.Header>
-        <Table.Body>{spValues && body()}</Table.Body>
+        <Table.Body>
+          {props.isScenario && !props.readOnly && (
+            <Table.Row>
+              <Table.Cell>
+                <Label>Change by %</Label>
+              </Table.Cell>
+              {boundary.valueProperties.map((p, idx) => (
+                <Table.Cell key={`percentage_chance_${idx}`} width={2}>
+                  <Input
+                    label={{ icon: 'percent' }}
+                    labelPosition="left corner"
+                    name={`percentage_${idx}`}
+                    onBlur={handleBlurPercentage(idx)}
+                    onChange={handleChangePercentage}
+                    placeholder="% Change"
+                    type="number"
+                    style={getCellStyle(boundary.valueProperties.length)}
+                    value={activeInput && activeInput.name === `percentage_${idx}` ? activeInput.value : 0}
+                  />
+                </Table.Cell>
+              ))}
+            </Table.Row>
+          )}
+          {spValues && body()}
+        </Table.Body>
       </Table>
     </div>
   );

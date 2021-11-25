@@ -165,6 +165,7 @@ const BoundaryDetails = (props: IProps) => {
       return (
         <BoundaryDateTimeValuesDataTable
           boundary={boundary}
+          isScenario={props.model.isScenario}
           onChange={props.onChange}
           readOnly={props.readOnly}
           selectedOP={observationPointId}
@@ -175,6 +176,7 @@ const BoundaryDetails = (props: IProps) => {
     return (
       <BoundaryValuesDataTable
         boundary={boundary}
+        isScenario={props.model.isScenario}
         onChange={props.onChange}
         readOnly={props.readOnly}
         selectedOP={observationPointId}

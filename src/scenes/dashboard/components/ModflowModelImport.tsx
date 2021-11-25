@@ -86,6 +86,7 @@ const ModflowModelImport = (props: RouteComponentProps) => {
         },
         permissions: 'rwx',
         calculation_id: '',
+        is_scenario: false,
         boundaries: BoundaryCollection.fromExport(data.boundaries, boundingBox, gridSize).toObject(),
         packages: FlopyPackages.fromObject(data.packages).toObject(),
         soilmodel: Soilmodel.fromExport(data.soilmodel).toObject(),
