@@ -104,7 +104,7 @@ export default class ModflowModel {
   }
 
   get isScenario() {
-    return this._props.isScenario;
+    return this._props.is_scenario;
   }
 
   get stressperiods() {
@@ -182,7 +182,7 @@ export default class ModflowModel {
         time_unit: timeUnit.toInt(),
       },
       calculation_id: '',
-      isScenario: false,
+      is_scenario: false,
     });
   }
 

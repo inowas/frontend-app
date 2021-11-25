@@ -29,7 +29,7 @@ export interface IDiscretizationImport {
 
 export interface IModflowModel {
   id: string;
-  isScenario: boolean;
+  is_scenario: boolean;
   name: string;
   description: string;
   permissions: string;
