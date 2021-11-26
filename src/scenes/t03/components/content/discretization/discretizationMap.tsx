@@ -2,7 +2,6 @@ import * as turf from '@turf/turf';
 import { BoundingBox, Cells, Geometry, GridSize } from '../../../../../core/model/geometry';
 import { Button } from 'semantic-ui-react';
 import { CALCULATE_CELLS_INPUT } from '../../../../modflow/worker/t03.worker';
-import { Control, LatLngBoundsExpression, LatLngExpression } from 'leaflet';
 import { EditControl } from 'react-leaflet-draw';
 import { FeatureGroup, Polygon } from 'react-leaflet';
 import { ICalculateCellsInputData } from '../../../../modflow/worker/t03.worker.type';
@@ -10,6 +9,7 @@ import { ICells } from '../../../../../core/model/geometry/Cells.type';
 import { IGeometry } from '../../../../../core/model/geometry/Geometry.type';
 import { IMapWithControlsOptions } from '../../../../shared/leaflet/types';
 import { IRowsAndColumns, getRowsAndColumnsFromGeoJson } from '../../../../../services/geoTools';
+import { LatLngBoundsExpression, LatLngExpression } from 'leaflet';
 import { addMessage } from '../../../actions/actions';
 import { asyncWorker } from '../../../../modflow/worker/worker';
 import { getCellFromClick, rotateCoordinateAroundPoint } from '../../../../../services/geoTools/getCellFromClick';
@@ -20,6 +20,7 @@ import GridRefinementPopup from './gridRefinementPopup';
 import MapWithControls from '../../maps/mapWithControls';
 import React, { useEffect, useRef, useState } from 'react';
 import _, { uniqueId } from 'lodash';
+import { renderBoundingBoxLayer } from '../../maps/mapLayers';
 
 interface IProps {
   boundingBox: BoundingBox;
@@ -39,7 +40,7 @@ const DiscretizationMap = (props: IProps) => {
   const cellsRef = useRef<Cells | null>(null);
   const mapRef = useRef<any>(null);
   const readOnlyRef = useRef<boolean>(true);
-  const refDrawControl = useRef<Control>(null);
+  const refDrawControl = useRef<any>(null);
   const [geometry, setGeometry] = useState<IGeometry | null>(null);
   const [mode, setMode] = useState<string>('single');
   const [selected, setSelected] = useState<IRowsAndColumns | null>(null);
@@ -207,9 +208,6 @@ const DiscretizationMap = (props: IProps) => {
   const handleToggleDrawing = (m: string) => () => setMode(m);
 
   const mapOptions: IMapWithControlsOptions = {
-    area: {
-      checked: false,
-    },
     boundaries:
       props.boundaries.length > 0
         ? {
@@ -219,6 +217,14 @@ const DiscretizationMap = (props: IProps) => {
         : undefined,
     boundingBox: {
       checked: true,
+    },
+    events: {
+      onEdited: (e: any) => {
+        console.log('EVENT TRIGGERED');
+        if (refDrawControl.current) {
+          refDrawControl.current._toolbars.edit._modes.edit.handler.enable();
+        }
+      },
     },
     fullScreenControl: true,
     grid: props.cells
@@ -261,35 +267,32 @@ const DiscretizationMap = (props: IProps) => {
         options={mapOptions}
       >
         {!props.readOnly && (
-          <>
-            <FeatureGroup>
-              <EditControl
-                ref={refDrawControl}
-                position="topleft"
-                draw={{
-                  circle: false,
-                  circlemarker: false,
-                  marker: false,
-                  polyline: mode === 'multi' && geometry !== null,
-                  rectangle: mode === 'refinement' && geometry !== null,
-                  polygon: geometry === null || mode === 'multi',
-                }}
-                edit={{
-                  edit: mode !== 'refinement' && geometry !== null && !!props.onChangeGeometry,
-                  remove: false,
-                }}
-                onCreated={onCreated}
-                onEdited={onEdited}
-                style={{ marginTop: '10px' }}
+          <FeatureGroup>
+            <EditControl
+              position="bottomright"
+              draw={{
+                circle: false,
+                circlemarker: false,
+                marker: false,
+                polyline: mode === 'multi' && geometry !== null,
+                rectangle: mode === 'refinement' && geometry !== null,
+                polygon: geometry === null || mode === 'multi',
+              }}
+              edit={{
+                edit: mode !== 'refinement' && geometry !== null && !!props.onChangeGeometry,
+                remove: false,
+              }}
+              onCreated={onCreated}
+              onEdited={onEdited}
+              onMounted={(e: any) => (refDrawControl.current = e)}
+            />
+            {geometry && (
+              <Polygon
+                key={uniqueId()}
+                positions={Geometry.fromObject(geometry).coordinatesLatLng as LatLngExpression[]}
               />
-              {geometry && (
-                <Polygon
-                  key={uniqueId()}
-                  positions={Geometry.fromObject(geometry).coordinatesLatLng as LatLngExpression[]}
-                />
-              )}
-            </FeatureGroup>
-          </>
+            )}
+          </FeatureGroup>
         )}
       </MapWithControls>
       {selected && (

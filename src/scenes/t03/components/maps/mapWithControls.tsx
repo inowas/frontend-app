@@ -5,12 +5,12 @@ import { BoundaryFactory } from '../../../../core/model/modflow/boundaries';
 import { ColorLegend } from '../../../shared/rasterData';
 import { FlopyModflowMfbas } from '../../../../core/model/flopy/packages/mf';
 import { FlopyPackages } from '../../../../core/model/flopy';
-import { GeoJSON, MapContainer, MapContainerProps, Pane, useMapEvents } from 'react-leaflet';
+import { FeatureGroup, GeoJSON, MapContainer, MapContainerProps, Pane, useMapEvents } from 'react-leaflet';
 import { IMapWithControlsOptions } from '../../../shared/leaflet/types';
 import { IReactLeafletHeatMapProps } from '../../../shared/rasterData/ReactLeafletHeatMapCanvasOverlay.type';
 import { IRootReducer } from '../../../../reducers';
 import { LeafletEvent, LeafletMouseEvent } from 'leaflet';
-import { ReactNode } from 'react';
+import { ReactNode, useRef } from 'react';
 import { createGridData, rainbowFactory } from '../../../shared/rasterData/helpers';
 import { getStyle } from '../../../../services/geoTools/mapHelpers';
 import { renderBoundaryOverlays, renderBoundingBoxLayer } from './mapLayers';
@@ -25,9 +25,10 @@ import RasterDataImageV2 from '../../../shared/rasterData/rasterDataImageV2';
 import ReactLeafletHeatMapCanvasOverlay from '../../../shared/rasterData/ReactLeafletHeatMapCanvasOverlay';
 import _ from 'lodash';
 import uuid from 'uuid';
+import { EditControl } from 'react-leaflet-draw';
 
 interface IProps {
-  children: ReactNode;
+  children?: ReactNode;
   onClick?: (e: LeafletMouseEvent) => any;
   onMoveEnd?: (e: LeafletEvent) => any;
   options?: IMapWithControlsOptions;
@@ -54,16 +55,15 @@ const MapWithControls = (props: TProps) => {
   let options: IMapWithControlsOptions = defaultOptions;
 
   if (props.options) {
-    options = {
-      ...options,
-      ...props.options,
-    };
+    options = props.options;
   }
 
   const T03 = useSelector((state: IRootReducer) => state.T03);
   const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
   let boundaries = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
   const packages = T03.packages && T03.packages.data ? FlopyPackages.fromObject(T03.packages.data) : null;
+
+  const editControlRef = useRef();
 
   if (boundaries && options.boundaries) {
     boundaries = BoundaryCollection.fromObject(
@@ -188,6 +188,8 @@ bounds: model.boundingBox.getBoundsLatLng(),
     });
     return null;
   };
+
+  console.log({ options });
 
   return (
     <>

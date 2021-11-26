@@ -16,10 +16,7 @@ export interface IMapWithControlsOptions {
   boundingBox?: {
     checked?: boolean;
   };
-  events?: {
-    onCreated: (e: any) => any;
-    onEdited: (e: any) => any;
-  };
+  events?: IDrawEvents;
   fullScreenControl?: boolean;
   grid?: {
     checked?: boolean;

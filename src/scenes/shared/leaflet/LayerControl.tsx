@@ -1,12 +1,11 @@
 import { Accordion, AccordionProps, Button, Form, Icon, Menu, SemanticICONS } from 'semantic-ui-react';
 import { DomEvent, Layer, Util } from 'leaflet';
-import { EditControl } from 'react-leaflet-draw';
 import { IDrawEvents } from './types';
 import { LayersControlProvider } from './layerControlContext';
 import { MouseEvent, useEffect, useRef } from 'react';
 import { ReactElement, useState } from 'react';
 import { groupBy } from 'lodash';
-import { useMapEvents } from 'react-leaflet';
+import { useMap, useMapEvents } from 'react-leaflet';
 import createControlledLayer from './controlledLayer';
 import md5 from 'md5';
 
@@ -47,6 +46,7 @@ const LayerControl = ({ position, children, events }: IProps) => {
   const [layers, setLayers] = useState<ILayerObj[]>([]);
   const positionClass = (position && POSITION_CLASSES[position]) || POSITION_CLASSES.topright;
 
+  const map = useMap();
   const divRef = useRef<any>(null);
 
   useEffect(() => {
@@ -55,7 +55,7 @@ const LayerControl = ({ position, children, events }: IProps) => {
     }
   });
 
-  const map = useMapEvents({
+  const mapEvents = useMapEvents({
     layerremove: () => {
       //console.log(add);
     },
@@ -68,8 +68,8 @@ const LayerControl = ({ position, children, events }: IProps) => {
   });
 
   const onLayerClick = (layerObj: ILayerObj) => {
-    if (map?.hasLayer(layerObj.layer)) {
-      map.removeLayer(layerObj.layer);
+    if (mapEvents?.hasLayer(layerObj.layer)) {
+      mapEvents.removeLayer(layerObj.layer);
       setLayers(
         layers.map((layer) => {
           if (layer.id === layerObj.id) {
@@ -82,7 +82,7 @@ const LayerControl = ({ position, children, events }: IProps) => {
         })
       );
     } else {
-      map.addLayer(layerObj.layer);
+      mapEvents.addLayer(layerObj.layer);
       setLayers(
         layers.map((layer) => {
           if (layer.id === layerObj.id) {
@@ -100,11 +100,11 @@ const LayerControl = ({ position, children, events }: IProps) => {
   const onRadioClick = (layerObj: ILayerObj) => {
     const layersInGroup = layers.filter((l) => l.id !== layerObj.id && l.group === layerObj.group);
     layersInGroup.forEach((l) => {
-      map?.removeLayer(l.layer);
+      mapEvents?.removeLayer(l.layer);
     });
 
-    if (!map?.hasLayer(layerObj.layer)) {
-      map.addLayer(layerObj.layer);
+    if (!mapEvents?.hasLayer(layerObj.layer)) {
+      mapEvents.addLayer(layerObj.layer);
       setLayers(
         layers.map((layer) => {
           if (layer.group === layerObj.group && layer.id !== layerObj.id) {
@@ -131,7 +131,7 @@ const LayerControl = ({ position, children, events }: IProps) => {
       layer,
       group,
       name,
-      checked: map?.hasLayer(layer),
+      checked: mapEvents?.hasLayer(layer),
       id: Util.stamp(layer),
       radio,
     });
@@ -141,25 +141,7 @@ const LayerControl = ({ position, children, events }: IProps) => {
 
   const groupedLayers = groupBy(layers, 'group');
 
-  const handleClickEdit = () => {
-    console.log(groupedLayers);
-    const filteredLayer = groupedLayers.Discretization?.filter((l) => l.name === 'Model Area');
-
-    console.log(map);
-
-    if (map && filteredLayer.length > 0) {
-      const toolbar = (
-        <EditControl
-          edit={true}
-          leaflet={{
-            map,
-            layerContainer: filteredLayer[0].layer,
-          }}
-        />
-      );
-      console.log(toolbar);
-    }
-  };
+  const handleClickEdit = () => (events && events.onEdited ? events.onEdited('TEST') : null);
 
   const handleClickGroup = (e: MouseEvent, titleProps: AccordionProps) => {
     const { index } = titleProps;
