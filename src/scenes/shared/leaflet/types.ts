@@ -1,4 +1,4 @@
-import { Cells } from '../../../core/model/geometry';
+import { BoundingBox, Cells } from '../../../core/model/geometry';
 
 export interface IDrawEvents {
   onCreated?: (e: any) => any;
@@ -15,15 +15,17 @@ export interface IMapWithControlsOptions {
   };
   boundingBox?: {
     checked?: boolean;
+    data?: BoundingBox;
   };
   events?: IDrawEvents;
   fullScreenControl?: boolean;
   grid?: {
     checked?: boolean;
+    data?: Cells;
   };
   inactiveCells?: {
     checked?: boolean;
-    state?: Cells;
+    data?: Cells;
   };
   raster?: {
     colors?: string[];

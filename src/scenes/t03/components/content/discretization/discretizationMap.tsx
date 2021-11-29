@@ -217,6 +217,7 @@ const DiscretizationMap = (props: IProps) => {
         : undefined,
     boundingBox: {
       checked: true,
+      data: props.boundingBox,
     },
     events: {
       onEdited: (e: any) => {
@@ -230,11 +231,12 @@ const DiscretizationMap = (props: IProps) => {
     grid: props.cells
       ? {
           checked: mode === 'refinement',
+          data: props.cells || undefined,
         }
       : undefined,
     inactiveCells: {
       checked: true,
-      state: props.cells || undefined,
+      data: props.cells || undefined,
     },
   };
 

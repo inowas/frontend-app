@@ -5,7 +5,7 @@ import { BoundaryFactory } from '../../../../core/model/modflow/boundaries';
 import { ColorLegend } from '../../../shared/rasterData';
 import { FlopyModflowMfbas } from '../../../../core/model/flopy/packages/mf';
 import { FlopyPackages } from '../../../../core/model/flopy';
-import { FeatureGroup, GeoJSON, MapContainer, MapContainerProps, Pane, useMapEvents } from 'react-leaflet';
+import { GeoJSON, MapContainer, MapContainerProps, Pane, useMapEvents } from 'react-leaflet';
 import { IMapWithControlsOptions } from '../../../shared/leaflet/types';
 import { IReactLeafletHeatMapProps } from '../../../shared/rasterData/ReactLeafletHeatMapCanvasOverlay.type';
 import { IRootReducer } from '../../../../reducers';
@@ -17,15 +17,11 @@ import { renderBoundaryOverlays, renderBoundingBoxLayer } from './mapLayers';
 import { useSelector } from 'react-redux';
 import ContourLayer from '../../../shared/rasterData/contourLayer';
 import GridRefinement from '../content/discretization/gridRefinement';
-import GroupedAffectedCellsLayer from '../../../../services/geoTools/groupedAffectedCellsLayer';
 import IBoundLayer from '../../../../services/geoTools/iBoundLayer';
 import LayerControl, { GroupedLayer } from '../../../shared/leaflet/LayerControl';
 import Rainbow from '../../../../services/rainbowvis/Rainbowvis';
 import RasterDataImageV2 from '../../../shared/rasterData/rasterDataImageV2';
-import ReactLeafletHeatMapCanvasOverlay from '../../../shared/rasterData/ReactLeafletHeatMapCanvasOverlay';
 import _ from 'lodash';
-import uuid from 'uuid';
-import { EditControl } from 'react-leaflet-draw';
 
 interface IProps {
   children?: ReactNode;
@@ -191,6 +187,18 @@ bounds: model.boundingBox.getBoundsLatLng(),
 
   console.log({ options });
 
+  const boundingBoxData =
+    options.boundingBox && options.boundingBox.data ? options.boundingBox.data : model ? model.boundingBox : null;
+
+  const iboundData =
+    options.inactiveCells && options.inactiveCells.data ? options.inactiveCells.data : model ? model.cells : null;
+
+  const geometryData = model ? model.geometry : null;
+
+  const gridSizeData = model ? model.gridSize : null;
+
+  const rotationData = model ? model.rotation : null;
+
   return (
     <>
       <MapContainer tap={false} zoomControl={false} {...props}>
@@ -200,31 +208,32 @@ bounds: model.boundingBox.getBoundsLatLng(),
         <LayerControl events={options.events} position="topright">
           {props.raster ? renderRaster() : null}
           <Pane name="middle" style={{ zIndex: 500 }}>
-            {model && options.area ? (
+            {options.area && geometryData ? (
               <GroupedLayer checked={options.area.checked} name="Model Area" group="Discretization">
-                <GeoJSON key={model.geometry.hash()} data={model.geometry.toGeoJSON()} style={getStyle('area')} />
+                <GeoJSON key={geometryData.hash()} data={geometryData.toGeoJSON()} style={getStyle('area')} />
               </GroupedLayer>
             ) : null}
-            {model && options.boundingBox ? (
+            {options.boundingBox && boundingBoxData && rotationData !== null && geometryData ? (
               <GroupedLayer checked={options.boundingBox.checked} name="Bounding Box" group="Discretization">
-                {renderBoundingBoxLayer(model.boundingBox)}
+                {renderBoundingBoxLayer(boundingBoxData, rotationData, geometryData)}
               </GroupedLayer>
             ) : null}
-            {model && options.grid ? (
+            {options.grid && boundingBoxData && gridSizeData ? (
               <GroupedLayer name="Grid" group="Discretization">
-                <GridRefinement
-                  boundingBox={model.boundingBox}
-                  gridSize={model.gridSize}
-                  selectedRowsAndColumns={null}
-                />
+                <GridRefinement boundingBox={boundingBoxData} gridSize={gridSizeData} selectedRowsAndColumns={null} />
               </GroupedLayer>
             ) : null}
-            {model && options.inactiveCells && options.inactiveCells ? (
+            {boundingBoxData &&
+            gridSizeData &&
+            iboundData &&
+            geometryData &&
+            rotationData !== null &&
+            options.inactiveCells ? (
               <IBoundLayer
-                boundingBox={model.boundingBox}
-                gridSize={model.gridSize}
-                cells={options.inactiveCells.state || model.cells}
-                rotation={{ geometry: model.geometry, angle: model.rotation }}
+                boundingBox={boundingBoxData}
+                gridSize={gridSizeData}
+                cells={iboundData}
+                rotation={{ geometry: geometryData, angle: rotationData }}
               />
             ) : null}
             {boundaries && options.boundaries ? renderBoundaryOverlays(boundaries, options.boundaries?.checked) : null}
