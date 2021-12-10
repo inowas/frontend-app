@@ -41,7 +41,7 @@ const PackageActualizationWrapper = (props: IProps) => {
   }, []);
 
   const recalculate = () => {
-    if (!boundaries || !model || !packages || !soilmodel || !transport || !variableDensity) {
+    if (!boundaries || !model || !soilmodel || !transport || !variableDensity) {
       return;
     }
 
