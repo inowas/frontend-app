@@ -158,7 +158,11 @@ const DataFetcherWrapper = (props: IProps) => {
   const fetchPackages = async (mId: string) => {
     try {
       const p = (await fetchApiWithToken(`modflowmodels/${mId}/packages`)).data
-      dispatch(updatePackages(FlopyPackages.fromObject(p)));
+      const packages = FlopyPackages.fromQuery(p);
+      if (packages instanceof FlopyPackages) {
+        dispatch(updatePackages(packages));
+      }
+
       setFetchingPackagesSuccess(true);
     } catch (err) {
       handleError(err)
@@ -222,8 +226,7 @@ const DataFetcherWrapper = (props: IProps) => {
   );
 
   const everythingIsLoaded = () => {
-    const eil: boolean = !!model && !!boundaries && !!soilmodel && !!transport && !!variableDensity && !!packages &&
-      !!packages.data;
+    const eil: boolean = !!model && !!boundaries && !!soilmodel && !!transport && !!variableDensity && !!packages;
     if (eil) {
       setTimeout(() => setShowModal(false), 1000);
     }
