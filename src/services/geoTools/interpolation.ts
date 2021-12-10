@@ -25,7 +25,7 @@ export const distanceWeighting = (
   options: IIdwOptions = {
     mode: 'number',
     numberOfPoints: 5,
-    range: 3
+    range: 3,
   }
 ): Array2D<number> => {
   const raster = new Array(gridSize.nY).fill(0).map(() => new Array(gridSize.nX).fill(0)) as Array2D<number>;
@@ -43,7 +43,7 @@ export const distanceWeighting = (
       const pointsWithDistance = points.map((p) => {
         return {
           ...p,
-          d: turf.distance([cX, cY], [p.x, p.y])
+          d: turf.distance([cX, cY], [p.x, p.y]),
         };
       });
 
