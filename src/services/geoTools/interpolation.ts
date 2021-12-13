@@ -4,7 +4,7 @@ import { BoundingBox, Geometry, GridSize } from '../../core/model/modflow';
 import { getCenterFromCell } from './index';
 import _ from 'lodash';
 
-interface IPoint3D {
+export interface IPoint3D {
   x: number;
   y: number;
   z: number;
@@ -33,6 +33,9 @@ export const distanceWeighting = (
   for (let y = 0; y < gridSize.nY; y++) {
     for (let x = 0; x < gridSize.nX; x++) {
       let [cX, cY] = getCenterFromCell([x, y], boundingBox, gridSize);
+      cX = boundingBox.xMin + cX;
+      cY = boundingBox.yMax - cY;
+
       if (rotation && rotation % 360 !== 0) {
         const result = turf.transformRotate(turf.point([cX, cY]), rotation, { pivot: area.centerOfMass });
         if (result.geometry) {

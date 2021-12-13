@@ -27,7 +27,7 @@ const maxResolution = 100;
 const RasterFromAzure = (props: IProps) => {
   const [activeInput, setActiveInput] = useState<string>();
   const [activeValue, setActiveValue] = useState<string>('');
-  const [apiKey, setApiKey] = useState<string>('INSERT YOUR API TOKEN HERE');
+  const [apiKey, setApiKey] = useState<string>('INSERT YOUR API KEY HERE');
   const [error, setError] = useState<string | null>(null);
   const [isCalculating, setIsCalculating] = useState<boolean>(false);
   const [isFetching, setIsFetching] = useState<boolean>(false);

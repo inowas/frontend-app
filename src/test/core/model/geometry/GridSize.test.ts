@@ -6,17 +6,21 @@ test('To object', () => {
 
   expect(gridSize.toObject()).toEqual({
     n_x: 500,
-    n_y: 300
+    n_y: 300,
   });
 });
 
 test('From data (2D Array)', () => {
-  const data1: Array2D<number> = [[1, 2, 3], [2, 3, 4], [3, 4, 5]];
+  const data1: Array2D<number> = [
+    [1, 2, 3],
+    [2, 3, 4],
+    [3, 4, 5],
+  ];
   const data2: Array2D<number> = [];
 
   expect(GridSize.fromData(data1 as Array2D<number>).toObject()).toEqual({
     n_x: 3,
-    n_y: 3
+    n_y: 3,
   });
 
   expect(() => GridSize.fromData(data2 as Array2D<number>)).toThrow();
@@ -45,7 +49,7 @@ test('Get cell', () => {
   expect(gridSize.getCellFromDistX(0.05)).toEqual(0);
   expect(gridSize.getCellFromDistX(0.1)).toEqual(0);
   expect(gridSize.getCellFromDistX(0.11)).toEqual(1);
-  expect(gridSize.getCellFromDistX(0.50)).toEqual(4);
+  expect(gridSize.getCellFromDistX(0.5)).toEqual(4);
   expect(gridSize.getCellFromDistX(0.51)).toEqual(5);
   expect(gridSize.getCellFromDistX(1)).toEqual(5);
 
@@ -54,7 +58,7 @@ test('Get cell', () => {
   expect(gridSize.getCellFromDistY(0.05)).toEqual(5);
   expect(gridSize.getCellFromDistY(0.1)).toEqual(5);
   expect(gridSize.getCellFromDistY(0.11)).toEqual(4);
-  expect(gridSize.getCellFromDistY(0.50)).toEqual(1);
+  expect(gridSize.getCellFromDistY(0.5)).toEqual(1);
   expect(gridSize.getCellFromDistY(0.51)).toEqual(0);
   expect(gridSize.getCellFromDistY(1)).toEqual(0);
 });

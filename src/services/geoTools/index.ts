@@ -156,8 +156,6 @@ export const getCenterFromCell = (cell: ICell, boundingBox: BoundingBox, gridSiz
     throw Error('Out of bounds');
   }
 
-  console.log({ x, y, gX: gridSize.getCenterX(x), gY: gridSize.getCenterY(y), bX: boundingBox.dX, bY: boundingBox.dY });
-
   return [
     parseFloat((gridSize.getCenterX(x) * boundingBox.dX).toPrecision(5)),
     parseFloat((gridSize.getCenterY(y) * boundingBox.dY).toPrecision(5)),
