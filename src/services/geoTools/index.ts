@@ -1,9 +1,9 @@
-import {AllGeoJSON} from '@turf/helpers';
-import {BoundingBox, Cells, Geometry, GridSize} from '../../core/model/modflow';
-import {IBoundingBox} from '../../core/model/geometry/BoundingBox.type';
-import {ICell} from '../../core/model/geometry/Cells.type';
-import {Polygon} from 'geojson';
-import {area, booleanContains, booleanCrosses, booleanOverlap, envelope, intersect, lineString} from '@turf/turf';
+import { AllGeoJSON } from '@turf/helpers';
+import { BoundingBox, Cells, Geometry, GridSize } from '../../core/model/modflow';
+import { IBoundingBox } from '../../core/model/geometry/BoundingBox.type';
+import { ICell } from '../../core/model/geometry/Cells.type';
+import { Polygon } from 'geojson';
+import { area, booleanContains, booleanCrosses, booleanOverlap, envelope, intersect, lineString } from '@turf/turf';
 
 /* Calculate GridCells
 Structure:
@@ -25,16 +25,12 @@ export const getGridCells = (boundingBox: BoundingBox, gridSize: GridSize) => {
       cells.push({
         x,
         y: gridSize.nY - y - 1,
-        geometry: envelope(lineString([
-          [
-            boundingBox.xMin + x * dx,
-            boundingBox.yMax - (gridSize.nY - y) * dy
-          ],
-          [
-            boundingBox.xMin + (x + 1) * dx,
-            boundingBox.yMax - (gridSize.nY - y - 1) * dy
-          ]
-        ]))
+        geometry: envelope(
+          lineString([
+            [boundingBox.xMin + x * dx, boundingBox.yMax - (gridSize.nY - y) * dy],
+            [boundingBox.xMin + (x + 1) * dx, boundingBox.yMax - (gridSize.nY - y - 1) * dy],
+          ])
+        ),
       });
     }
   }
@@ -61,16 +57,18 @@ export const getGridCellsFromVariableGrid = (boundingBox: BoundingBox, gridSize:
       cells.push({
         x,
         y: gridSize.nY - y - 1,
-        geometry: envelope(lineString([
-          [
-            boundingBox.xMin + gridSize.getDistanceXStart(x) * dx,
-            boundingBox.yMax - gridSize.getDistanceYStart((gridSize.nY - y - 1)) * dy
-          ],
-          [
-            boundingBox.xMin + gridSize.getDistancesXEnd()[x] * dx,
-            boundingBox.yMax - gridSize.getDistancesYEnd()[(gridSize.nY - y - 1)] * dy
-          ]
-        ]))
+        geometry: envelope(
+          lineString([
+            [
+              boundingBox.xMin + gridSize.getDistanceXStart(x) * dx,
+              boundingBox.yMax - gridSize.getDistanceYStart(gridSize.nY - y - 1) * dy,
+            ],
+            [
+              boundingBox.xMin + gridSize.getDistancesXEnd()[x] * dx,
+              boundingBox.yMax - gridSize.getDistancesYEnd()[gridSize.nY - y - 1] * dy,
+            ],
+          ])
+        ),
       });
     }
   }
@@ -79,7 +77,9 @@ export const getGridCellsFromVariableGrid = (boundingBox: BoundingBox, gridSize:
 };
 
 export const getActiveCellFromCoordinate = (
-  coordinate: number[], boundingBox: BoundingBox, gridSize: GridSize
+  coordinate: number[],
+  boundingBox: BoundingBox,
+  gridSize: GridSize
 ): ICell => {
   const [x, y] = coordinate;
   if (x < boundingBox.xMin || x > boundingBox.xMax) {
@@ -92,10 +92,7 @@ export const getActiveCellFromCoordinate = (
   const distXRel = (x - boundingBox.xMin) / boundingBox.dX;
   const distYRel = (y - boundingBox.yMin) / boundingBox.dY;
 
-  return [
-    gridSize.getCellFromDistX(distXRel),
-    gridSize.getCellFromDistY(distYRel)
-  ];
+  return [gridSize.getCellFromDistX(distXRel), gridSize.getCellFromDistY(distYRel)];
 };
 
 export const calculateCells = (geometry: Geometry, boundingBox: BoundingBox, gridSize: GridSize) => {
@@ -136,7 +133,7 @@ export const calculateActiveCells = (
       } else if (booleanContains(geometry, cell.geometry) || booleanOverlap(geometry, cell.geometry)) {
         if (intersection > 0 && geometry.type === 'Polygon') {
           const coveredArea = intersect(geometry.toGeoJSON() as Polygon, cell.geometry);
-          if (coveredArea && (area(coveredArea) / cellArea) > intersection) {
+          if (coveredArea && area(coveredArea) / cellArea > intersection) {
             activeCells.addCell([cell.x, cell.y]);
           }
         } else {
@@ -161,7 +158,7 @@ export const getCenterFromCell = (cell: ICell, boundingBox: BoundingBox, gridSiz
 
   return [
     parseFloat((gridSize.getCenterX(x) * boundingBox.dX).toPrecision(5)),
-    parseFloat((gridSize.getCenterY(y) * boundingBox.dY).toPrecision(5))
+    parseFloat((gridSize.getCenterY(y) * boundingBox.dY).toPrecision(5)),
   ];
 };
 
@@ -175,18 +172,22 @@ export const getRowsAndColumnsFromCoordinate = (coordinate: any, boundingBox: Bo
 
   return {
     columns: [gridSize.distX[cell[0]]],
-    rows: [gridSize.distY[gridSize.distY.length - cell[1] - 1]]
-  }
+    rows: [gridSize.distY[gridSize.distY.length - cell[1] - 1]],
+  };
 };
 
-export const getRowsAndColumnsFromGeoJson = (geoJson: AllGeoJSON, boundingBox: BoundingBox, gridSize: GridSize): IRowsAndColumns => {
+export const getRowsAndColumnsFromGeoJson = (
+  geoJson: AllGeoJSON,
+  boundingBox: BoundingBox,
+  gridSize: GridSize
+): IRowsAndColumns => {
   const bbox = BoundingBox.fromGeoJson(geoJson);
 
   const columns: number[] = [];
 
   for (let x = 0; x < gridSize.nX; x++) {
-    const distXStart = boundingBox.xMin + (gridSize.getDistanceXStart(x) * boundingBox.dX);
-    const distXEnd = boundingBox.xMin + (gridSize.getDistanceXEnd(x) * boundingBox.dX);
+    const distXStart = boundingBox.xMin + gridSize.getDistanceXStart(x) * boundingBox.dX;
+    const distXEnd = boundingBox.xMin + gridSize.getDistanceXEnd(x) * boundingBox.dX;
 
     if (
       (distXStart < bbox.xMin && distXEnd > bbox.xMin) ||
@@ -200,8 +201,8 @@ export const getRowsAndColumnsFromGeoJson = (geoJson: AllGeoJSON, boundingBox: B
   const rows: number[] = [];
 
   for (let y = 0; y < gridSize.nY; y++) {
-    const distYStart = boundingBox.yMin + (gridSize.getDistanceYStart(y) * boundingBox.dY);
-    const distYEnd = boundingBox.yMin + (gridSize.getDistanceYEnd(y) * boundingBox.dY);
+    const distYStart = boundingBox.yMin + gridSize.getDistanceYStart(y) * boundingBox.dY;
+    const distYEnd = boundingBox.yMin + gridSize.getDistanceYEnd(y) * boundingBox.dY;
 
     if (
       (distYStart < bbox.yMin && distYEnd > bbox.yMin) ||
@@ -214,7 +215,7 @@ export const getRowsAndColumnsFromGeoJson = (geoJson: AllGeoJSON, boundingBox: B
 
   return {
     columns,
-    rows
+    rows,
   };
 };
 
@@ -229,9 +230,9 @@ export const calculateColumns = (boundingBox: BoundingBox, gridSize: GridSize) =
     columns.push({
       dist: gridSize.distX[x],
       boundingBox: new BoundingBox([
-        [boundingBox.xMin + (gridSize.getDistanceXStart(x) * boundingBox.dX), boundingBox.yMin],
-        [boundingBox.xMin + (gridSize.getDistanceXEnd(x) * boundingBox.dX), boundingBox.yMax]
-      ]).toObject()
+        [boundingBox.xMin + gridSize.getDistanceXStart(x) * boundingBox.dX, boundingBox.yMin],
+        [boundingBox.xMin + gridSize.getDistanceXEnd(x) * boundingBox.dX, boundingBox.yMax],
+      ]).toObject(),
     });
   }
 
@@ -245,8 +246,8 @@ export const calculateRows = (boundingBox: BoundingBox, gridSize: GridSize) => {
       dist: gridSize.distY[y],
       boundingBox: new BoundingBox([
         [boundingBox.xMin, boundingBox.yMin + gridSize.getDistanceYStart(y) * boundingBox.dY],
-        [boundingBox.xMax, boundingBox.yMin + gridSize.getDistanceYEnd(y) * boundingBox.dY]
-      ]).toObject()
+        [boundingBox.xMax, boundingBox.yMin + gridSize.getDistanceYEnd(y) * boundingBox.dY],
+      ]).toObject(),
     });
   }
 
