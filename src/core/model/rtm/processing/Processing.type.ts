@@ -24,6 +24,7 @@ export interface ITimeProcessing extends IProcessing {
   type: 'time';
   rule: string;
   method: string;
+  mode: string;
   cut: ECutRule;
   cutNumber?: number;
 }

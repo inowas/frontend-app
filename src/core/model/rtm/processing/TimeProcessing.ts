@@ -14,6 +14,10 @@ export const methods = [
   ['zero', 'These methods use the numerical values of the index'],
 ];
 
+export const modes = [
+  'aggregation', 'average'
+];
+
 class TimeProcessing extends GenericObject<ITimeProcessing> {
   public static fromObject(obj: ITimeProcessing) {
     return new TimeProcessing(this.cloneDeep(obj));
@@ -75,6 +79,14 @@ class TimeProcessing extends GenericObject<ITimeProcessing> {
     this._props.rule = value;
   }
 
+  get mode(): string {
+    return this._props.mode;
+  }
+
+  set mode(value: string) {
+    this._props.mode = value;
+  }
+
   public async apply(input: IDateTimeValue[]) {
     let dataToProcess: IDateTimeValue[] = _.uniqBy(input, 'timeStamp');
     if (!this.cut || this.cut === ECutRule.NONE || this.cut === ECutRule.PERIOD) {
@@ -88,8 +100,7 @@ class TimeProcessing extends GenericObject<ITimeProcessing> {
 
     // eslint-disable-next-line no-useless-catch
     try {
-      const processedData = await makeTimeProcessingRequest(dataToProcess, this.rule, this.method);
-
+      const processedData = await makeTimeProcessingRequest(dataToProcess, this.rule, this.method, this.mode);
       if (!this.cut || this.cut === ECutRule.NONE) {
         return input
           .filter((i) => !(i.timeStamp >= this.begin && ((this.end && i.timeStamp <= this.end) || !this.end)))

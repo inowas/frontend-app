@@ -37,6 +37,7 @@ export const useTimeProcessing = (tp: TimeProcessing | null, dsc: DataSourceColl
       end,
       rule: '1d',
       method: 'time',
+      mode: 'average',
       cut: ECutRule.NONE,
     });
     process(cProcessing);
