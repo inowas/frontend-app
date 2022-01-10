@@ -14,7 +14,7 @@ import {
 import { DataSourceCollection } from '../../../../core/model/rtm/monitoring';
 import { ECutRule } from '../../../../core/model/rtm/processing/Processing.type';
 import { TimeProcessing } from '../../../../core/model/rtm/processing';
-import { methods } from '../../../../core/model/rtm/processing/TimeProcessing';
+import { methods, modes } from '../../../../core/model/rtm/processing/TimeProcessing';
 import { parseDate } from '../setup/dataSources/helpers';
 import { useTimeProcessing } from '../hooks/useTimeProcessing';
 import DataChart from '../shared/dataChart';
@@ -56,6 +56,9 @@ const TimeProcessingEditor = (props: IProps) => {
     }
     if (d.name === 'cut' && typeof d.value === 'string') {
       cProcessing.cut = d.value as ECutRule;
+    }
+    if (d.name === 'mode' && typeof d.value === 'string') {
+      cProcessing.mode = d.value;
     }
     updateProcessing(TimeProcessing.fromObject(cProcessing));
   };
@@ -199,6 +202,14 @@ const TimeProcessingEditor = (props: IProps) => {
                           onBlur={handleBlurInput}
                         />
                       </Form.Group>
+                      <Form.Select
+                        fluid={true}
+                        label="Mode"
+                        name="mode"
+                        options={modes.map((m) => ({ key: m, value: m, text: m }))}
+                        value={processing.mode}
+                        onChange={handleChangeSelect}
+                      />
                     </Form>
                   </Segment>
                 </Grid.Column>
