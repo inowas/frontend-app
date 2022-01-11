@@ -1,11 +1,11 @@
-import {Array2D} from '../../../../../core/model/geometry/Array2D.type';
-import {BoundaryCollection, Calculation, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
-import {EResultType} from './flowResults';
-import {FlopyModflowMfbas} from '../../../../../core/model/flopy/packages/mf';
-import {FlopyPackages} from '../../../../../core/model/flopy';
-import {Grid, Header, Segment} from 'semantic-ui-react';
-import {fetchCalculationResultsFlow} from '../../../../../services/api';
-import React, {useEffect, useState} from 'react';
+import { Array2D } from '../../../../../core/model/geometry/Array2D.type';
+import { BoundaryCollection, Calculation, ModflowModel, Soilmodel } from '../../../../../core/model/modflow';
+import { EResultType } from './flowResults';
+import { FlopyModflowMfbas } from '../../../../../core/model/flopy/packages/mf';
+import { FlopyPackages } from '../../../../../core/model/flopy';
+import { Grid, Header, Segment } from 'semantic-ui-react';
+import { fetchCalculationResultsFlow } from '../../../../../services/api';
+import React, { useEffect, useState } from 'react';
 import ResultsChart from '../../../../shared/complexTools/ResultsChart';
 import ResultsMap from '../../maps/resultsMap';
 import ResultsSelectorFlow from '../../../../shared/complexTools/ResultsSelectorFlow';
@@ -29,8 +29,8 @@ const CrossSection = (props: IProps) => {
   const [totalTimes, setTotalTimes] = useState<number[] | null>(null);
   const [data, setData] = useState<Array2D<number> | null>(null);
   const [ibound, setIbound] = useState<Array2D<number>>();
-  
-  const {boundaries, calculation, model, packages, soilmodel} = props;
+
+  const { boundaries, calculation, model, packages, soilmodel } = props;
 
   useEffect(() => {
     if (model === null || calculation === null) {
@@ -43,7 +43,7 @@ const CrossSection = (props: IProps) => {
       fetchData({
         layer: selectedLay,
         totim: calculation.times.head.idx[calculation.times.head.idx.length - 1],
-        type: selectedType
+        type: selectedType,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -75,14 +75,16 @@ const CrossSection = (props: IProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [calculation]);
 
-  const fetchData = ({layer, totim, type}: { layer: number, totim: number, type: EResultType }) => {
+  const fetchData = ({ layer, totim, type }: { layer: number; totim: number; type: EResultType }) => {
     if (!calculation) {
       return null;
     }
     const calculationId = calculation.id;
     setIsLoading(true);
 
-    fetchCalculationResultsFlow({calculationId, layer, totim, type}, (cData: Array2D<number>) => {
+    fetchCalculationResultsFlow(
+      { calculationId, layer, totim, type },
+      (cData: Array2D<number>) => {
         setSelectedLay(layer);
         setSelectedType(type);
         setSelectedTotim(totim);
@@ -93,11 +95,11 @@ const CrossSection = (props: IProps) => {
     );
   };
 
-  const handleChangeSelector = ({type, layer, totim}: { type: EResultType, layer: number, totim: number }) => {
+  const handleChangeSelector = ({ type, layer, totim }: { type: EResultType; layer: number; totim: number }) => {
     setSelectedType(type);
     setSelectedLay(layer);
     setSelectedTotim(totim);
-    fetchData({layer, totim, type});
+    fetchData({ layer, totim, type });
   };
 
   const handleClickOnCell = (colRow: number[]) => {
@@ -107,61 +109,53 @@ const CrossSection = (props: IProps) => {
 
   return (
     <React.Fragment>
-      {totalTimes && layerValues &&
-      <ResultsSelectorFlow
-        data={{
-          type: selectedType,
-          layer: selectedLay,
-          totim: selectedTotim,
-        }}
-        onChange={handleChangeSelector}
-        layerValues={layerValues}
-        soilmodel={soilmodel}
-        stressperiods={model.stressperiods}
-        totalTimes={totalTimes}
-      />
-      }
-      <Segment color={'grey'} loading={isLoading}>
-        {data &&
-        <ResultsMap
-          activeCell={[selectedCol, selectedRow]}
-          boundaries={boundaries}
-          data={data}
-          ibound={ibound}
-          mode="contour"
-          model={model}
-          onClick={handleClickOnCell}
+      {totalTimes && layerValues && (
+        <ResultsSelectorFlow
+          data={{
+            type: selectedType,
+            layer: selectedLay,
+            totim: selectedTotim,
+          }}
+          onChange={handleChangeSelector}
+          layerValues={layerValues}
+          soilmodel={soilmodel}
+          stressperiods={model.stressperiods}
+          totalTimes={totalTimes}
         />
-        }
+      )}
+      <Segment color={'grey'} loading={isLoading}>
+        {data && (
+          <ResultsMap
+            activeCell={[selectedCol, selectedRow]}
+            boundaries={boundaries}
+            data={data}
+            ibound={ibound}
+            mode="contour"
+            model={model}
+            onClick={handleClickOnCell}
+          />
+        )}
       </Segment>
       <Grid>
         <Grid.Row columns={2}>
           <Grid.Column>
             <Segment loading={isLoading} color={'blue'}>
-              <Header textAlign={'center'} as={'h4'}>Horizontal cross section</Header>
-              {data &&
-              <ResultsChart
-                data={data}
-                col={selectedCol}
-                row={selectedRow}
-                show={'row'}
-                yLabel={selectedType}
-              />
-              }
+              <Header textAlign={'center'} as={'h4'}>
+                Horizontal cross section
+              </Header>
+              {data && (
+                <ResultsChart data={data} col={selectedCol} row={selectedRow} show={'row'} yLabel={selectedType} />
+              )}
             </Segment>
           </Grid.Column>
           <Grid.Column>
             <Segment loading={isLoading} color={'blue'}>
-              <Header textAlign={'center'} as={'h4'}>Vertical cross section</Header>
-              {data &&
-              <ResultsChart
-                data={data}
-                col={selectedCol}
-                row={selectedRow}
-                show={'col'}
-                yLabel={selectedType}
-              />
-              }
+              <Header textAlign={'center'} as={'h4'}>
+                Vertical cross section
+              </Header>
+              {data && (
+                <ResultsChart data={data} col={selectedCol} row={selectedRow} show={'col'} yLabel={selectedType} />
+              )}
             </Segment>
           </Grid.Column>
         </Grid.Row>

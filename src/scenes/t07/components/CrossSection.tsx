@@ -250,6 +250,7 @@ const CrossSection = (props: IProps) => {
                                     col={selectedCol}
                                     row={selectedRow}
                                     show={'row'}
+                                    yLabel={selectedType}
                                 />
                             </Segment>
                         </Grid.Column>
@@ -261,6 +262,7 @@ const CrossSection = (props: IProps) => {
                                     col={selectedCol}
                                     row={selectedRow}
                                     show={'col'}
+                                    yLabel={selectedType}
                                 />
                             </Segment>
                         </Grid.Column>

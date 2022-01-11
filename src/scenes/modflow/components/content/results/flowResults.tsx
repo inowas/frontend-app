@@ -1,27 +1,30 @@
-import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
-import {Calculation, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
-import {Grid, Header, Menu, Segment} from 'semantic-ui-react';
-import {IT03Reducer} from '../../../../t03/reducers';
-import {IT20Reducer} from '../../../../t20/reducers';
-import {sendCommand} from '../../../../../services/api';
-import {useHistory} from 'react-router-dom';
+import { BoundaryCollection } from '../../../../../core/model/modflow/boundaries';
+import { Calculation, ModflowModel, Soilmodel } from '../../../../../core/model/modflow';
+import { Grid, Header, Menu, Segment } from 'semantic-ui-react';
+import { IT03Reducer } from '../../../../t03/reducers';
+import { IT20Reducer } from '../../../../t20/reducers';
+import { sendCommand } from '../../../../../services/api';
+import { useHistory } from 'react-router-dom';
 import CrossSection from './crossSection';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import ScenarioAnalysisCommand from '../../../../t07/commands/scenarioAnalysisCommand';
 import TimeSeries from './timeSeries';
 import Uuid from 'uuid';
 
 export enum EResultType {
   DRAWDOWN = 'drawdown',
-  HEAD = 'head'
+  HEAD = 'head',
 }
 
 interface IProps {
   reducer: IT03Reducer | IT20Reducer;
 }
 
-enum EMode {CROSS_SECTION, TIME_SERIES}
+enum EMode {
+  CROSS_SECTION,
+  TIME_SERIES,
+}
 
 const FlowResults = (props: IProps) => {
   const [mode, setMode] = useState<EMode>(EMode.CROSS_SECTION);
@@ -33,12 +36,11 @@ const FlowResults = (props: IProps) => {
 
   const history = useHistory();
 
-
   if (!boundaries || !calculation || !model || !packages || !soilmodel) {
     return (
       <Segment color={'grey'}>
         <Header as={'h2'}>
-          No result data found. <br/>
+          No result data found. <br />
           Have you started the calculation?
         </Header>
       </Segment>
@@ -49,12 +51,13 @@ const FlowResults = (props: IProps) => {
 
   const handleCreateScenarioAnalysisClick = () => {
     const scenarioAnalysisId = Uuid.v4();
-    sendCommand(ScenarioAnalysisCommand.createScenarioAnalysis(
-      scenarioAnalysisId,
-      model.id,
-      'New scenario analysis ' + model.name,
-      '',
-      model.isPublic
+    sendCommand(
+      ScenarioAnalysisCommand.createScenarioAnalysis(
+        scenarioAnalysisId,
+        model.id,
+        'New scenario analysis ' + model.name,
+        '',
+        model.isPublic
       ),
       () => history.push('/tools/T07/' + scenarioAnalysisId),
       () => null
@@ -74,14 +77,7 @@ const FlowResults = (props: IProps) => {
       );
     }
     if (mode === EMode.TIME_SERIES) {
-      return (
-        <TimeSeries
-          boundaries={boundaries}
-          calculation={calculation}
-          model={model}
-          soilmodel={soilmodel}
-        />
-      );
+      return <TimeSeries boundaries={boundaries} calculation={calculation} model={model} soilmodel={soilmodel} />;
     }
   };
 
@@ -90,34 +86,19 @@ const FlowResults = (props: IProps) => {
       <Grid padded={true}>
         <Grid.Row>
           <Grid.Column width={3}>
-            <Menu
-              fluid={true}
-              vertical={true}
-              tabular={true}
-            >
-              <Menu.Item
-                active={mode === EMode.CROSS_SECTION}
-                onClick={handleChangeMode(EMode.CROSS_SECTION)}
-              >
+            <Menu fluid={true} vertical={true} tabular={true}>
+              <Menu.Item active={mode === EMode.CROSS_SECTION} onClick={handleChangeMode(EMode.CROSS_SECTION)}>
                 Cross Section
               </Menu.Item>
-              <Menu.Item
-                active={mode === EMode.TIME_SERIES}
-                onClick={handleChangeMode(EMode.TIME_SERIES)}
-              >
+              <Menu.Item active={mode === EMode.TIME_SERIES} onClick={handleChangeMode(EMode.TIME_SERIES)}>
                 Time Series
               </Menu.Item>
-              <Menu.Item
-                disabled={model.readOnly}
-                onClick={handleCreateScenarioAnalysisClick}
-              >
+              <Menu.Item disabled={model.readOnly} onClick={handleCreateScenarioAnalysisClick}>
                 Scenario Analysis
               </Menu.Item>
             </Menu>
           </Grid.Column>
-          <Grid.Column width={13}>
-            {renderMode()}
-          </Grid.Column>
+          <Grid.Column width={13}>{renderMode()}</Grid.Column>
         </Grid.Row>
       </Grid>
     </Segment>

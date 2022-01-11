@@ -1,9 +1,8 @@
-import {BoundingBox, Cells, Geometry, GridSize, LengthUnit, Stressperiods, TimeUnit} from './index';
-import {IDiscretization, IModflowModel} from './ModflowModel.type';
-import {cloneDeep, includes} from 'lodash';
+import { BoundingBox, Cells, Geometry, GridSize, LengthUnit, Stressperiods, TimeUnit } from './index';
+import { IDiscretization, IModflowModel } from './ModflowModel.type';
+import { cloneDeep, includes } from 'lodash';
 
 export default class ModflowModel {
-
   get id(): string {
     return this._props.id;
   }
@@ -104,6 +103,10 @@ export default class ModflowModel {
     this._props.public = value;
   }
 
+  get isScenario() {
+    return this._props.is_scenario;
+  }
+
   get stressperiods() {
     return Stressperiods.fromObject(this._props.discretization.stressperiods);
   }
@@ -159,7 +162,8 @@ export default class ModflowModel {
     intersection: number,
     rotation: number,
     stressperiods: Stressperiods,
-    isPublic: boolean) {
+    isPublic: boolean
+  ) {
     return new ModflowModel({
       id,
       name,
@@ -177,7 +181,8 @@ export default class ModflowModel {
         stressperiods: stressperiods.toObject(),
         time_unit: timeUnit.toInt(),
       },
-      calculation_id: ''
+      calculation_id: '',
+      is_scenario: false,
     });
   }
 
@@ -187,8 +192,10 @@ export default class ModflowModel {
     this._props.discretization.cells = this._props.discretization.cells.filter((cell) => {
       let cellIsValid = true;
       if (
-        cell[0] < 0 || cell[0] > this._props.discretization.grid_size.n_x ||
-        cell[1] < 0 || cell[1] > this._props.discretization.grid_size.n_y ||
+        cell[0] < 0 ||
+        cell[0] > this._props.discretization.grid_size.n_x ||
+        cell[1] < 0 ||
+        cell[1] > this._props.discretization.grid_size.n_y ||
         (cell.length === 3 && cell[2] < 0)
       ) {
         cellIsValid = false;
@@ -201,9 +208,9 @@ export default class ModflowModel {
     this._props = cloneDeep(props);
   }
 
-  public toObject = () => (this._props);
+  public toObject = () => this._props;
 
-  public toPayload = () => (this._props);
+  public toPayload = () => this._props;
 
   public toCreatePayload = () => ({
     id: this.id,
@@ -218,10 +225,8 @@ export default class ModflowModel {
     intersection: this.intersection,
     rotation: this.rotation,
     stressperiods: this.stressperiods.toObject(),
-    time_unit: this.timeUnit.toInt()
+    time_unit: this.timeUnit.toInt(),
   });
 
-  public getClone = () => (
-    ModflowModel.fromObject(this.toObject())
-  );
+  public getClone = () => ModflowModel.fromObject(this.toObject());
 }

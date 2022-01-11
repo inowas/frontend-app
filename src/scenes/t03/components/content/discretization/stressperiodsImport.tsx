@@ -1,6 +1,6 @@
-import {AdvancedCsvUpload} from '../../../../shared/simpleTools/upload';
+import {AdvancedCsvUpload} from '../../../../shared/upload';
 import {Button, Divider, Grid, Header, Icon, List, Modal, Segment} from 'semantic-ui-react';
-import {ECsvColumnType} from '../../../../shared/simpleTools/upload/types';
+import {ECsvColumnType} from '../../../../shared/upload/types';
 import {IStressPeriods} from '../../../../../core/model/modflow/Stressperiods.type';
 import {ITimeUnit} from '../../../../../core/model/modflow/TimeUnit.type';
 import React, {useState} from 'react';

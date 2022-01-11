@@ -91,6 +91,11 @@ const ResultsMap = (props: IProps) => {
   }, [props.activeCell]);
 
   const handleClickOnMap = ({ latlng }: LeafletMouseEvent) => {
+    if (latlng.lat > props.model.boundingBox.yMax || latlng.lat < props.model.boundingBox.yMin ||
+      latlng.lng > props.model.boundingBox.xMax || latlng.lng < props.model.boundingBox.xMin) {
+      return null;
+    }
+
     const activeCell = getCellFromClick(
       props.model.boundingBox,
       props.model.gridSize,

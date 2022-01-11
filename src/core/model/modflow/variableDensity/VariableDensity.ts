@@ -35,6 +35,9 @@ class VariableDensity extends GenericObject<IVariableDensity> {
     }
 
     public static fromObject(obj: IVariableDensity) {
+      if (Array.isArray(obj) && obj.length === 0) {
+        return this.fromDefault();
+      }
         return new VariableDensity(obj);
     }
 

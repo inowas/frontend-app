@@ -1,14 +1,14 @@
-import {Boundary, BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
-import {Button, Progress} from 'semantic-ui-react';
-import {IBoundary} from '../../../../../core/model/modflow/boundaries/Boundary.type';
-import {IBoundaryComparisonItem} from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
-import {ModflowModel} from '../../../../../core/model/modflow';
-import {asyncSendCommand, fetchUrl} from '../../../../../services/api';
-import {updateBoundaries} from '../../../actions/actions';
-import {useDispatch} from 'react-redux';
+import { Boundary, BoundaryCollection } from '../../../../../core/model/modflow/boundaries';
+import { Button, Progress } from 'semantic-ui-react';
+import { IBoundary } from '../../../../../core/model/modflow/boundaries/Boundary.type';
+import { IBoundaryComparisonItem } from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
+import { ModflowModel } from '../../../../../core/model/modflow';
+import { asyncSendCommand, fetchUrl } from '../../../../../services/api';
+import { updateBoundaries } from '../../../actions/actions';
+import { useDispatch } from 'react-redux';
 import AbstractCommand from '../../../../../core/model/command/AbstractCommand';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface IProps {
   currentBoundaries: BoundaryCollection;
@@ -33,8 +33,6 @@ const BoundarySynchronizer = (props: IProps) => {
     setCommands(calculateCommands(boundaryList));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.currentBoundaries, props.model, props.newBoundaries, props.removeExistingBoundaries]);
-
-  console.log('SYNCHRONIZER');
 
   const calculateCommands = (boundaryList: IBoundaryComparisonItem[]) => {
     const commands: ModflowModelCommand[] = [];

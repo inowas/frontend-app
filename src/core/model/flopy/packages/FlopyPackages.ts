@@ -13,7 +13,6 @@ import md5 from 'md5';
 import { JSON_SCHEMA_URL } from '../../../../services/api';
 
 export default class FlopyPackages {
-
   get version() {
     return this._version;
   }
@@ -113,7 +112,6 @@ export default class FlopyPackages {
   }
 
   public static create(modelId: string, mf: FlopyModflow, mp: FlopyModpath, mt: FlopyMt3d, swt: FlopySeawat) {
-
     const self = new this();
     self.modelId = modelId;
     self.mf = mf;
@@ -136,14 +134,14 @@ export default class FlopyPackages {
   public static fromObject(obj: IFlopyPackages) {
     const mf = FlopyModflow.fromObject(obj.mf);
     const mp = obj.mp ? FlopyModpath.fromObject(obj.mp) : new FlopyModpath();
-    const mt = FlopyMt3d.fromObject(obj.mt);
-    const swt = FlopySeawat.fromObject(obj.swt);
+    const mt = obj.mt ? FlopyMt3d.fromObject(obj.mt) : null;
+    const swt = obj.swt ? FlopySeawat.fromObject(obj.swt) : null;
     const modelId = obj.model_id;
 
     const self = new this();
     self._modelId = modelId;
     self._mf = mf;
-    self._mf.setTransportEnabled(mt.enabled);
+    self._mf.setTransportEnabled(mt ? mt.enabled : false);
     self._mp = mp;
     self._mt = mt;
     self._swt = swt;
@@ -171,9 +169,16 @@ export default class FlopyPackages {
     transport: Transport,
     variableDensity: VariableDensity
   ) => {
-    this.mf = this.mf.recalculate(model, soilmodel, boundaries.filter((b) => !b.isExcludedFromCalculation));
+    this.mf = this.mf.recalculate(
+      model,
+      soilmodel,
+      boundaries.filter((b) => !b.isExcludedFromCalculation)
+    );
     this.mf.setTransportEnabled(transport.enabled);
-    this.mt = this.mt.recalculate(transport, boundaries.filter((b) => !b.isExcludedFromCalculation));
+    this.mt = this.mt.recalculate(
+      transport,
+      boundaries.filter((b) => !b.isExcludedFromCalculation)
+    );
     this.swt = this.swt.recalculate(variableDensity);
     return this;
   };
@@ -216,9 +221,9 @@ export default class FlopyPackages {
       version: this.version,
       model_id: this.modelId || '',
       mf: this.mf.toObject(),
-      mp: this.mp ? this.mp.toObject() : null,
-      mt: this.mt ? this.mt.toObject() : null,
-      swt: this.swt ? this.swt.toObject() : null
+      mp: this.mp ? this.mp.toObject() : undefined,
+      mt: this.mt ? this.mt.toObject() : undefined,
+      swt: this.swt ? this.swt.toObject() : undefined,
     };
   }
 
@@ -229,7 +234,7 @@ export default class FlopyPackages {
       version: this.version,
       calculation_id: this.calculation_id,
       model_id: this.modelId || '',
-      data: this.getData()
+      data: this.getData(),
     };
   }
 
@@ -270,17 +275,10 @@ export default class FlopyPackages {
   };
 
   public validate(forCalculationServer = true) {
-
     if (forCalculationServer) {
-      return jsonSchemaValidate(
-        this.toFlopyCalculation(),
-        JSON_SCHEMA_URL + '/modflow/packages/flopyCalculation.json'
-      );
+      return jsonSchemaValidate(this.toFlopyCalculation(), JSON_SCHEMA_URL + '/modflow/packages/flopyCalculation.json');
     }
 
-    return jsonSchemaValidate(
-      this.toObject(),
-      JSON_SCHEMA_URL + '/modflow/packages/flopyCalculationPackages.json'
-    );
+    return jsonSchemaValidate(this.toObject(), JSON_SCHEMA_URL + '/modflow/packages/flopyCalculationPackages.json');
   }
 }
