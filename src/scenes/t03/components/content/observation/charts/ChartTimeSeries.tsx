@@ -28,6 +28,7 @@ import { misc } from '../../../../defaults/colorScales';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import React from 'react';
+import TimeSeriesModal from '../../../../../shared/visualization/timeSeriesModal';
 
 interface IData {
   sp: string;
@@ -171,6 +172,7 @@ const ChartTimeSeries = () => {
       </Form>
       {data && selectedWells.length > 0 && (
         <Segment raised={true} loading={isFetching}>
+          <TimeSeriesModal data={data.map((r) => ({ timeStamp: 0, value: 1 }))} />
           <ResponsiveContainer aspect={1.5}>
             <LineChart data={data}>
               <XAxis dataKey="sp" />

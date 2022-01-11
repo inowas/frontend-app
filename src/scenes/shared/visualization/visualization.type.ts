@@ -24,6 +24,10 @@ export enum EFileType {
   SVG = 'svg'
 }
 
+export const fileTypes: EFileType[] = [
+  EFileType.JPG, EFileType.PNG, EFileType.SVG
+];
+
 export enum ELegendLocation {
   BEST = 'best',
   CENTER = 'center',
@@ -39,11 +43,18 @@ export enum ELegendLocation {
   RIGHT = 'right'
 }
 
+export const legendLocations: ELegendLocation[] = [
+  ELegendLocation.BEST, ELegendLocation.CENTER, ELegendLocation.CENTER_LEFT, ELegendLocation.CENTER_RIGHT,
+  ELegendLocation.LEFT, ELegendLocation.LOWER_CENTER, ELegendLocation.LOWER_LEFT, ELegendLocation.LOWER_RIGHT,
+  ELegendLocation.RIGHT, ELegendLocation.UPPER_CENTER, ELegendLocation.UPPER_LEFT, ELegendLocation.UPPER_RIGHT
+];
+
 export interface IScatterPlot {
   dpi: number;
   filetype: EFileType;
   name: string;
   rotation?: number; // trendline == true
+  title: string;
   trendline: boolean;
   x?: number; // trendline == true
   xaxis: string;
@@ -51,8 +62,22 @@ export interface IScatterPlot {
   y?: number; // trendline == true
   yaxis: string;
   ylabel: string;
-  title: string;
 }
+
+export const scatterPlotDefaults: IScatterPlot = {
+  dpi: 300,
+  filetype: EFileType.JPG,
+  name: 'scatterplot',
+  rotation: 0,
+  title: 'New Scatterplot',
+  trendline: false,
+  x: 0,
+  xaxis: '',
+  xlabel: 'm',
+  y: 0,
+  yaxis: '',
+  ylabel: 'm'
+};
 
 export interface ITimeSeries {
   asksti: boolean;
@@ -69,6 +94,22 @@ export interface ITimeSeries {
   xlabel: string;
   ylabel: string;
 }
+
+export const timeSeriesDefaults: ITimeSeries = {
+  asksti: false,
+  dpi: 300,
+  filetype: EFileType.JPG,
+  grid: true,
+  leglocation: ELegendLocation.BEST,
+  name: 'chart',
+  obdata: '',
+  stidata: '',
+  time: 'Datetime',
+  title: 'New Chart',
+  Xaxisformat: 'YYYY-MM-DD',
+  xlabel: '',
+  ylabel: 'Datetime'
+};
 
 export interface I3DVisualization {
   aspect: number;
@@ -88,6 +129,24 @@ export interface I3DVisualization {
   ymin: number;
 }
 
+export const visualization3DDefaults: I3DVisualization = {
+  aspect: 0,
+  axislabelsize: 12,
+  c: 1,
+  cbarlabel: '',
+  clblabel: 'z',
+  cmap: colormaps[0],
+  dpi: 300,
+  filetype: EFileType.JPG,
+  name: 'chart3d',
+  scalebarsize: 1,
+  ticklabelsize: 1,
+  xmax: 0,
+  xmin: 0,
+  ymax: 0,
+  ymin: 0
+};
+
 export interface IContourExport {
   ask: boolean;
   c: number;
@@ -104,3 +163,20 @@ export interface IContourExport {
   ymax: number;
   ymin: number;
 }
+
+export const contourDefaults: IContourExport = {
+  ask: false,
+  c: 1,
+  clblabel: '',
+  cmap: colormaps[0],
+  distance: 0,
+  dpi: 300,
+  filetype: EFileType.JPG,
+  name: 'contour',
+  rotation: 0,
+  tifname: 'raster',
+  xmax: 0,
+  xmin: 0,
+  ymax: 0,
+  ymin: 0
+};
