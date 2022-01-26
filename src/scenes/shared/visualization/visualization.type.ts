@@ -151,32 +151,44 @@ export interface IContourExport {
   ask: boolean;
   c: number;
   clblabel: string;
+  clabel: string;
+  clevels: number;
   cmap: string; // must match on of colormaps
   distance: number;
   dpi: number;
   filetype: EFileType;
   name: string;
   rotation: number;
+  target: string;
   tifname?: string; // If ask == true
+  xlabel: string;
   xmax: number;
   xmin: number;
+  ylabel: string;
   ymax: number;
   ymin: number;
+  zlabel: string;
 }
 
 export const contourDefaults: IContourExport = {
   ask: false,
   c: 1,
+  clabel: '',
   clblabel: '',
+  clevels: 10,
   cmap: colormaps[0],
   distance: 0,
   dpi: 300,
   filetype: EFileType.JPG,
   name: 'contour',
   rotation: 0,
+  target: 'web',
   tifname: 'raster',
+  xlabel: '',
   xmax: 0,
   xmin: 0,
+  ylabel: '',
   ymax: 0,
-  ymin: 0
+  ymin: 0,
+  zlabel: ''
 };

@@ -9,6 +9,7 @@ import React, { useEffect, useState } from 'react';
 import ResultsChart from '../../../../shared/complexTools/ResultsChart';
 import ResultsMap from '../../maps/resultsMap';
 import ResultsSelectorFlow from '../../../../shared/complexTools/ResultsSelectorFlow';
+import ContourModal from '../../../../shared/visualization/contourModal';
 
 interface IProps {
   boundaries: BoundaryCollection;
@@ -124,6 +125,7 @@ const CrossSection = (props: IProps) => {
         />
       )}
       <Segment color={'grey'} loading={isLoading}>
+        {data && <ContourModal data={data} />}
         {data && (
           <ResultsMap
             activeCell={[selectedCol, selectedRow]}

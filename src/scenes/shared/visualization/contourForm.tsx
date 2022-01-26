@@ -9,8 +9,8 @@ interface IActiveInput {
 }
 
 interface IProps {
+  isFetching: boolean;
   onChange: (s: IContourExport) => void;
-  simData: boolean;
 }
 
 const ContourForm = (props: IProps) => {
@@ -59,6 +59,13 @@ const ContourForm = (props: IProps) => {
         <Form.Input
           onBlur={handleBlurInput}
           onChange={handleChangeInput}
+          label="X Label"
+          name="xlabel"
+          value={activeInput && activeInput.name === 'xlabel' ? activeInput.value : settings.xlabel}
+        />
+        <Form.Input
+          onBlur={handleBlurInput}
+          onChange={handleChangeInput}
           label="X Min"
           name="xmin"
           type="number"
@@ -74,6 +81,13 @@ const ContourForm = (props: IProps) => {
         />
       </Form.Group>
       <Form.Group widths="equal">
+        <Form.Input
+          onBlur={handleBlurInput}
+          onChange={handleChangeInput}
+          label="Y Label"
+          name="ylabel"
+          value={activeInput && activeInput.name === 'ylabel' ? activeInput.value : settings.ylabel}
+        />
         <Form.Input
           onBlur={handleBlurInput}
           onChange={handleChangeInput}
@@ -173,7 +187,7 @@ const ContourForm = (props: IProps) => {
         type="number"
         value={activeInput && activeInput.name === 'dpi' ? activeInput.value : settings.dpi}
       />
-      <Button primary fluid onClick={handleClickButton}>
+      <Button primary fluid loading={props.isFetching} onClick={handleClickButton}>
         Apply
       </Button>
     </Form>
