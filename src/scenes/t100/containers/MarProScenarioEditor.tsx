@@ -1,0 +1,89 @@
+import { AppContainer } from '../../shared';
+import { Breadcrumb, Button, Grid, Header, Icon, Search, Segment } from 'semantic-ui-react';
+import { IScenario } from '../../../core/marPro/Scenario.type';
+import { scenario1, scenario2 } from '../../../core/marPro/scenarios';
+import { useDispatch } from 'react-redux';
+import { useHistory, useParams, withRouter } from 'react-router-dom';
+import { useState } from 'react';
+import Playground from '../components/playground/Playground_2';
+
+const navigation = [
+  {
+    name: 'Documentation',
+    path: 'https://inowas.com/tools',
+    icon: <Icon name="file" />,
+  },
+];
+
+const T100 = () => {
+  const [activeScenario, setActiveScenario] = useState<IScenario>();
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const { id, property, pid } = useParams<any>();
+
+  const handleSelectScenario = (scenario: IScenario) => () => setActiveScenario(scenario);
+
+  if (activeScenario) {
+    return <Playground scenario={activeScenario} />;
+  }
+
+  const renderBreadcumbs = () => {
+    return (
+      <Breadcrumb>
+        <Breadcrumb.Section link={true} onClick={() => history.push('/tools')}>
+          Tools
+        </Breadcrumb.Section>
+        <Breadcrumb.Divider icon="right chevron" />
+        <Breadcrumb.Section active={true}>T100. MarPro - Scenario Editor</Breadcrumb.Section>
+      </Breadcrumb>
+    );
+  };
+
+  return (
+    <AppContainer navbarItems={navigation}>
+      <Grid padded={true}>
+        <Grid.Row>
+          <Grid.Column style={{ paddingTop: '0.3em' }}>{renderBreadcumbs()}</Grid.Column>
+        </Grid.Row>
+        <Grid.Row columns={2}>
+          <Grid.Column textAlign="center">
+            <Segment>
+              <Header icon>
+                <Icon name="play" />
+                Playground
+              </Header>
+              <Button.Group fluid primary vertical>
+                <Button onClick={handleSelectScenario(scenario1)}>Scenario 1.1: Ezousa</Button>
+                <Button onClick={handleSelectScenario(scenario2)}>Scenario 1.2: Ezousa</Button>
+              </Button.Group>
+            </Segment>
+          </Grid.Column>
+          <Grid.Column textAlign="center">
+            <Segment>
+              <Header icon>
+                <Icon name="upload" />
+                Upload JSON
+              </Header>
+              <Search disabled placeholder="Select file..." />
+            </Segment>
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row>
+          <Grid.Column textAlign="center">
+            <Segment>
+              <Header icon>
+                <Icon name="edit" />
+                Editor
+              </Header>
+              <Button disabled primary fluid>
+                Create New Scenario
+              </Button>
+            </Segment>
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>
+    </AppContainer>
+  );
+};
+
+export default withRouter(T100);
