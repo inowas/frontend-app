@@ -4,7 +4,7 @@ import { IContourExport, colormaps, contourDefaults, fileTypes } from './visuali
 
 interface IActiveInput {
   name: string;
-  value: string;
+  value?: string;
   type?: string;
 }
 
@@ -21,9 +21,14 @@ const ContourForm = (props: IProps) => {
 
   const handleBlurInput = () => {
     if (activeInput) {
+      let value: any = activeInput.value;
+      if (activeInput.value !== undefined && activeInput.type === 'number') {
+        value = parseFloat(activeInput.value);
+      }
+
       setSettings({
         ...settings,
-        [activeInput.name]: activeInput.type === 'number' ? parseFloat(activeInput.value) : activeInput.value,
+        [activeInput.name]: value,
       });
     }
     setActiveInput(null);
@@ -103,6 +108,24 @@ const ContourForm = (props: IProps) => {
           name="ymax"
           type="number"
           value={activeInput && activeInput.name === 'ymax' ? activeInput.value : settings.ymax}
+        />
+      </Form.Group>
+      <Form.Group widths="equal">
+        <Form.Input
+          onBlur={handleBlurInput}
+          onChange={handleChangeInput}
+          label="Z Min"
+          name="zmin"
+          type="number"
+          value={activeInput && activeInput.name === 'zmin' ? activeInput.value : settings.zmin}
+        />
+        <Form.Input
+          onBlur={handleBlurInput}
+          onChange={handleChangeInput}
+          label="Z Max"
+          name="zmax"
+          type="number"
+          value={activeInput && activeInput.name === 'zmax' ? activeInput.value : settings.zmax}
         />
       </Form.Group>
       <Form.Group widths="equal">

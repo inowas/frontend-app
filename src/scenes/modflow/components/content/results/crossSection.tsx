@@ -5,11 +5,11 @@ import { FlopyModflowMfbas } from '../../../../../core/model/flopy/packages/mf';
 import { FlopyPackages } from '../../../../../core/model/flopy';
 import { Grid, Header, Segment } from 'semantic-ui-react';
 import { fetchCalculationResultsFlow } from '../../../../../services/api';
+import ContourModal from '../../../../shared/visualization/contourModal';
 import React, { useEffect, useState } from 'react';
 import ResultsChart from '../../../../shared/complexTools/ResultsChart';
 import ResultsMap from '../../maps/resultsMap';
 import ResultsSelectorFlow from '../../../../shared/complexTools/ResultsSelectorFlow';
-import ContourModal from '../../../../shared/visualization/contourModal';
 
 interface IProps {
   boundaries: BoundaryCollection;

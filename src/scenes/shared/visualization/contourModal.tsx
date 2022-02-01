@@ -1,7 +1,7 @@
 import { Array2D } from '../../../core/model/geometry/Array2D.type';
-import { Button, Grid, Image, Modal } from 'semantic-ui-react';
-import { IContourExport } from './visualization.type';
-import { useState } from 'react';
+import { Button, Dimmer, Grid, Icon, Image, Loader, Modal } from 'semantic-ui-react';
+import { IContourExport, contourDefaults } from './visualization.type';
+import { useEffect, useState } from 'react';
 import ContourForm from './contourForm';
 import axios from 'axios';
 
@@ -11,79 +11,87 @@ interface IProps {
 
 const ContourModal = (props: IProps) => {
   const [isFetching, setIsFetching] = useState<boolean>(false);
-  const [result, setResult] = useState<any>();
+  const [getUrl, setGetUrl] = useState<string | null>(null);
+  const [objectUrl, setObjectUrl] = useState<string | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [settings, setSettings] = useState<IContourExport>(contourDefaults);
 
-  const handleChangeSettings = async (settings: IContourExport) => {
-    const response = await axios
-      .request({
-        method: 'POST',
-        url: 'https://processing.inowas.com/visualization/contour',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        data: props.data.map((row) => row.map((col) => (col === null ? -1 : col))),
-      })
+  const getFullUrl = (settings: IContourExport) => {
+    return (
+      getUrl +
+      '?' +
+      Object.keys(settings)
+        .filter((k) => settings[k] !== undefined && settings[k] !== '')
+        .map((k: string) => {
+          return encodeURIComponent(k) + '=' + encodeURIComponent(settings[k]);
+        })
+        .join('&')
+    );
+  };
 
-      .then((e: any) => {
-        console.log('RESULT', e);
-      })
-      .catch((error) => {
-        console.log(error.toJSON());
-        if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          console.log(error.response.data);
-          console.log(error.response.status);
-          console.log(error.response.headers);
-        } else if (error.request) {
-          // The request was made but no response was received
-          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-          // http.ClientRequest in node.js
-          console.log(error.request);
-        } else {
-          // Something happened in setting up the request that triggered an Error
-          console.log('Error', error.message);
-        }
-        console.log(error.config);
-      })
-      .finally(() => {
-        setIsFetching(false);
-      });
-    /*axios
-      .request({
-        method: 'POST',
-        url: `https://processing.inowas.com/visualization/contour?xmin=${settings.xmin}&xmax=${settings.xmax}&ymin=${settings.ymin}&ymax=${settings.ymax}&clevels=${settings.clevels}&cmap=${settings.cmap}&target=${settings.target}&clabel=${settings.clabel}&xlabel=${settings.xlabel}&ylabel=${settings.ylabel}&zlabel=${settings.zlabel}`,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        data: props.data.map((row) => row.map((col) => (col === null ? -1 : col))),
-      })
-      .then((e: any) => {
-        setResult(e);
-      })
-      .catch((e) => {
-        console.log('ERROR', e);
-      })
-      .finally(() => {
-        setIsFetching(false);
-      });*/
+  const getImage = async (settings: IContourExport) => {
+    setIsFetching(true);
+    const getResponse = await axios.get(getFullUrl(settings), { responseType: 'blob' });
+    const objectUrl = URL.createObjectURL(getResponse.data);
+    setObjectUrl(objectUrl);
+    setIsFetching(false);
+  };
+
+  const postData = async (data: Array2D<number>) => {
+    setIsFetching(true);
+    const postResponse = await axios.post('https://processing.inowas.com/visualization/contour', data, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      responseType: 'blob',
+    });
+    setGetUrl(postResponse.request.responseURL);
+    setIsFetching(false);
+  };
+
+  useEffect(() => {
+    if (showModal && !getUrl) {
+      const data = props.data.map((row) => row.map((col) => (col === null ? -1 : col))) as Array2D<number>;
+      postData(data);
+    }
+  }, [getUrl, props.data, showModal]);
+
+  const handleChangeSettings = (settings: IContourExport) => {
+    setSettings(settings);
+    getImage(settings);
+  };
+
+  const handleClickDownload = () => {
+    const tempLink = document.createElement('a');
+    tempLink.href = getFullUrl(settings);
+    tempLink.setAttribute('download', `${settings.name}.${settings.filetype}`);
+    tempLink.target = '_blank';
+    document.body.appendChild(tempLink);
+    tempLink.click();
+    document.body.removeChild(tempLink);
   };
 
   const renderResult = () => {
-    if (!result) {
+    if (isFetching) {
+      return (
+        <Dimmer active inverted>
+          <Loader inverted>Generating image ...</Loader>
+        </Dimmer>
+      );
+    }
+    if (!objectUrl) {
       return null;
     }
 
-    //const base64 = Buffer.from(result, 'binary').toString('base64');
-    console.log(result);
-    const blob = result.blob();
-    const objectUrl = URL.createObjectURL(blob);
-
-    console.log(objectUrl);
-
-    // <img src={`data:image/png;base64,${Buffer.from(result, 'binary').toString('base64')}`} />
-    return <img src={`data:image/png;base64,${objectUrl}`} />;
+    return (
+      <>
+        <Image src={objectUrl} centered />
+        <Button icon labelPosition="left" floated="right" onClick={handleClickDownload} primary>
+          <Icon name="download" />
+          Download
+        </Button>
+      </>
+    );
   };
 
   return (
@@ -93,7 +101,6 @@ const ContourModal = (props: IProps) => {
       open={showModal}
       size="fullscreen"
       trigger={<Button>Export Graphic</Button>}
-      zIndex={1002}
     >
       <Modal.Header>Export Graphic</Modal.Header>
       <Modal.Content>

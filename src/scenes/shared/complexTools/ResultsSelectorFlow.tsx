@@ -114,7 +114,7 @@ const ResultsSelectorFlow = (props: IProps) => {
                 <label>Select type</label>
                 <Form.Dropdown
                   selection={true}
-                  style={{ zIndex: 1002, minWidth: '8em' }}
+                  style={{ zIndex: 402, minWidth: '8em' }}
                   options={typeOptions()}
                   value={props.data.type}
                   onChange={handleChangeType}
@@ -122,7 +122,7 @@ const ResultsSelectorFlow = (props: IProps) => {
               </Form.Group>
               <Form.Select
                 loading={!props.soilmodel}
-                style={{ zIndex: 1001 }}
+                style={{ zIndex: 401 }}
                 fluid={true}
                 options={layerOptions()}
                 value={props.data.layer}
