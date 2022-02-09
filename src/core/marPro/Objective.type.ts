@@ -1,4 +1,4 @@
-import { ICell } from './Geometry.type';
+import { IVector2D } from './Geometry.type';
 
 export enum EObjectiveType {
   BY_CELLS = 'cells',
@@ -12,7 +12,7 @@ export enum EParameterObjectiveType {
 }
 
 export interface IObjectiveByCells {
-  cells: Array<ICell | string>;
+  cells: Array<IVector2D | string>;
   parameters: IParameterObjective[];
   type: EObjectiveType.BY_CELLS;
 }

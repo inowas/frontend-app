@@ -1,9 +1,4 @@
-export interface ICell {
+export interface IVector2D {
   x: number;
   y: number;
-}
-
-export interface IGridSize {
-  height: number;
-  width: number;
 }

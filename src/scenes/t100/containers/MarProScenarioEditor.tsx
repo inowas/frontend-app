@@ -1,3 +1,4 @@
+import '../style.css';
 import { AppContainer } from '../../shared';
 import { Breadcrumb, Button, Grid, Header, Icon, Search, Segment } from 'semantic-ui-react';
 import { IScenario } from '../../../core/marPro/Scenario.type';

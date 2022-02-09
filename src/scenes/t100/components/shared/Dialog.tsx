@@ -1,6 +1,14 @@
-import { DragEventHandler, useEffect, useRef, useState } from 'react';
+import { DragEventHandler, ReactNode, useEffect, useRef, useState } from 'react';
+import { Icon, Image } from 'semantic-ui-react';
+import well from '../../assets/infiltration-pond.png';
 
-const Dialog = () => {
+interface IProps {
+  header: string;
+  content: ReactNode;
+  onClose: () => void;
+}
+
+const Dialog = (props: IProps) => {
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const divRef = useRef<HTMLDivElement>(null);
@@ -12,6 +20,7 @@ const Dialog = () => {
   }, [position]);
 
   const handleMouseMove: DragEventHandler<HTMLDivElement> = (e) => {
+    e.preventDefault();
     if (isDragging) {
       setPosition({
         x: position.x + e.movementX,
@@ -25,14 +34,8 @@ const Dialog = () => {
   return (
     <div
       ref={divRef}
+      className="obj-modal-container"
       style={{
-        backgroundColor: '#fff',
-        border: '1px solid black',
-        height: '300px',
-        left: '0px',
-        position: 'absolute',
-        top: '25px',
-        width: '200px',
         zIndex: isDragging ? 1001 : 1000,
       }}
     >
@@ -40,16 +43,23 @@ const Dialog = () => {
         onMouseMove={handleMouseMove}
         onMouseDown={toggleIsDragging}
         onMouseUp={toggleIsDragging}
+        className="obj-modal-header"
         style={{
-          backgroundColor: '#0088aa',
-          color: '#fff',
           cursor: isDragging ? 'grabbing' : 'grab',
-          height: '30px',
         }}
       >
-        Dialog
+        <Image floated="left" src={well} size="mini" />
+        {props.header}
+        <Icon style={{ float: 'right' }} link name="close" onClick={props.onClose} />
       </div>
-      <p>{isDragging ? 'Dragging...' : 'Press to drag'}</p>
+      <div
+        className="obj-modal-body"
+        style={{
+          cursor: isDragging ? 'grabbing' : 'grab',
+        }}
+      >
+        {props.content}
+      </div>
     </div>
   );
 };
