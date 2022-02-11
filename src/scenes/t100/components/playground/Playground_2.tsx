@@ -1,18 +1,22 @@
 import { Circle, Image, Layer, Stage } from 'react-konva';
 import { Dimmer, List, Loader } from 'semantic-ui-react';
+import { DragEvent, useEffect, useRef, useState } from 'react';
 import { EGameObjectType, IGameObject } from '../../../../core/marPro/GameObject.type';
 import { IGameState } from '../../../../core/marPro/GameState.type';
 import { IScenario } from '../../../../core/marPro/Scenario.type';
 import { IVector2D } from '../../../../core/marPro/Geometry.type';
 import { Vector2d } from 'konva/lib/types';
 import { styles } from './styles';
-import { useEffect, useRef, useState } from 'react';
 import Dialog from '../shared/Dialog';
+import GameObjectsDialog from './GameObjectsDialog';
 import GameState from '../../../../core/marPro/GameState';
 import InfiltrationPond from '../gameObjects/InfiltrationPond';
+import ResourcesDialog from './ResourcesDialog';
 import River from '../gameObjects/River';
 import bg from '../../assets/mar-gameboard-01-riverbed.png';
 import useImage from '../../hooks/useImage';
+import GameObject from '../../../../core/marPro/GameObject';
+import Header from './Header';
 
 interface IProps {
   scenario: IScenario;
@@ -23,28 +27,15 @@ const Playground = (props: IProps) => {
   const [backgroundImage] = useImage(bg);
   const stageRef = useRef<any>(null);
   const [gameState, setGameState] = useState<IGameState>(GameState.fromScenario(props.scenario).toObject());
+  const [isDraggingNewObject, setIsDraggingNewObject] = useState<boolean>(false);
 
   const calculateGrid = (scenario: IScenario) => {
-    const angle = 30;
     const r_x = 800;
     const r_y = 0;
-    const g_x = 20;
-    const g_y = 40;
+    const g_x = scenario.gridSize.x;
+    const g_y = scenario.gridSize.y;
     const c_x = 44;
     const c_y = 30;
-    const dxx = Math.cos((angle * Math.PI) / 180) * c_x;
-    const dyx = Math.cos(((90 - angle) * Math.PI) / 180) * c_y;
-    const dxy = Math.sin((angle * Math.PI) / 180) * c_x;
-    const dyy = Math.sin(((90 - angle) * Math.PI) / 180) * c_y;
-    const dx = c_x * Math.cos(angle) + c_y * Math.cos(60);
-    const dy = c_x * Math.sin(angle) + c_y * Math.sin(60);
-
-    console.log({
-      dxx,
-      dyx,
-      dxy,
-      dyy,
-    });
 
     const points: Vector2d[] = [];
     for (let y = 0; y < g_y; y++) {
@@ -54,8 +45,6 @@ const Playground = (props: IProps) => {
           y: r_y + ((x + y) * c_y) / 2,
         });
       }
-      //r_x += dx;
-      //r_y -= dy;
     }
     return points;
   };
@@ -65,6 +54,20 @@ const Playground = (props: IProps) => {
   useEffect(() => {
     setGrid(calculateGrid(props.scenario));
   }, [props.scenario]);
+
+  const handleDragNewObject = (e: DragEvent<HTMLDivElement>) => {
+    setIsDraggingNewObject(true);
+    const newGameObject = GameObject.createWell();
+    console.log('DRAG', e, newGameObject.toObject());
+  };
+
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
+
+  const handleDropNewObject = (e: DragEvent<HTMLDivElement>) => {
+    console.log('DROP', e);
+  };
 
   const handleClickPoint = (e: any) => {
     console.log(e);
@@ -89,50 +92,42 @@ const Playground = (props: IProps) => {
   };
 
   return (
-    <div style={styles.body}>
-      {activeGameObjects.map((gameObject) => (
-        <Dialog
-          key={`dialog_${gameObject.id}`}
-          header={gameObject.type}
-          content={
-            <List>
-              <List.Item>object_id: {gameObject.id}</List.Item>
-            </List>
-          }
-          onClose={handleCloseDialog(gameObject.id)}
-        />
-      ))}
-      {!backgroundImage ? (
-        <Dimmer active inverted>
-          <Loader inverted>Loading</Loader>
-        </Dimmer>
-      ) : (
-        <Stage width={props.scenario.stageSize.x} height={props.scenario.stageSize.y} ref={stageRef}>
-          <Layer>{backgroundImage && <Image image={backgroundImage} />}</Layer>
-          <Layer>{renderGameObjects()}</Layer>
-          <Layer>
-            {grid.map((cell, k) => (
-              <Circle key={k} onClick={handleClickPoint} fill="grey" radius={2} x={cell.x} y={cell.y} />
-            ))}
-          </Layer>
-        </Stage>
-      )}
-    </div>
-  );
-
-  /*return (
-    <div style={styles.body}>
-      <div style={styles.bgNoise}>xx</div>
-      <div
-        style={{
-          ...styles.boardBg,
-          background: `url(${bg}) no-repeat`,
-        }}
-      >
-        {renderGameObjects()}
+    <>
+      <Header />
+      <div style={styles.body} onDrop={handleDropNewObject} onDragOver={handleDragOver}>
+        <GameObjectsDialog onDrag={handleDragNewObject} />
+        <ResourcesDialog resources={gameState.resources} />
+        {activeGameObjects.map((gameObject) => (
+          <Dialog
+            key={`dialog_${gameObject.id}`}
+            header={gameObject.type}
+            image={gameObject.type}
+            content={
+              <List>
+                <List.Item>object_id: {gameObject.id}</List.Item>
+              </List>
+            }
+            onClose={handleCloseDialog(gameObject.id)}
+          />
+        ))}
+        {!backgroundImage ? (
+          <Dimmer active inverted>
+            <Loader inverted>Loading</Loader>
+          </Dimmer>
+        ) : (
+          <Stage width={props.scenario.stageSize.x} height={props.scenario.stageSize.y} ref={stageRef}>
+            <Layer>{backgroundImage && <Image image={backgroundImage} />}</Layer>
+            <Layer>{renderGameObjects()}</Layer>
+            <Layer>
+              {grid.map((cell, k) => (
+                <Circle key={k} onClick={handleClickPoint} fill="grey" radius={2} x={cell.x} y={cell.y} />
+              ))}
+            </Layer>
+          </Stage>
+        )}
       </div>
-    </div>
-  );*/
+    </>
+  );
 };
 
 export default Playground;

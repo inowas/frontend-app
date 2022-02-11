@@ -20,3 +20,198 @@
   border-radius: 0 0 4px 4px;
   padding: 10px 15px;
 }
+
+.obj-modal-container {
+  border-radius: 4px;
+  box-shadow: 0 0 1px 1px #c9b69c;
+  color: #333333;
+  left: 30px;
+  position: absolute;
+  top: 25px;
+  width: 200px !important;
+}
+.ui.modal > .close {
+  top: -0.2rem !important;
+  right: -0.2rem !important;
+}
+.obj-modal-container:after {
+  background: #f5ead6;
+  bottom: -0.30714286em;
+  box-shadow: 1px 1px 0 0 #bababc;
+  content: ' ';
+  height: 0.71428571em;
+  left: 1em;
+  margin-left: 0;
+  position: absolute;
+  right: auto;
+  transform: rotate(45deg);
+  top: auto;
+  width: 0.71428571em;
+}
+.ui.ui.header.obj-modal {
+  background-color: #333333;
+  border-radius: 4px 4px 0 0;
+  color: #ebe6e0;
+  height: auto;
+  padding: 10px 15px;
+}
+.obj-modal-container .content {
+  background-color: #f5ead6 !important;
+}
+
+.ui.labeled.icon.menu .item {
+  padding-bottom: 0;
+}
+.ui.labeled.icon.menu .button.item {
+  min-width: 3em !important;
+  margin: auto;
+  padding-left: 0;
+  padding-right: 0;
+}
+.ui.labeled.icon.menu .active.item {
+  text-transform: uppercase;
+}
+
+.coins .button {
+  background: transparent !important;
+}
+.coins .label {
+  background-color: #333333 !important;
+  color: #ffffff !important;
+  display: inline-block !important;
+  width: 100px;
+  height: 25px;
+  left: -20px;
+  position: relative;
+  text-align: right;
+  top: 12px;
+  z-index: -1;
+}
+.coins .ui.progress {
+  background-color: #333333;
+  height: 25px;
+  top: 12px;
+  width: 100px;
+}
+.ui.card.object {
+  box-shadow: none;
+  text-align: left;
+  width: 135px !important;
+}
+.ui.card.object {
+  background-color: #f5ead6;
+}
+.ui.card.object .image {
+  top: 15px;
+}
+.ui.card.object .header {
+  font-size: 14px !important;
+  white-space: nowrap;
+}
+.ui.vertical.menu.objects .item:before {
+  height: 0;
+}
+.ui.segment.calculation {
+  overflow-y: visible !important;
+}
+.ui.floating.label {
+  left: 50% !important;
+}
+/* .calculation-container {
+  background: #333333;
+  border-radius: 8px;
+  display: inline-flex;
+  flex-direction: row;
+  padding: 15px;
+  position: absolute;
+  bottom: 0%;
+  width: 700px;
+} */
+.calculation .ui.segment {
+  background: #f5ead6;
+  text-align: left;
+}
+.calculation h3 {
+  text-transform: uppercase;
+}
+.calculation .ui.label {
+  background-color: transparent;
+}
+.calculation .ui.label > .icon {
+  margin: 0 0.75em;
+}
+.calculation .ui.input {
+  background-color: transparent;
+  border: none;
+}
+.calculation .ui.button {
+  border-radius: 50px;
+}
+.ui.range {
+  width: 100%;
+  padding: 1em 0.5em;
+  position: relative;
+}
+.ui.range .inner {
+  height: 1.5em;
+  position: relative;
+}
+.ui.range .inner .track {
+  width: 100%;
+  height: 0.4em;
+  top: 0.55em;
+  left: 0;
+  position: absolute;
+  border-radius: 4px;
+  background-color: rgba(201 182 156 / 50%);
+}
+.ui.range .inner .track-fill {
+  width: 0;
+  height: 0.4em;
+  top: 0.55em;
+  left: 0;
+  position: absolute;
+  border-radius: 4px;
+  background-color: #1581ba;
+}
+.ui.range .inner .thumb {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 1.5em;
+  width: 1.5em;
+  background: #ffffff -webkit-linear-gradient(transparent, rgba(0, 0, 0, 0.05));
+  background: #ffffff linear-gradient(transparent, rgba(0, 0, 0, 0.05));
+  border-radius: 100%;
+  box-shadow: 0px 1px 2px 0 rgb(34 36 38 / 15%), 0 0 0 1px rgb(34 36 38 / 15%) inset;
+  z-index: 2;
+}
+.ui.labeled.range:not(.vertical) > .labels {
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+.ui.labeled.range > .labels {
+  height: 1.5em;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 50%;
+}
+.ui.labeled.range > .labels .label {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  position: absolute;
+  -webkit-transform: translate(-50%, -100%);
+  transform: translate(-50%, -100%);
+}
+.ui.labeled.range > .labels .label:after {
+  content: ' ';
+  height: 0.75em;
+  width: 2px;
+  background: #333333;
+  position: absolute;
+  top: 20px;
+  left: 50%;
+}

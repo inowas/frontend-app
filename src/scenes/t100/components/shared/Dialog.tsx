@@ -1,11 +1,12 @@
 import { DragEventHandler, ReactNode, useEffect, useRef, useState } from 'react';
 import { Icon, Image } from 'semantic-ui-react';
-import well from '../../assets/infiltration-pond.png';
+import { getImage } from '../../assets/images';
 
 interface IProps {
   header: string;
+  image?: string;
   content: ReactNode;
-  onClose: () => void;
+  onClose?: () => void;
 }
 
 const Dialog = (props: IProps) => {
@@ -48,9 +49,9 @@ const Dialog = (props: IProps) => {
           cursor: isDragging ? 'grabbing' : 'grab',
         }}
       >
-        <Image floated="left" src={well} size="mini" />
+        {!!props.image && <Image floated="left" src={getImage(props.image)} size="mini" />}
         {props.header}
-        <Icon style={{ float: 'right' }} link name="close" onClick={props.onClose} />
+        {!!props.onClose && <Icon style={{ float: 'right' }} link name="close" onClick={props.onClose} />}
       </div>
       <div
         className="obj-modal-body"

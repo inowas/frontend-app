@@ -6,6 +6,7 @@ export const styles: {
 } = {
   body: {
     background: 'linear-gradient(20deg, #0f3d13 0%, #0f5715 40%, #4d3719 60%)',
+    color: '#333333',
     height: '100vmax',
     overflow: 'hidden',
     margin: 'auto',
@@ -19,9 +20,8 @@ export const styles: {
     mixBlendMode: 'screen',
   },
   boardBg: {
-    width: '1100px',
-    height: '900px',
-    position: 'absolute',
+    width: '1060px',
+    height: '800px',
     top: '40px',
     left: '120px',
   },
