@@ -1,8 +1,13 @@
 import { EGameObjectType, IGameObject } from './GameObject.type';
 import { GenericObject } from '../model/genericObject/GenericObject';
+import { IVector2D } from './Geometry.type';
 import uuid from 'uuid';
 
 class GameObject extends GenericObject<IGameObject> {
+  set location(value: IVector2D) {
+    this._props.location = value;
+  }
+
   public static fromObject(value: IGameObject) {
     return new GameObject(value);
   }

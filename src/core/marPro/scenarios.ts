@@ -1,3 +1,4 @@
+import { EGameObjectCategory } from './Tool.type';
 import { EGameObjectType } from './GameObject.type';
 import { EObjectiveType, EParameterObjectiveType } from './Objective.type';
 import { IScenario } from './Scenario.type';
@@ -151,6 +152,7 @@ export const scenario1: IScenario = {
   title: 'Ezousa Catchment',
   tools: [
     {
+      category: EGameObjectCategory.STRUCTURES,
       editParameters: ['p_infiltration_rate'],
       editPosition: true,
       name: 'o_infiltration_pond',
@@ -445,10 +447,12 @@ export const scenario2: IScenario = {
   title: 'Ezousa Catchment',
   tools: [
     {
+      category: EGameObjectCategory.STRUCTURES,
       editParameters: ['p_infiltration_rate'],
       name: 'o_infiltration_pond',
     },
     {
+      category: EGameObjectCategory.STRUCTURES,
       editParameters: ['p_ecological_flow', 'p_agricultural_flow'],
       name: 'o_abstraction_well',
     },

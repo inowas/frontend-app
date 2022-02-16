@@ -6,17 +6,18 @@ import { IGameState } from '../../../../core/marPro/GameState.type';
 import { IScenario } from '../../../../core/marPro/Scenario.type';
 import { IVector2D } from '../../../../core/marPro/Geometry.type';
 import { Vector2d } from 'konva/lib/types';
+import { getSnappingPoint } from '../utils';
 import { styles } from './styles';
 import Dialog from '../shared/Dialog';
-import GameObjectsDialog from './GameObjectsDialog';
+import Footer from './Footer';
+import GameObject from '../../../../core/marPro/GameObject';
 import GameState from '../../../../core/marPro/GameState';
+import Header from './Header';
 import InfiltrationPond from '../gameObjects/InfiltrationPond';
-import ResourcesDialog from './ResourcesDialog';
 import River from '../gameObjects/River';
+import Toolbox from './Toolbox';
 import bg from '../../assets/mar-gameboard-01-riverbed.png';
 import useImage from '../../hooks/useImage';
-import GameObject from '../../../../core/marPro/GameObject';
-import Header from './Header';
 
 interface IProps {
   scenario: IScenario;
@@ -27,7 +28,6 @@ const Playground = (props: IProps) => {
   const [backgroundImage] = useImage(bg);
   const stageRef = useRef<any>(null);
   const [gameState, setGameState] = useState<IGameState>(GameState.fromScenario(props.scenario).toObject());
-  const [isDraggingNewObject, setIsDraggingNewObject] = useState<boolean>(false);
 
   const calculateGrid = (scenario: IScenario) => {
     const r_x = 800;
@@ -55,18 +55,20 @@ const Playground = (props: IProps) => {
     setGrid(calculateGrid(props.scenario));
   }, [props.scenario]);
 
-  const handleDragNewObject = (e: DragEvent<HTMLDivElement>) => {
-    setIsDraggingNewObject(true);
-    const newGameObject = GameObject.createWell();
-    console.log('DRAG', e, newGameObject.toObject());
-  };
-
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
   };
 
   const handleDropNewObject = (e: DragEvent<HTMLDivElement>) => {
-    console.log('DROP', e);
+    console.log(e);
+
+    const newGameObject = GameObject.createWell();
+    newGameObject.location = getSnappingPoint(grid, e.clientX, e.clientY);
+
+    setGameState({
+      ...gameState,
+      objects: [...gameState.objects, newGameObject.toObject()],
+    });
   };
 
   const handleClickPoint = (e: any) => {
@@ -94,9 +96,8 @@ const Playground = (props: IProps) => {
   return (
     <>
       <Header />
+      <Toolbox scenario={props.scenario} />
       <div style={styles.body} onDrop={handleDropNewObject} onDragOver={handleDragOver}>
-        <GameObjectsDialog onDrag={handleDragNewObject} />
-        <ResourcesDialog resources={gameState.resources} />
         {activeGameObjects.map((gameObject) => (
           <Dialog
             key={`dialog_${gameObject.id}`}
@@ -126,6 +127,7 @@ const Playground = (props: IProps) => {
           </Stage>
         )}
       </div>
+      <Footer />
     </>
   );
 };

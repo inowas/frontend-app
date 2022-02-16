@@ -2,6 +2,7 @@ import { IGameObject } from '../../../../core/marPro/GameObject.type';
 import { IVector2D } from '../../../../core/marPro/Geometry.type';
 import { Image } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
+import { getSnappingPoint } from '../utils';
 import { useState } from 'react';
 import img from '../../assets/well.png';
 import useImage from '../../hooks/useImage';
@@ -9,6 +10,7 @@ import useImage from '../../hooks/useImage';
 interface IProps {
   gameObject: IGameObject;
   grid: IVector2D[];
+  isDraft?: boolean;
   onClick: (gameObject: IGameObject) => void;
 }
 
@@ -16,25 +18,10 @@ const InfiltrationPond = (props: IProps) => {
   const [isHighlighted, setIsHighlighted] = useState<boolean>(false);
   const [image] = useImage(img);
 
-  const getSnappingPoint = (x: number, y: number) => {
-    let shortestDistance: number | null = null;
-    let shortestKey = -1;
-    props.grid.forEach((c, key) => {
-      const d = Math.floor(Math.pow(c.x - x, 2) + Math.pow(c.y - y, 2));
-      if (shortestDistance === null || d < shortestDistance) {
-        shortestDistance = d;
-        shortestKey = key;
-      }
-    });
-    return props.grid[shortestKey];
-  };
-
   const handleClick = () => props.onClick(props.gameObject);
 
   const handleDrag = (e: KonvaEventObject<DragEvent>) => {
-    console.log(e);
-    const snapTo = getSnappingPoint(e.evt.clientX, e.evt.clientY);
-    console.log(snapTo);
+    const snapTo = getSnappingPoint(props.grid, e.evt.clientX, e.evt.clientY);
     e.target.absolutePosition(snapTo);
   };
 
@@ -58,6 +45,7 @@ const InfiltrationPond = (props: IProps) => {
       onDragMove={handleDrag}
       onMouseOver={handleMouseOver}
       onMouseOut={handleMouseOut}
+      opacity={props.isDraft ? 0.5 : 1}
       shadowEnabled={isHighlighted}
       shadowColor={isHighlighted ? 'white' : undefined}
       shadowBlur={15}
