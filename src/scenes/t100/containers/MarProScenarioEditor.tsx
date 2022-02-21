@@ -6,6 +6,7 @@ import { scenario1, scenario2 } from '../../../core/marPro/scenarios';
 import { useDispatch } from 'react-redux';
 import { useHistory, useParams, withRouter } from 'react-router-dom';
 import { useState } from 'react';
+import Editor from '../components/editor/Editor';
 import Playground from '../components/playground/Playground_2';
 
 const navigation = [
@@ -24,9 +25,9 @@ const T100 = () => {
 
   const handleSelectScenario = (scenario: IScenario) => () => setActiveScenario(scenario);
 
-  if (activeScenario) {
-    return <Playground scenario={activeScenario} />;
-  }
+  const handleClickNewScenario = () => {
+    history.push('T100/editor');
+  };
 
   const renderBreadcumbs = () => {
     return (
@@ -40,8 +41,16 @@ const T100 = () => {
     );
   };
 
-  return (
-    <AppContainer navbarItems={navigation}>
+  const renderContent = () => {
+    if (property === 'editor') {
+      return <Editor />;
+    }
+
+    if (activeScenario) {
+      return <Playground scenario={activeScenario} />;
+    }
+
+    return (
       <Grid padded={true}>
         <Grid.Row>
           <Grid.Column style={{ paddingTop: '0.3em' }}>{renderBreadcumbs()}</Grid.Column>
@@ -76,15 +85,17 @@ const T100 = () => {
                 <Icon name="edit" />
                 Editor
               </Header>
-              <Button disabled primary fluid>
+              <Button onClick={handleClickNewScenario} primary fluid>
                 Create New Scenario
               </Button>
             </Segment>
           </Grid.Column>
         </Grid.Row>
       </Grid>
-    </AppContainer>
-  );
+    );
+  };
+
+  return <AppContainer navbarItems={navigation}>{renderContent()}</AppContainer>;
 };
 
 export default withRouter(T100);
