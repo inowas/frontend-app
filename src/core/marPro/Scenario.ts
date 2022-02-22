@@ -14,6 +14,18 @@ class Scenario extends GenericObject<IScenario> {
     return this._props.modelId;
   }
 
+  set modelId(value: string) {
+    this._props.modelId = value;
+  }
+
+  get referencePoints() {
+    return this._props.referencePoints;
+  }
+
+  set referencePoints(value: Array<[number, number]>) {
+    this._props.referencePoints = value;
+  }
+
   get subtitle() {
     return this._props.subtitle;
   }
@@ -27,12 +39,15 @@ class Scenario extends GenericObject<IScenario> {
       aim: [],
       backgroundImage: '',
       description: '',
-      gridReferencePoint: { x: 0, y: 0 },
       gridSize: { x: 0, y: 0 },
       hints: [],
       modelId: '',
       objectives: [],
       objects: [],
+      referencePoints: [
+        [0, 0],
+        [0, 0],
+      ],
       resources: [],
       subtitle: '',
       stageSize: {

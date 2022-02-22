@@ -1,73 +1,31 @@
 import { BasicTileLayer } from '../../../../services/geoTools/tileLayers';
-import { Card, Dropdown, DropdownProps, Grid, Image, Input, Loader, Radio, Segment } from 'semantic-ui-react';
-import { IModflowModel } from '../../../../core/model/modflow/ModflowModel.type';
+import { Card, Divider, Dropdown, DropdownProps, Grid, Image, Label, List, Radio, Segment } from 'semantic-ui-react';
 import { IToolInstance } from '../../../types';
-import { Icon, LeafletEvent } from 'leaflet';
+import { Icon } from 'leaflet';
 import { ImageOverlay, Map, Marker } from 'react-leaflet';
 import { ModflowModel } from '../../../../core/model/modflow';
-import { RefObject, SyntheticEvent, useEffect, useRef, useState } from 'react';
-import { fetchApiWithToken, fetchUrl } from '../../../../services/api';
+import { SyntheticEvent, useRef, useState } from 'react';
+import { cloneDeep } from 'lodash';
 import { gameBoards } from '../../assets/images';
 import { renderAreaLayer } from '../../../t03/components/maps/mapLayers';
-import { uniqBy } from 'lodash';
 import Scenario from '../../../../core/marPro/Scenario';
 import SliderWithTooltip from '../../../shared/complexTools/SliderWithTooltip';
 import marker from '../../assets/marker.png';
-import uuid from 'uuid';
-import { CLONE_SOILMODEL_LAYER } from '../../../t03/reducers/soilmodel';
 
 interface IProps {
   onChange: (scenario: Scenario) => any;
+  onChangeModel: (id: string) => any;
+  model?: ModflowModel;
   scenario: Scenario;
+  t03Instances: IToolInstance[];
 }
 
 const Georeferencing = (props: IProps) => {
-  const [errors, setErrors] = useState<Array<{ id: string; message: string }>>([]);
-  const [isFetching, setIsFetching] = useState<boolean>(true);
   const [opacity, setOpacity] = useState<number>(0.5);
-  const [referencePoints, setReferencePoints] = useState<Array<[number, number]>>([]);
-  const [selectedModel, setSelectedModel] = useState<IModflowModel>();
-  const [t03Instances, setT03Instances] = useState<IToolInstance[]>();
 
-  const ImageRef = useRef<any>();
-
-  useEffect(() => {
-    const fetchInstances = async () => {
-      try {
-        setIsFetching(true);
-        const privateT03Instances = (await fetchApiWithToken('tools/T03?public=false')).data;
-        const publicT03Instances = (await fetchApiWithToken('tools/T03?public=true')).data;
-
-        const tools = uniqBy(privateT03Instances.concat(publicT03Instances), (t: IToolInstance) => t.id);
-        setT03Instances(tools);
-      } catch (err) {
-        setErrors(errors.concat([{ id: uuid.v4(), message: 'Fetching t03 instances failed.' }]));
-      } finally {
-        setIsFetching(false);
-      }
-    };
-
-    fetchInstances();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const fetchModel = (id: string) => {
-    setIsFetching(true);
-    fetchUrl(
-      `modflowmodels/${id}`,
-      (data) => {
-        const mfModel = ModflowModel.fromQuery(data);
-
-        setReferencePoints(mfModel.boundingBox.getBoundsLatLng());
-        setSelectedModel(mfModel.toObject());
-        setIsFetching(false);
-      },
-      () => {
-        setErrors(errors.concat([{ id: uuid.v4(), message: 'Fetching model failed.' }]));
-        setIsFetching(false);
-      }
-    );
-  };
+  const imageRef = useRef<any>();
+  const marker1Ref = useRef<any>();
+  const marker2Ref = useRef<any>();
 
   const handleChangeImage = (value: string) => () => {
     const scenario = props.scenario.toObject();
@@ -82,48 +40,59 @@ const Georeferencing = (props: IProps) => {
     const scenario = props.scenario.toObject();
     scenario.modelId = value;
     props.onChange(Scenario.fromObject(scenario));
-    fetchModel(value);
+    props.onChangeModel(value);
   };
 
   const handleChangeOpacity = (value: number) => setOpacity(value);
 
   const handleDragMarker = (key: number) => (e: any) => {
-    const points = referencePoints;
+    const points = props.scenario.referencePoints;
     points[key] = [e.latlng.lat, e.latlng.lng];
-    ImageRef.current.leafletElement.setBounds(points);
+    imageRef.current.leafletElement.setBounds(points);
   };
 
-  const handleDragEndMarker = (key: number) => (e: any) => {
-    console.log(e);
-    const points = referencePoints;
-    points[key] = [e.target._latlng.lat, e.target._latlng.lng];
-    setReferencePoints(points);
+  const handleDragEndMarker = (key: number) => () => {
+    const marker = key === 0 ? marker1Ref.current : marker2Ref.current;
+    const coords = marker.leafletElement.getLatLng();
+    const newPoints = cloneDeep(props.scenario.referencePoints);
+    newPoints[key] = [coords.lat, coords.lng];
+    const scenario = props.scenario.toObject();
+    scenario.referencePoints = newPoints;
+    props.onChange(Scenario.fromObject(scenario));
   };
-
-  console.log(referencePoints);
 
   const renderMap = () => {
-    if (!selectedModel) {
+    if (!props.model) {
       return null;
     }
-    const model = ModflowModel.fromObject(selectedModel);
 
     return (
       <Segment>
-        <Map style={{ height: '500px', width: '100%' }} bounds={model.boundingBox.getBoundsLatLng()}>
+        <Map style={{ height: '500px', width: '100%' }} bounds={props.model.boundingBox.getBoundsLatLng()}>
           <BasicTileLayer />
-          {renderAreaLayer(model.geometry)}
-          <ImageOverlay bounds={referencePoints} opacity={opacity} ref={ImageRef} url={gameBoards[0].img} />
-          {referencePoints.map((point, k) => (
-            <Marker
-              draggable
-              icon={new Icon({ iconUrl: marker, iconSize: [50, 50], iconAnchor: [25, 50] })}
-              key={k}
-              ondrag={handleDragMarker(k)}
-              ondragend={handleDragEndMarker(k)}
-              position={point}
-            />
-          ))}
+          {renderAreaLayer(props.model.geometry)}
+          <ImageOverlay
+            bounds={props.scenario.referencePoints}
+            opacity={opacity}
+            ref={imageRef}
+            url={gameBoards[0].img}
+          />
+          <Marker
+            draggable
+            icon={new Icon({ iconUrl: marker, iconSize: [50, 50], iconAnchor: [25, 50] })}
+            ondrag={handleDragMarker(0)}
+            ondragend={handleDragEndMarker(0)}
+            ref={marker1Ref}
+            position={props.scenario.referencePoints[0]}
+          />
+          <Marker
+            draggable
+            icon={new Icon({ iconUrl: marker, iconSize: [50, 50], iconAnchor: [25, 50] })}
+            ondrag={handleDragMarker(1)}
+            ondragend={handleDragEndMarker(1)}
+            ref={marker2Ref}
+            position={props.scenario.referencePoints[1]}
+          />
         </Map>
       </Segment>
     );
@@ -153,24 +122,21 @@ const Georeferencing = (props: IProps) => {
       <Grid.Row>
         <Grid.Column width={12}>
           <Segment>
-            {!isFetching && t03Instances && (
-              <Dropdown
-                options={t03Instances.map((i, key) => {
-                  return {
-                    key,
-                    value: i.id,
-                    text: i.name,
-                  };
-                })}
-                onChange={handleChangeModel}
-                placeholder="Select modflow model ..."
-                value={props.scenario.modelId}
-                fluid
-                search
-                selection
-              />
-            )}
-            {isFetching && <Loader active={true} inline="centered" />}
+            <Dropdown
+              options={props.t03Instances.map((i, key) => {
+                return {
+                  key,
+                  value: i.id,
+                  text: i.name,
+                };
+              })}
+              onChange={handleChangeModel}
+              placeholder="Select modflow model ..."
+              value={props.scenario.modelId}
+              fluid
+              search
+              selection
+            />
             {renderMap()}
           </Segment>
         </Grid.Column>
@@ -185,6 +151,48 @@ const Georeferencing = (props: IProps) => {
               value={opacity}
               onChange={handleChangeOpacity}
             />
+            <Divider />
+            {props.scenario.referencePoints.length > 0 && (
+              <List>
+                <List.Item>
+                  <List.Header>Reference Points</List.Header>
+                </List.Item>
+                <List.Item>
+                  Point 1
+                  <List.List>
+                    <List.Item>
+                      Latitude
+                      <Label style={{ textAlign: 'right', width: '100%' }}>
+                        {props.scenario.referencePoints[0][0]}
+                      </Label>
+                    </List.Item>
+                    <List.Item>
+                      Longitude
+                      <Label style={{ textAlign: 'right', width: '100%' }}>
+                        {props.scenario.referencePoints[0][1]}
+                      </Label>
+                    </List.Item>
+                  </List.List>
+                </List.Item>
+                <List.Item>
+                  Point 2
+                  <List.List>
+                    <List.Item>
+                      Latitude
+                      <Label style={{ textAlign: 'right', width: '100%' }}>
+                        {props.scenario.referencePoints[1][0]}
+                      </Label>
+                    </List.Item>
+                    <List.Item>
+                      Longitude
+                      <Label style={{ textAlign: 'right', width: '100%' }}>
+                        {props.scenario.referencePoints[1][1]}
+                      </Label>
+                    </List.Item>
+                  </List.List>
+                </List.Item>
+              </List>
+            )}
           </Segment>
         </Grid.Column>
       </Grid.Row>

@@ -8,12 +8,12 @@ export interface IScenario {
   aim: string[];
   backgroundImage: string;
   description: string;
-  gridReferencePoint: IVector2D;
   gridSize: IVector2D;
   hints: string[];
   modelId: string;
   objectives: TObjective[];
   objects: IGameObject[];
+  referencePoints: Array<[number, number]>;
   resources: IResourceSettings[];
   subtitle: string;
   stageSize: {
