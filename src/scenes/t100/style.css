@@ -1,43 +1,38 @@
-.obj-modal-container {
-  background-color: #f5ead6;
-  border-radius: 4px;
-  box-shadow: 0 0 1px 1px #c9b69c;
-  color: #333333;
-  height: 300px;
-  left: 0px;
-  position: absolute;
-  top: 25px;
-  width: 300px;
+/* Basic Layout
+-------------- */
+.bg_noise {
+  background: linear-gradient(20deg, rgb(22 29 22 / 88%) 10%, rgb(53 47 39 / 88%) 50%), url(/src/scenes/t100/assets/noise.svg);
+  filter: contrast(155%) brightness(450%);
+  height: 120%;
+  position: fixed;
+  z-index: -1;
+  width: 100%;
 }
-.obj-modal-header {
-  background-color: #333333;
-  border-radius: 4px 4px 0 0;
-  color: #ebe6e0;
-  height: auto;
-  padding: 10px 15px;
-}
-.obj-modal-body {
-  border-radius: 0 0 4px 4px;
-  padding: 10px 15px;
+.bg_noise + .ui.grid>.row {
+  padding-top: 0px !important;
 }
 
+
+/* Object Modal
+---------------- */
 .obj-modal-container {
-  border-radius: 4px;
+  background-color: #f5ead6 !important;
   box-shadow: 0 0 1px 1px #c9b69c;
   color: #333333;
-  left: 30px;
-  position: absolute;
-  top: 25px;
-  width: 200px !important;
+  height: 240px;
+  width: auto !important;
 }
-.ui.modal > .close {
-  top: -0.2rem !important;
-  right: -0.2rem !important;
+.ui.ui.header.obj-modal-header {
+  background-color: #333333;
+  color: #ebe6e0;
+  padding: 10px 15px;
+}
+.obj-modal-container .content {
+  background-color: #f5ead6 !important;
 }
 .obj-modal-container:after {
   background: #f5ead6;
   bottom: -0.30714286em;
-  box-shadow: 1px 1px 0 0 #bababc;
   content: ' ';
   height: 0.71428571em;
   left: 1em;
@@ -48,19 +43,22 @@
   top: auto;
   width: 0.71428571em;
 }
-.ui.ui.header.obj-modal {
-  background-color: #333333;
-  border-radius: 4px 4px 0 0;
-  color: #ebe6e0;
-  height: auto;
-  padding: 10px 15px;
-}
-.obj-modal-container .content {
-  background-color: #f5ead6 !important;
-}
 
+
+/* Toolbox
+----------- */
+.ui.menu.objects .item.header {
+  background-color: #20B142 !important;
+}
 .ui.labeled.icon.menu .item {
   padding-bottom: 0;
+}
+.ui.vertical.menu.objects .item:before {
+  height: 0;
+}
+.ui.menu.objects .button.active {
+  background: rgba(255,255,255,.15);
+  color: #fff !important;
 }
 .ui.labeled.icon.menu .button.item {
   min-width: 3em !important;
@@ -71,12 +69,45 @@
 .ui.labeled.icon.menu .active.item {
   text-transform: uppercase;
 }
+.ui.card.object {
+  background-color: #f5ead6;
+  box-shadow: none;
+  text-align: left;
+  width: 135px !important;
+}
+.ui.card.object .image {
+  top: 15px;
+}
+.ui.card.object .header {
+  font-size: 14px !important;
+  position: absolute;
+  /* white-space: nowrap; */
+  word-break: break-all;
+}
 
+
+.ui.menu.objects a.item:hover {
+  background-color: transparent !important;
+}
+
+
+/* Reward Icons
+----------------- */
+.ui.message.mission {
+  background-color: #f5ead6;
+  box-shadow: none !important;
+}
+.mission .info.icon {
+  color: #333333;
+  opacity: 1 !important;
+}
 .coins .button {
   background: transparent !important;
+  width: max-content;
 }
 .coins .label {
   background-color: #333333 !important;
+  border: none !important;
   color: #ffffff !important;
   display: inline-block !important;
   width: 100px;
@@ -93,40 +124,16 @@
   top: 12px;
   width: 100px;
 }
-.ui.card.object {
-  box-shadow: none;
-  text-align: left;
-  width: 135px !important;
-}
-.ui.card.object {
-  background-color: #f5ead6;
-}
-.ui.card.object .image {
-  top: 15px;
-}
-.ui.card.object .header {
-  font-size: 14px !important;
-  white-space: nowrap;
-}
-.ui.vertical.menu.objects .item:before {
-  height: 0;
-}
+
+
+/* Resources Dialog
+-------------------- */
 .ui.segment.calculation {
   overflow-y: visible !important;
 }
 .ui.floating.label {
   left: 50% !important;
 }
-/* .calculation-container {
-  background: #333333;
-  border-radius: 8px;
-  display: inline-flex;
-  flex-direction: row;
-  padding: 15px;
-  position: absolute;
-  bottom: 0%;
-  width: 700px;
-} */
 .calculation .ui.segment {
   background: #f5ead6;
   text-align: left;
@@ -214,4 +221,26 @@
   position: absolute;
   top: 20px;
   left: 50%;
+}
+.calculation .ui.progress.success .bar {
+  background-color: #21ba45!important;
+}
+
+@media only screen and (max-width: 767px) {
+  :not(.unstackable) img, .ui.items:not(.unstackable) > .item >.image > img {
+      max-width: 100% !important;
+      width: auto !important;
+      max-height: 250px !important;
+  }
+}
+@media (max-width: 768px) {
+  .bg_noise {
+    margin-left: calc(-100vw / 2 + 320px / 2);
+  }
+}
+@media (min-width: 1280px) {
+  .bg_noise {
+    margin-left: calc(-100vw / 2 + 1280px / 2);
+    margin-right: calc(-100vw / 2 + 1280px / 2);
+  }
 }
