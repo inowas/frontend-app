@@ -1,3 +1,4 @@
+import { BoundaryType } from '../model/modflow/boundaries/Boundary.type';
 import { IParameter } from './Parameter.type';
 import { IVector2D } from './Geometry.type';
 
@@ -9,6 +10,7 @@ export enum EGameObjectType {
 
 export interface IGameObject {
   boundaryId?: string;
+  boundaryType?: BoundaryType;
   id: string;
   type: EGameObjectType;
   location: IVector2D;

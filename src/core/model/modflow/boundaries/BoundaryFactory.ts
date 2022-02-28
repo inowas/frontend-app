@@ -1,11 +1,5 @@
 import { Boundary } from './index';
-import {
-  BoundaryType,
-  IBoundary,
-  IBoundaryExport,
-  IBoundaryFeature,
-  ISpValues
-} from './Boundary.type';
+import { BoundaryType, IBoundary, IBoundaryExport, IBoundaryFeature, ISpValues } from './Boundary.type';
 import { GeoJson } from '../../geometry/Geometry.type';
 import { ICells } from '../../geometry/Cells.type';
 import { IConstantHeadBoundary, IConstantHeadBoundaryExport } from './ConstantHeadBoundary.type';
@@ -24,16 +18,36 @@ import ConstantHeadBoundary from './ConstantHeadBoundary';
 import DrainageBoundary from './DrainageBoundary';
 import EvapotranspirationBoundary from './EvapotranspirationBoundary';
 import FlowAndHeadBoundary from './FlowAndHeadBoundary';
+import GameObject from '../../../marPro/GameObject';
 import GeneralHeadBoundary from './GeneralHeadBoundary';
 import GridSize from '../../geometry/GridSize';
 import HeadObservationWell from './HeadObservationWell';
 import RechargeBoundary from './RechargeBoundary';
 import RiverBoundary from './RiverBoundary';
+import Scenario from '../../../marPro/Scenario';
 import WellBoundary from './WellBoundary';
+import uuid from 'uuid';
 
 export default abstract class BoundaryFactory {
-
   public static availableTypes = ['chd', 'drn', 'evt', 'fhb', 'ghb', 'hob', 'rch', 'riv', 'wel'];
+
+  public static fromMarProGameObject = (obj: GameObject, scenario: Scenario) => {
+    if (!obj.boundaryType) {
+      return null;
+    }
+
+    // TODO:
+    return this.createNewFromProps(
+      obj.boundaryType,
+      uuid.v4(),
+      obj.calculateGeometry(scenario).toGeoJSON(),
+      `${obj.boundaryType}_${obj.boundaryId}`,
+      [0],
+      [],
+      [],
+      []
+    );
+  };
 
   public static fromObject = (obj: IBoundary): Boundary => {
     let type;
@@ -81,9 +95,7 @@ export default abstract class BoundaryFactory {
       case 'drn':
         return DrainageBoundary.fromExport(obj as IDrainageBoundaryExport, boundingBox, gridSize);
       case 'evt':
-        return EvapotranspirationBoundary.fromExport(
-          obj as IEvapotranspirationBoundaryExport, boundingBox, gridSize
-        );
+        return EvapotranspirationBoundary.fromExport(obj as IEvapotranspirationBoundaryExport, boundingBox, gridSize);
       case 'fhb':
         return FlowAndHeadBoundary.fromExport(obj as IFlowAndHeadBoundaryExport, boundingBox, gridSize);
       case 'ghb':
@@ -101,16 +113,23 @@ export default abstract class BoundaryFactory {
     }
   };
 
-  public static createNewFromProps(type: BoundaryType, id: string, geometry: GeoJson, name: string,
-                                   layers: number[], cells: ICells, spValues: ISpValues, dateTimes: string[] = []) {
+  public static createNewFromProps(
+    type: BoundaryType,
+    id: string,
+    geometry: GeoJson,
+    name: string,
+    layers: number[],
+    cells: ICells,
+    spValues: ISpValues,
+    dateTimes: string[] = []
+  ) {
     switch (type) {
       case 'chd':
         return ConstantHeadBoundary.create(id, geometry as LineString, name, layers, cells, spValues);
       case 'drn':
         return DrainageBoundary.create(id, geometry as LineString, name, layers, cells, spValues);
       case 'evt':
-        return EvapotranspirationBoundary.create(id, geometry as Polygon, name, layers,
-          cells, spValues, 1);
+        return EvapotranspirationBoundary.create(id, geometry as Polygon, name, layers, cells, spValues, 1);
       case 'fhb':
         return FlowAndHeadBoundary.create(id, geometry as LineString, name, layers, cells, dateTimes, spValues);
       case 'ghb':
@@ -118,8 +137,7 @@ export default abstract class BoundaryFactory {
       case 'hob':
         return HeadObservationWell.create(id, geometry as Point, name, layers, cells, dateTimes, spValues);
       case 'rch':
-        return RechargeBoundary.create(id, geometry as Polygon, name, layers, cells,
-          spValues, 1);
+        return RechargeBoundary.create(id, geometry as Polygon, name, layers, cells, spValues, 1);
       case 'riv':
         return RiverBoundary.create(id, geometry as LineString, name, layers, cells, spValues);
       case 'wel':

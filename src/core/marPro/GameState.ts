@@ -1,14 +1,14 @@
 import { GenericObject } from '../model/genericObject/GenericObject';
 import { IGameState } from './GameState.type';
-import { IScenario } from './Scenario.type';
 import { cloneDeep } from 'lodash';
+import Scenario from './Scenario';
 
 class GameState extends GenericObject<IGameState> {
   public static fromObject(value: IGameState) {
     return new GameState(value);
   }
 
-  public static fromScenario(scenario: IScenario) {
+  public static fromScenario(scenario: Scenario) {
     return new GameState({
       dialogs: [],
       objects: cloneDeep(scenario.objects),

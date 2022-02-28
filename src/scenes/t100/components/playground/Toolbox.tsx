@@ -1,11 +1,11 @@
 import { Button, Card, Image, Menu } from 'semantic-ui-react';
 import { EGameObjectCategory, ITool } from '../../../../core/marPro/Tool.type';
-import { IScenario } from '../../../../core/marPro/Scenario.type';
 import { getImage } from '../../assets/images';
 import { useEffect, useState } from 'react';
+import Scenario from '../../../../core/marPro/Scenario';
 
 interface IProps {
-  scenario: IScenario;
+  scenario: Scenario;
 }
 
 const Toolbox = (props: IProps) => {

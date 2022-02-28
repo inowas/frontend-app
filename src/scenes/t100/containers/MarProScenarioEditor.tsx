@@ -3,11 +3,11 @@ import { AppContainer } from '../../shared';
 import { Breadcrumb, Button, Grid, Header, Icon, Search, Segment } from 'semantic-ui-react';
 import { IScenario } from '../../../core/marPro/Scenario.type';
 import { scenario1, scenario2 } from '../../../core/marPro/scenarios';
-import { useDispatch } from 'react-redux';
 import { useHistory, useParams, withRouter } from 'react-router-dom';
 import { useState } from 'react';
 import Editor from '../components/editor/Editor';
 import Playground from '../components/playground/Playground_2';
+import Scenario from '../../../core/marPro/Scenario';
 
 const navigation = [
   {
@@ -19,9 +19,8 @@ const navigation = [
 
 const T100 = () => {
   const [activeScenario, setActiveScenario] = useState<IScenario>();
-  const dispatch = useDispatch();
   const history = useHistory();
-  const { id, property, pid } = useParams<any>();
+  const { property } = useParams<any>();
 
   const handleSelectScenario = (scenario: IScenario) => () => setActiveScenario(scenario);
 
@@ -47,7 +46,7 @@ const T100 = () => {
     }
 
     if (activeScenario) {
-      return <Playground scenario={activeScenario} />;
+      return <Playground scenario={Scenario.fromObject(activeScenario)} />;
     }
 
     return (

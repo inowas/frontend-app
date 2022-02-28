@@ -3,7 +3,6 @@ import { DragEvent, useRef, useState } from 'react';
 import { EGameObjectType, IGameObject } from '../../../../core/marPro/GameObject.type';
 import { IGameState } from '../../../../core/marPro/GameState.type';
 import { IMapScale } from '../types';
-import { IScenario } from '../../../../core/marPro/Scenario.type';
 import { Image, Layer, Stage } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { styles } from './styles';
@@ -13,13 +12,15 @@ import GameObject from '../../../../core/marPro/GameObject';
 import GameState from '../../../../core/marPro/GameState';
 import Header from './Header';
 import InfiltrationPond from '../gameObjects/InfiltrationPond';
+import ResultModal from './ResultModal';
 import River from '../gameObjects/River';
+import Scenario from '../../../../core/marPro/Scenario';
 import Toolbox from './Toolbox';
 import bg from '../../assets/mar-gameboard-01-riverbed.png';
 import useImage from '../../hooks/useImage';
 
 interface IProps {
-  scenario: IScenario;
+  scenario: Scenario;
 }
 
 const scaleBy = 1.3;
@@ -29,8 +30,11 @@ const Playground = (props: IProps) => {
   const [backgroundImage] = useImage(bg);
   const stageRef = useRef<any>(null);
   const [gameState, setGameState] = useState<IGameState>(GameState.fromScenario(props.scenario).toObject());
+  const [showResultModal, setShowResultModal] = useState<boolean>(false);
 
   const [mapScale, setMapScale] = useState<IMapScale>({ offset: { x: 0, y: 0 }, zoom: 0 });
+
+  const toggleResultModal = () => setShowResultModal(!showResultModal);
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -133,7 +137,14 @@ const Playground = (props: IProps) => {
           </Stage>
         )}
       </div>
-      <Footer />
+      <Footer onClickCheck={toggleResultModal} />
+      {showResultModal && (
+        <ResultModal
+          gameState={GameState.fromObject(gameState)}
+          onClose={toggleResultModal}
+          scenario={props.scenario}
+        />
+      )}
     </>
   );
 };

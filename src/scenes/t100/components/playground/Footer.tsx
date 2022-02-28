@@ -1,4 +1,10 @@
-const Footer = () => {
+import { Button } from 'semantic-ui-react';
+
+interface IProps {
+  onClickCheck: () => any;
+}
+
+const Footer = (props: IProps) => {
   return (
     <div className="ui segment ui overlay bottom visible sidebar inverted calculation">
       <div className="ui floating black label">
@@ -80,7 +86,9 @@ const Footer = () => {
             </div>
           </div>
           <div className="column">
-            <button className="ui big button blue">Check</button>
+            <Button color="blue" onClick={props.onClickCheck} size="big">
+              Check
+            </Button>
             <button className="ui big button orange">Cancel</button>
             <div className="ui hidden divider"></div>
             <div className="ui success progress" data-percent="100">

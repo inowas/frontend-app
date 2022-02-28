@@ -16,15 +16,15 @@ import { IGameObject } from '../../../../core/marPro/GameObject.type';
 import { IGameState } from '../../../../core/marPro/GameState.type';
 import { IParameter, IParameterRelation } from '../../../../core/marPro/Parameter.type';
 import { IResourceSettings } from '../../../../core/marPro/Resource.type';
-import { IScenario } from '../../../../core/marPro/Scenario.type';
 import { useEffect, useState } from 'react';
 import GameState from '../../../../core/marPro/GameState';
 import Logo from '../../assets/logo_01.png';
 import Objective from '../../../../core/marPro/Objective';
+import Scenario from '../../../../core/marPro/Scenario';
 import Slider from 'rc-slider';
 
 interface IProps {
-  scenario: IScenario;
+  scenario: Scenario;
 }
 
 const Game = (props: IProps) => {
