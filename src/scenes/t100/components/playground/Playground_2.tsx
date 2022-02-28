@@ -1,18 +1,16 @@
-import { Dimmer, List, Loader } from 'semantic-ui-react';
+import { Dimmer, Grid, List, Loader } from 'semantic-ui-react';
 import { DragEvent, useRef, useState } from 'react';
 import { EGameObjectType, IGameObject } from '../../../../core/marPro/GameObject.type';
 import { IGameState } from '../../../../core/marPro/GameState.type';
 import { IMapScale } from '../types';
 import { Image, Layer, Stage } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
-import { styles } from './styles';
 import Dialog from '../shared/Dialog';
 import Footer from './Footer';
 import GameObject from '../../../../core/marPro/GameObject';
 import GameState from '../../../../core/marPro/GameState';
 import Header from './Header';
 import InfiltrationPond from '../gameObjects/InfiltrationPond';
-import ResultModal from './ResultModal';
 import River from '../gameObjects/River';
 import Scenario from '../../../../core/marPro/Scenario';
 import Toolbox from './Toolbox';
@@ -103,48 +101,51 @@ const Playground = (props: IProps) => {
 
   return (
     <>
+      <div className="bg_noise"></div>
       <Header />
-      <Toolbox scenario={props.scenario} />
-      <div style={styles.body} onDrop={handleDropNewObject} onDragOver={handleDragOver}>
-        {activeGameObjects.map((gameObject) => (
-          <Dialog
-            key={`dialog_${gameObject.id}`}
-            header={gameObject.type}
-            image={gameObject.type}
-            content={
-              <List>
-                <List.Item>object_id: {gameObject.id}</List.Item>
-              </List>
-            }
-            onClose={handleCloseDialog(gameObject.id)}
-          />
-        ))}
-        {!backgroundImage ? (
-          <Dimmer active inverted>
-            <Loader inverted>Loading</Loader>
-          </Dimmer>
-        ) : (
-          <Stage
-            draggable
-            width={1280}
-            height={props.scenario.stageSize.y}
-            onDragEnd={handleDragStage}
-            onWheel={handleWheel}
-            ref={stageRef}
-          >
-            <Layer>{backgroundImage && <Image image={backgroundImage} />}</Layer>
-            <Layer>{renderGameObjects()}</Layer>
-          </Stage>
-        )}
-      </div>
+      <Grid>
+        <Grid.Row style={{ paddingTop: 0 }}>
+          <Grid.Column width={'two'}>
+            <Toolbox scenario={props.scenario} />
+          </Grid.Column>
+          <Grid.Column width={'fourteen'}>
+            <div onDrop={handleDropNewObject} onDragOver={handleDragOver}>
+              {activeGameObjects.map((gameObject) => (
+                <Dialog
+                  key={`dialog_${gameObject.id}`}
+                  header={gameObject.type}
+                  image={gameObject.type}
+                  content={
+                    <List>
+                      <List.Item>object_id: {gameObject.id}</List.Item>
+                    </List>
+                  }
+                  onClose={handleCloseDialog(gameObject.id)}
+                />
+              ))}
+              {!backgroundImage ? (
+                <Dimmer active inverted>
+                  <Loader inverted>Loading</Loader>
+                </Dimmer>
+              ) : (
+                <Stage
+                  draggable
+                  width={1280}
+                  height={props.scenario.stageSize.y}
+                  onDragEnd={handleDragStage}
+                  onWheel={handleWheel}
+                  ref={stageRef}
+                >
+                  <Layer>{backgroundImage && <Image image={backgroundImage} />}</Layer>
+                  <Layer>{renderGameObjects()}</Layer>
+                </Stage>
+              )}
+            </div>
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>
+
       <Footer onClickCheck={toggleResultModal} />
-      {showResultModal && (
-        <ResultModal
-          gameState={GameState.fromObject(gameState)}
-          onClose={toggleResultModal}
-          scenario={props.scenario}
-        />
-      )}
     </>
   );
 };

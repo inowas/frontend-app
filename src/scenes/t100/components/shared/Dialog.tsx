@@ -35,7 +35,7 @@ const Dialog = (props: IProps) => {
   return (
     <div
       ref={divRef}
-      className="obj-modal-container"
+      className="ui modal mini active obj-modal-container"
       style={{
         zIndex: isDragging ? 1001 : 1000,
       }}
@@ -44,7 +44,7 @@ const Dialog = (props: IProps) => {
         onMouseMove={handleMouseMove}
         onMouseDown={toggleIsDragging}
         onMouseUp={toggleIsDragging}
-        className="obj-modal-header"
+        className="ui header obj-modal-header tiny"
         style={{
           cursor: isDragging ? 'grabbing' : 'grab',
         }}
@@ -54,7 +54,7 @@ const Dialog = (props: IProps) => {
         {!!props.onClose && <Icon style={{ float: 'right' }} link name="close" onClick={props.onClose} />}
       </div>
       <div
-        className="obj-modal-body"
+        className="content obj-modal-body"
         style={{
           cursor: isDragging ? 'grabbing' : 'grab',
         }}

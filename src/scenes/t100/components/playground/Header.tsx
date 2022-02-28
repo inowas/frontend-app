@@ -1,31 +1,29 @@
-import { Image } from 'semantic-ui-react';
+import { Grid, Icon, Image, Message } from 'semantic-ui-react';
 import happyPoints from '../../assets/happy-points.png';
 import marCoin from '../../assets/mar-coin.png';
 
 const Header = () => {
   return (
-    <div className="ui grid">
-      <div className="row" style={{ paddingBottom: 0 }}>
-        <div className="ten wide column">
-          <div className="ui compact bottom attached icon message">
-            <i aria-hidden="true" className="info circle icon"></i>
-            <div className="content">
+    <Grid>
+      <Grid.Row style={{ paddingBottom: 0 }}>
+        <Grid.Column width={10}>
+          <Message compact icon attached={'bottom'} className={'mission'}>
+            <Icon name='info circle' />
+            <Message.Content>
               Mission: Ezousa River, Cyprus
-              <button className="ui icon button item">
-                <i aria-hidden="true" className="right chevron icon"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="two wide column">
+              <i aria-hidden="true" className="right chevron icon"></i>
+            </Message.Content>
+            </Message>
+        </Grid.Column>
+        <Grid.Column width={2} verticalAlign={'middle'}>
           <div className="ui right labeled tiny button coins">
             <button className="ui icon button">
               <Image src={marCoin} alt="Mar Coins" />
             </button>
             <a className="ui left basic label">-25</a>
           </div>
-        </div>
-        <div className="two wide column">
+        </Grid.Column>
+        <Grid.Column width={2} verticalAlign={'middle'}>
           <div className="ui right labeled tiny button coins">
             <button className="ui icon button">
               <Image src={happyPoints} className="ui image" />
@@ -36,9 +34,9 @@ const Header = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
+        </Grid.Column>
+        </Grid.Row>
+      </Grid>
   );
 };
 

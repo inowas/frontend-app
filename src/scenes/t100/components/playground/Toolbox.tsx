@@ -57,9 +57,8 @@ const Toolbox = (props: IProps) => {
       inverted
       vertical
       icon="labeled"
-      style={{ left: '0', top: '45px', position: 'absolute', zIndex: 1000 }}
     >
-      <Menu.Item className="header" style={{ backgroundColor: '#20b142' }}>
+      <Menu.Item className="header">
         <Menu pagination secondary>
           {categories.length > 1 && <Menu.Item icon="chevron left" as="a" onClick={handleClickChevron('left')} />}
           <Menu.Item>
