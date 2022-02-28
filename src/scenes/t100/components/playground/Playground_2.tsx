@@ -11,6 +11,7 @@ import GameObject from '../../../../core/marPro/GameObject';
 import GameState from '../../../../core/marPro/GameState';
 import Header from './Header';
 import InfiltrationPond from '../gameObjects/InfiltrationPond';
+import ResultModal from './ResultModal';
 import River from '../gameObjects/River';
 import Scenario from '../../../../core/marPro/Scenario';
 import Toolbox from './Toolbox';
@@ -49,10 +50,6 @@ const Playground = (props: IProps) => {
       ...gameState,
       objects: [...gameState.objects, newGameObject.toObject()],
     });
-  };
-
-  const handleClickPoint = (e: any) => {
-    console.log(e);
   };
 
   const handleCloseDialog = (id: string) => () =>
@@ -144,8 +141,14 @@ const Playground = (props: IProps) => {
           </Grid.Column>
         </Grid.Row>
       </Grid>
-
       <Footer onClickCheck={toggleResultModal} />
+      {showResultModal && (
+        <ResultModal
+          gameState={GameState.fromObject(gameState)}
+          onClose={toggleResultModal}
+          scenario={props.scenario}
+        />
+      )}
     </>
   );
 };

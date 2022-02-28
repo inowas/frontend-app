@@ -37,7 +37,7 @@ export default abstract class BoundaryFactory {
     }
 
     // TODO:
-    return this.createNewFromProps(
+    return BoundaryFactory.createNewFromProps(
       obj.boundaryType,
       uuid.v4(),
       obj.calculateGeometry(scenario).toGeoJSON(),
