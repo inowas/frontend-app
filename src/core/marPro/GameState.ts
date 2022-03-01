@@ -15,6 +15,10 @@ class GameState extends GenericObject<IGameState> {
     this._props.objects = value;
   }
 
+  get resources() {
+    return this._props.resources;
+  }
+
   public getResource(id: string) {
     const res = this._props.resources.filter((r) => r.id === id);
     if (res.length > 0) {
@@ -42,12 +46,22 @@ class GameState extends GenericObject<IGameState> {
     });
   }
 
-  public addGameObject = (g: GameObject) => {
+  public addGameObject(g: GameObject) {
     this._props.objects = [...this._props.objects, g.toObject()];
     return this;
-  };
+  }
 
-  public updateResource = (cost: ICost) => {
+  public updateGameObject(object: GameObject) {
+    this._props.objects = this._props.objects.map((o) => {
+      if (o.id === object.id) {
+        return object.toObject();
+      }
+      return o;
+    });
+    return this;
+  }
+
+  public updateResource(cost: ICost) {
     this._props.resources = this._props.resources.map((r) => {
       if (r.id === cost.resource) {
         r.value = r.value - cost.amount;
@@ -55,7 +69,7 @@ class GameState extends GenericObject<IGameState> {
       return r;
     });
     return this;
-  };
+  }
 }
 
 export default GameState;

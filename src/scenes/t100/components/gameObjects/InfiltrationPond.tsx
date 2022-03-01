@@ -1,13 +1,14 @@
-import { IGameObject } from '../../../../core/marPro/GameObject.type';
 import { Image } from 'react-konva';
 import { getImage } from '../../assets/images';
 import { useState } from 'react';
+import GameObject from '../../../../core/marPro/GameObject';
 import useImage from '../../hooks/useImage';
 
 interface IProps {
-  gameObject: IGameObject;
+  gameObject: GameObject;
   isDraft?: boolean;
-  onClick?: (gameObject: IGameObject) => void;
+  onDragEnd: (gameObject: GameObject) => void;
+  onClick?: (gameObject: GameObject) => void;
 }
 
 const InfiltrationPond = (props: IProps) => {
@@ -20,6 +21,8 @@ const InfiltrationPond = (props: IProps) => {
     }
     props.onClick(props.gameObject);
   };
+
+  const handleDragEnd = () => props.onDragEnd(props.gameObject);
 
   const handleMouseOut = (e: any) => {
     const container = e.target.getStage().container();
@@ -38,6 +41,7 @@ const InfiltrationPond = (props: IProps) => {
       draggable
       image={image}
       onClick={handleClick}
+      onDragEnd={handleDragEnd}
       onMouseOver={handleMouseOver}
       onMouseOut={handleMouseOut}
       opacity={props.isDraft ? 0.5 : 1}

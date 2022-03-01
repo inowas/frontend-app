@@ -1,17 +1,16 @@
-import { Dimmer, Grid, List, Loader } from 'semantic-ui-react';
-import { DragEvent, useRef, useState } from 'react';
-import { EGameObjectType, IDraftGameObject, IGameObject } from '../../../../core/marPro/GameObject.type';
+import { Dimmer, Grid, Loader } from 'semantic-ui-react';
+import { DragEvent, ReactNode, useRef, useState } from 'react';
+import { EGameObjectType, IDraftGameObject } from '../../../../core/marPro/GameObject.type';
 import { IGameState } from '../../../../core/marPro/GameState.type';
 import { IMapScale } from '../types';
-import { IVector2D } from '../../../../core/marPro/Geometry.type';
 import { Image, Layer, Stage } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import ConfirmBuyGameObject from '../dialogs/ConfirmBuyGameObject';
-import Dialog from '../shared/Dialog';
 import DraftGameObject from '../../../../core/marPro/DraftGameObject';
 import DraftGameObjectComponent from '../gameObjects/DraftGameObjectComponent';
 import Footer from './Footer';
 import GameObject from '../../../../core/marPro/GameObject';
+import GameObjectDialog from '../dialogs/GameObjectDialog';
 import GameState from '../../../../core/marPro/GameState';
 import Header from './Header';
 import InfiltrationPond from '../gameObjects/InfiltrationPond';
@@ -30,7 +29,7 @@ interface IProps {
 const scaleBy = 1.3;
 
 const Playground = (props: IProps) => {
-  const [activeGameObjects, setActiveGameObjects] = useState<IGameObject[]>([]);
+  const [activeGameObjects, setActiveGameObjects] = useState<string[]>([]);
   const [backgroundImage] = useImage(bg);
   const stageRef = useRef<any>(null);
   const [gameState, setGameState] = useState<IGameState>(GameState.fromScenario(props.scenario).toObject());
@@ -61,12 +60,8 @@ const Playground = (props: IProps) => {
     });
   };
 
-  const handleClick = (e: KonvaEventObject<MouseEvent>) => {
-    console.log(stageRef.current.getRelativePointerPosition());
-  };
-
-  const handleCloseDialog = (id: string) => () =>
-    setActiveGameObjects(activeGameObjects.filter((gameObject) => gameObject.id !== id));
+  const handleCloseDialog = (id: string) =>
+    setActiveGameObjects(activeGameObjects.filter((gameObjectId) => gameObjectId !== id));
 
   const handleClickDraftGameObject = () => {
     if (!gameObjectToAdd) {
@@ -99,14 +94,38 @@ const Playground = (props: IProps) => {
     setGameObjectToAdd(null);
   };
 
-  const handleClickGameObject = (gameObject: IGameObject) =>
-    activeGameObjects.filter((g) => g.id === gameObject.id).length === 0
-      ? setActiveGameObjects([...activeGameObjects, gameObject])
+  const handleChangeGameObject = (g: GameObject) => {
+    const cGameState = GameState.fromObject(gameState);
+    cGameState.updateGameObject(g);
+    setGameState(cGameState.toObject());
+  };
+
+  const handleClickGameObject = (gameObject: GameObject) =>
+    activeGameObjects.filter((id) => id === gameObject.id).length === 0
+      ? setActiveGameObjects([...activeGameObjects, gameObject.id])
       : null;
+
+  const handleDragGameObject = (gameObject: GameObject) => {
+    const pointerPosition = stageRef.current.getRelativePointerPosition();
+    if (
+      pointerPosition.x < 0 ||
+      pointerPosition.y < 0 ||
+      pointerPosition.x > props.scenario.stageSize.x ||
+      pointerPosition.y > props.scenario.stageSize.y
+    ) {
+      return null;
+    }
+    const cGameState = GameState.fromObject(gameState);
+    gameObject.location = {
+      x: pointerPosition.x - 22,
+      y: pointerPosition.y - 15,
+    };
+    cGameState.updateGameObject(gameObject);
+    setGameState(cGameState.toObject());
+  };
 
   const handleDragStage = (e: KonvaEventObject<any>) => {
     e.evt.preventDefault();
-    console.log(e);
     setMapScale({ ...mapScale, offset: e.target._lastPos });
   };
 
@@ -173,12 +192,37 @@ const Playground = (props: IProps) => {
     );
   };
 
+  const renderGameObjectDialogs = () => {
+    const aGameObjects: ReactNode[] = [];
+    activeGameObjects.forEach((id) => {
+      const g = gameState.objects.filter((o) => o.id === id);
+      if (g.length > 0) {
+        aGameObjects.push(
+          <GameObjectDialog
+            key={g[0].id}
+            gameObject={GameObject.fromObject(g[0])}
+            onChange={handleChangeGameObject}
+            onClose={handleCloseDialog}
+          />
+        );
+      }
+    });
+    return aGameObjects;
+  };
+
   const renderGameObjects = () => {
     const gameObjects: any[] = gameState.objects.map((object, k) => {
       if (object.type === EGameObjectType.RIVER) {
-        return <River key={object.id} gameObject={object} onClick={handleClickGameObject} />;
+        return <River key={object.id} gameObject={GameObject.fromObject(object)} onClick={handleClickGameObject} />;
       }
-      return <InfiltrationPond key={object.id} gameObject={object} onClick={handleClickGameObject} />;
+      return (
+        <InfiltrationPond
+          key={object.id}
+          gameObject={GameObject.fromObject(object)}
+          onClick={handleClickGameObject}
+          onDragEnd={handleDragGameObject}
+        />
+      );
     });
     return gameObjects;
   };
@@ -198,22 +242,7 @@ const Playground = (props: IProps) => {
           </Grid.Column>
           <Grid.Column width={'fourteen'}>
             <div onDrop={handleDropNewObject} onDragOver={handleDragOver}>
-              {activeGameObjects.map((gameObject) => (
-                <Dialog
-                  key={`dialog_${gameObject.id}`}
-                  header={gameObject.type}
-                  image={gameObject.type}
-                  content={
-                    <List>
-                      <List.Item>object_id: {gameObject.id}</List.Item>
-                      <List.Item>
-                        [{gameObject.location.x}, {gameObject.location.y}]
-                      </List.Item>
-                    </List>
-                  }
-                  onClose={handleCloseDialog(gameObject.id)}
-                />
-              ))}
+              {renderGameObjectDialogs()}
               {renderDraftGameObjectDialogs()}
               {!backgroundImage ? (
                 <Dimmer active inverted>
@@ -224,7 +253,6 @@ const Playground = (props: IProps) => {
                   draggable
                   width={1280}
                   height={props.scenario.stageSize.y}
-                  onClick={handleClick}
                   onDragEnd={handleDragStage}
                   onMouseMove={handleMouseMove}
                   onWheel={handleWheel}
@@ -246,7 +274,7 @@ const Playground = (props: IProps) => {
           </Grid.Column>
         </Grid.Row>
       </Grid>
-      <Footer onClickCheck={toggleResultModal} />
+      <Footer gameState={GameState.fromObject(gameState)} onClickCheck={toggleResultModal} />
       {showResultModal && (
         <ResultModal
           gameState={GameState.fromObject(gameState)}

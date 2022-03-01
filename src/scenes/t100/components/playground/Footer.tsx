@@ -1,6 +1,8 @@
 import { Button } from 'semantic-ui-react';
+import GameState from '../../../../core/marPro/GameState';
 
 interface IProps {
+  gameState: GameState;
   onClickCheck: () => any;
 }
 
@@ -26,17 +28,19 @@ const Footer = (props: IProps) => {
                   <div className="sub header">Select one or multiple objects</div>
                 </div>
               </h3>
-              <div className="ui left labeled input">
-                <div className="ui label" style={{ width: '150px' }}>
-                  Infiltration Rate
+              {props.gameState.resources.map((r, key) => (
+                <div className="ui left labeled input" key={`res_${key}`}>
+                  <div className="ui label" style={{ width: '150px' }}>
+                    {r.id}
+                  </div>
+                  <input className="ui input" value={r.value} type="text" />
                 </div>
-                <input className="ui input" value="11.003,00" type="text" />
-              </div>
+              ))}
               <div className="ui left labeled input">
                 <div className="ui label" style={{ width: '150px' }}>
                   Objects
                 </div>
-                <input className="ui input" value="03" type="text" />
+                <input className="ui input" value={props.gameState.objects.length} type="text" />
               </div>
             </div>
           </div>
