@@ -17,3 +17,12 @@ export interface IGameObject {
   size: IVector2D;
   parameters: IParameter[];
 }
+
+export interface IDraftGameObject {
+  hasBeenPaid: boolean;
+  hasBeenPlaced: boolean;
+  image: string;
+  location: IVector2D;
+  size: IVector2D;
+  type: EGameObjectType;
+}

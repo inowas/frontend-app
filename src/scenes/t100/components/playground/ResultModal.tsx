@@ -1,13 +1,13 @@
+import { Boundary } from '../../../../core/model/modflow/boundaries';
 import { BoundaryCollection } from '../../../../core/model/modflow';
 import { Button, List, Modal } from 'semantic-ui-react';
-import { EBoundaryType, IBoundary } from '../../../../core/model/modflow/boundaries/Boundary.type';
+import { IBoundary } from '../../../../core/model/modflow/boundaries/Boundary.type';
+import { boundaryUpdater } from '../utils';
 import { fetchApiWithToken } from '../../../../services/api';
 import { useEffect, useState } from 'react';
+import GameObject from '../../../../core/marPro/GameObject';
 import GameState from '../../../../core/marPro/GameState';
 import Scenario from '../../../../core/marPro/Scenario';
-import GameObject from '../../../../core/marPro/GameObject';
-import { IGameObject } from '../../../../core/marPro/GameObject.type';
-import { calculateActiveCells } from '../../../../services/geoTools';
 
 interface IProps {
   gameState: GameState;
@@ -30,8 +30,6 @@ const ResultModal = (props: IProps) => {
     setStatus([`${date.toLocaleString()}: ${msg}`, ...status]);
   };
 
-  const handleClickButton = () => addStatusMessage('TEST');
-
   const fetchBoundaries = async (id: string) => {
     addStatusMessage('Fetching Boundaries ...');
     try {
@@ -44,30 +42,30 @@ const ResultModal = (props: IProps) => {
     }
   };
 
-  const updateBoundaries = (gameObjects: GameObject[], boundaries: BoundaryCollection) => {
-    const cBoundaries = boundaries.all.map((boundary) => {
-      const filteredObjects = gameObjects.filter((object) => object.boundaryId === boundary.id);
-      if (filteredObjects.length > 0) {
-        const g = filteredObjects[0];
-
-        if (props.scenario.isManipulatingBoundaryPositions) {
-          const geometry = g.calculateGeometry(props.scenario);
-          if (boundary.type === EBoundaryType.WEL) {
-            //TODO: boundary.cells = calculateActiveCells(geometry)
-            boundary.geometry = geometry;
-          }
-        }
+  const handleUpdateBoundaries = async () => {
+    if (!boundaries) {
+      return null;
+    }
+    await boundaryUpdater(
+      props.scenario,
+      props.gameState,
+      BoundaryCollection.fromObject(boundaries),
+      new BoundaryCollection([]),
+      (b: Boundary, g?: GameObject) => {
+        addStatusMessage(`Update boundary ${b.name}.`);
+      },
+      (bc: BoundaryCollection) => {
+        addStatusMessage('Done updating boundaries.');
       }
-      return boundary;
-    });
+    );
   };
 
   return (
-    <Modal open={true}>
+    <Modal open={true} closeIcon onClose={props.onClose}>
       <Modal.Header>Results</Modal.Header>
       <Modal.Content>
         {props.scenario.needsModelCalculation ? 'NEED CALCULATION' : 'NO CALCULATION NEEDED'}
-        <Button onClick={handleClickButton}>Test</Button>
+        <Button onClick={handleUpdateBoundaries}>Update Boundaries</Button>
         <List style={{ height: '100px', overflow: 'auto' }}>
           {status.map((message, key) => (
             <List.Item key={key}>{message}</List.Item>

@@ -1,20 +1,25 @@
 import { IGameObject } from '../../../../core/marPro/GameObject.type';
 import { Image } from 'react-konva';
+import { getImage } from '../../assets/images';
 import { useState } from 'react';
-import img from '../../assets/well.png';
 import useImage from '../../hooks/useImage';
 
 interface IProps {
   gameObject: IGameObject;
   isDraft?: boolean;
-  onClick: (gameObject: IGameObject) => void;
+  onClick?: (gameObject: IGameObject) => void;
 }
 
 const InfiltrationPond = (props: IProps) => {
   const [isHighlighted, setIsHighlighted] = useState<boolean>(false);
-  const [image] = useImage(img);
+  const [image] = useImage(getImage(props.gameObject.type));
 
-  const handleClick = () => props.onClick(props.gameObject);
+  const handleClick = () => {
+    if (!props.onClick) {
+      return null;
+    }
+    props.onClick(props.gameObject);
+  };
 
   const handleMouseOut = (e: any) => {
     const container = e.target.getStage().container();

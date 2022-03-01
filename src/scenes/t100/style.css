@@ -1,17 +1,17 @@
 /* Basic Layout
 -------------- */
 .bg_noise {
-  background: linear-gradient(20deg, rgb(22 29 22 / 88%) 10%, rgb(53 47 39 / 88%) 50%), url(/src/scenes/t100/assets/noise.svg);
+  background: linear-gradient(20deg, rgb(22 29 22 / 88%) 10%, rgb(53 47 39 / 88%) 50%),
+    url(/src/scenes/t100/assets/noise.svg);
   filter: contrast(155%) brightness(450%);
   height: 120%;
   position: fixed;
   z-index: -1;
   width: 100%;
 }
-.bg_noise + .ui.grid>.row {
+.bg_noise + .ui.grid > .row {
   padding-top: 0px !important;
 }
-
 
 /* Object Modal
 ---------------- */
@@ -44,11 +44,10 @@
   width: 0.71428571em;
 }
 
-
 /* Toolbox
 ----------- */
 .ui.menu.objects .item.header {
-  background-color: #20B142 !important;
+  background-color: #20b142 !important;
 }
 .ui.labeled.icon.menu .item {
   padding-bottom: 0;
@@ -57,7 +56,7 @@
   height: 0;
 }
 .ui.menu.objects .button.active {
-  background: rgba(255,255,255,.15);
+  background: rgba(255, 255, 255, 0.15);
   color: #fff !important;
 }
 .ui.labeled.icon.menu .button.item {
@@ -85,11 +84,9 @@
   word-break: break-all;
 }
 
-
 .ui.menu.objects a.item:hover {
   background-color: transparent !important;
 }
-
 
 /* Reward Icons
 ----------------- */
@@ -104,11 +101,10 @@
 .coins .button {
   background: transparent !important;
   width: max-content;
+  z-index: 2;
 }
 .coins .label {
-  background-color: #333333 !important;
   border: none !important;
-  color: #ffffff !important;
   display: inline-block !important;
   width: 100px;
   height: 25px;
@@ -116,7 +112,29 @@
   position: relative;
   text-align: right;
   top: 12px;
-  z-index: -1;
+  z-index: 1;
+}
+.coins .noChange {
+  background-color: #333333 !important;
+  color: #ffffff !important;
+}
+.coins .positiveChange {
+  background-color: green !important;
+  color: #ffffff !important;
+  -moz-transition: all 1s ease-in-out;
+  -webkit-transition: all 1s ease-in-out;
+  -o-transition: all 1s ease-in-out;
+  -ms-transition: all 1s ease-in-out;
+  transition: all 1s ease-in-out;
+}
+.coins .negativeChange {
+  background-color: red !important;
+  color: #ffffff !important;
+  -moz-transition: all 1s ease-in-out;
+  -webkit-transition: all 1s ease-in-out;
+  -o-transition: all 1s ease-in-out;
+  -ms-transition: all 1s ease-in-out;
+  transition: all 1s ease-in-out;
 }
 .coins .ui.progress {
   background-color: #333333;
@@ -124,7 +142,6 @@
   top: 12px;
   width: 100px;
 }
-
 
 /* Resources Dialog
 -------------------- */
@@ -223,14 +240,15 @@
   left: 50%;
 }
 .calculation .ui.progress.success .bar {
-  background-color: #21ba45!important;
+  background-color: #21ba45 !important;
 }
 
 @media only screen and (max-width: 767px) {
-  :not(.unstackable) img, .ui.items:not(.unstackable) > .item >.image > img {
-      max-width: 100% !important;
-      width: auto !important;
-      max-height: 250px !important;
+  :not(.unstackable) img,
+  .ui.items:not(.unstackable) > .item > .image > img {
+    max-width: 100% !important;
+    width: auto !important;
+    max-height: 250px !important;
   }
 }
 @media (max-width: 768px) {

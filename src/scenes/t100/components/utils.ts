@@ -3,20 +3,25 @@ import { BoundaryCollection } from '../../../core/model/modflow';
 import { IVector2D } from '../../../core/marPro/Geometry.type';
 import { Vector2d } from 'konva/lib/types';
 import GameObject from '../../../core/marPro/GameObject';
+import GameState from '../../../core/marPro/GameState';
 import Scenario from '../../../core/marPro/Scenario';
 
 export const boundaryUpdater = async (
   scenario: Scenario,
+  gameState: GameState,
   boundaries: BoundaryCollection,
   updatedBoundaries: BoundaryCollection,
   onUpdateBoundary: (b: Boundary, g?: GameObject) => any,
   onFinish: (bc: BoundaryCollection) => any
 ) => {
-  const shiftedBoundary = boundaries.toObject().shift();
+  const cBoundaries = boundaries.toObject();
+  const shiftedBoundary = cBoundaries.shift();
+
+  console.log({ boundaries, shiftedBoundary });
 
   if (!shiftedBoundary) {
     // Add remaining gameobjects as new boundaries
-    scenario.objects.forEach((gameObject) => {
+    gameState.objects.forEach((gameObject) => {
       const boundary = BoundaryFactory.fromMarProGameObject(GameObject.fromObject(gameObject), scenario); // TODO
       if (boundary) {
         updatedBoundaries.addBoundary(boundary);
@@ -28,19 +33,19 @@ export const boundaryUpdater = async (
   }
 
   const boundary = BoundaryFactory.fromObject(shiftedBoundary);
-  const filteredGameObjects = scenario.objects.filter((g) => g.boundaryId === boundary.id);
+  const filteredGameObjects = gameState.objects.filter((g) => g.boundaryId === boundary.id);
   if (filteredGameObjects.length > 0) {
     const gameObject = GameObject.fromObject(filteredGameObjects[0]);
 
     // Manipulate boundary with gameObject
-    if (scenario.isManipulatingBoundaryPositions) {
+    if (scenario.isManipulatingBoundaryPositions && gameObject.boundaryType) {
       boundary.geometry = gameObject.calculateGeometry(scenario);
       //TODO: boundary.cells = calculateActiveCells(geometry)
     }
     // Manipulate spvalues
 
     // Remove gameObject from array
-    scenario.objects = scenario.objects.filter((g) => g.boundaryId !== boundary.id);
+    gameState.objects = scenario.objects.filter((g) => g.boundaryId !== boundary.id);
   }
 
   onUpdateBoundary(
@@ -48,7 +53,14 @@ export const boundaryUpdater = async (
     filteredGameObjects.length > 0 ? GameObject.fromObject(filteredGameObjects[0]) : undefined
   );
   updatedBoundaries.add(boundary);
-  boundaryUpdater(scenario, boundaries, updatedBoundaries, onUpdateBoundary, onFinish);
+  boundaryUpdater(
+    scenario,
+    gameState,
+    BoundaryCollection.fromObject(cBoundaries),
+    updatedBoundaries,
+    onUpdateBoundary,
+    onFinish
+  );
 };
 
 export const getSnappingPoint = (grid: IVector2D[], x: number, y: number, offset: Vector2d) => {

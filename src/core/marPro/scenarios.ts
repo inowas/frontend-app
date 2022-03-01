@@ -143,6 +143,12 @@ export const scenario1: IScenario = {
       unit: 'm³',
       startValue: 11000,
     },
+    {
+      color: 'orange',
+      id: 'res_coins',
+      name: 'MAR Coins',
+      startValue: -25,
+    },
   ],
   subtitle: 'Infiltration ponds to achieve sustainability',
   stageSize: {
@@ -153,9 +159,13 @@ export const scenario1: IScenario = {
   tools: [
     {
       category: EGameObjectCategory.STRUCTURES,
+      cost: {
+        amount: 10,
+        resource: 'res_coins',
+      },
       editParameters: ['p_infiltration_rate'],
       editPosition: true,
-      name: 'o_infiltration_pond',
+      name: EGameObjectType.INFILTRATION_POND,
     },
   ],
 };
@@ -449,12 +459,12 @@ export const scenario2: IScenario = {
     {
       category: EGameObjectCategory.STRUCTURES,
       editParameters: ['p_infiltration_rate'],
-      name: 'o_infiltration_pond',
+      name: EGameObjectType.INFILTRATION_POND,
     },
     {
       category: EGameObjectCategory.STRUCTURES,
       editParameters: ['p_ecological_flow', 'p_agricultural_flow'],
-      name: 'o_abstraction_well',
+      name: EGameObjectType.ABSTRACTION_WELL,
     },
   ],
 };
