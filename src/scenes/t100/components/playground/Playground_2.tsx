@@ -21,6 +21,7 @@ import Tool from '../../../../core/marPro/Tool';
 import Toolbox from './Toolbox';
 import bg from '../../assets/mar-gameboard-01-riverbed.png';
 import useImage from '../../hooks/useImage';
+import { ICost } from '../../../../core/marPro/Tool.type';
 
 interface IProps {
   scenario: Scenario;
@@ -94,9 +95,10 @@ const Playground = (props: IProps) => {
     setGameObjectToAdd(null);
   };
 
-  const handleChangeGameObject = (g: GameObject) => {
+  const handleChangeGameObject = (g: GameObject, costs: ICost[]) => {
     const cGameState = GameState.fromObject(gameState);
     cGameState.updateGameObject(g);
+    costs.forEach((cost) => cGameState.updateResource(cost));
     setGameState(cGameState.toObject());
   };
 
