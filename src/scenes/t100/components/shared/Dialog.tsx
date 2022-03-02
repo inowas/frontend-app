@@ -44,17 +44,17 @@ const Dialog = (props: IProps) => {
         onMouseMove={handleMouseMove}
         onMouseDown={toggleIsDragging}
         onMouseUp={toggleIsDragging}
-        className="ui header obj-modal-header tiny"
+        className="ui header tiny"
         style={{
           cursor: isDragging ? 'grabbing' : 'grab',
         }}
       >
-        {!!props.image && <Image floated="left" src={getImage(props.image)} size="mini" />}
+        {!!props.image && <Image as='div' floated="left" src={getImage(props.image)} size="mini" />}
         {props.header}
         {!!props.onClose && <Icon style={{ float: 'right' }} link name="close" onClick={props.onClose} />}
       </div>
       <div
-        className="content obj-modal-body"
+        className="content"
         style={{
           cursor: isDragging ? 'grabbing' : 'grab',
         }}

@@ -15,7 +15,6 @@ const Footer = (props: IProps) => {
       <div className="ui center aligned grid">
         <div className="one column row">
           <div className="column">
-            <h3 className="ui header"></h3>
           </div>
         </div>
         <div className="four column row">

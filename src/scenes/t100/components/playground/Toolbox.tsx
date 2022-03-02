@@ -1,4 +1,4 @@
-import { Button, Card, Image, Menu, Popup } from 'semantic-ui-react';
+import { Button, Card, Image, Menu, Pagination, Popup } from 'semantic-ui-react';
 import { EGameObjectCategory, ITool } from '../../../../core/marPro/Tool.type';
 import { EGameObjectType } from '../../../../core/marPro/GameObject.type';
 import { getImage } from '../../assets/images';
@@ -84,9 +84,9 @@ const Toolbox = (props: IProps) => {
           {categories.length > 1 && <Menu.Item icon="chevron right" as="a" onClick={handleClickChevron('right')} />}
         </Menu>
       </Menu.Item>
-      <Menu.Item icon="angle up" as="a" style={{ padding: 0 }} />
+      <Menu.Item icon="angle up" as="a" />
       {props.scenario.tools.filter((tool) => tool.category === categories[categoryKey]).map((tool) => renderTool(tool))}
-      <Menu.Item icon="angle down" as="a" style={{ padding: 0 }} />
+      <Menu.Item icon="angle down" as="a" />
     </Menu>
   );
 };

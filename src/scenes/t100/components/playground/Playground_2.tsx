@@ -21,6 +21,7 @@ import Tool from '../../../../core/marPro/Tool';
 import Toolbox from './Toolbox';
 import bg from '../../assets/mar-gameboard-01-riverbed.png';
 import useImage from '../../hooks/useImage';
+import { ICost } from '../../../../core/marPro/Tool.type';
 
 interface IProps {
   scenario: Scenario;
@@ -94,9 +95,10 @@ const Playground = (props: IProps) => {
     setGameObjectToAdd(null);
   };
 
-  const handleChangeGameObject = (g: GameObject) => {
+  const handleChangeGameObject = (g: GameObject, costs: ICost[]) => {
     const cGameState = GameState.fromObject(gameState);
     cGameState.updateGameObject(g);
+    costs.forEach((cost) => cGameState.updateResource(cost));
     setGameState(cGameState.toObject());
   };
 
@@ -229,18 +231,18 @@ const Playground = (props: IProps) => {
 
   return (
     <>
-      <div className="bg_noise"></div>
+      <div className="bg-noise"></div>
       <Header gameState={GameState.fromObject(gameState)} />
       <Grid>
-        <Grid.Row style={{ paddingTop: 0 }}>
-          <Grid.Column width={'two'}>
+        <Grid.Row className="gameboard">
+          <Grid.Column width={'three'}>
             <Toolbox
               gameObjectToAdd={gameObjectToAdd ? DraftGameObject.fromObject(gameObjectToAdd) : null}
               onAddGameObject={handleAddGameObject}
               scenario={props.scenario}
             />
           </Grid.Column>
-          <Grid.Column width={'fourteen'}>
+          <Grid.Column width={'thirteen'}>
             <div onDrop={handleDropNewObject} onDragOver={handleDragOver}>
               {renderGameObjectDialogs()}
               {renderDraftGameObjectDialogs()}
@@ -251,7 +253,7 @@ const Playground = (props: IProps) => {
               ) : (
                 <Stage
                   draggable
-                  width={1280}
+                  width={1060}
                   height={props.scenario.stageSize.y}
                   onDragEnd={handleDragStage}
                   onMouseMove={handleMouseMove}

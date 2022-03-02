@@ -1,4 +1,5 @@
-import { List } from 'semantic-ui-react';
+import { Button, Grid, List } from 'semantic-ui-react';
+import { ICost } from '../../../../core/marPro/Tool.type';
 import Dialog from '../shared/Dialog';
 import GameObject from '../../../../core/marPro/GameObject';
 import React, { useState } from 'react';
@@ -6,13 +7,14 @@ import Slider from 'rc-slider';
 
 interface IProps {
   gameObject: GameObject;
-  onChange: (gameObject: GameObject) => void;
+  onChange: (gameObject: GameObject, costs: ICost[]) => void;
   onClose: (id: string) => void;
 }
 
 const GameObjectDialog = (props: IProps) => {
-  const [activeValue, setActiveValue] = useState<number>();
+  const [activeValue, setActiveValue] = useState<number>(0);
   const [activeSlider, setActiveSlider] = useState<string | null>(null);
+  const [isAfterChange, setIsAfterChange] = useState<boolean>(false);
 
   const { gameObject } = props;
 
@@ -23,7 +25,14 @@ const GameObjectDialog = (props: IProps) => {
     setActiveValue(value);
   };
 
-  const handleAfterChangeSlider = () => {
+  const handleAfterChangeSlider = () => setIsAfterChange(true);
+
+  const handleCancelChange = () => {
+    setActiveSlider(null);
+    setIsAfterChange(false);
+  };
+
+  const handleConfirmChange = () => {
     if (!activeValue || !activeSlider) {
       return null;
     }
@@ -34,9 +43,69 @@ const GameObjectDialog = (props: IProps) => {
       }
       return p;
     });
+
+    const costs: ICost[] = [];
+    const parameter = gameObject.parameters.filter((p) => p.id === activeSlider);
+    if (parameter.length > 0) {
+      const diff = activeValue - parameter[0].value;
+      parameter[0].relations?.forEach((relation) => {
+        costs.push({
+          amount: (relation.relation || 1) * diff,
+          resource: relation.resourceId,
+        });
+      });
+    }
+
+    props.onChange(GameObject.fromObject(cGameObject), costs);
     setActiveSlider(null);
-    props.onChange(GameObject.fromObject(cGameObject));
+    setIsAfterChange(false);
   };
+
+  if (isAfterChange && activeSlider) {
+    const parameter = gameObject.parameters.filter((p) => p.id === activeSlider);
+    if (parameter.length > 0) {
+      const diff = activeValue - parameter[0].value;
+
+      return (
+        <Dialog
+          header={gameObject.type}
+          image={gameObject.type}
+          content={
+            <Grid textAlign="center" style={{ minWidth: '20rem', width: 'min-content' }}>
+              <Grid.Row>
+                <Grid.Column>
+                  Do you really want to change the value of parameter {parameter[0].id} to {activeValue}? It will{' '}
+                  <b>{diff < 0 ? 'give' : 'cost'}</b> you:
+                </Grid.Column>
+              </Grid.Row>
+              {parameter[0].relations &&
+                parameter[0].relations.map((relation) => (
+                  <Grid.Row key={relation.resourceId}>
+                    <Grid.Column>
+                      {Math.abs((relation.relation || 1) * diff)} {relation.resourceId}
+                    </Grid.Column>
+                  </Grid.Row>
+                ))}
+              <Grid.Row>
+                <Grid.Column>
+                  <Button.Group> {/*fluid widths={2} */}
+                    <Button negative onClick={handleCancelChange}>
+                      Cancel
+                    </Button>
+                    <Button.Or />
+                    <Button positive onClick={handleConfirmChange}>
+                      Confirm
+                    </Button>
+                  </Button.Group>
+                </Grid.Column>
+              </Grid.Row>
+            </Grid>
+          }
+          onClose={handleCloseDialog}
+        />
+      );
+    }
+  }
 
   return (
     <Dialog

@@ -10,13 +10,13 @@ interface IProps {
 const Header = (props: IProps) => {
   return (
     <Grid>
-      <Grid.Row style={{ paddingBottom: 0 }}>
+      <Grid.Row>
         <Grid.Column width={10}>
           <Message compact icon attached={'bottom'} className={'mission'}>
             <Icon name="info circle" />
             <Message.Content>
               Mission: Ezousa River, Cyprus
-              <i aria-hidden="true" className="right chevron icon"></i>
+              <Icon name="chevron right" />
             </Message.Content>
           </Message>
         </Grid.Column>
