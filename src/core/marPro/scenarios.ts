@@ -159,11 +159,20 @@ export const scenario1: IScenario = {
   tools: [
     {
       category: EGameObjectCategory.STRUCTURES,
-      cost: {
-        amount: 10,
-        resource: 'res_coins',
-      },
-      editParameters: ['p_infiltration_rate'],
+      costs: [
+        {
+          amount: 10,
+          refund: 10,
+          resource: 'res_coins',
+        },
+      ],
+      editParameters: [
+        {
+          relations: [{ resourceId: 'res_treated_wastewater' }],
+          id: 'p_infiltration_rate',
+          value: 0,
+        },
+      ],
       editPosition: true,
       name: EGameObjectType.INFILTRATION_POND,
     },
@@ -458,12 +467,36 @@ export const scenario2: IScenario = {
   tools: [
     {
       category: EGameObjectCategory.STRUCTURES,
-      editParameters: ['p_infiltration_rate'],
+      costs: [],
+      editParameters: [
+        {
+          relations: [{ resourceId: 'res_treated_wastewater' }],
+          id: 'p_infiltration_rate',
+          value: 0,
+        },
+      ],
       name: EGameObjectType.INFILTRATION_POND,
     },
     {
       category: EGameObjectCategory.STRUCTURES,
-      editParameters: ['p_ecological_flow', 'p_agricultural_flow'],
+      costs: [],
+      editParameters: [
+        {
+          relations: [{ resourceId: 'res_happiness', relation: 0.03 }],
+          id: 'p_ecological_flow',
+          min: 0,
+          value: 0,
+        },
+        {
+          relations: [
+            { resourceId: 'res_happiness', relation: 0.01 },
+            { resourceId: 'res_coins', relation: 0.02 },
+          ],
+          id: 'p_agricultural_flow',
+          min: 0,
+          value: 1500,
+        },
+      ],
       name: EGameObjectType.ABSTRACTION_WELL,
     },
   ],

@@ -1,4 +1,4 @@
-import { Button, Grid, List } from 'semantic-ui-react';
+import { Button, Grid, Icon, List } from 'semantic-ui-react';
 import { ICost } from '../../../../core/marPro/Tool.type';
 import Dialog from '../shared/Dialog';
 import GameObject from '../../../../core/marPro/GameObject';
@@ -9,6 +9,7 @@ interface IProps {
   gameObject: GameObject;
   onChange: (gameObject: GameObject, costs: ICost[]) => void;
   onClose: (id: string) => void;
+  onDelete: (gameObject: GameObject, costs: ICost[]) => void;
 }
 
 const GameObjectDialog = (props: IProps) => {
@@ -33,7 +34,7 @@ const GameObjectDialog = (props: IProps) => {
   };
 
   const handleConfirmChange = () => {
-    if (!activeValue || !activeSlider) {
+    if (!activeSlider) {
       return null;
     }
     const cGameObject = gameObject.toObject();
@@ -59,6 +60,34 @@ const GameObjectDialog = (props: IProps) => {
     props.onChange(GameObject.fromObject(cGameObject), costs);
     setActiveSlider(null);
     setIsAfterChange(false);
+  };
+
+  const handleSell = () => {
+    let costs: ICost[] = [];
+
+    // Remove all resources which had been manipulated by this gameObject
+    gameObject.parameters.forEach((parameter) => {
+      const value = parameter.value;
+      parameter.relations?.forEach((relation) => {
+        const diff = (relation.relation || 1) * value;
+        const fCosts = costs.filter((c) => c.resource === relation.resourceId);
+        if (fCosts.length > 0) {
+          costs = costs.map((cost) => {
+            if (cost.resource === relation.resourceId) {
+              cost.amount += diff;
+            }
+            return cost;
+          });
+        } else {
+          costs.push({
+            amount: -1 * diff,
+            resource: relation.resourceId,
+          });
+        }
+      });
+    });
+
+    props.onDelete(gameObject, costs);
   };
 
   if (isAfterChange && activeSlider) {
@@ -140,6 +169,12 @@ const GameObjectDialog = (props: IProps) => {
                 ))}
             </React.Fragment>
           ))}
+          <List.Item>
+            <Button icon labelPosition="left" negative floated="right" onClick={handleSell}>
+              <Icon name="eraser" />
+              Sell
+            </Button>
+          </List.Item>
         </List>
       }
       onClose={handleCloseDialog}

@@ -1,10 +1,11 @@
 import { Dimmer, Grid, Loader } from 'semantic-ui-react';
-import { DragEvent, ReactNode, useRef, useState } from 'react';
 import { EGameObjectType, IDraftGameObject } from '../../../../core/marPro/GameObject.type';
+import { ICost } from '../../../../core/marPro/Tool.type';
 import { IGameState } from '../../../../core/marPro/GameState.type';
 import { IMapScale } from '../types';
 import { Image, Layer, Stage } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
+import { ReactNode, useRef, useState } from 'react';
 import ConfirmBuyGameObject from '../dialogs/ConfirmBuyGameObject';
 import DraftGameObject from '../../../../core/marPro/DraftGameObject';
 import DraftGameObjectComponent from '../gameObjects/DraftGameObjectComponent';
@@ -21,7 +22,7 @@ import Tool from '../../../../core/marPro/Tool';
 import Toolbox from './Toolbox';
 import bg from '../../assets/mar-gameboard-01-riverbed.png';
 import useImage from '../../hooks/useImage';
-import { ICost } from '../../../../core/marPro/Tool.type';
+import { solverPackages } from '../../../../core/model/flopy/packages/mf/FlopyModflow';
 
 interface IProps {
   scenario: Scenario;
@@ -43,24 +44,6 @@ const Playground = (props: IProps) => {
 
   const handleAddGameObject = (object: DraftGameObject) => setGameObjectToAdd(object.toObject());
 
-  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  };
-
-  const handleDropNewObject = (e: DragEvent<HTMLDivElement>) => {
-    const newGameObject = GameObject.createWell();
-
-    newGameObject.location = {
-      x: e.nativeEvent.offsetX - mapScale.offset.x - 22,
-      y: e.nativeEvent.offsetY - mapScale.offset.y - 15,
-    };
-
-    setGameState({
-      ...gameState,
-      objects: [...gameState.objects, newGameObject.toObject()],
-    });
-  };
-
   const handleCloseDialog = (id: string) =>
     setActiveGameObjects(activeGameObjects.filter((gameObjectId) => gameObjectId !== id));
 
@@ -78,20 +61,18 @@ const Playground = (props: IProps) => {
   const handleCancelPurchaseGameObject = () => setGameObjectToAdd(null);
 
   const handleConfirmPurchaseGameObject = (tool: Tool) => {
+    console.log(gameObjectToAdd);
     if (!gameObjectToAdd) {
       return null;
     }
 
     const gs = GameState.fromObject(gameState);
-    const newGameObject = DraftGameObject.fromObject(gameObjectToAdd).toGameObject();
+    const newGameObject = DraftGameObject.fromObject(gameObjectToAdd).toGameObject(tool.editParameters);
 
     gs.addGameObject(newGameObject);
-    if (tool.cost) {
-      gs.updateResource(tool.cost);
-    }
+    gs.updateResources(tool.costs);
 
     setGameState(gs.toObject());
-
     setGameObjectToAdd(null);
   };
 
@@ -123,6 +104,21 @@ const Playground = (props: IProps) => {
       y: pointerPosition.y - 15,
     };
     cGameState.updateGameObject(gameObject);
+    setGameState(cGameState.toObject());
+  };
+
+  const handleDeleteGameObject = (g: GameObject, costs: ICost[]) => {
+    const cGameState = GameState.fromObject(gameState);
+    costs.forEach((cost) => cGameState.updateResource(cost));
+    cGameState.removeGameObject(g);
+
+    const tool = props.scenario.tools.filter((tool) => tool.name === g.type);
+    if (tool.length > 0) {
+      tool[0].costs?.forEach((cost) => {
+        cGameState.refundResource(cost);
+      });
+    }
+
     setGameState(cGameState.toObject());
   };
 
@@ -205,6 +201,7 @@ const Playground = (props: IProps) => {
             gameObject={GameObject.fromObject(g[0])}
             onChange={handleChangeGameObject}
             onClose={handleCloseDialog}
+            onDelete={handleDeleteGameObject}
           />
         );
       }
@@ -243,36 +240,34 @@ const Playground = (props: IProps) => {
             />
           </Grid.Column>
           <Grid.Column width={'fourteen'}>
-            <div onDrop={handleDropNewObject} onDragOver={handleDragOver}>
-              {renderGameObjectDialogs()}
-              {renderDraftGameObjectDialogs()}
-              {!backgroundImage ? (
-                <Dimmer active inverted>
-                  <Loader inverted>Loading</Loader>
-                </Dimmer>
-              ) : (
-                <Stage
-                  draggable
-                  width={1280}
-                  height={props.scenario.stageSize.y}
-                  onDragEnd={handleDragStage}
-                  onMouseMove={handleMouseMove}
-                  onWheel={handleWheel}
-                  ref={stageRef}
-                >
-                  <Layer>{backgroundImage && <Image image={backgroundImage} />}</Layer>
-                  <Layer>{renderGameObjects()}</Layer>
-                  {gameObjectToAdd && (
-                    <Layer>
-                      <DraftGameObjectComponent
-                        gameObject={DraftGameObject.fromObject(gameObjectToAdd)}
-                        onClick={handleClickDraftGameObject}
-                      />
-                    </Layer>
-                  )}
-                </Stage>
-              )}
-            </div>
+            {renderGameObjectDialogs()}
+            {renderDraftGameObjectDialogs()}
+            {!backgroundImage ? (
+              <Dimmer active inverted>
+                <Loader inverted>Loading</Loader>
+              </Dimmer>
+            ) : (
+              <Stage
+                draggable
+                width={1280}
+                height={props.scenario.stageSize.y}
+                onDragEnd={handleDragStage}
+                onMouseMove={handleMouseMove}
+                onWheel={handleWheel}
+                ref={stageRef}
+              >
+                <Layer>{backgroundImage && <Image image={backgroundImage} />}</Layer>
+                <Layer>{renderGameObjects()}</Layer>
+                {gameObjectToAdd && (
+                  <Layer>
+                    <DraftGameObjectComponent
+                      gameObject={DraftGameObject.fromObject(gameObjectToAdd)}
+                      onClick={handleClickDraftGameObject}
+                    />
+                  </Layer>
+                )}
+              </Stage>
+            )}
           </Grid.Column>
         </Grid.Row>
       </Grid>

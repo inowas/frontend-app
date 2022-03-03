@@ -51,6 +51,21 @@ class GameState extends GenericObject<IGameState> {
     return this;
   }
 
+  public refundResource(cost: ICost) {
+    this._props.resources = this._props.resources.map((r) => {
+      if (r.id === cost.resource && cost.refund && cost.refund !== 0) {
+        r.value = r.value + cost.refund;
+      }
+      return r;
+    });
+    return this;
+  }
+
+  public removeGameObject(g: GameObject) {
+    this._props.objects = this._props.objects.filter((o) => o.id !== g.id);
+    return this;
+  }
+
   public updateGameObject(object: GameObject) {
     this._props.objects = this._props.objects.map((o) => {
       if (o.id === object.id) {
@@ -69,6 +84,10 @@ class GameState extends GenericObject<IGameState> {
       return r;
     });
     return this;
+  }
+
+  public updateResources(costs: ICost[]) {
+    costs.forEach((cost) => this.updateResource(cost));
   }
 }
 
