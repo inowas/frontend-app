@@ -236,8 +236,8 @@ export const scenario2: IScenario = {
       id: 'obj_pond_1',
       type: EGameObjectType.INFILTRATION_POND,
       location: {
-        x: 0,
-        y: 0,
+        x: 540,
+        y: 450,
       },
       size: {
         x: 0,
@@ -256,8 +256,8 @@ export const scenario2: IScenario = {
       id: 'obj_pond_2',
       type: EGameObjectType.INFILTRATION_POND,
       location: {
-        x: 0,
-        y: 0,
+        x: 560,
+        y: 480,
       },
       size: {
         x: 0,
@@ -276,8 +276,8 @@ export const scenario2: IScenario = {
       id: 'obj_pond_3',
       type: EGameObjectType.INFILTRATION_POND,
       location: {
-        x: 0,
-        y: 0,
+        x: 510,
+        y: 410,
       },
       size: {
         x: 0,
@@ -296,8 +296,8 @@ export const scenario2: IScenario = {
       id: 'obj_pond_4',
       type: EGameObjectType.INFILTRATION_POND,
       location: {
-        x: 0,
-        y: 0,
+        x: 440,
+        y: 450,
       },
       size: {
         x: 0,
@@ -314,7 +314,7 @@ export const scenario2: IScenario = {
     {
       boundaryId: '0e35d0d3-21b8-40cc-b950-02b34efc1fd6',
       id: 'obj_well_1',
-      type: EGameObjectType.INFILTRATION_POND,
+      type: EGameObjectType.ABSTRACTION_WELL,
       location: {
         x: 0,
         y: 0,
@@ -325,7 +325,7 @@ export const scenario2: IScenario = {
       },
       parameters: [
         {
-          relations: [{ resourceId: 'res_happiness', relation: 0.03 }],
+          relations: [{ resourceId: 'res_happiness', relation: -0.03 }],
           id: 'p_ecological_flow',
           min: 0,
           value: 0,
@@ -344,10 +344,10 @@ export const scenario2: IScenario = {
     {
       boundaryId: 'fe73884e-2c94-4d1a-a714-6f83565dbe78',
       id: 'obj_well_2',
-      type: EGameObjectType.INFILTRATION_POND,
+      type: EGameObjectType.ABSTRACTION_WELL,
       location: {
-        x: 100,
-        y: 50,
+        x: 400,
+        y: 500,
       },
       size: {
         x: 1,
@@ -355,7 +355,7 @@ export const scenario2: IScenario = {
       },
       parameters: [
         {
-          relations: [{ resourceId: 'res_happiness', relation: 0.03 }],
+          relations: [{ resourceId: 'res_happiness', relation: -0.03 }],
           id: 'p_ecological_flow',
           min: 0,
           value: 0,
@@ -374,10 +374,10 @@ export const scenario2: IScenario = {
     {
       boundaryId: '171c76b2-d5b2-4af7-bc1a-9a846da20d1f',
       id: 'obj_well_3',
-      type: EGameObjectType.INFILTRATION_POND,
+      type: EGameObjectType.ABSTRACTION_WELL,
       location: {
-        x: 140,
-        y: 50,
+        x: 540,
+        y: 550,
       },
       size: {
         x: 1,
@@ -385,7 +385,7 @@ export const scenario2: IScenario = {
       },
       parameters: [
         {
-          relations: [{ resourceId: 'res_happiness', relation: 0.03 }],
+          relations: [{ resourceId: 'res_happiness', relation: -0.03 }],
           id: 'p_ecological_flow',
           min: 0,
           value: 0,
@@ -404,10 +404,10 @@ export const scenario2: IScenario = {
     {
       boundaryId: '448f88c5-da72-4007-a8ce-25217127c83b',
       id: 'obj_well_4',
-      type: EGameObjectType.INFILTRATION_POND,
+      type: EGameObjectType.ABSTRACTION_WELL,
       location: {
-        x: 0,
-        y: 0,
+        x: 600,
+        y: 650,
       },
       size: {
         x: 1,
@@ -415,7 +415,7 @@ export const scenario2: IScenario = {
       },
       parameters: [
         {
-          relations: [{ resourceId: 'res_happiness', relation: 0.03 }],
+          relations: [{ resourceId: 'res_happiness', relation: -0.03 }],
           id: 'p_ecological_flow',
           min: 0,
           value: 0,

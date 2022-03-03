@@ -22,7 +22,6 @@ import Tool from '../../../../core/marPro/Tool';
 import Toolbox from './Toolbox';
 import bg from '../../assets/mar-gameboard-01-riverbed.png';
 import useImage from '../../hooks/useImage';
-import { solverPackages } from '../../../../core/model/flopy/packages/mf/FlopyModflow';
 
 interface IProps {
   scenario: Scenario;

@@ -1,3 +1,4 @@
+import { EGameObjectType } from '../../../core/marPro/GameObject.type';
 import gb1 from './mar-gameboard-01-riverbed.png';
 import infiltrationPond from './infiltration-pond.png';
 import river from './river.png';
@@ -21,10 +22,10 @@ export const gameBoards: IGameBoard[] = [
 ];
 
 export const getImage = (slag?: string) => {
-  if (slag === 'o_river') {
+  if (slag === EGameObjectType.RIVER) {
     return river;
   }
-  if (slag === 'o_well') {
+  if (slag === EGameObjectType.ABSTRACTION_WELL) {
     return well;
   }
   return infiltrationPond;

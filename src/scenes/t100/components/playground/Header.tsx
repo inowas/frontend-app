@@ -1,7 +1,7 @@
-import { Grid, Icon, Image, Message } from 'semantic-ui-react';
+import { Grid, Icon, Message } from 'semantic-ui-react';
 import GameState from '../../../../core/marPro/GameState';
+import Happiness from '../shared/Happiness';
 import MarCoins from '../shared/MarCoins';
-import happyPoints from '../../assets/happy-points.png';
 
 interface IProps {
   gameState: GameState;
@@ -24,16 +24,7 @@ const Header = (props: IProps) => {
           <MarCoins amount={props.gameState.getResource('res_coins')} />
         </Grid.Column>
         <Grid.Column width={2} verticalAlign={'middle'}>
-          <div className="ui right labeled tiny button coins">
-            <button className="ui icon button">
-              <Image src={happyPoints} className="ui image" />
-            </button>
-            <div className="ui indicating progress" data-percent="44">
-              <div className="bar" style={{ width: '44%' }}>
-                <div className="progress">44%</div>
-              </div>
-            </div>
-          </div>
+          <Happiness amount={props.gameState.getResource('res_happiness')} />
         </Grid.Column>
       </Grid.Row>
     </Grid>
