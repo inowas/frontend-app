@@ -18,8 +18,8 @@ const DraftGameObjectComponent = (props: IProps) => {
       opacity={0.5}
       x={props.gameObject.location.x}
       y={props.gameObject.location.y}
-      width={44}
-      height={30}
+      width={props.gameObject.size.x}
+      height={props.gameObject.size.y}
     />
   );
 };

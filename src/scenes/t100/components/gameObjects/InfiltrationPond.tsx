@@ -38,7 +38,7 @@ const InfiltrationPond = (props: IProps) => {
 
   return (
     <Image
-      draggable
+      draggable={!props.gameObject.locationIsFixed}
       image={image}
       onClick={handleClick}
       onDragEnd={handleDragEnd}
@@ -53,8 +53,8 @@ const InfiltrationPond = (props: IProps) => {
       shadowOffsetY={0}
       x={props.gameObject.location.x}
       y={props.gameObject.location.y}
-      width={44}
-      height={30}
+      width={props.gameObject.size.x}
+      height={props.gameObject.size.y}
     />
   );
 };

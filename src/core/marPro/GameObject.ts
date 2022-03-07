@@ -18,6 +18,10 @@ class GameObject extends GenericObject<IGameObject> {
     return this._props.id;
   }
 
+  get locationIsFixed() {
+    return this._props.locationIsFixed;
+  }
+
   get location() {
     return this._props.location;
   }
@@ -28,6 +32,10 @@ class GameObject extends GenericObject<IGameObject> {
 
   get parameters() {
     return this._props.parameters;
+  }
+
+  get size() {
+    return this._props.size;
   }
 
   get type() {

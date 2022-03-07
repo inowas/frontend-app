@@ -1,8 +1,9 @@
 import { EGameObjectType } from '../../../core/marPro/GameObject.type';
 import gb1 from './mar-gameboard-01-riverbed.png';
-import infiltrationPond from './infiltration-pond.png';
+import infiltrationPond from './infiltration-pond.svg';
 import river from './river.png';
-import well from './well.png';
+import well from './structure-well.svg';
+import wtp from './structure-wtp.svg';
 
 interface IGameBoard {
   country: string;
@@ -27,6 +28,9 @@ export const getImage = (slag?: string) => {
   }
   if (slag === EGameObjectType.ABSTRACTION_WELL) {
     return well;
+  }
+  if (slag === EGameObjectType.WASTEWATER_TREATMENT_PLANT) {
+    return wtp;
   }
   return infiltrationPond;
 };

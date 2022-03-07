@@ -10,6 +10,14 @@ class Tool extends GenericObject<ITool> {
     return this._props.editParameters;
   }
 
+  get name() {
+    return this._props.name;
+  }
+
+  get size() {
+    return this._props.size;
+  }
+
   public static fromObject(value: ITool) {
     return new Tool(value);
   }

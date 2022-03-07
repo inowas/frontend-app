@@ -43,11 +43,33 @@ export const scenario1: IScenario = {
         x: 105,
         y: 0,
       },
+      locationIsFixed: true,
       size: {
         x: 4.45,
         y: 4.45,
       },
       parameters: [],
+    },
+    {
+      id: 'wastewater_treatment_plant',
+      type: EGameObjectType.WASTEWATER_TREATMENT_PLANT,
+      location: {
+        x: 600,
+        y: 650,
+      },
+      locationIsFixed: true,
+      size: {
+        x: 130,
+        y: 90,
+      },
+      parameters: [
+        {
+          id: 'p_wastewater',
+          isFixed: true,
+          relations: [{ isStorage: true, resourceId: 'res_treated_wastewater' }],
+          value: 10000,
+        },
+      ],
     },
     {
       boundaryId: 'dcf1156e-3f02-4d5a-ad44-87073e0e7822',
@@ -58,8 +80,8 @@ export const scenario1: IScenario = {
         y: 450,
       },
       size: {
-        x: 0,
-        y: 0,
+        x: 44,
+        y: 30,
       },
       parameters: [
         {
@@ -78,8 +100,8 @@ export const scenario1: IScenario = {
         y: 450,
       },
       size: {
-        x: 0,
-        y: 0,
+        x: 44,
+        y: 30,
       },
       parameters: [
         {
@@ -98,8 +120,8 @@ export const scenario1: IScenario = {
         y: 320,
       },
       size: {
-        x: 0,
-        y: 0,
+        x: 44,
+        y: 30,
       },
       parameters: [
         {
@@ -118,8 +140,8 @@ export const scenario1: IScenario = {
         y: 320,
       },
       size: {
-        x: 0,
-        y: 0,
+        x: 44,
+        y: 30,
       },
       parameters: [
         {
@@ -140,6 +162,7 @@ export const scenario1: IScenario = {
       id: 'res_treated_wastewater',
       min: 0,
       name: 'Treated Wasterwater',
+      needsStorage: true,
       unit: 'm³',
       startValue: 11000,
     },
@@ -175,6 +198,10 @@ export const scenario1: IScenario = {
       ],
       editPosition: true,
       name: EGameObjectType.INFILTRATION_POND,
+      size: {
+        x: 44,
+        y: 30,
+      },
     },
   ],
 };
@@ -232,6 +259,42 @@ export const scenario2: IScenario = {
   ],
   objects: [
     {
+      boundaryId: 'river_id',
+      id: 'obj_riv',
+      type: EGameObjectType.RIVER,
+      location: {
+        x: 105,
+        y: 0,
+      },
+      locationIsFixed: true,
+      size: {
+        x: 4.45,
+        y: 4.45,
+      },
+      parameters: [],
+    },
+    {
+      id: 'wastewater_treatment_plant',
+      type: EGameObjectType.WASTEWATER_TREATMENT_PLANT,
+      location: {
+        x: 600,
+        y: 650,
+      },
+      locationIsFixed: true,
+      size: {
+        x: 130,
+        y: 90,
+      },
+      parameters: [
+        {
+          id: 'p_wastewater',
+          isFixed: true,
+          relations: [{ resourceId: 'res_treated_wastewater' }],
+          value: 10000,
+        },
+      ],
+    },
+    {
       boundaryId: 'dcf1156e-3f02-4d5a-ad44-87073e0e7822',
       id: 'obj_pond_1',
       type: EGameObjectType.INFILTRATION_POND,
@@ -240,8 +303,8 @@ export const scenario2: IScenario = {
         y: 450,
       },
       size: {
-        x: 0,
-        y: 0,
+        x: 44,
+        y: 30,
       },
       parameters: [
         {
@@ -260,8 +323,8 @@ export const scenario2: IScenario = {
         y: 480,
       },
       size: {
-        x: 0,
-        y: 0,
+        x: 44,
+        y: 30,
       },
       parameters: [
         {
@@ -280,8 +343,8 @@ export const scenario2: IScenario = {
         y: 410,
       },
       size: {
-        x: 0,
-        y: 0,
+        x: 44,
+        y: 30,
       },
       parameters: [
         {
@@ -300,8 +363,8 @@ export const scenario2: IScenario = {
         y: 450,
       },
       size: {
-        x: 0,
-        y: 0,
+        x: 44,
+        y: 30,
       },
       parameters: [
         {
@@ -320,8 +383,8 @@ export const scenario2: IScenario = {
         y: 0,
       },
       size: {
-        x: 1,
-        y: 1,
+        x: 47,
+        y: 37,
       },
       parameters: [
         {
@@ -350,8 +413,8 @@ export const scenario2: IScenario = {
         y: 500,
       },
       size: {
-        x: 1,
-        y: 1,
+        x: 47,
+        y: 37,
       },
       parameters: [
         {
@@ -380,8 +443,8 @@ export const scenario2: IScenario = {
         y: 550,
       },
       size: {
-        x: 1,
-        y: 1,
+        x: 47,
+        y: 37,
       },
       parameters: [
         {
@@ -410,8 +473,8 @@ export const scenario2: IScenario = {
         y: 650,
       },
       size: {
-        x: 1,
-        y: 1,
+        x: 47,
+        y: 37,
       },
       parameters: [
         {
@@ -476,6 +539,10 @@ export const scenario2: IScenario = {
         },
       ],
       name: EGameObjectType.INFILTRATION_POND,
+      size: {
+        x: 44,
+        y: 30,
+      },
     },
     {
       category: EGameObjectCategory.STRUCTURES,
@@ -498,6 +565,10 @@ export const scenario2: IScenario = {
         },
       ],
       name: EGameObjectType.ABSTRACTION_WELL,
+      size: {
+        x: 49,
+        y: 37,
+      },
     },
   ],
 };

@@ -1,7 +1,8 @@
-import { EGameObjectType, IDraftGameObject } from './GameObject.type';
 import { GenericObject } from '../model/genericObject/GenericObject';
+import { IDraftGameObject } from './GameObject.type';
 import { IParameter } from './Parameter.type';
 import GameObject from './GameObject';
+import Tool from './Tool';
 import uuid from 'uuid';
 
 class DraftGameObject extends GenericObject<IDraftGameObject> {
@@ -13,6 +14,10 @@ class DraftGameObject extends GenericObject<IDraftGameObject> {
     return this._props.location;
   }
 
+  get size() {
+    return this._props.size;
+  }
+
   get type() {
     return this._props.type;
   }
@@ -21,14 +26,14 @@ class DraftGameObject extends GenericObject<IDraftGameObject> {
     return new DraftGameObject(value);
   }
 
-  public static fromType(type: EGameObjectType) {
+  public static fromTool(tool: Tool) {
     return new DraftGameObject({
       hasBeenPaid: false,
       hasBeenPlaced: false,
-      image: type,
+      image: tool.name,
       location: { x: 0, y: 0 },
-      size: { x: 1, y: 1 },
-      type,
+      size: tool.size,
+      type: tool.name,
     });
   }
 

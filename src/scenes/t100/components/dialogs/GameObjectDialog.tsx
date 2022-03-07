@@ -151,30 +151,36 @@ const GameObjectDialog = (props: IProps) => {
               <List.Item>
                 {p.id}: {activeSlider === p.id ? activeValue : p.value}
               </List.Item>
-              <List.Item>
-                <Slider
-                  min={p.min}
-                  max={p.max}
-                  step={1}
-                  value={activeSlider === p.id ? activeValue : p.value}
-                  onChange={handleChangeSlider(p.id)}
-                  onAfterChange={handleAfterChangeSlider}
-                />
-              </List.Item>
-              {p.relations &&
-                p.relations.map((r) => (
-                  <List.Item key={`${gameObject.id}_${p.id}_${r.resourceId}`}>
-                    {r.resourceId}: {r.relation || '1:1'}
+              {!p.isFixed && (
+                <>
+                  <List.Item>
+                    <Slider
+                      min={p.min}
+                      max={p.max}
+                      step={1}
+                      value={activeSlider === p.id ? activeValue : p.value}
+                      onChange={handleChangeSlider(p.id)}
+                      onAfterChange={handleAfterChangeSlider}
+                    />
                   </List.Item>
-                ))}
+                  {p.relations &&
+                    p.relations.map((r) => (
+                      <List.Item key={`${gameObject.id}_${p.id}_${r.resourceId}`}>
+                        {r.resourceId}: {r.relation || '1:1'}
+                      </List.Item>
+                    ))}
+                </>
+              )}
             </React.Fragment>
           ))}
-          <List.Item>
-            <Button icon labelPosition="left" negative floated="right" onClick={handleSell}>
-              <Icon name="eraser" />
-              Sell
-            </Button>
-          </List.Item>
+          {!gameObject.locationIsFixed && (
+            <List.Item>
+              <Button icon labelPosition="left" negative floated="right" onClick={handleSell}>
+                <Icon name="eraser" />
+                Sell
+              </Button>
+            </List.Item>
+          )}
         </List>
       }
       onClose={handleCloseDialog}

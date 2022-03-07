@@ -1,5 +1,6 @@
 import { EGameObjectType } from './GameObject.type';
 import { IParameter } from './Parameter.type';
+import { IVector2D } from './Geometry.type';
 
 export enum EGameObjectCategory {
   LANDUSE = 'landuse',
@@ -19,4 +20,5 @@ export interface ITool {
   editPosition?: boolean;
   editSize?: boolean;
   name: EGameObjectType;
+  size: IVector2D;
 }

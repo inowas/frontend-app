@@ -1,10 +1,10 @@
 import { Button, Card, Image, Menu, Popup } from 'semantic-ui-react';
 import { EGameObjectCategory, ITool } from '../../../../core/marPro/Tool.type';
-import { EGameObjectType } from '../../../../core/marPro/GameObject.type';
 import { getImage } from '../../assets/images';
 import { useEffect, useState } from 'react';
 import DraftGameObject from '../../../../core/marPro/DraftGameObject';
 import Scenario from '../../../../core/marPro/Scenario';
+import Tool from '../../../../core/marPro/Tool';
 
 interface IProps {
   gameObjectToAdd: DraftGameObject | null;
@@ -26,8 +26,8 @@ const Toolbox = (props: IProps) => {
     setCategories(c);
   }, [props.scenario]);
 
-  const handleAddObject = (tool: EGameObjectType) => () => {
-    const newGameObject = DraftGameObject.fromType(tool);
+  const handleAddObject = (tool: ITool) => () => {
+    const newGameObject = DraftGameObject.fromTool(Tool.fromObject(tool));
     props.onAddGameObject(newGameObject);
   };
 
@@ -65,7 +65,7 @@ const Toolbox = (props: IProps) => {
                 position="left center"
               />
             ) : (
-              <Button positive onClick={handleAddObject(tool.name)} circular icon="add" />
+              <Button positive onClick={handleAddObject(tool)} circular icon="add" />
             )}
           </Card.Content>
         </Card>

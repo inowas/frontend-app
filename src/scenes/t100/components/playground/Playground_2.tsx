@@ -60,7 +60,6 @@ const Playground = (props: IProps) => {
   const handleCancelPurchaseGameObject = () => setGameObjectToAdd(null);
 
   const handleConfirmPurchaseGameObject = (tool: Tool) => {
-    console.log(gameObjectToAdd);
     if (!gameObjectToAdd) {
       return null;
     }
