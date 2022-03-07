@@ -1,4 +1,4 @@
-import { Button, Grid, List } from 'semantic-ui-react';
+import { Button, Grid, Icon, List } from 'semantic-ui-react';
 import { ICost } from '../../../../core/marPro/Tool.type';
 import Dialog from '../shared/Dialog';
 import GameObject from '../../../../core/marPro/GameObject';
@@ -9,6 +9,7 @@ interface IProps {
   gameObject: GameObject;
   onChange: (gameObject: GameObject, costs: ICost[]) => void;
   onClose: (id: string) => void;
+  onDelete: (gameObject: GameObject, costs: ICost[]) => void;
 }
 
 const GameObjectDialog = (props: IProps) => {
@@ -33,7 +34,7 @@ const GameObjectDialog = (props: IProps) => {
   };
 
   const handleConfirmChange = () => {
-    if (!activeValue || !activeSlider) {
+    if (!activeSlider) {
       return null;
     }
     const cGameObject = gameObject.toObject();
@@ -61,6 +62,34 @@ const GameObjectDialog = (props: IProps) => {
     setIsAfterChange(false);
   };
 
+  const handleSell = () => {
+    let costs: ICost[] = [];
+
+    // Remove all resources which had been manipulated by this gameObject
+    gameObject.parameters.forEach((parameter) => {
+      const value = parameter.value;
+      parameter.relations?.forEach((relation) => {
+        const diff = (relation.relation || 1) * value;
+        const fCosts = costs.filter((c) => c.resource === relation.resourceId);
+        if (fCosts.length > 0) {
+          costs = costs.map((cost) => {
+            if (cost.resource === relation.resourceId) {
+              cost.amount += diff;
+            }
+            return cost;
+          });
+        } else {
+          costs.push({
+            amount: -1 * diff,
+            resource: relation.resourceId,
+          });
+        }
+      });
+    });
+
+    props.onDelete(gameObject, costs);
+  };
+
   if (isAfterChange && activeSlider) {
     const parameter = gameObject.parameters.filter((p) => p.id === activeSlider);
     if (parameter.length > 0) {
@@ -71,7 +100,7 @@ const GameObjectDialog = (props: IProps) => {
           header={gameObject.type}
           image={gameObject.type}
           content={
-            <Grid textAlign="center" style={{ minWidth: '20rem', width: 'min-content' }}>
+            <Grid  textAlign="center" style={{ minWidth: '20rem', width: 'min-content' }}>
               <Grid.Row>
                 <Grid.Column>
                   Do you really want to change the value of parameter {parameter[0].id} to {activeValue}? It will{' '}
@@ -81,14 +110,14 @@ const GameObjectDialog = (props: IProps) => {
               {parameter[0].relations &&
                 parameter[0].relations.map((relation) => (
                   <Grid.Row key={relation.resourceId}>
-                    <Grid.Column>
+                    <Grid.Column width={16} textAlign="center">
                       {Math.abs((relation.relation || 1) * diff)} {relation.resourceId}
                     </Grid.Column>
                   </Grid.Row>
                 ))}
               <Grid.Row>
                 <Grid.Column>
-                  <Button.Group> {/*fluid widths={2} */}
+                  <Button.Group fluid widths={2}>
                     <Button negative onClick={handleCancelChange}>
                       Cancel
                     </Button>
@@ -140,6 +169,12 @@ const GameObjectDialog = (props: IProps) => {
                 ))}
             </React.Fragment>
           ))}
+          <List.Item>
+            <Button icon labelPosition="left" negative floated="right" onClick={handleSell}>
+              <Icon name="eraser" />
+              Sell
+            </Button>
+          </List.Item>
         </List>
       }
       onClose={handleCloseDialog}

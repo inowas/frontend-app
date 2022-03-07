@@ -1,5 +1,6 @@
 import { EGameObjectType, IDraftGameObject } from './GameObject.type';
 import { GenericObject } from '../model/genericObject/GenericObject';
+import { IParameter } from './Parameter.type';
 import GameObject from './GameObject';
 import uuid from 'uuid';
 
@@ -31,13 +32,13 @@ class DraftGameObject extends GenericObject<IDraftGameObject> {
     });
   }
 
-  public toGameObject() {
+  public toGameObject(parameters?: IParameter[]) {
     return new GameObject({
       id: uuid.v4(),
       type: this._props.type,
       location: this._props.location,
       size: this._props.size,
-      parameters: [],
+      parameters: parameters || [],
     });
   }
 }

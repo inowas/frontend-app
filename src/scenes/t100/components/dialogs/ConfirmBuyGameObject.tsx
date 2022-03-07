@@ -2,7 +2,6 @@ import { Button, Grid } from 'semantic-ui-react';
 import Dialog from '../shared/Dialog';
 import MarCoins from '../shared/MarCoins';
 import Tool from '../../../../core/marPro/Tool';
-import sound from '../../assets/sounds/cash.mp3';
 
 interface IProps {
   onClickConfirm: (tool: Tool) => any;
@@ -11,11 +10,7 @@ interface IProps {
 }
 
 const ConfirmBuyGameObject = (props: IProps) => {
-  const handleConfirm = () => {
-    const audio = new Audio(sound);
-    audio.play();
-    props.onClickConfirm(props.tool);
-  };
+  const handleConfirm = () => props.onClickConfirm(props.tool);
 
   return (
     <Dialog
@@ -29,7 +24,16 @@ const ConfirmBuyGameObject = (props: IProps) => {
           </Grid.Row>
           <Grid.Row>
             <Grid.Column width={16} textAlign="center">
-              {props.tool.cost?.resource === 'res_coins' && <MarCoins amount={props.tool.cost.amount} />}
+              {props.tool.costs.map((cost) => {
+                if (cost.resource === 'res_coins') {
+                  return <MarCoins amount={cost.amount} key={`cost_${cost.resource}`} />;
+                }
+                return (
+                  <p key={`cost_${cost.resource}`}>
+                    {cost.resource}: {cost.amount}
+                  </p>
+                );
+              })}
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
