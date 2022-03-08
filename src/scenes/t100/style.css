@@ -1,6 +1,6 @@
 /* Basic Layout
 -------------- */
-.bg_noise {
+.bg-noise {
   background: linear-gradient(20deg, rgb(22 29 22 / 88%) 10%, rgb(53 47 39 / 88%) 50%),
     url(/src/scenes/t100/assets/noise.svg);
   filter: contrast(155%) brightness(450%);
@@ -9,28 +9,35 @@
   z-index: -1;
   width: 100%;
 }
-.bg_noise + .ui.grid > .row {
-  padding-top: 0px !important;
+.bg-noise + .ui.grid > .row {
+  padding-bottom: 0.5rem;
+  padding-top: 0rem;
+}
+.ui.grid > .row.gameboard {
+  padding-top: 0;
+}
+.gameboard .konvajs-content {
+  box-shadow: 0px 0px 20px 1px rgb(0 0 0 / 15%);
 }
 
 /* Object Modal
 ---------------- */
-.obj-modal-container {
+.ui.modal.obj-modal-container {
   background-color: #f5ead6 !important;
   box-shadow: 0 0 1px 1px #c9b69c;
   color: #333333;
-  height: 240px;
+  min-height: 240px;
   width: auto !important;
 }
-.ui.ui.header.obj-modal-header {
+.ui.modal.obj-modal-container .ui.header {
   background-color: #333333;
   color: #ebe6e0;
   padding: 10px 15px;
 }
-.obj-modal-container .content {
+.ui.modal.obj-modal-container .content {
   background-color: #f5ead6 !important;
 }
-.obj-modal-container:after {
+.ui.modal.obj-modal-container:after {
   background: #f5ead6;
   bottom: -0.30714286em;
   content: ' ';
@@ -49,33 +56,31 @@
 .ui.menu.objects .item.header {
   background-color: #20b142 !important;
 }
-.ui.labeled.icon.menu .item {
-  padding-bottom: 0;
+.ui.vertical.inverted.menu.objects .menu .item {
+  padding: 0;
+  min-width: 3em;
+}
+.ui.labeled.icon.menu.objects a.icon.item {
+  padding: 0.3rem 0 0;
+}
+.ui.labeled.icon.menu.objects .item {
+  padding: 0.5rem 1rem;
 }
 .ui.vertical.menu.objects .item:before {
   height: 0;
 }
-.ui.menu.objects .button.active {
+.ui.labeled.icon.menu.objects .button.active {
   background: rgba(255, 255, 255, 0.15);
   color: #fff !important;
 }
-.ui.labeled.icon.menu .button.item {
-  min-width: 3em !important;
-  margin: auto;
-  padding-left: 0;
-  padding-right: 0;
-}
-.ui.labeled.icon.menu .active.item {
+.ui.labeled.icon.menu.objects .button {
   text-transform: uppercase;
 }
 .ui.card.object {
   background-color: #f5ead6;
   box-shadow: none;
   text-align: left;
-  width: 135px !important;
-}
-.ui.card.object .image {
-  top: 15px;
+  width: 15rem !important;
 }
 .ui.card.object .header {
   font-size: 14px !important;
@@ -83,20 +88,48 @@
   /* white-space: nowrap; */
   word-break: break-all;
 }
-
 .ui.menu.objects a.item:hover {
   background-color: transparent !important;
 }
 
-/* Reward Icons
+/* Resource Icons
 ----------------- */
 .ui.message.mission {
-  background-color: #f5ead6;
+  background-color: #F5EAD6;
   box-shadow: none !important;
 }
-.mission .info.icon {
-  color: #333333;
+.ui.message.mission .info.icon {
+  color: #1481B8;
+  font-size: 2em !important;
   opacity: 1 !important;
+}
+.ui.message.mission .chevron.right.icon {
+  margin-left: 0.6em;
+}
+.water .ui.image {
+  top: 7px;
+}
+.water .ui.progress {
+  background-color: #1481B8;
+  display: flex;
+  top: 10px;
+}
+.water .ui.progress .bar.budget {
+  background-color: #0092CC;
+  background-image: linear-gradient(90deg,#1EB1ED,#0092CC);
+  width: 35%;
+}
+.water .ui.progress .bar.infiltration {
+  background-color: #006699;
+  background-image: linear-gradient(45deg,rgba(255,255,255,.1) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.1) 50%,rgba(255,255,255,.1) 75%,transparent 75%,transparent);
+  background-size: 1rem 1rem;
+  width: 65%;
+  -webkit-animation: infiltration 1.5s linear infinite;
+    animation: infiltration 1.5s linear infinite;
+}
+@keyframes infiltration {
+  from { background-position: 1rem 0; }
+  to { background-position: 0 0; }
 }
 .coins .button {
   background: transparent !important;
@@ -105,6 +138,8 @@
 }
 .coins .label {
   border: none !important;
+  /* border-radius: 0 15px 15px 0 !important; */
+  color: #FFFFFF !important;
   display: inline-block !important;
   width: 100px;
   height: 25px;
@@ -114,27 +149,19 @@
   top: 12px;
   z-index: 1;
 }
-.coins .noChange {
+.coins .label.noChange {
   background-color: #333333 !important;
-  color: #ffffff !important;
-}
-.coins .positiveChange {
-  background-color: green !important;
-  color: #ffffff !important;
   -moz-transition: all 1s ease-in-out;
   -webkit-transition: all 1s ease-in-out;
   -o-transition: all 1s ease-in-out;
   -ms-transition: all 1s ease-in-out;
   transition: all 1s ease-in-out;
 }
-.coins .negativeChange {
-  background-color: red !important;
-  color: #ffffff !important;
-  -moz-transition: all 1s ease-in-out;
-  -webkit-transition: all 1s ease-in-out;
-  -o-transition: all 1s ease-in-out;
-  -ms-transition: all 1s ease-in-out;
-  transition: all 1s ease-in-out;
+.coins .label.positiveChange {
+  background-color: #20B142 !important;
+}
+.coins .label.negativeChange {
+  background-color: #FF5500 !important;
 }
 .coins .ui.progress {
   background-color: #333333;
@@ -142,10 +169,18 @@
   top: 12px;
   width: 100px;
 }
+.coins .ui.active.indicating.progress .bar {
+  min-width: 1em;
+}
+.coins .ui.active.indicating.progress .bar .progress {
+  left: 0.5rem;
+}
+
 
 /* Resources Dialog
 -------------------- */
 .ui.segment.calculation {
+  display: none;
   overflow-y: visible !important;
 }
 .ui.floating.label {
@@ -170,6 +205,24 @@
 }
 .calculation .ui.button {
   border-radius: 50px;
+}
+.calculation .ui.progress.success .bar {
+  background-color: #21ba45 !important;
+}
+
+/* Sliders
+---------- */
+.rc-slider-rail {
+  background-color: rgba(201 182 156 / 50%) !important;
+}
+.rc-slider-track {
+  background-color: #1481B8 !important;
+}
+.rc-slider-handle {
+  background: #ffffff -webkit-linear-gradient(transparent, rgba(0, 0, 0, 0.05));
+  background: #ffffff linear-gradient(transparent, rgba(0, 0, 0, 0.05));
+  border: none;
+  box-shadow: 0px 1px 2px 0 rgb(34 36 38 / 15%), 0 0 0 1px rgb(34 36 38 / 15%) inset;
 }
 .ui.range {
   width: 100%;
@@ -239,9 +292,8 @@
   top: 20px;
   left: 50%;
 }
-.calculation .ui.progress.success .bar {
-  background-color: #21ba45 !important;
-}
+
+
 
 @media only screen and (max-width: 767px) {
   :not(.unstackable) img,
@@ -252,12 +304,12 @@
   }
 }
 @media (max-width: 768px) {
-  .bg_noise {
+  .bg-noise {
     margin-left: calc(-100vw / 2 + 320px / 2);
   }
 }
 @media (min-width: 1280px) {
-  .bg_noise {
+  .bg-noise {
     margin-left: calc(-100vw / 2 + 1280px / 2);
     margin-right: calc(-100vw / 2 + 1280px / 2);
   }

@@ -1,10 +1,12 @@
-import { Button, Card, Image, Menu, Popup } from 'semantic-ui-react';
+import { Button, Card, Image, Label, Menu, Popup } from 'semantic-ui-react';
 import { EGameObjectCategory, ITool } from '../../../../core/marPro/Tool.type';
 import { EGameObjectType } from '../../../../core/marPro/GameObject.type';
 import { getImage } from '../../assets/images';
 import { useEffect, useState } from 'react';
 import DraftGameObject from '../../../../core/marPro/DraftGameObject';
 import Scenario from '../../../../core/marPro/Scenario';
+import marCoin from '../../assets/mar-coin.png';
+import happyPoints from '../../assets/happy-points.png';
 
 interface IProps {
   gameObjectToAdd: DraftGameObject | null;
@@ -56,6 +58,8 @@ const Toolbox = (props: IProps) => {
             <Card.Description>Property</Card.Description>
           </Card.Content>
           <Card.Content textAlign="center" extra>
+          <Label image><Image src={marCoin} />20</Label>
+          <Label image><Image src={happyPoints} />14</Label>
             {props.gameObjectToAdd && props.gameObjectToAdd.type === tool.name ? (
               <Popup
                 trigger={<Button positive loading={true} circular icon="add" />}
@@ -84,9 +88,9 @@ const Toolbox = (props: IProps) => {
           {categories.length > 1 && <Menu.Item icon="chevron right" as="a" onClick={handleClickChevron('right')} />}
         </Menu>
       </Menu.Item>
-      <Menu.Item icon="angle up" as="a" style={{ padding: 0 }} />
+      <Menu.Item icon="angle up" as="a" />
       {props.scenario.tools.filter((tool) => tool.category === categories[categoryKey]).map((tool) => renderTool(tool))}
-      <Menu.Item icon="angle down" as="a" style={{ padding: 0 }} />
+      <Menu.Item icon="angle down" as="a" />
     </Menu>
   );
 };

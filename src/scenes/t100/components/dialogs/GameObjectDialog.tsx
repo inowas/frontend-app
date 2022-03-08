@@ -100,9 +100,9 @@ const GameObjectDialog = (props: IProps) => {
           header={gameObject.type}
           image={gameObject.type}
           content={
-            <Grid style={{ width: '400px' }}>
+            <Grid  textAlign="center" style={{ minWidth: '20rem', width: 'min-content' }}>
               <Grid.Row>
-                <Grid.Column width={16} textAlign="center">
+                <Grid.Column>
                   Do you really want to change the value of parameter {parameter[0].id} to {activeValue}? It will{' '}
                   <b>{diff < 0 ? 'give' : 'cost'}</b> you:
                 </Grid.Column>
@@ -116,7 +116,7 @@ const GameObjectDialog = (props: IProps) => {
                   </Grid.Row>
                 ))}
               <Grid.Row>
-                <Grid.Column width={16}>
+                <Grid.Column>
                   <Button.Group fluid widths={2}>
                     <Button negative onClick={handleCancelChange}>
                       Cancel

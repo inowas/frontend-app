@@ -1,24 +1,42 @@
-import { Grid, Icon, Message } from 'semantic-ui-react';
+import { Button, Grid, Icon, Image, Message } from 'semantic-ui-react';
+import { useState } from 'react';
 import GameState from '../../../../core/marPro/GameState';
 import Happiness from '../shared/Happiness';
 import MarCoins from '../shared/MarCoins';
+import WaterDrop from '../../assets/water-drop.png';
+import ResourceManager from '../shared/ResourceManager';
 
 interface IProps {
   gameState: GameState;
 }
 
 const Header = (props: IProps) => {
+  const [showResourceManager, setShowResourceManager] = useState<boolean>(false);
+
+  const toggleResourceManager = () => setShowResourceManager(!showResourceManager);
+
+
   return (
     <Grid>
-      <Grid.Row style={{ paddingBottom: 0 }}>
-        <Grid.Column width={10}>
+      <Grid.Row>
+        <Grid.Column width={4}>
           <Message compact icon attached={'bottom'} className={'mission'}>
             <Icon name="info circle" />
             <Message.Content>
               Mission: Ezousa River, Cyprus
-              <i aria-hidden="true" className="right chevron icon"></i>
+              <Icon name="chevron right" />
             </Message.Content>
           </Message>
+        </Grid.Column>
+        <Grid.Column width={6} verticalAlign={'middle'} className='water'>
+            <Image as='div' floated='left' src={WaterDrop} />
+              <div className="ui progress">
+                <div className="bar budget"><div className="progress">Budget 35%</div></div>
+                <div className="bar infiltration"><div className="progress">Infiltration 65%</div></div>
+              </div>
+        </Grid.Column>
+        <Grid.Column width={2} verticalAlign={'middle'}>
+          <Button icon size='tiny'><Icon name='table' />Resources</Button>
         </Grid.Column>
         <Grid.Column width={2} verticalAlign={'middle'}>
           <MarCoins amount={props.gameState.getResource('res_coins')} />
