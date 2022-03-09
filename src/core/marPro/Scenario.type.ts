@@ -3,6 +3,11 @@ import { IResourceSettings } from './Resource.type';
 import { ITool } from './Tool.type';
 import { IVector2D } from './Geometry.type';
 import { TObjective } from './Objective.type';
+import IZone from './Zone.type';
+
+export interface IScenarioSettings {
+  allowGameObjectsOnlyInZones?: boolean;
+}
 
 export interface IScenario {
   aim: string[];
@@ -15,6 +20,7 @@ export interface IScenario {
   objects: IGameObject[];
   referencePoints: Array<[number, number]>;
   resources: IResourceSettings[];
+  settings: IScenarioSettings;
   subtitle: string;
   stageSize: {
     x: number;
@@ -22,4 +28,5 @@ export interface IScenario {
   };
   title: string;
   tools: ITool[];
+  zones: IZone[];
 }

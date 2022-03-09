@@ -44,6 +44,10 @@ class Scenario extends GenericObject<IScenario> {
     return this._props.resources;
   }
 
+  get settings() {
+    return this._props.settings;
+  }
+
   get subtitle() {
     return this._props.subtitle;
   }
@@ -58,6 +62,10 @@ class Scenario extends GenericObject<IScenario> {
 
   get tools() {
     return this._props.tools;
+  }
+
+  get zones() {
+    return this._props.zones;
   }
 
   public static fromDefaults() {
@@ -75,6 +83,9 @@ class Scenario extends GenericObject<IScenario> {
         [0, 0],
       ],
       resources: [],
+      settings: {
+        allowGameObjectsOnlyInZones: false,
+      },
       subtitle: '',
       stageSize: {
         x: 0,
@@ -82,6 +93,7 @@ class Scenario extends GenericObject<IScenario> {
       },
       title: '',
       tools: [],
+      zones: [],
     });
   }
 

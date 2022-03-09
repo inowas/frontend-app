@@ -8,6 +8,7 @@ import { uniqBy } from 'lodash';
 import { useEffect, useState } from 'react';
 import Georeferencation from './Georeferencing';
 import Scenario from '../../../../core/marPro/Scenario';
+import Settings from './Settings';
 import Setup from './Setup';
 import uuid from 'uuid';
 
@@ -86,6 +87,10 @@ const Editor = () => {
           t03Instances={t03Instances}
         />
       );
+    }
+
+    if (activeStep === 2) {
+      return <Settings scenario={Scenario.fromObject(scenario)} />;
     }
 
     return <div>Select a Step!</div>;

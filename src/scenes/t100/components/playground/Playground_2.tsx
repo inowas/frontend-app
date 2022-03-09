@@ -3,7 +3,7 @@ import { EGameObjectType, IDraftGameObject } from '../../../../core/marPro/GameO
 import { ICost } from '../../../../core/marPro/Tool.type';
 import { IGameState } from '../../../../core/marPro/GameState.type';
 import { IMapScale } from '../types';
-import { Image, Layer, Stage } from 'react-konva';
+import { Image, Layer, Path, Stage } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { ReactNode, useRef, useState } from 'react';
 import ConfirmBuyGameObject from '../dialogs/ConfirmBuyGameObject';
@@ -224,6 +224,20 @@ const Playground = (props: IProps) => {
     return gameObjects;
   };
 
+  const renderZones = () => {
+    if (props.scenario.zones.length === 0) {
+      return null;
+    }
+
+    return (
+      <Layer>
+        {props.scenario.zones.map((zone) => (
+          <Path key={zone.id} {...zone.options} />
+        ))}
+      </Layer>
+    );
+  };
+
   return (
     <>
       <div className="bg_noise"></div>
@@ -255,6 +269,7 @@ const Playground = (props: IProps) => {
                 ref={stageRef}
               >
                 <Layer>{backgroundImage && <Image image={backgroundImage} />}</Layer>
+                {renderZones()}
                 <Layer>{renderGameObjects()}</Layer>
                 {gameObjectToAdd && (
                   <Layer>

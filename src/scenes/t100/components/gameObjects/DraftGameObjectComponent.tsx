@@ -13,6 +13,7 @@ const DraftGameObjectComponent = (props: IProps) => {
 
   return (
     <Image
+      fill="red"
       image={image}
       onClick={props.onClick}
       opacity={0.5}
