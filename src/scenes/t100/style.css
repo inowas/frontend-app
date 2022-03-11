@@ -50,6 +50,19 @@
   top: auto;
   width: 0.71428571em;
 }
+.ui.modal.obj-modal-container span.parameter-name {
+  background-color: #998466;
+    border-radius: 15px;
+    color: #FFFFFF;
+    padding: 0.285714rem 1rem;
+    box-shadow: inset 0 0 3px 0 rgb(0 0 0 / 50%);
+}
+.ui.modal.obj-modal-container p {
+  line-height: 1.8;
+}
+.ui.image.label.object-reward {
+  background: transparent;
+}
 
 /* Toolbox
 ----------- */
