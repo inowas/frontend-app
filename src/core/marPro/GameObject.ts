@@ -1,7 +1,8 @@
 import { EGameObjectType, IGameObject } from './GameObject.type';
 import { GenericObject } from '../model/genericObject/GenericObject';
-import { Geometry } from '../model/geometry';
+import { GeoJson } from '../model/geometry/Geometry.type';
 import { IVector2D } from './Geometry.type';
+import { ModflowModel } from '../model/modflow';
 import Scenario from './Scenario';
 import uuid from 'uuid';
 
@@ -32,6 +33,10 @@ class GameObject extends GenericObject<IGameObject> {
 
   get parameters() {
     return this._props.parameters;
+  }
+
+  get parametersAreFixed() {
+    return this._props.parameters.filter((p) => p.isFixed).length > 0;
   }
 
   get size() {
@@ -66,25 +71,40 @@ class GameObject extends GenericObject<IGameObject> {
     });
   };
 
-  public calculateGeometry(scenario: Scenario) {
+  public calculateGeometry(model: ModflowModel, scenario: Scenario): GeoJson {
     if (scenario.stageSize.x === 0 || scenario.stageSize.y === 0) {
       throw new Error('Stage size of scenario is not allowed to be 0.');
     }
 
-    // TODO: Add calculation for other geometries than points
     const ref = scenario.referencePoints;
-    console.log(this.boundaryType, this.location, scenario.stageSize);
+
     const relPosX = this.location.x / scenario.stageSize.x;
     const relPosY = this.location.y / scenario.stageSize.y;
-    const lat = ref[0][0] + relPosY * (ref[1][0] - ref[0][0]);
-    const lng = ref[1][0] + relPosX * (ref[1][1] - ref[1][0]);
-    return Geometry.fromGeoJson({
-      type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: [lat, lng],
-      },
-    });
+    const lat = ref[1][0] - relPosY * (ref[1][0] - ref[0][0]);
+    const lng = ref[0][1] + relPosX * (ref[1][1] - ref[0][1]);
+
+    /*if (this.boundaryType === 'rch') {
+      const cellWidth = model.boundingBox.dX / model.gridSize.nX;
+      const cellHeight = model.boundingBox.dY / model.gridSize.nY;
+
+      return {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [lng - cellWidth / 2, lat + cellHeight / 2],
+            [lng + cellWidth + cellWidth / 2, lat + cellHeight / 2],
+            [lng + cellWidth + cellWidth / 2, lat - cellHeight - cellHeight / 2],
+            [lng - cellWidth / 2, lat - cellHeight - cellHeight / 2],
+            [lng - cellWidth / 2, lat + cellHeight / 2],
+          ],
+        ],
+      };
+    }*/
+
+    return {
+      type: 'Point',
+      coordinates: [lng, lat],
+    };
   }
 }
 

@@ -1,3 +1,4 @@
+import { EBoundaryType } from '../model/modflow/boundaries/Boundary.type';
 import { EGameObjectType } from './GameObject.type';
 import { IParameter } from './Parameter.type';
 import { IVector2D } from './Geometry.type';
@@ -14,6 +15,7 @@ export interface ICost {
 }
 
 export interface ITool {
+  boundaryType?: EBoundaryType;
   category?: EGameObjectCategory;
   costs: ICost[];
   editParameters?: IParameter[];

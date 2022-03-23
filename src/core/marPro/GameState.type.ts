@@ -4,6 +4,7 @@ import { IResource } from './Resource.type';
 
 export interface IGameState {
   dialogs: IDialog[];
+  modelId: string | null;
   objects: IGameObject[];
   playerId: string;
   resources: IResource[];

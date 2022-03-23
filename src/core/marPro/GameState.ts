@@ -34,6 +34,7 @@ class GameState extends GenericObject<IGameState> {
   public static fromScenario(scenario: Scenario) {
     return new GameState({
       dialogs: [],
+      modelId: null,
       objects: cloneDeep(scenario.objects),
       playerId: 'player_001',
       resources: scenario.resources.map((res) => {

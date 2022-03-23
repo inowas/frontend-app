@@ -18,36 +18,15 @@ import ConstantHeadBoundary from './ConstantHeadBoundary';
 import DrainageBoundary from './DrainageBoundary';
 import EvapotranspirationBoundary from './EvapotranspirationBoundary';
 import FlowAndHeadBoundary from './FlowAndHeadBoundary';
-import GameObject from '../../../marPro/GameObject';
 import GeneralHeadBoundary from './GeneralHeadBoundary';
 import GridSize from '../../geometry/GridSize';
 import HeadObservationWell from './HeadObservationWell';
 import RechargeBoundary from './RechargeBoundary';
 import RiverBoundary from './RiverBoundary';
-import Scenario from '../../../marPro/Scenario';
 import WellBoundary from './WellBoundary';
-import uuid from 'uuid';
 
 export default abstract class BoundaryFactory {
   public static availableTypes = ['chd', 'drn', 'evt', 'fhb', 'ghb', 'hob', 'rch', 'riv', 'wel'];
-
-  public static fromMarProGameObject = (obj: GameObject, scenario: Scenario) => {
-    if (!obj.boundaryType) {
-      return null;
-    }
-
-    // TODO:
-    return BoundaryFactory.createNewFromProps(
-      obj.boundaryType,
-      uuid.v4(),
-      obj.calculateGeometry(scenario).toGeoJSON(),
-      `${obj.boundaryType}_${obj.boundaryId}`,
-      [0],
-      [],
-      [],
-      []
-    );
-  };
 
   public static fromObject = (obj: IBoundary): Boundary => {
     let type;

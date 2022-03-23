@@ -1,5 +1,6 @@
 import { BoundaryType } from '../model/modflow/boundaries/Boundary.type';
 import { IParameter } from './Parameter.type';
+import { ITool } from './Tool.type';
 import { IVector2D } from './Geometry.type';
 
 export enum EGameObjectType {
@@ -23,8 +24,6 @@ export interface IGameObject {
 export interface IDraftGameObject {
   hasBeenPaid: boolean;
   hasBeenPlaced: boolean;
-  image: string;
   location: IVector2D;
-  size: IVector2D;
-  type: EGameObjectType;
+  tool: ITool;
 }

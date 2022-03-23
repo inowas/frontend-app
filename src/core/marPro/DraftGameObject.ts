@@ -7,7 +7,7 @@ import uuid from 'uuid';
 
 class DraftGameObject extends GenericObject<IDraftGameObject> {
   get image() {
-    return this._props.image;
+    return this._props.tool.name;
   }
 
   get location() {
@@ -15,11 +15,11 @@ class DraftGameObject extends GenericObject<IDraftGameObject> {
   }
 
   get size() {
-    return this._props.size;
+    return this._props.tool.size;
   }
 
   get type() {
-    return this._props.type;
+    return this._props.tool.name;
   }
 
   public static fromObject(value: IDraftGameObject) {
@@ -30,19 +30,18 @@ class DraftGameObject extends GenericObject<IDraftGameObject> {
     return new DraftGameObject({
       hasBeenPaid: false,
       hasBeenPlaced: false,
-      image: tool.name,
       location: { x: 0, y: 0 },
-      size: tool.size,
-      type: tool.name,
+      tool: tool.toObject(),
     });
   }
 
   public toGameObject(parameters?: IParameter[]) {
     return new GameObject({
+      boundaryType: this._props.tool.boundaryType,
       id: uuid.v4(),
-      type: this._props.type,
+      type: this._props.tool.name,
       location: this._props.location,
-      size: this._props.size,
+      size: this._props.tool.size,
       parameters: parameters || [],
     });
   }

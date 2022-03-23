@@ -106,7 +106,7 @@ class Scenario extends GenericObject<IScenario> {
   }
 
   get isManipulatingBoundaryPositions() {
-    return this._props.tools.filter((t) => t.editPosition === true); // TODO: specialize if objects are connected to boundaries
+    return this._props.tools.filter((t) => t.editPosition === true).length > 0; // TODO: specialize if objects are connected to boundaries
   }
 
   get isManipulatingBoundaries() {

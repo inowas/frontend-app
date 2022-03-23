@@ -1,3 +1,4 @@
+import { EBoundaryType } from '../model/modflow/boundaries/Boundary.type';
 import { EGameObjectCategory } from './Tool.type';
 import { EGameObjectType } from './GameObject.type';
 import { EObjectiveType, EParameterObjectiveType } from './Objective.type';
@@ -36,7 +37,6 @@ export const scenario1: IScenario = {
   ],
   objects: [
     {
-      boundaryId: 'river_id',
       id: 'obj_riv',
       type: EGameObjectType.RIVER,
       location: {
@@ -73,6 +73,7 @@ export const scenario1: IScenario = {
     },
     {
       boundaryId: 'dcf1156e-3f02-4d5a-ad44-87073e0e7822',
+      boundaryType: EBoundaryType.RCH,
       id: 'obj_pond_1',
       type: EGameObjectType.INFILTRATION_POND,
       location: {
@@ -88,11 +89,13 @@ export const scenario1: IScenario = {
           relations: [{ resourceId: 'res_treated_wastewater' }],
           id: 'p_infiltration_rate',
           value: 0,
+          valuePropertyKey: 0,
         },
       ],
     },
     {
       boundaryId: '151e123c-0af5-4a16-a17c-fcfebfa4de38',
+      boundaryType: EBoundaryType.RCH,
       id: 'obj_pond_2',
       type: EGameObjectType.INFILTRATION_POND,
       location: {
@@ -108,11 +111,13 @@ export const scenario1: IScenario = {
           relations: [{ resourceId: 'res_treated_wastewater' }],
           id: 'p_infiltration_rate',
           value: 0,
+          valuePropertyKey: 0,
         },
       ],
     },
     {
       boundaryId: '19ea9d2a-b4ad-4d38-91e7-33de63450306',
+      boundaryType: EBoundaryType.RCH,
       id: 'obj_pond_3',
       type: EGameObjectType.INFILTRATION_POND,
       location: {
@@ -128,11 +133,13 @@ export const scenario1: IScenario = {
           relations: [{ resourceId: 'res_treated_wastewater' }],
           id: 'p_infiltration_rate',
           value: 0,
+          valuePropertyKey: 0,
         },
       ],
     },
     {
       boundaryId: '09a27400-a686-4a93-811c-7749e138e977',
+      boundaryType: EBoundaryType.RCH,
       id: 'obj_pond_4',
       type: EGameObjectType.INFILTRATION_POND,
       location: {
@@ -148,6 +155,7 @@ export const scenario1: IScenario = {
           relations: [{ resourceId: 'res_treated_wastewater' }],
           id: 'p_infiltration_rate',
           value: 0,
+          valuePropertyKey: 0,
         },
       ],
     },
@@ -184,6 +192,7 @@ export const scenario1: IScenario = {
   title: 'Ezousa Catchment',
   tools: [
     {
+      boundaryType: EBoundaryType.RCH,
       category: EGameObjectCategory.STRUCTURES,
       costs: [
         {
@@ -197,6 +206,7 @@ export const scenario1: IScenario = {
           relations: [{ resourceId: 'res_treated_wastewater' }],
           id: 'p_infiltration_rate',
           value: 0,
+          valuePropertyKey: 0,
         },
       ],
       editPosition: true,

@@ -1,5 +1,6 @@
 import { Button, Grid, Icon, List } from 'semantic-ui-react';
 import { ICost } from '../../../../core/marPro/Tool.type';
+import { isArray } from 'lodash';
 import Dialog from '../shared/Dialog';
 import GameObject from '../../../../core/marPro/GameObject';
 import React, { useState } from 'react';
@@ -48,7 +49,7 @@ const GameObjectDialog = (props: IProps) => {
     const costs: ICost[] = [];
     const parameter = gameObject.parameters.filter((p) => p.id === activeSlider);
     if (parameter.length > 0) {
-      const diff = activeValue - parameter[0].value;
+      const diff = activeValue - (!isArray(parameter[0].value) ? parameter[0].value : parameter[0].value[0]);
       parameter[0].relations?.forEach((relation) => {
         costs.push({
           amount: (relation.relation || 1) * diff,
@@ -69,7 +70,7 @@ const GameObjectDialog = (props: IProps) => {
     gameObject.parameters.forEach((parameter) => {
       const value = parameter.value;
       parameter.relations?.forEach((relation) => {
-        const diff = (relation.relation || 1) * value;
+        const diff = (relation.relation || 1) * (!isArray(value) ? value : value[0]);
         const fCosts = costs.filter((c) => c.resource === relation.resourceId);
         if (fCosts.length > 0) {
           costs = costs.map((cost) => {
@@ -92,7 +93,7 @@ const GameObjectDialog = (props: IProps) => {
 
   if (isAfterChange && activeSlider) {
     const parameter = gameObject.parameters.filter((p) => p.id === activeSlider);
-    if (parameter.length > 0) {
+    if (parameter.length > 0 && !isArray(parameter[0].value)) {
       const diff = activeValue - parameter[0].value;
 
       return (
@@ -151,7 +152,7 @@ const GameObjectDialog = (props: IProps) => {
               <List.Item>
                 {p.id}: {activeSlider === p.id ? activeValue : p.value}
               </List.Item>
-              {!p.isFixed && (
+              {!p.isFixed && !isArray(p.value) && (
                 <>
                   <List.Item>
                     <Slider

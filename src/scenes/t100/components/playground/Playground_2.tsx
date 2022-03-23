@@ -7,6 +7,7 @@ import { Image, Layer, Path, Stage } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { ReactNode, useRef, useState } from 'react';
 import ConfirmBuyGameObject from '../dialogs/ConfirmBuyGameObject';
+import DataFetcherWrapper from '../../../modflow/components/content/dataFetcherWrapper';
 import DraftGameObject from '../../../../core/marPro/DraftGameObject';
 import DraftGameObjectComponent from '../gameObjects/DraftGameObjectComponent';
 import Footer from './Footer';
@@ -173,7 +174,7 @@ const Playground = (props: IProps) => {
     if (!gameObjectToAdd || !gameObjectToAdd.hasBeenPlaced) {
       return null;
     }
-    const tool = props.scenario.tools.filter((tool) => tool.name === gameObjectToAdd.type);
+    const tool = props.scenario.tools.filter((tool) => tool.name === gameObjectToAdd.tool.name);
 
     if (tool.length === 0) {
       return null;
@@ -239,7 +240,7 @@ const Playground = (props: IProps) => {
   };
 
   return (
-    <>
+    <DataFetcherWrapper modelId={props.scenario.modelId}>
       <div className="bg_noise"></div>
       <Header gameState={GameState.fromObject(gameState)} />
       <Grid>
@@ -292,7 +293,7 @@ const Playground = (props: IProps) => {
           scenario={props.scenario}
         />
       )}
-    </>
+    </DataFetcherWrapper>
   );
 };
 
