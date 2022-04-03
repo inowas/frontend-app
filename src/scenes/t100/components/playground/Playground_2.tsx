@@ -240,7 +240,7 @@ const Playground = (props: IProps) => {
             />
           </Grid.Column>
           <Grid.Column width={'thirteen'}>
-          {/* <ResourceManager /> */}
+            {/* <ResourceManager /> */}
             {renderGameObjectDialogs()}
             {renderDraftGameObjectDialogs()}
             {!backgroundImage ? (
@@ -273,13 +273,7 @@ const Playground = (props: IProps) => {
         </Grid.Row>
       </Grid>
       <Footer gameState={GameState.fromObject(gameState)} onClickCheck={toggleResultModal} />
-      {showResultModal && (
-        <ResultModal
-          gameState={GameState.fromObject(gameState)}
-          onClose={toggleResultModal}
-          scenario={props.scenario}
-        />
-      )}
+      {showResultModal && <ResultModal onClose={toggleResultModal} />}
     </>
   );
 };

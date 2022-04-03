@@ -79,8 +79,6 @@ const ValueProcessingEditor = (props: IProps) => {
       return;
     }
 
-    console.log(p.name, p.value);
-
     const cProcessing = processing.toObject();
     const value = moment(p.value.toDateString()).unix();
     if (p.name === 'start') {

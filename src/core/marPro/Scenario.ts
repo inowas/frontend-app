@@ -2,10 +2,15 @@ import { EObjectiveType } from './Objective.type';
 import { GenericObject } from '../model/genericObject/GenericObject';
 import { IGameObject } from './GameObject.type';
 import { IScenario } from './Scenario.type';
+import uuid from 'uuid';
 
 class Scenario extends GenericObject<IScenario> {
   get description() {
     return this._props.description;
+  }
+
+  get id() {
+    return this._props.id;
   }
 
   get image() {
@@ -44,6 +49,10 @@ class Scenario extends GenericObject<IScenario> {
     return this._props.resources;
   }
 
+  get settings() {
+    return this._props.settings;
+  }
+
   get subtitle() {
     return this._props.subtitle;
   }
@@ -60,6 +69,10 @@ class Scenario extends GenericObject<IScenario> {
     return this._props.tools;
   }
 
+  get zones() {
+    return this._props.zones;
+  }
+
   public static fromDefaults() {
     return new Scenario({
       aim: [],
@@ -67,6 +80,7 @@ class Scenario extends GenericObject<IScenario> {
       description: '',
       gridSize: { x: 0, y: 0 },
       hints: [],
+      id: uuid.v4(),
       modelId: '',
       objectives: [],
       objects: [],
@@ -75,6 +89,9 @@ class Scenario extends GenericObject<IScenario> {
         [0, 0],
       ],
       resources: [],
+      settings: {
+        allowGameObjectsOnlyInZones: false,
+      },
       subtitle: '',
       stageSize: {
         x: 0,
@@ -82,6 +99,7 @@ class Scenario extends GenericObject<IScenario> {
       },
       title: '',
       tools: [],
+      zones: [],
     });
   }
 
@@ -94,7 +112,7 @@ class Scenario extends GenericObject<IScenario> {
   }
 
   get isManipulatingBoundaryPositions() {
-    return this._props.tools.filter((t) => t.editPosition === true); // TODO: specialize if objects are connected to boundaries
+    return this._props.tools.filter((t) => t.editPosition === true).length > 0; // TODO: specialize if objects are connected to boundaries
   }
 
   get isManipulatingBoundaries() {

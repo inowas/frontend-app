@@ -1,231 +1,306 @@
-import {
-  Accordion,
-  AccordionPanel,
-  Button,
-  Divider,
-  Grid,
-  Header,
-  Icon,
-  Image,
-  Label,
-  List,
-  SemanticCOLORS,
-} from 'semantic-ui-react';
-import { EObjectiveType, TObjective } from '../../../../core/marPro/Objective.type';
-import { IGameObject } from '../../../../core/marPro/GameObject.type';
-import { IGameState } from '../../../../core/marPro/GameState.type';
-import { IParameter, IParameterRelation } from '../../../../core/marPro/Parameter.type';
-import { IResourceSettings } from '../../../../core/marPro/Resource.type';
-import { useEffect, useState } from 'react';
+import { Dimmer, Grid, Loader } from 'semantic-ui-react';
+import { EGameObjectType, IDraftGameObject } from '../../../../core/marPro/GameObject.type';
+import { ICost } from '../../../../core/marPro/Tool.type';
+import { IMapScale } from '../types';
+import { IRootReducer } from '../../../../reducers';
+import { Image, Layer, Path, Stage } from 'react-konva';
+import { KonvaEventObject } from 'konva/lib/Node';
+import { ReactNode, useRef, useState } from 'react';
+import { updateGameState } from '../../actions/actions';
+import { useDispatch, useSelector } from 'react-redux';
+import ConfirmBuyGameObject from '../dialogs/ConfirmBuyGameObject';
+import DraftGameObject from '../../../../core/marPro/DraftGameObject';
+import DraftGameObjectComponent from '../gameObjects/DraftGameObjectComponent';
+import Footer from './Footer';
+import GameObject from '../../../../core/marPro/GameObject';
+import GameObjectDialog from '../dialogs/GameObjectDialog';
 import GameState from '../../../../core/marPro/GameState';
-import Logo from '../../assets/logo_01.png';
-import Objective from '../../../../core/marPro/Objective';
+import Header from './Header';
+import InfiltrationPond from '../gameObjects/InfiltrationPond';
+import ResultModal from './ResultModal';
+import River from '../gameObjects/River';
 import Scenario from '../../../../core/marPro/Scenario';
-import Slider from 'rc-slider';
+import Tool from '../../../../core/marPro/Tool';
+import Toolbox from './Toolbox';
+import bg from '../../assets/mar-gameboard-01-riverbed.png';
+import useImage from '../../hooks/useImage';
+import { Calculation } from '../../../../core/model/modflow';
 
-interface IProps {
-  scenario: Scenario;
-}
+const scaleBy = 1.3;
 
-const Game = (props: IProps) => {
-  const [messages, setMessages] = useState<string[]>([]);
-  const [gameState, setGameState] = useState<IGameState>(GameState.fromScenario(props.scenario).toObject());
+const Playground = () => {
+  const [activeGameObjects, setActiveGameObjects] = useState<string[]>([]);
+  const [backgroundImage] = useImage(bg);
+  const stageRef = useRef<any>(null);
+  const [gameObjectToAdd, setGameObjectToAdd] = useState<IDraftGameObject | null>(null);
+  const [showResultModal, setShowResultModal] = useState<boolean>(false);
 
-  const sendMessage = (m: string) => setMessages([m, ...messages]);
+  const [mapScale, setMapScale] = useState<IMapScale>({ offset: { x: 0, y: 0 }, zoom: 0 });
 
-  useEffect(() => {
-    sendMessage('Load Scenario');
-    setGameState(GameState.fromScenario(props.scenario).toObject());
-  }, [props.scenario]);
+  const MarPro = useSelector((state: IRootReducer) => state.MarPro);
+  const gameState = MarPro.gameState || null;
+  const scenario = MarPro.scenario ? Scenario.fromObject(MarPro.scenario) : null;
+  const calculation = MarPro.calculation ? Calculation.fromObject(MarPro.calculation) : null;
 
-  const handleSendSolution = () => {
-    console.log(gameState);
-    sendMessage('Send soultion!');
-  };
+  const dispatch = useDispatch();
 
-  const checkObjective = (objective: TObjective) => Objective.fromObject(objective).check(gameState);
+  console.log({ calculation: calculation?.toObject() });
 
-  const handleChangeSlider = (gameObject: IGameObject, parameterId: string) => (value: number) => {
-    let relations: IParameterRelation[] = [];
-    const gsObjects = props.scenario.objects.filter((o) => o.id === gameObject.id);
-    if (gsObjects.length > 0) {
-      const gsParameters = gsObjects[0].parameters.filter((p) => p.id === parameterId);
-      if (gsParameters.length > 0) {
-        relations = gsParameters[0].relations || [];
-      }
+  const updateStore = (g: GameState) => dispatch(updateGameState(g));
+
+  if (!gameState || !scenario) {
+    return null;
+  }
+
+  const toggleResultModal = () => setShowResultModal(!showResultModal);
+
+  const handleAddGameObject = (object: DraftGameObject) => setGameObjectToAdd(object.toObject());
+
+  const handleCloseDialog = (id: string) =>
+    setActiveGameObjects(activeGameObjects.filter((gameObjectId) => gameObjectId !== id));
+
+  const handleClickDraftGameObject = () => {
+    if (!gameObjectToAdd) {
+      return null;
     }
 
-    let cResources = gameState.resources;
-    if (relations.length > 0) {
-      cResources = gameState.resources.map((r) => {
-        const relationsWithThisResource = relations.filter((rRes) => rRes.resourceId === r.id);
-        if (relationsWithThisResource.length > 0) {
-          if (value > r.value) {
-            r.value += Math.round(value * (relationsWithThisResource[0].relation || 1));
-          }
-          if (value < r.value) {
-            r.value -= Math.round(value * (relationsWithThisResource[0].relation || 1));
-          }
-        }
-        sendMessage(`Change slider for ${gameObject.id} - ${parameterId} to ${value}.`);
-        return r;
-      });
-    }
-
-    setGameState({
-      ...gameState,
-      objects: gameState.objects.map((object) => {
-        if (object.id === gameObject.id) {
-          object.parameters = object.parameters.map((p) => {
-            if (parameterId === p.id) {
-              p.value = value;
-            }
-            return p;
-          });
-        }
-        return object;
-      }),
-      resources: cResources,
+    setGameObjectToAdd({
+      ...gameObjectToAdd,
+      hasBeenPlaced: true,
     });
   };
 
-  const renderObjectiveCheck = (type: string, name: string, isDone: boolean, min?: number, max?: number) => {
-    const Failed = <Icon name="cancel" />;
-    const Success = <Icon name="check" />;
+  const handleCancelPurchaseGameObject = () => setGameObjectToAdd(null);
 
-    if (min !== undefined && max !== undefined) {
-      return (
-        <List.Item>
-          {type} {name} must be between {min} and {max}. {isDone ? Success : Failed}
-        </List.Item>
-      );
+  const handleConfirmPurchaseGameObject = (tool: Tool) => {
+    if (!gameObjectToAdd) {
+      return null;
     }
-    if (min !== undefined && max === undefined) {
-      return (
-        <List.Item>
-          {type} {name} must be higher than {min} {isDone ? Success : Failed}
-        </List.Item>
-      );
+
+    const gs = GameState.fromObject(gameState);
+    const newGameObject = DraftGameObject.fromObject(gameObjectToAdd).toGameObject(tool.editParameters);
+
+    gs.addGameObject(newGameObject);
+    gs.updateResources(tool.costs);
+
+    updateStore(gs);
+    setGameObjectToAdd(null);
+  };
+
+  const handleChangeGameObject = (g: GameObject, costs: ICost[]) => {
+    const cGameState = GameState.fromObject(gameState);
+    cGameState.updateGameObject(g);
+    costs.forEach((cost) => cGameState.updateResource(cost));
+    updateStore(cGameState);
+  };
+
+  const handleClickGameObject = (gameObject: GameObject) =>
+    activeGameObjects.filter((id) => id === gameObject.id).length === 0
+      ? setActiveGameObjects([...activeGameObjects, gameObject.id])
+      : null;
+
+  const handleDragGameObject = (gameObject: GameObject) => {
+    const pointerPosition = stageRef.current.getRelativePointerPosition();
+    if (
+      pointerPosition.x < 0 ||
+      pointerPosition.y < 0 ||
+      pointerPosition.x > scenario.stageSize.x ||
+      pointerPosition.y > scenario.stageSize.y
+    ) {
+      return null;
     }
-    if (min === undefined && max !== undefined) {
-      return (
-        <List.Item>
-          {type} {name} must be lower than {max} {isDone ? Success : Failed}
-        </List.Item>
-      );
+    const cGameState = GameState.fromObject(gameState);
+    gameObject.location = {
+      x: pointerPosition.x - 22,
+      y: pointerPosition.y - 15,
+    };
+    cGameState.updateGameObject(gameObject);
+    updateStore(cGameState);
+  };
+
+  const handleDeleteGameObject = (g: GameObject, costs: ICost[]) => {
+    const cGameState = GameState.fromObject(gameState);
+    costs.forEach((cost) => cGameState.updateResource(cost));
+    cGameState.removeGameObject(g);
+
+    const tool = scenario.tools.filter((tool) => tool.name === g.type);
+    if (tool.length > 0) {
+      tool[0].costs?.forEach((cost) => {
+        cGameState.refundResource(cost);
+      });
     }
+
+    updateStore(cGameState);
+  };
+
+  const handleDragStage = (e: KonvaEventObject<any>) => {
+    e.evt.preventDefault();
+    setMapScale({ ...mapScale, offset: e.target._lastPos });
+  };
+
+  const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
+    if (!gameObjectToAdd || gameObjectToAdd.hasBeenPlaced) {
+      return null;
+    }
+    const pointerPosition = stageRef.current.getRelativePointerPosition();
+
+    if (
+      pointerPosition.x < 0 ||
+      pointerPosition.y < 0 ||
+      pointerPosition.x > scenario.stageSize.x ||
+      pointerPosition.y > scenario.stageSize.y
+    ) {
+      return null;
+    }
+    setGameObjectToAdd({
+      ...gameObjectToAdd,
+      location: {
+        x: pointerPosition.x - 22,
+        y: pointerPosition.y - 15,
+      },
+    });
+  };
+
+  const handleWheel = (e: KonvaEventObject<WheelEvent>) => {
+    e.evt.preventDefault();
+    if (stageRef.current !== null) {
+      const stage = stageRef.current;
+      const oldScale = stage.scaleX();
+      const { x: pointerX, y: pointerY } = stage.getPointerPosition();
+      const mousePointTo = {
+        x: (pointerX - stage.x()) / oldScale,
+        y: (pointerY - stage.y()) / oldScale,
+      };
+      const newScale = e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy;
+      stage.scale({ x: newScale, y: newScale });
+      const newPos = {
+        x: pointerX - mousePointTo.x * newScale,
+        y: pointerY - mousePointTo.y * newScale,
+      };
+      stage.position(newPos);
+      stage.batchDraw();
+    }
+  };
+
+  const renderDraftGameObjectDialogs = () => {
+    if (!gameObjectToAdd || !gameObjectToAdd.hasBeenPlaced) {
+      return null;
+    }
+    const tool = scenario.tools.filter((tool) => tool.name === gameObjectToAdd.tool.name);
+
+    if (tool.length === 0) {
+      return null;
+    }
+
     return (
-      <List.Item>
-        {type} {name} must be present. {isDone ? Success : Failed}
-      </List.Item>
+      <ConfirmBuyGameObject
+        onClickCancel={handleCancelPurchaseGameObject}
+        onClickConfirm={handleConfirmPurchaseGameObject}
+        tool={Tool.fromObject(tool[0])}
+      />
     );
   };
 
-  const renderParameter = (object: IGameObject, parameter: IParameter) => {
-    const gs = gameState.objects.filter;
-    return (
-      <p>
-        {parameter.id}:{' '}
-        <Slider
-          onChange={handleChangeSlider(object, parameter.id)}
-          max={parameter.max}
-          min={parameter.min}
-          value={parameter.value}
+  const renderGameObjectDialogs = () => {
+    const aGameObjects: ReactNode[] = [];
+    activeGameObjects.forEach((id) => {
+      const g = gameState.objects.filter((o) => o.id === id);
+      if (g.length > 0) {
+        aGameObjects.push(
+          <GameObjectDialog
+            key={g[0].id}
+            gameObject={GameObject.fromObject(g[0])}
+            onChange={handleChangeGameObject}
+            onClose={handleCloseDialog}
+            onDelete={handleDeleteGameObject}
+          />
+        );
+      }
+    });
+    return aGameObjects;
+  };
+
+  const renderGameObjects = () => {
+    const gameObjects: any[] = gameState.objects.map((object, k) => {
+      if (object.type === EGameObjectType.RIVER) {
+        return <River key={object.id} gameObject={GameObject.fromObject(object)} onClick={handleClickGameObject} />;
+      }
+      return (
+        <InfiltrationPond
+          key={object.id}
+          gameObject={GameObject.fromObject(object)}
+          onClick={handleClickGameObject}
+          onDragEnd={handleDragGameObject}
         />
-      </p>
-    );
+      );
+    });
+    return gameObjects;
   };
 
-  const renderObject = (item: IGameObject) => {
+  const renderZones = () => {
+    if (scenario.zones.length === 0) {
+      return null;
+    }
+
     return (
-      <Accordion>
-        <AccordionPanel header={item.id} key={item.id}>
-          <p>Type: {item.type}</p>
-          {item.parameters.map((parameter) => renderParameter(item, parameter))}
-        </AccordionPanel>
-      </Accordion>
+      <Layer>
+        {scenario.zones.map((zone) => (
+          <Path key={zone.id} {...zone.options} />
+        ))}
+      </Layer>
     );
-  };
-
-  const renderObjective = (item: TObjective) => {
-    if (item.type === EObjectiveType.BY_CELLS) {
-      return (
-        <List.Item>
-          In cells {item.cells.map((c) => `[${c}]`)},{' '}
-          {item.parameters.map((p) => `${p.id} must be ${p.type} between ${p.min} and ${p.max}`)}{' '}
-        </List.Item>
-      );
-    }
-    if (item.type === EObjectiveType.BY_PARAMETER) {
-      return renderObjectiveCheck('Parameter', item.parameterId, checkObjective(item), item.min, item.max);
-    }
-    if (item.type === EObjectiveType.BY_RESOURCE) {
-      return renderObjectiveCheck('Resource', item.resourceId, checkObjective(item), item.min, item.max);
-    }
-  };
-
-  const renderResource = (resource: IResourceSettings) => {
-    const resState = gameState.resources.filter((res) => res.id === resource.id);
-    if (resState.length > 0) {
-      const res = resState[0];
-      return (
-        <Label color={resource.color as SemanticCOLORS}>
-          {resource.name}: {res.value} {resource.unit}
-        </Label>
-      );
-    }
   };
 
   return (
-    <Grid padded>
-      <Grid.Row>
-        <Grid.Column width={4}>
-          <Image src={Logo} />
-        </Grid.Column>
-        <Grid.Column width={12}>
-          <Header>{props.scenario.title}</Header>
-          <p>{props.scenario.description}</p>
-        </Grid.Column>
-      </Grid.Row>
-      <Grid.Row>
-        <Grid.Column width={8}>
-          <Divider orientation="left">Resources</Divider>
-          {props.scenario.resources.map((res) => renderResource(res))}
-        </Grid.Column>
-        <Grid.Column width={8}>
-          <Divider orientation="left">Controls</Divider>
-          <Button onClick={handleSendSolution} block type="primary">
-            Send Soultion
-          </Button>
-        </Grid.Column>
-      </Grid.Row>
-      <Grid.Row>
-        <Grid.Column width={16}>
-          <Divider orientation="left">Objectives</Divider>
-          <List bordered dataSource={props.scenario.objectives} renderItem={(item: any) => renderObjective(item)} />
-        </Grid.Column>
-      </Grid.Row>
-      <Grid.Row>
-        <Grid.Column width={16}>
-          <Divider orientation="left">Objects</Divider>
-          <Accordion>{gameState.objects.map((item) => renderObject(item))}</Accordion>
-        </Grid.Column>
-      </Grid.Row>
-      <Grid.Row>
-        <Grid.Column width={16}>
-          <Divider orientation="left">Debug</Divider>
-          <div style={{ backgroundColor: 'black', color: 'lime' }}>
-            {messages.map((m, k) => (
-              <span key={k}>
-                {`> ${m}`}
-                <br />
-              </span>
-            ))}
-          </div>
-        </Grid.Column>
-      </Grid.Row>
-    </Grid>
+    <>
+      <div className="bg_noise"></div>
+      <Header gameState={GameState.fromObject(gameState)} />
+      <Grid>
+        <Grid.Row style={{ paddingTop: 0 }}>
+          <Grid.Column width={'two'}>
+            <Toolbox
+              gameObjectToAdd={gameObjectToAdd ? DraftGameObject.fromObject(gameObjectToAdd) : null}
+              onAddGameObject={handleAddGameObject}
+              scenario={scenario}
+            />
+          </Grid.Column>
+          <Grid.Column width={'fourteen'}>
+            {renderGameObjectDialogs()}
+            {renderDraftGameObjectDialogs()}
+            {!backgroundImage ? (
+              <Dimmer active inverted>
+                <Loader inverted>Loading</Loader>
+              </Dimmer>
+            ) : (
+              <Stage
+                draggable
+                width={1280}
+                height={scenario.stageSize.y}
+                onDragEnd={handleDragStage}
+                onMouseMove={handleMouseMove}
+                onWheel={handleWheel}
+                ref={stageRef}
+              >
+                <Layer>{backgroundImage && <Image image={backgroundImage} />}</Layer>
+                {renderZones()}
+                <Layer>{renderGameObjects()}</Layer>
+                {gameObjectToAdd && (
+                  <Layer>
+                    <DraftGameObjectComponent
+                      gameObject={DraftGameObject.fromObject(gameObjectToAdd)}
+                      onClick={handleClickDraftGameObject}
+                    />
+                  </Layer>
+                )}
+              </Stage>
+            )}
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>
+      <Footer gameState={GameState.fromObject(gameState)} onClickCheck={toggleResultModal} />
+      {showResultModal && <ResultModal onClose={toggleResultModal} />}
+    </>
   );
 };
 
-export default Game;
+export default Playground;

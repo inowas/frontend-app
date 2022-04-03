@@ -2,6 +2,8 @@ import { ISessionReducer } from './scenes/user/reducers/session';
 import { IUserReducer } from './scenes/user/reducers/user';
 import { combineReducers } from 'redux';
 import { session, user } from './scenes/user/reducers';
+import MarPro, { IMarProReducer } from './scenes/t100/reducers';
+import ModflowReducer, { IModflowReducer } from './scenes/modflow/reducers';
 import T03, { IT03Reducer } from './scenes/t03/reducers';
 import T07, { IT07Reducer } from './scenes/t07/reducers';
 import T10, { IT10Reducer } from './scenes/t10/reducers';
@@ -12,6 +14,8 @@ import dashboard from './scenes/dashboard/reducers';
 
 const rootReducer = combineReducers<IRootReducer>({
   dashboard,
+  MarPro,
+  ModflowReducer,
   session,
   T03,
   T07,
@@ -26,6 +30,8 @@ export default rootReducer;
 
 export interface IRootReducer {
   dashboard: any;
+  MarPro: IMarProReducer;
+  ModflowReducer: IModflowReducer;
   session: ISessionReducer;
   T03: IT03Reducer;
   T07: IT07Reducer;

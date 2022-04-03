@@ -1,77 +1,113 @@
-import { Boundary, BoundaryFactory } from '../../../core/model/modflow/boundaries';
-import { BoundaryCollection } from '../../../core/model/modflow';
-import { IVector2D } from '../../../core/marPro/Geometry.type';
-import { Vector2d } from 'konva/lib/types';
+import { BoundaryCollection, Cells, Geometry, ModflowModel } from '../../../core/model/modflow';
+import { BoundaryFactory } from '../../../core/model/modflow/boundaries';
+import { CALCULATE_CELLS_INPUT } from '../../modflow/worker/t03.worker';
+import { ICalculateCellsInputData } from '../../modflow/worker/t03.worker.type';
+import { asyncWorker } from '../../modflow/worker/worker';
 import GameObject from '../../../core/marPro/GameObject';
 import GameState from '../../../core/marPro/GameState';
 import Scenario from '../../../core/marPro/Scenario';
 
-export const boundaryUpdater = async (
-  scenario: Scenario,
-  gameState: GameState,
+export const boundaryUpdater2 = async (
   boundaries: BoundaryCollection,
+  gameState: GameState,
+  model: ModflowModel,
+  scenario: Scenario,
   updatedBoundaries: BoundaryCollection,
-  onUpdateBoundary: (b: Boundary, g?: GameObject) => any,
   onFinish: (bc: BoundaryCollection) => any
 ) => {
+  // Check all boundaries and update them if necessary -> Remove gameObjects which have been used for update
   const cBoundaries = boundaries.toObject();
   const shiftedBoundary = cBoundaries.shift();
 
-  console.log({ boundaries, shiftedBoundary });
-
   if (!shiftedBoundary) {
-    // Add remaining gameobjects as new boundaries
-    gameState.objects.forEach((gameObject) => {
-      const boundary = BoundaryFactory.fromMarProGameObject(GameObject.fromObject(gameObject), scenario); // TODO
-      if (boundary) {
-        updatedBoundaries.addBoundary(boundary);
-      }
-    });
+    // Check remaining gameObjects and add them as boundaries if necessary
+    const shiftedGameObject = gameState.objects.shift();
+    if (!shiftedGameObject) {
+      // Everything is done
+      onFinish(updatedBoundaries);
+      return;
+    }
 
-    onFinish(updatedBoundaries);
+    const g = GameObject.fromObject(shiftedGameObject);
+
+    if (g.boundaryType && (!g.parametersAreFixed || !g.locationIsFixed)) {
+      // GameObject needs to be transformed into a new boundary
+      boundaryUpdater2(
+        BoundaryCollection.fromObject(cBoundaries),
+        gameState,
+        model,
+        scenario,
+        updatedBoundaries,
+        onFinish
+      );
+      return;
+    }
+
+    // GameObject will be skipped
+    boundaryUpdater2(
+      BoundaryCollection.fromObject(cBoundaries),
+      gameState,
+      model,
+      scenario,
+      updatedBoundaries,
+      onFinish
+    );
     return;
   }
 
   const boundary = BoundaryFactory.fromObject(shiftedBoundary);
   const filteredGameObjects = gameState.objects.filter((g) => g.boundaryId === boundary.id);
+
   if (filteredGameObjects.length > 0) {
     const gameObject = GameObject.fromObject(filteredGameObjects[0]);
+    gameState.objects = gameState.objects.filter((o) => o.id !== gameObject.id);
 
-    // Manipulate boundary with gameObject
-    if (scenario.isManipulatingBoundaryPositions && gameObject.boundaryType) {
-      boundary.geometry = gameObject.calculateGeometry(scenario);
-      //TODO: boundary.cells = calculateActiveCells(geometry)
+    // Boundary will be updated by the corresponding gameObject
+    if (!gameObject.locationIsFixed) {
+      boundary.geometry = Geometry.fromObject(gameObject.calculateGeometry(model, scenario));
+      const c = await asyncWorker({
+        type: CALCULATE_CELLS_INPUT,
+        data: {
+          geometry: boundary.geometry.toGeoJSON(),
+          boundingBox: model.boundingBox.toObject(),
+          gridSize: model.gridSize.toObject(),
+          intersection: model.intersection,
+        } as ICalculateCellsInputData,
+      });
+      boundary.cells = Cells.fromObject(c);
     }
-    // Manipulate spvalues
 
-    // Remove gameObject from array
-    gameState.objects = scenario.objects.filter((g) => g.boundaryId !== boundary.id);
+    if (!gameObject.parametersAreFixed) {
+      const cSpValues = boundary.getSpValues(model.stressperiods).map((spValue, spKey) => {
+        return boundary.valueProperties.map((vp, vpk) => {
+          const fParameter = gameObject.parameters.filter((p) => p.valuePropertyKey === vpk);
+          if (fParameter.length > 0 && !Array.isArray(fParameter[0].value) && spKey === 0) {
+            return fParameter[0].value;
+          }
+
+          if (fParameter.length > 0 && Array.isArray(fParameter[0].value) && fParameter[0].value.length >= spKey) {
+            return fParameter[0].value[spKey];
+          }
+
+          return spValue[vpk];
+        });
+      });
+      boundary.setSpValues(cSpValues);
+    }
+
+    updatedBoundaries.add(boundary);
+    boundaryUpdater2(
+      BoundaryCollection.fromObject(cBoundaries),
+      gameState,
+      model,
+      scenario,
+      updatedBoundaries,
+      onFinish
+    );
+    return;
   }
 
-  onUpdateBoundary(
-    boundary,
-    filteredGameObjects.length > 0 ? GameObject.fromObject(filteredGameObjects[0]) : undefined
-  );
+  // Boundary will be skipped
   updatedBoundaries.add(boundary);
-  boundaryUpdater(
-    scenario,
-    gameState,
-    BoundaryCollection.fromObject(cBoundaries),
-    updatedBoundaries,
-    onUpdateBoundary,
-    onFinish
-  );
-};
-
-export const getSnappingPoint = (grid: IVector2D[], x: number, y: number, offset: Vector2d) => {
-  let shortestDistance: number | null = null;
-  let shortestKey = -1;
-  grid.forEach((c, key) => {
-    const d = Math.floor(Math.pow(c.x - offset.x - x, 2) + Math.pow(c.y - offset.y - y, 2));
-    if (shortestDistance === null || d < shortestDistance) {
-      shortestDistance = d;
-      shortestKey = key;
-    }
-  });
-  return grid[shortestKey];
+  boundaryUpdater2(BoundaryCollection.fromObject(cBoundaries), gameState, model, scenario, updatedBoundaries, onFinish);
 };
