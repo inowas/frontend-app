@@ -2,13 +2,10 @@ import { BoundaryCollection, Cells, Geometry, ModflowModel } from '../../../core
 import { BoundaryFactory } from '../../../core/model/modflow/boundaries';
 import { CALCULATE_CELLS_INPUT } from '../../modflow/worker/t03.worker';
 import { ICalculateCellsInputData } from '../../modflow/worker/t03.worker.type';
-import { IVector2D } from '../../../core/marPro/Geometry.type';
-import { Vector2d } from 'konva/lib/types';
 import { asyncWorker } from '../../modflow/worker/worker';
 import GameObject from '../../../core/marPro/GameObject';
 import GameState from '../../../core/marPro/GameState';
 import Scenario from '../../../core/marPro/Scenario';
-import { mapProps } from 'recompose';
 
 export const boundaryUpdater2 = async (
   boundaries: BoundaryCollection,
@@ -27,7 +24,6 @@ export const boundaryUpdater2 = async (
     const shiftedGameObject = gameState.objects.shift();
     if (!shiftedGameObject) {
       // Everything is done
-      console.log('DONE');
       onFinish(updatedBoundaries);
       return;
     }
@@ -36,7 +32,6 @@ export const boundaryUpdater2 = async (
 
     if (g.boundaryType && (!g.parametersAreFixed || !g.locationIsFixed)) {
       // GameObject needs to be transformed into a new boundary
-      console.log(`ADD BOUNDARY WITH ${g.id}`);
       boundaryUpdater2(
         BoundaryCollection.fromObject(cBoundaries),
         gameState,

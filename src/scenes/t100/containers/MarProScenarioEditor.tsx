@@ -1,13 +1,21 @@
 import '../style.css';
 import { AppContainer } from '../../shared';
-import { Breadcrumb, Button, Grid, Header, Icon, Search, Segment } from 'semantic-ui-react';
+import { Breadcrumb, Button, Grid, Header, Icon, List, Search, Segment } from 'semantic-ui-react';
 import { IScenario } from '../../../core/marPro/Scenario.type';
-import { scenario1, scenario2 } from '../../../core/marPro/scenarios';
+import { IToolInstance } from '../../types';
+import { asyncSendCommand, fetchUrl, sendCommand } from '../../../services/api';
+import { createToolInstance, deleteToolInstance } from '../../dashboard/commands';
+import { updateGameState, updateScenario } from '../actions/actions';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useHistory, useParams, withRouter } from 'react-router-dom';
-import { useState } from 'react';
 import Editor from '../components/editor/Editor';
-import Playground from '../components/playground/Playground_2';
+import Game from '../components/playground/GameDataFetcher';
+import GameState from '../../../core/marPro/GameState';
+import ModflowModelCommand from '../../modflow/commands/modflowModelCommand';
 import Scenario from '../../../core/marPro/Scenario';
+import scenarios from '../../../core/marPro/scenarios';
+import uuid from 'uuid';
 
 const navigation = [
   {
@@ -18,11 +26,80 @@ const navigation = [
 ];
 
 const T100 = () => {
-  const [activeScenario, setActiveScenario] = useState<IScenario>();
+  const [errorLoading, setErrorLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [toolInstances, setToolInstances] = useState<IToolInstance[]>([]);
+
   const history = useHistory();
   const { property } = useParams<any>();
+  const dispatch = useDispatch();
 
-  const handleSelectScenario = (scenario: IScenario) => () => setActiveScenario(scenario);
+  const fetchingAttempts = useRef<number>(0);
+
+  const fetchInstances = useCallback(() => {
+    fetchUrl(
+      'tools/marpro?public=false',
+      (data: any) => {
+        setToolInstances(data);
+        setIsLoading(false);
+      },
+      () => {
+        // TODO: not pretty but works for now
+        fetchingAttempts.current = fetchingAttempts.current + 1;
+        if (fetchingAttempts.current <= 5) {
+          fetchInstances();
+        }
+
+        if (fetchingAttempts.current > 5) {
+          setErrorLoading(true);
+        }
+      }
+    );
+  }, []);
+
+  useEffect(() => {
+    fetchInstances();
+  }, [fetchInstances]);
+
+  const handleDeleteInstance = (i: IToolInstance) => () => {
+    setIsLoading(true);
+    sendCommand(
+      deleteToolInstance('marpro', i.id),
+      () => {
+        fetchInstances();
+      },
+      () => {
+        setIsLoading(false);
+      }
+    );
+  };
+
+  const handleSelectInstance = (i: IToolInstance) => {
+    history.push(`T100/scenario/${i.id}`);
+  };
+
+  const handleSelectScenario = async (scenario: IScenario) => {
+    dispatch(updateScenario(Scenario.fromObject(scenario)));
+
+    const newInstance = GameState.fromScenario(Scenario.fromObject(scenario));
+
+    if (scenario.modelId) {
+      const modelId = uuid.v4();
+      await asyncSendCommand(
+        ModflowModelCommand.cloneModflowModel({ id: scenario.modelId, newId: modelId, isTool: false })
+      );
+      newInstance.modelId = modelId;
+    }
+
+    sendCommand(
+      createToolInstance('marpro', newInstance.toToolInstance()),
+      () => {
+        dispatch(updateGameState(newInstance));
+        history.push(`T100/scenario/${newInstance.id}`);
+      },
+      (e) => console.log('ERROR', e)
+    );
+  };
 
   const handleClickNewScenario = () => {
     history.push('T100/editor');
@@ -40,13 +117,40 @@ const T100 = () => {
     );
   };
 
+  const renderScenarioListItem = (s: IScenario) => {
+    const i = toolInstances.filter((i) => i.name === s.id);
+
+    const handleClickStart = () => {
+      if (i.length > 0) {
+        return handleSelectInstance(i[0]);
+      }
+      return handleSelectScenario(s);
+    };
+
+    return (
+      <List.Item key={s.id}>
+        <List.Content floated="right">
+          <Button onClick={handleClickStart} size="mini">
+            {i.length > 0 ? 'Continue' : 'Start'}
+          </Button>
+          {i.length > 0 && (
+            <Button negative onClick={handleDeleteInstance(i[0])} size="mini">
+              Delete
+            </Button>
+          )}
+        </List.Content>
+        <List.Content floated="left">{s.id}</List.Content>
+      </List.Item>
+    );
+  };
+
   const renderContent = () => {
     if (property === 'editor') {
       return <Editor />;
     }
 
-    if (activeScenario) {
-      return <Playground scenario={Scenario.fromObject(activeScenario)} />;
+    if (property === 'scenario') {
+      return <Game />;
     }
 
     return (
@@ -56,15 +160,12 @@ const T100 = () => {
         </Grid.Row>
         <Grid.Row columns={2}>
           <Grid.Column textAlign="center">
-            <Segment>
+            <Segment loading={isLoading}>
               <Header icon>
                 <Icon name="play" />
                 Playground
               </Header>
-              <Button.Group fluid primary vertical>
-                <Button onClick={handleSelectScenario(scenario1)}>Scenario 1.1: Ezousa</Button>
-                <Button onClick={handleSelectScenario(scenario2)}>Scenario 1.2: Ezousa</Button>
-              </Button.Group>
+              <List divided>{scenarios.map((s) => renderScenarioListItem(s))}</List>
             </Segment>
           </Grid.Column>
           <Grid.Column textAlign="center">

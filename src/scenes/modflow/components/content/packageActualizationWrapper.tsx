@@ -3,6 +3,7 @@ import { CALCULATE_PACKAGES_INPUT } from '../../worker/t03.worker';
 import { Calculation } from '../../../../core/model/modflow';
 import { ICalculatePackagesInputData } from '../../worker/t03.worker.type';
 import { IFlopyPackages } from '../../../../core/model/flopy/packages/FlopyPackages.type';
+import { IMarProReducer } from '../../../t100/reducers';
 import { IModflowReducer } from '../../reducers';
 import { IT03Reducer } from '../../../t03/reducers';
 import { IT20Reducer } from '../../../t20/reducers';
@@ -21,7 +22,7 @@ interface IProps {
   boundaries?: BoundaryCollection;
   model?: ModflowModel;
   property: string;
-  reducer: IModflowReducer | IT03Reducer | IT20Reducer;
+  reducer: IModflowReducer | IT03Reducer | IT20Reducer | IMarProReducer;
   updatePackages: (packages: FlopyPackages) => { type: string; payload: IFlopyPackages };
   startCalculation: () => { type: string };
 }

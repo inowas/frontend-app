@@ -15,6 +15,7 @@ export interface IScenario {
   description: string;
   gridSize: IVector2D;
   hints: string[];
+  id: string;
   modelId: string;
   objectives: TObjective[];
   objects: IGameObject[];

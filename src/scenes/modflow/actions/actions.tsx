@@ -8,24 +8,15 @@ import { PROCESSING_PACKAGES, UPDATE_PACKAGES, UPDATE_PROCESSED_PACKAGES } from 
 import { START_CALCULATION, UPDATE_CALCULATION } from '../reducers/calculation';
 import { Soilmodel } from '../../../core/model/modflow/soilmodel';
 import { UPDATE_BOUNDARIES } from '../reducers/boundaries';
-import { UPDATE_GAMESTATE } from '../../t100/reducers/gameState';
 import { UPDATE_OPTIMIZATION } from '../reducers/optimization';
 import { UPDATE_SOILMODEL } from '../reducers/soilmodel';
 import { UPDATE_TRANSPORT } from '../reducers/transport';
 import { UPDATE_VARIABLE_DENSITY } from '../reducers/variableDensity';
 import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
-import GameState from '../../../core/marPro/GameState';
 
 export function clear() {
   return {
     type: CLEAR,
-  };
-}
-
-export function updateGameState(gameState: GameState) {
-  return {
-    type: UPDATE_GAMESTATE,
-    payload: gameState.toObject(),
   };
 }
 

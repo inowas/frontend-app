@@ -1,13 +1,14 @@
 import { Dimmer, Grid, Loader } from 'semantic-ui-react';
 import { EGameObjectType, IDraftGameObject } from '../../../../core/marPro/GameObject.type';
 import { ICost } from '../../../../core/marPro/Tool.type';
-import { IGameState } from '../../../../core/marPro/GameState.type';
 import { IMapScale } from '../types';
+import { IRootReducer } from '../../../../reducers';
 import { Image, Layer, Path, Stage } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { ReactNode, useRef, useState } from 'react';
+import { updateGameState } from '../../actions/actions';
+import { useDispatch, useSelector } from 'react-redux';
 import ConfirmBuyGameObject from '../dialogs/ConfirmBuyGameObject';
-import DataFetcherWrapper from '../../../modflow/components/content/dataFetcherWrapper';
 import DraftGameObject from '../../../../core/marPro/DraftGameObject';
 import DraftGameObjectComponent from '../gameObjects/DraftGameObjectComponent';
 import Footer from './Footer';
@@ -23,22 +24,33 @@ import Tool from '../../../../core/marPro/Tool';
 import Toolbox from './Toolbox';
 import bg from '../../assets/mar-gameboard-01-riverbed.png';
 import useImage from '../../hooks/useImage';
-
-interface IProps {
-  scenario: Scenario;
-}
+import { Calculation } from '../../../../core/model/modflow';
 
 const scaleBy = 1.3;
 
-const Playground = (props: IProps) => {
+const Playground = () => {
   const [activeGameObjects, setActiveGameObjects] = useState<string[]>([]);
   const [backgroundImage] = useImage(bg);
   const stageRef = useRef<any>(null);
-  const [gameState, setGameState] = useState<IGameState>(GameState.fromScenario(props.scenario).toObject());
   const [gameObjectToAdd, setGameObjectToAdd] = useState<IDraftGameObject | null>(null);
   const [showResultModal, setShowResultModal] = useState<boolean>(false);
 
   const [mapScale, setMapScale] = useState<IMapScale>({ offset: { x: 0, y: 0 }, zoom: 0 });
+
+  const MarPro = useSelector((state: IRootReducer) => state.MarPro);
+  const gameState = MarPro.gameState || null;
+  const scenario = MarPro.scenario ? Scenario.fromObject(MarPro.scenario) : null;
+  const calculation = MarPro.calculation ? Calculation.fromObject(MarPro.calculation) : null;
+
+  const dispatch = useDispatch();
+
+  console.log({ calculation: calculation?.toObject() });
+
+  const updateStore = (g: GameState) => dispatch(updateGameState(g));
+
+  if (!gameState || !scenario) {
+    return null;
+  }
 
   const toggleResultModal = () => setShowResultModal(!showResultModal);
 
@@ -71,7 +83,7 @@ const Playground = (props: IProps) => {
     gs.addGameObject(newGameObject);
     gs.updateResources(tool.costs);
 
-    setGameState(gs.toObject());
+    updateStore(gs);
     setGameObjectToAdd(null);
   };
 
@@ -79,7 +91,7 @@ const Playground = (props: IProps) => {
     const cGameState = GameState.fromObject(gameState);
     cGameState.updateGameObject(g);
     costs.forEach((cost) => cGameState.updateResource(cost));
-    setGameState(cGameState.toObject());
+    updateStore(cGameState);
   };
 
   const handleClickGameObject = (gameObject: GameObject) =>
@@ -92,8 +104,8 @@ const Playground = (props: IProps) => {
     if (
       pointerPosition.x < 0 ||
       pointerPosition.y < 0 ||
-      pointerPosition.x > props.scenario.stageSize.x ||
-      pointerPosition.y > props.scenario.stageSize.y
+      pointerPosition.x > scenario.stageSize.x ||
+      pointerPosition.y > scenario.stageSize.y
     ) {
       return null;
     }
@@ -103,7 +115,7 @@ const Playground = (props: IProps) => {
       y: pointerPosition.y - 15,
     };
     cGameState.updateGameObject(gameObject);
-    setGameState(cGameState.toObject());
+    updateStore(cGameState);
   };
 
   const handleDeleteGameObject = (g: GameObject, costs: ICost[]) => {
@@ -111,14 +123,14 @@ const Playground = (props: IProps) => {
     costs.forEach((cost) => cGameState.updateResource(cost));
     cGameState.removeGameObject(g);
 
-    const tool = props.scenario.tools.filter((tool) => tool.name === g.type);
+    const tool = scenario.tools.filter((tool) => tool.name === g.type);
     if (tool.length > 0) {
       tool[0].costs?.forEach((cost) => {
         cGameState.refundResource(cost);
       });
     }
 
-    setGameState(cGameState.toObject());
+    updateStore(cGameState);
   };
 
   const handleDragStage = (e: KonvaEventObject<any>) => {
@@ -135,8 +147,8 @@ const Playground = (props: IProps) => {
     if (
       pointerPosition.x < 0 ||
       pointerPosition.y < 0 ||
-      pointerPosition.x > props.scenario.stageSize.x ||
-      pointerPosition.y > props.scenario.stageSize.y
+      pointerPosition.x > scenario.stageSize.x ||
+      pointerPosition.y > scenario.stageSize.y
     ) {
       return null;
     }
@@ -174,7 +186,7 @@ const Playground = (props: IProps) => {
     if (!gameObjectToAdd || !gameObjectToAdd.hasBeenPlaced) {
       return null;
     }
-    const tool = props.scenario.tools.filter((tool) => tool.name === gameObjectToAdd.tool.name);
+    const tool = scenario.tools.filter((tool) => tool.name === gameObjectToAdd.tool.name);
 
     if (tool.length === 0) {
       return null;
@@ -226,13 +238,13 @@ const Playground = (props: IProps) => {
   };
 
   const renderZones = () => {
-    if (props.scenario.zones.length === 0) {
+    if (scenario.zones.length === 0) {
       return null;
     }
 
     return (
       <Layer>
-        {props.scenario.zones.map((zone) => (
+        {scenario.zones.map((zone) => (
           <Path key={zone.id} {...zone.options} />
         ))}
       </Layer>
@@ -240,7 +252,7 @@ const Playground = (props: IProps) => {
   };
 
   return (
-    <DataFetcherWrapper modelId={props.scenario.modelId}>
+    <>
       <div className="bg_noise"></div>
       <Header gameState={GameState.fromObject(gameState)} />
       <Grid>
@@ -249,7 +261,7 @@ const Playground = (props: IProps) => {
             <Toolbox
               gameObjectToAdd={gameObjectToAdd ? DraftGameObject.fromObject(gameObjectToAdd) : null}
               onAddGameObject={handleAddGameObject}
-              scenario={props.scenario}
+              scenario={scenario}
             />
           </Grid.Column>
           <Grid.Column width={'fourteen'}>
@@ -263,7 +275,7 @@ const Playground = (props: IProps) => {
               <Stage
                 draggable
                 width={1280}
-                height={props.scenario.stageSize.y}
+                height={scenario.stageSize.y}
                 onDragEnd={handleDragStage}
                 onMouseMove={handleMouseMove}
                 onWheel={handleWheel}
@@ -286,14 +298,8 @@ const Playground = (props: IProps) => {
         </Grid.Row>
       </Grid>
       <Footer gameState={GameState.fromObject(gameState)} onClickCheck={toggleResultModal} />
-      {showResultModal && (
-        <ResultModal
-          gameState={GameState.fromObject(gameState)}
-          onClose={toggleResultModal}
-          scenario={props.scenario}
-        />
-      )}
-    </DataFetcherWrapper>
+      {showResultModal && <ResultModal onClose={toggleResultModal} />}
+    </>
   );
 };
 

@@ -2,10 +2,15 @@ import { EObjectiveType } from './Objective.type';
 import { GenericObject } from '../model/genericObject/GenericObject';
 import { IGameObject } from './GameObject.type';
 import { IScenario } from './Scenario.type';
+import uuid from 'uuid';
 
 class Scenario extends GenericObject<IScenario> {
   get description() {
     return this._props.description;
+  }
+
+  get id() {
+    return this._props.id;
   }
 
   get image() {
@@ -75,6 +80,7 @@ class Scenario extends GenericObject<IScenario> {
       description: '',
       gridSize: { x: 0, y: 0 },
       hints: [],
+      id: uuid.v4(),
       modelId: '',
       objectives: [],
       objects: [],
