@@ -26,4 +26,5 @@ export interface IDraftGameObject {
   hasBeenPlaced: boolean;
   location: IVector2D;
   tool: ITool;
+  type: EGameObjectType;
 }

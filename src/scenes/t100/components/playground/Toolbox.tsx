@@ -5,8 +5,6 @@ import { useEffect, useState } from 'react';
 import DraftGameObject from '../../../../core/marPro/DraftGameObject';
 import Scenario from '../../../../core/marPro/Scenario';
 import Tool from '../../../../core/marPro/Tool';
-import happyPoints from '../../assets/happy-points.png';
-import marCoin from '../../assets/mar-coin.png';
 
 interface IProps {
   gameObjectToAdd: DraftGameObject | null;
@@ -29,6 +27,7 @@ const Toolbox = (props: IProps) => {
   }, [props.scenario]);
 
   const handleAddObject = (tool: ITool) => () => {
+    console.log('CLICK');
     const newGameObject = DraftGameObject.fromTool(Tool.fromObject(tool));
     props.onAddGameObject(newGameObject);
   };
@@ -58,14 +57,12 @@ const Toolbox = (props: IProps) => {
             <Card.Description>Property</Card.Description>
           </Card.Content>
           <Card.Content textAlign="center" extra>
-            <Label image>
-              <Image src={marCoin} />
-              20
-            </Label>
-            <Label image>
-              <Image src={happyPoints} />
-              14
-            </Label>
+            {tool.costs.map((cost, key) => (
+              <Label key={`cost_${tool.name}_${key}`} image>
+                <Image src={getImage(cost.resource)} />
+                {cost.amount}
+              </Label>
+            ))}
             {props.gameObjectToAdd && props.gameObjectToAdd.type === tool.name ? (
               <Popup
                 trigger={<Button positive loading={true} circular icon="add" />}

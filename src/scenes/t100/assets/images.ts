@@ -1,6 +1,8 @@
 import { EGameObjectType } from '../../../core/marPro/GameObject.type';
 import gb1 from './mar-gameboard-01-riverbed.png';
+import happyPoints from './happy-points.png';
 import infiltrationPond from './infiltration-pond.svg';
+import marCoin from './mar-coin.png';
 import river from './river.png';
 import well from './structure-well.svg';
 import wtp from './structure-wtp.svg';
@@ -23,6 +25,12 @@ export const gameBoards: IGameBoard[] = [
 ];
 
 export const getImage = (slag?: string) => {
+  if (slag === 'res_coins') {
+    return marCoin;
+  }
+  if (slag === 'res_happiness') {
+    return happyPoints;
+  }
   if (slag === EGameObjectType.RIVER) {
     return river;
   }

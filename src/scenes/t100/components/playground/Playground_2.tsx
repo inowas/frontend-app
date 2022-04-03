@@ -250,7 +250,7 @@ const Playground = (props: IProps) => {
             ) : (
               <Stage
                 draggable
-                width={1060}
+                width={100}
                 height={props.scenario.stageSize.y}
                 onDragEnd={handleDragStage}
                 onMouseMove={handleMouseMove}

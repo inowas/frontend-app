@@ -32,6 +32,7 @@ class DraftGameObject extends GenericObject<IDraftGameObject> {
       hasBeenPlaced: false,
       location: { x: 0, y: 0 },
       tool: tool.toObject(),
+      type: tool.name,
     });
   }
 
