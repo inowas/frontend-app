@@ -1,10 +1,11 @@
-import { Button, Grid, Icon, List } from 'semantic-ui-react';
+import { Button, Grid, Icon, Image, Label, List } from 'semantic-ui-react';
 import { ICost } from '../../../../core/marPro/Tool.type';
 import { isArray } from 'lodash';
 import Dialog from '../shared/Dialog';
 import GameObject from '../../../../core/marPro/GameObject';
 import React, { useState } from 'react';
 import Slider from 'rc-slider';
+import marCoin from '../../assets/mar-coin.png';
 
 interface IProps {
   gameObject: GameObject;
@@ -101,18 +102,19 @@ const GameObjectDialog = (props: IProps) => {
           header={gameObject.type}
           image={gameObject.type}
           content={
-            <Grid  textAlign="center" style={{ minWidth: '20rem', width: 'min-content' }}>
+            <Grid textAlign="center" style={{ minWidth: '20rem', width: 'min-content' }}>
               <Grid.Row>
                 <Grid.Column>
-                  Do you really want to change the value of parameter {parameter[0].id} to {activeValue}? It will{' '}
-                  <b>{diff < 0 ? 'give' : 'cost'}</b> you:
+                  <p>Change the value of parameter <span className='parameter-name'>{parameter[0].id}</span> to <strong>{activeValue}</strong>? <br/>This will{' '}
+                  <b>{diff < 0 ? 'earn' : 'cost'}</b> you:</p>
                 </Grid.Column>
               </Grid.Row>
               {parameter[0].relations &&
                 parameter[0].relations.map((relation) => (
                   <Grid.Row key={relation.resourceId}>
                     <Grid.Column width={16} textAlign="center">
-                      {Math.abs((relation.relation || 1) * diff)} {relation.resourceId}
+                    <Label size='medium' image><Image size='mini' src={marCoin} />
+                      {Math.abs((relation.relation || 1) * diff)} {relation.resourceId}</Label>
                     </Grid.Column>
                   </Grid.Row>
                 ))}

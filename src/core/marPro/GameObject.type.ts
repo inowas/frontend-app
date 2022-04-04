@@ -7,7 +7,7 @@ export enum EGameObjectType {
   ABSTRACTION_WELL = 'o_abstraction_well',
   INFILTRATION_POND = 'o_infiltration_pond',
   RIVER = 'o_river',
-  WASTEWATER_TREATMENT_PLANT = 'o_wtp',
+  WASTEWATER_TREATMENT_PLANT = 'o_wtp'
 }
 
 export interface IGameObject {

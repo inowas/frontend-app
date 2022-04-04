@@ -50,6 +50,19 @@
   top: auto;
   width: 0.71428571em;
 }
+.ui.modal.obj-modal-container span.parameter-name {
+  background-color: #998466;
+    border-radius: 15px;
+    color: #FFFFFF;
+    padding: 0.285714rem 1rem;
+    box-shadow: inset 0 0 3px 0 rgb(0 0 0 / 50%);
+}
+.ui.modal.obj-modal-container p {
+  line-height: 1.8;
+}
+.ui.image.label.object-reward {
+  background: transparent;
+}
 
 /* Toolbox
 ----------- */
@@ -94,8 +107,9 @@
 
 /* Resource Icons
 ----------------- */
-.ui.message.mission {
-  background-color: #f5ead6;
+.ui.message.mission,
+.ui.small.icon.button.resources {
+  background-color: #F5EAD6;
   box-shadow: none !important;
 }
 .ui.message.mission .info.icon {
@@ -103,11 +117,18 @@
   font-size: 2em !important;
   opacity: 1 !important;
 }
+.ui.button.resources .icon:not(.button) {
+  color: #1481B8;
+  margin-right: 0.6em;
+  opacity: 1
+}
 .ui.message.mission .chevron.right.icon {
   margin-left: 0.6em;
 }
 .water .ui.image {
+  right: -24px;
   top: 7px;
+  z-index: 2;
 }
 .water .ui.progress {
   background-color: #1481b8;
