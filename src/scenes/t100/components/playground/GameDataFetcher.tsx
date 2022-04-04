@@ -27,10 +27,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import GameState from '../../../../core/marPro/GameState';
-import Playground from './Playground';
 import Scenario from '../../../../core/marPro/Scenario';
 import scenarios from '../../../../core/marPro/scenarios';
 import { loadSoilmodel } from '../../../../core/model/modflow/soilmodel/services';
+import Playground from './Playground_2';
 
 const GameDataFetcher = () => {
   const [fetchingGameState, setFetchingGameState] = useState<boolean>(false);
@@ -270,7 +270,7 @@ const GameDataFetcher = () => {
 
   return (
     <div>
-      {everythingIsLoaded() && <Playground />}
+      {everythingIsLoaded() && scenario && <Playground />}
       <Modal size={'small'} closeIcon={false} open={showModal} dimmer={'inverted'}>
         <Modal.Header>Loading Model Data</Modal.Header>
         <Modal.Content>

@@ -31,7 +31,7 @@ export const boundaryUpdater2 = async (
     const g = GameObject.fromObject(shiftedGameObject);
 
     if (g.boundaryType && (!g.parametersAreFixed || !g.locationIsFixed)) {
-      // GameObject needs to be transformed into a new boundary
+      // GameObject needs to be transformed into a new boundary TODO
       boundaryUpdater2(
         BoundaryCollection.fromObject(cBoundaries),
         gameState,
