@@ -101,7 +101,7 @@ const GameObjectDialog = (props: IProps) => {
           header={gameObject.type}
           image={gameObject.type}
           content={
-            <Grid  textAlign="center" style={{ minWidth: '20rem', width: 'min-content' }}>
+            <Grid textAlign="center" style={{ minWidth: '20rem', width: 'min-content' }}>
               <Grid.Row>
                 <Grid.Column>
                   <p>Change the value of parameter <span className='parameter-name'>{parameter[0].id}</span> to <strong>{activeValue}</strong>? <br/>This will{' '}

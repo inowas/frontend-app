@@ -3,9 +3,9 @@ import { IParameter } from './Parameter.type';
 import { IVector2D } from './Geometry.type';
 
 export enum EGameObjectType {
-  ABSTRACTION_WELL = 'o_abstraction_well',
-  INFILTRATION_POND = 'o_infiltration_pond',
-  RIVER = 'o_river',
+  ABSTRACTION_WELL = 'Abstraction Well',
+  INFILTRATION_POND = 'Infiltration Pond',
+  RIVER = 'River',
 }
 
 export interface IGameObject {

@@ -3,8 +3,8 @@ import { useState } from 'react';
 import GameState from '../../../../core/marPro/GameState';
 import Happiness from '../shared/Happiness';
 import MarCoins from '../shared/MarCoins';
-import WaterDrop from '../../assets/water-drop.png';
 import ResourceManager from '../shared/ResourceManager';
+import WaterDrop from '../../assets/water-drop.png';
 
 interface IProps {
   gameState: GameState;
@@ -12,7 +12,7 @@ interface IProps {
 
 const Header = (props: IProps) => {
   const [showResourceManager, setShowResourceManager] = useState<boolean>(false);
-
+//  eslint-disable-next-line
   const toggleResourceManager = () => setShowResourceManager(!showResourceManager);
 
 
@@ -22,7 +22,7 @@ const Header = (props: IProps) => {
         <Grid.Column width={4}>
           <Message compact icon attached={'bottom'} className={'mission'}>
             <Icon name="info circle" />
-            <Message.Content>
+            <Message.Content> 
               Mission: Ezousa River, Cyprus
               <Icon name="chevron right" />
             </Message.Content>
@@ -31,12 +31,24 @@ const Header = (props: IProps) => {
         <Grid.Column width={6} verticalAlign={'middle'} className='water'>
             <Image as='div' floated='left' src={WaterDrop} />
               <div className="ui progress">
-                <div className="bar budget"><div className="progress">Budget 35%</div></div>
-                <div className="bar infiltration"><div className="progress">Infiltration 65%</div></div>
+                <div className="bar budget">
+                  <div className="progress">Budget 35%</div>
+                  </div>
+                <div className="bar infiltration">
+                  <div className="progress"><Icon name='angle double down' />Infiltration 65%</div>
+                  </div>
               </div>
         </Grid.Column>
         <Grid.Column width={2} verticalAlign={'middle'}>
-          <Button icon size='tiny'><Icon name='table' />Resources</Button>
+          <Button className='resources' fluid size='small' onClick={toggleResourceManager}>
+            <Icon name='table' />
+            Resources
+            {showResourceManager &&
+              <ResourceManager 
+                onClose={toggleResourceManager}
+              />
+            }
+          </Button>
         </Grid.Column>
         <Grid.Column width={2} verticalAlign={'middle'}>
           <MarCoins amount={props.gameState.getResource('res_coins')} />

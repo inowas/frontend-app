@@ -107,7 +107,8 @@
 
 /* Resource Icons
 ----------------- */
-.ui.message.mission {
+.ui.message.mission,
+.ui.small.icon.button.resources {
   background-color: #F5EAD6;
   box-shadow: none !important;
 }
@@ -116,11 +117,18 @@
   font-size: 2em !important;
   opacity: 1 !important;
 }
+.ui.button.resources .icon:not(.button) {
+  color: #1481B8;
+  margin-right: 0.6em;
+  opacity: 1
+}
 .ui.message.mission .chevron.right.icon {
   margin-left: 0.6em;
 }
 .water .ui.image {
+  right: -24px;
   top: 7px;
+  z-index: 2;
 }
 .water .ui.progress {
   background-color: #1481B8;

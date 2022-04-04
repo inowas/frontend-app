@@ -58,8 +58,8 @@ const Toolbox = (props: IProps) => {
             <Card.Description>Property</Card.Description>
           </Card.Content>
           <Card.Content textAlign="center" extra>
-          <Label size='small' image className='object-reward'><Image size='mini' src={marCoin} />20</Label>
-          <Label size='small' image className='object-reward'><Image size='mini' src={happyPoints} />14</Label>
+          <Label size='small' image className='object-reward'><Image size='mini' src={marCoin} />-20</Label>
+          <Label size='small' image className='object-reward'><Image size='mini' src={happyPoints} />+14</Label>
             {props.gameObjectToAdd && props.gameObjectToAdd.type === tool.name ? (
               <Popup
                 trigger={<Button positive loading={true} circular icon="add" />}
