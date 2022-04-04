@@ -26,7 +26,6 @@ import Tool from '../../../../core/marPro/Tool';
 import Toolbox from './Toolbox';
 import bg from '../../assets/mar-gameboard-01-riverbed.png';
 import useImage from '../../hooks/useImage';
-// import ResourceManager from '../shared/ResourceManager';
 
 const scaleBy = 1.3;
 
@@ -269,7 +268,7 @@ const Playground = () => {
             />
           </Grid.Column>
           <Grid.Column width={'thirteen'}>
-            <ResourceManager onToggle={toggleResourceManager} open={showResourceManager} />
+            {showResourceManager && <ResourceManager onClose={toggleResourceManager} />}
             {renderGameObjectDialogs()}
             {renderDraftGameObjectDialogs()}
             {!backgroundImage ? (
