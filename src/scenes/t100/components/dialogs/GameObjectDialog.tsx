@@ -1,5 +1,6 @@
 import { Button, Grid, Icon, Image, Label, List } from 'semantic-ui-react';
 import { ICost } from '../../../../core/marPro/Tool.type';
+import { isArray } from 'lodash';
 import Dialog from '../shared/Dialog';
 import GameObject from '../../../../core/marPro/GameObject';
 import React, { useState } from 'react';
@@ -49,7 +50,7 @@ const GameObjectDialog = (props: IProps) => {
     const costs: ICost[] = [];
     const parameter = gameObject.parameters.filter((p) => p.id === activeSlider);
     if (parameter.length > 0) {
-      const diff = activeValue - parameter[0].value;
+      const diff = activeValue - (!isArray(parameter[0].value) ? parameter[0].value : parameter[0].value[0]);
       parameter[0].relations?.forEach((relation) => {
         costs.push({
           amount: (relation.relation || 1) * diff,
@@ -70,7 +71,7 @@ const GameObjectDialog = (props: IProps) => {
     gameObject.parameters.forEach((parameter) => {
       const value = parameter.value;
       parameter.relations?.forEach((relation) => {
-        const diff = (relation.relation || 1) * value;
+        const diff = (relation.relation || 1) * (!isArray(value) ? value : value[0]);
         const fCosts = costs.filter((c) => c.resource === relation.resourceId);
         if (fCosts.length > 0) {
           costs = costs.map((cost) => {
@@ -93,7 +94,7 @@ const GameObjectDialog = (props: IProps) => {
 
   if (isAfterChange && activeSlider) {
     const parameter = gameObject.parameters.filter((p) => p.id === activeSlider);
-    if (parameter.length > 0) {
+    if (parameter.length > 0 && !isArray(parameter[0].value)) {
       const diff = activeValue - parameter[0].value;
 
       return (
@@ -153,30 +154,36 @@ const GameObjectDialog = (props: IProps) => {
               <List.Item>
                 {p.id}: {activeSlider === p.id ? activeValue : p.value}
               </List.Item>
-              <List.Item>
-                <Slider
-                  min={p.min}
-                  max={p.max}
-                  step={1}
-                  value={activeSlider === p.id ? activeValue : p.value}
-                  onChange={handleChangeSlider(p.id)}
-                  onAfterChange={handleAfterChangeSlider}
-                />
-              </List.Item>
-              {p.relations &&
-                p.relations.map((r) => (
-                  <List.Item key={`${gameObject.id}_${p.id}_${r.resourceId}`}>
-                    {r.resourceId}: {r.relation || '1:1'}
+              {!p.isFixed && !isArray(p.value) && (
+                <>
+                  <List.Item>
+                    <Slider
+                      min={p.min}
+                      max={p.max}
+                      step={1}
+                      value={activeSlider === p.id ? activeValue : p.value}
+                      onChange={handleChangeSlider(p.id)}
+                      onAfterChange={handleAfterChangeSlider}
+                    />
                   </List.Item>
-                ))}
+                  {p.relations &&
+                    p.relations.map((r) => (
+                      <List.Item key={`${gameObject.id}_${p.id}_${r.resourceId}`}>
+                        {r.resourceId}: {r.relation || '1:1'}
+                      </List.Item>
+                    ))}
+                </>
+              )}
             </React.Fragment>
           ))}
-          <List.Item>
-            <Button icon labelPosition="left" negative floated="right" onClick={handleSell}>
-              <Icon name="eraser" />
-              Sell
-            </Button>
-          </List.Item>
+          {!gameObject.locationIsFixed && (
+            <List.Item>
+              <Button icon labelPosition="left" negative floated="right" onClick={handleSell}>
+                <Icon name="eraser" />
+                Sell
+              </Button>
+            </List.Item>
+          )}
         </List>
       }
       onClose={handleCloseDialog}

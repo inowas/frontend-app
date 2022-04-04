@@ -1,5 +1,4 @@
 import { Button, Grid, Icon, Image, Message } from 'semantic-ui-react';
-import { useState } from 'react';
 import GameState from '../../../../core/marPro/GameState';
 import Happiness from '../shared/Happiness';
 import MarCoins from '../shared/MarCoins';
@@ -8,13 +7,12 @@ import WaterDrop from '../../assets/water-drop.png';
 
 interface IProps {
   gameState: GameState;
+  onToggleResourceManager: () => void;
 }
 
 const Header = (props: IProps) => {
   const [showResourceManager, setShowResourceManager] = useState<boolean>(false);
-//  eslint-disable-next-line
   const toggleResourceManager = () => setShowResourceManager(!showResourceManager);
-
 
   return (
     <Grid>

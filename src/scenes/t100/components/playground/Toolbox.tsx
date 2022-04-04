@@ -1,12 +1,10 @@
 import { Button, Card, Image, Label, Menu, Popup } from 'semantic-ui-react';
 import { EGameObjectCategory, ITool } from '../../../../core/marPro/Tool.type';
-import { EGameObjectType } from '../../../../core/marPro/GameObject.type';
 import { getImage } from '../../assets/images';
 import { useEffect, useState } from 'react';
 import DraftGameObject from '../../../../core/marPro/DraftGameObject';
 import Scenario from '../../../../core/marPro/Scenario';
-import marCoin from '../../assets/mar-coin.png';
-import happyPoints from '../../assets/happy-points.png';
+import Tool from '../../../../core/marPro/Tool';
 
 interface IProps {
   gameObjectToAdd: DraftGameObject | null;
@@ -28,8 +26,9 @@ const Toolbox = (props: IProps) => {
     setCategories(c);
   }, [props.scenario]);
 
-  const handleAddObject = (tool: EGameObjectType) => () => {
-    const newGameObject = DraftGameObject.fromType(tool);
+  const handleAddObject = (tool: ITool) => () => {
+    console.log('CLICK');
+    const newGameObject = DraftGameObject.fromTool(Tool.fromObject(tool));
     props.onAddGameObject(newGameObject);
   };
 
@@ -58,8 +57,12 @@ const Toolbox = (props: IProps) => {
             <Card.Description>Property</Card.Description>
           </Card.Content>
           <Card.Content textAlign="center" extra>
-          <Label size='small' image className='object-reward'><Image size='mini' src={marCoin} />-20</Label>
-          <Label size='small' image className='object-reward'><Image size='mini' src={happyPoints} />+14</Label>
+            {tool.costs.map((cost, key) => (
+              <Label key={`cost_${tool.name}_${key}`} image>
+                <Image src={getImage(cost.resource)} />
+                {cost.amount}
+              </Label>
+            ))}
             {props.gameObjectToAdd && props.gameObjectToAdd.type === tool.name ? (
               <Popup
                 trigger={<Button positive loading={true} circular icon="add" />}
@@ -69,7 +72,7 @@ const Toolbox = (props: IProps) => {
                 position="left center"
               />
             ) : (
-              <Button positive onClick={handleAddObject(tool.name)} circular icon="add" />
+              <Button positive onClick={handleAddObject(tool)} circular icon="add" />
             )}
           </Card.Content>
         </Card>

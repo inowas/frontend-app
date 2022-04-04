@@ -17,7 +17,8 @@ class Objective extends GenericObject<TObjective> {
       let sum = 0;
       gameState.objects.forEach((o) => {
         const p = o.parameters.filter((fp) => fp.id === objective.parameterId);
-        if (p.length > 0) {
+        if (p.length > 0 && typeof p[0].value === 'number') {
+          // TODO: multiple timesteps
           sum += p[0].value;
         }
       });

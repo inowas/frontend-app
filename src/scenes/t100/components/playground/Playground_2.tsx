@@ -1,11 +1,14 @@
+import { Calculation } from '../../../../core/model/modflow';
 import { Dimmer, Grid, Loader } from 'semantic-ui-react';
 import { EGameObjectType, IDraftGameObject } from '../../../../core/marPro/GameObject.type';
 import { ICost } from '../../../../core/marPro/Tool.type';
-import { IGameState } from '../../../../core/marPro/GameState.type';
 import { IMapScale } from '../types';
-import { Image, Layer, Stage } from 'react-konva';
+import { IRootReducer } from '../../../../reducers';
+import { Image, Layer, Path, Stage } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { ReactNode, useRef, useState } from 'react';
+import { updateGameState } from '../../actions/actions';
+import { useDispatch, useSelector } from 'react-redux';
 import ConfirmBuyGameObject from '../dialogs/ConfirmBuyGameObject';
 import DraftGameObject from '../../../../core/marPro/DraftGameObject';
 import DraftGameObjectComponent from '../gameObjects/DraftGameObjectComponent';
@@ -15,6 +18,7 @@ import GameObjectDialog from '../dialogs/GameObjectDialog';
 import GameState from '../../../../core/marPro/GameState';
 import Header from './Header';
 import InfiltrationPond from '../gameObjects/InfiltrationPond';
+import ResourceManager from '../shared/ResourceManager';
 import ResultModal from './ResultModal';
 import River from '../gameObjects/River';
 import Scenario from '../../../../core/marPro/Scenario';
@@ -24,21 +28,32 @@ import bg from '../../assets/mar-gameboard-01-riverbed.png';
 import useImage from '../../hooks/useImage';
 // import ResourceManager from '../shared/ResourceManager';
 
-interface IProps {
-  scenario: Scenario;
-}
-
 const scaleBy = 1.3;
 
-const Playground = (props: IProps) => {
+const Playground = () => {
   const [activeGameObjects, setActiveGameObjects] = useState<string[]>([]);
   const [backgroundImage] = useImage(bg);
   const stageRef = useRef<any>(null);
-  const [gameState, setGameState] = useState<IGameState>(GameState.fromScenario(props.scenario).toObject());
   const [gameObjectToAdd, setGameObjectToAdd] = useState<IDraftGameObject | null>(null);
+  const [showResourceManager, setShowResourceManager] = useState<boolean>(false);
   const [showResultModal, setShowResultModal] = useState<boolean>(false);
 
   const [mapScale, setMapScale] = useState<IMapScale>({ offset: { x: 0, y: 0 }, zoom: 0 });
+
+  const MarPro = useSelector((state: IRootReducer) => state.MarPro);
+  const gameState = MarPro.gameState || null;
+  const scenario = MarPro.scenario ? Scenario.fromObject(MarPro.scenario) : null;
+  const calculation = MarPro.calculation ? Calculation.fromObject(MarPro.calculation) : null;
+
+  const dispatch = useDispatch();
+
+  const updateStore = (g: GameState) => dispatch(updateGameState(g));
+
+  if (!gameState || !scenario) {
+    return null;
+  }
+
+  const toggleResourceManager = () => setShowResourceManager(!showResourceManager);
 
   const toggleResultModal = () => setShowResultModal(!showResultModal);
 
@@ -72,7 +87,7 @@ const Playground = (props: IProps) => {
     gs.addGameObject(newGameObject);
     gs.updateResources(tool.costs);
 
-    setGameState(gs.toObject());
+    updateStore(gs);
     setGameObjectToAdd(null);
   };
 
@@ -80,7 +95,7 @@ const Playground = (props: IProps) => {
     const cGameState = GameState.fromObject(gameState);
     cGameState.updateGameObject(g);
     costs.forEach((cost) => cGameState.updateResource(cost));
-    setGameState(cGameState.toObject());
+    updateStore(cGameState);
   };
 
   const handleClickGameObject = (gameObject: GameObject) =>
@@ -93,8 +108,8 @@ const Playground = (props: IProps) => {
     if (
       pointerPosition.x < 0 ||
       pointerPosition.y < 0 ||
-      pointerPosition.x > props.scenario.stageSize.x ||
-      pointerPosition.y > props.scenario.stageSize.y
+      pointerPosition.x > scenario.stageSize.x ||
+      pointerPosition.y > scenario.stageSize.y
     ) {
       return null;
     }
@@ -104,7 +119,7 @@ const Playground = (props: IProps) => {
       y: pointerPosition.y - 15,
     };
     cGameState.updateGameObject(gameObject);
-    setGameState(cGameState.toObject());
+    updateStore(cGameState);
   };
 
   const handleDeleteGameObject = (g: GameObject, costs: ICost[]) => {
@@ -112,14 +127,14 @@ const Playground = (props: IProps) => {
     costs.forEach((cost) => cGameState.updateResource(cost));
     cGameState.removeGameObject(g);
 
-    const tool = props.scenario.tools.filter((tool) => tool.name === g.type);
+    const tool = scenario.tools.filter((tool) => tool.name === g.type);
     if (tool.length > 0) {
       tool[0].costs?.forEach((cost) => {
         cGameState.refundResource(cost);
       });
     }
 
-    setGameState(cGameState.toObject());
+    updateStore(cGameState);
   };
 
   const handleDragStage = (e: KonvaEventObject<any>) => {
@@ -136,8 +151,8 @@ const Playground = (props: IProps) => {
     if (
       pointerPosition.x < 0 ||
       pointerPosition.y < 0 ||
-      pointerPosition.x > props.scenario.stageSize.x ||
-      pointerPosition.y > props.scenario.stageSize.y
+      pointerPosition.x > scenario.stageSize.x ||
+      pointerPosition.y > scenario.stageSize.y
     ) {
       return null;
     }
@@ -175,7 +190,7 @@ const Playground = (props: IProps) => {
     if (!gameObjectToAdd || !gameObjectToAdd.hasBeenPlaced) {
       return null;
     }
-    const tool = props.scenario.tools.filter((tool) => tool.name === gameObjectToAdd.type);
+    const tool = scenario.tools.filter((tool) => tool.name === gameObjectToAdd.type);
 
     if (tool.length === 0) {
       return null;
@@ -226,21 +241,35 @@ const Playground = (props: IProps) => {
     return gameObjects;
   };
 
+  const renderZones = () => {
+    if (scenario.zones.length === 0) {
+      return null;
+    }
+
+    return (
+      <Layer>
+        {scenario.zones.map((zone) => (
+          <Path key={zone.id} {...zone.options} />
+        ))}
+      </Layer>
+    );
+  };
+
   return (
     <>
       <div className="bg-noise"></div>
-      <Header gameState={GameState.fromObject(gameState)} />
+      <Header gameState={GameState.fromObject(gameState)} onToggleResourceManager={toggleResourceManager} />
       <Grid>
         <Grid.Row className="gameboard">
           <Grid.Column width={'three'}>
             <Toolbox
               gameObjectToAdd={gameObjectToAdd ? DraftGameObject.fromObject(gameObjectToAdd) : null}
               onAddGameObject={handleAddGameObject}
-              scenario={props.scenario}
+              scenario={scenario}
             />
           </Grid.Column>
           <Grid.Column width={'thirteen'}>
-          {/* <ResourceManager /> */}
+            <ResourceManager onToggle={toggleResourceManager} open={showResourceManager} />
             {renderGameObjectDialogs()}
             {renderDraftGameObjectDialogs()}
             {!backgroundImage ? (
@@ -250,14 +279,15 @@ const Playground = (props: IProps) => {
             ) : (
               <Stage
                 draggable
-                width={1060}
-                height={props.scenario.stageSize.y}
+                width={1000}
+                height={scenario.stageSize.y}
                 onDragEnd={handleDragStage}
                 onMouseMove={handleMouseMove}
                 onWheel={handleWheel}
                 ref={stageRef}
               >
                 <Layer>{backgroundImage && <Image image={backgroundImage} />}</Layer>
+                {renderZones()}
                 <Layer>{renderGameObjects()}</Layer>
                 {gameObjectToAdd && (
                   <Layer>
@@ -273,13 +303,7 @@ const Playground = (props: IProps) => {
         </Grid.Row>
       </Grid>
       <Footer gameState={GameState.fromObject(gameState)} onClickCheck={toggleResultModal} />
-      {showResultModal && (
-        <ResultModal
-          gameState={GameState.fromObject(gameState)}
-          onClose={toggleResultModal}
-          scenario={props.scenario}
-        />
-      )}
+      {showResultModal && <ResultModal onClose={toggleResultModal} />}
     </>
   );
 };

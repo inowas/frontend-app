@@ -5,8 +5,21 @@ import { IGameState } from './GameState.type';
 import { cloneDeep } from 'lodash';
 import GameObject from './GameObject';
 import Scenario from './Scenario';
+import uuid from 'uuid';
 
 class GameState extends GenericObject<IGameState> {
+  get id() {
+    return this._props.id;
+  }
+
+  get modelId() {
+    return this._props.modelId;
+  }
+
+  set modelId(value: string | null) {
+    this._props.modelId = value;
+  }
+
   get objects() {
     return this._props.objects;
   }
@@ -33,7 +46,9 @@ class GameState extends GenericObject<IGameState> {
 
   public static fromScenario(scenario: Scenario) {
     return new GameState({
+      id: uuid.v4(),
       dialogs: [],
+      modelId: null,
       objects: cloneDeep(scenario.objects),
       playerId: 'player_001',
       resources: scenario.resources.map((res) => {
@@ -42,7 +57,7 @@ class GameState extends GenericObject<IGameState> {
           value: res.startValue,
         };
       }),
-      scenarioId: 'scenario_001',
+      scenarioId: scenario.id,
     });
   }
 
@@ -64,6 +79,18 @@ class GameState extends GenericObject<IGameState> {
   public removeGameObject(g: GameObject) {
     this._props.objects = this._props.objects.filter((o) => o.id !== g.id);
     return this;
+  }
+
+  public toToolInstance() {
+    return {
+      id: this._props.id,
+      name: this._props.scenarioId,
+      data: this._props,
+      description: '',
+      permissions: 'rwx',
+      public: false,
+      tool: 'marpro',
+    };
   }
 
   public updateGameObject(object: GameObject) {

@@ -248,7 +248,7 @@ const ResourceManager = (props: IProps) => {
           <Icon name='checkmark' /> Save
         </Button>
       </Modal.Actions>
-  </Modal>
-)
-}
-export default ResourceManager
+    </Modal>
+  );
+};
+export default ResourceManager;

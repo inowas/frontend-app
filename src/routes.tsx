@@ -160,7 +160,7 @@ const getRoutes = () => {
         component={Scenes.T20.EditRealTimeModelling}
         forRoles={['ROLE_USER']}
       />
-      <PrivateRoute exact={true} path="/tools/T100/:property?" component={Scenes.T100} forRoles={['ROLE_USER']} />
+      <PrivateRoute exact={true} path="/tools/T100/:property?/:id?" component={Scenes.T100} forRoles={['ROLE_USER']} />
       <PrivateRoute path="/credentials" component={Scenes.UserCredentials} forRoles={['ROLE_USER']} />
       <PrivateRoute path="/profile" component={Scenes.UserProfile} forRoles={['ROLE_USER']} />
 

@@ -9,6 +9,7 @@ export interface IResourceSettings {
   max?: number;
   min?: number;
   name: string;
+  needsStorage?: boolean;
   startValue: number;
   unit?: string;
 }
