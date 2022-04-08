@@ -7,6 +7,52 @@ import GameObject from '../../../core/marPro/GameObject';
 import GameState from '../../../core/marPro/GameState';
 import Scenario from '../../../core/marPro/Scenario';
 
+const boundaryFromGameObject = async (gameObject: GameObject, model: ModflowModel, scenario: Scenario) => {
+  if (!gameObject.boundaryType || !gameObject.boundaryId) {
+    return null;
+  }
+
+  const geometry = gameObject.calculateGeometry(model, scenario);
+  const cells = await asyncWorker({
+    type: CALCULATE_CELLS_INPUT,
+    data: {
+      geometry: geometry,
+      boundingBox: model.boundingBox.toObject(),
+      gridSize: model.gridSize.toObject(),
+      intersection: model.intersection,
+    } as ICalculateCellsInputData,
+  });
+
+  const boundary = BoundaryFactory.createNewFromProps(
+    gameObject.boundaryType,
+    gameObject.boundaryId,
+    geometry,
+    gameObject.id,
+    [0], //TODO
+    cells,
+    []
+  );
+
+  const cSpValues = model.stressperiods.stressperiods.map((_, spKey) => {
+    return boundary.valueProperties.map((_, vpk) => {
+      const fParameter = gameObject.parameters.filter((p) => p.valuePropertyKey === vpk);
+      if (fParameter.length > 0 && !Array.isArray(fParameter[0].value) && spKey === 0) {
+        return fParameter[0].value;
+      }
+
+      if (fParameter.length > 0 && Array.isArray(fParameter[0].value) && fParameter[0].value.length >= spKey) {
+        return fParameter[0].value[spKey];
+      }
+
+      return 0;
+    });
+  });
+
+  boundary.setSpValues(cSpValues);
+
+  return boundary;
+};
+
 export const boundaryUpdater2 = async (
   boundaries: BoundaryCollection,
   gameState: GameState,
@@ -31,7 +77,13 @@ export const boundaryUpdater2 = async (
     const g = GameObject.fromObject(shiftedGameObject);
 
     if (g.boundaryType && (!g.parametersAreFixed || !g.locationIsFixed)) {
-      // GameObject needs to be transformed into a new boundary TODO
+      // GameObject needs to be transformed into a new boundary
+      const newBoundary = await boundaryFromGameObject(g, model, scenario);
+
+      if (newBoundary) {
+        updatedBoundaries.add(newBoundary);
+      }
+
       boundaryUpdater2(
         BoundaryCollection.fromObject(cBoundaries),
         gameState,
