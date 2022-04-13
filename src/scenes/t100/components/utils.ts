@@ -1,6 +1,8 @@
+import { Array2D } from '../../../core/model/geometry/Array2D.type';
 import { BoundaryCollection, Cells, Geometry, ModflowModel } from '../../../core/model/modflow';
 import { BoundaryFactory } from '../../../core/model/modflow/boundaries';
 import { CALCULATE_CELLS_INPUT } from '../../modflow/worker/t03.worker';
+import { EObjectiveType, TObjective } from '../../../core/marPro/Objective.type';
 import { ICalculateCellsInputData } from '../../modflow/worker/t03.worker.type';
 import { asyncWorker } from '../../modflow/worker/worker';
 import GameObject from '../../../core/marPro/GameObject';
@@ -162,4 +164,20 @@ export const boundaryUpdater2 = async (
   // Boundary will be skipped
   updatedBoundaries.add(boundary);
   boundaryUpdater2(BoundaryCollection.fromObject(cBoundaries), gameState, model, scenario, updatedBoundaries, onFinish);
+};
+
+export const getObservedValue = (objective: TObjective, data: Array2D<number>) => {
+  if (objective.type !== EObjectiveType.BY_OBSERVATION) {
+    throw new Error('Objective is not of type OBSERVATION.');
+  }
+
+  const cell = objective.cell;
+
+  if (data.length < cell[0] || data[cell[0]].length < cell[1]) {
+    throw new Error('Dimensions dont match.');
+  }
+
+  const value = data[cell[0]][cell[1]];
+
+  return value;
 };

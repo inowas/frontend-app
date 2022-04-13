@@ -120,7 +120,7 @@ class Scenario extends GenericObject<IScenario> {
   }
 
   get needsModelCalculation() {
-    return this._props.objectives.filter((o) => o.type === EObjectiveType.BY_CELLS).length > 0;
+    return this._props.objectives.filter((o) => o.type === EObjectiveType.BY_OBSERVATION).length > 0;
   }
 }
 

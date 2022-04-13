@@ -1,7 +1,7 @@
 import { EBoundaryType } from '../model/modflow/boundaries/Boundary.type';
 import { EGameObjectCategory } from './Tool.type';
 import { EGameObjectType } from './GameObject.type';
-import { EObjectiveType, EParameterObjectiveType } from './Objective.type';
+import { EObjectiveType } from './Objective.type';
 import { IScenario } from './Scenario.type';
 
 const scenarios: IScenario[] = [
@@ -25,16 +25,12 @@ const scenarios: IScenario[] = [
     modelId: 'c0d6d9eb-8737-4b43-b7fc-30796e2889cc',
     objectives: [
       {
-        cells: ['obj_well_1', 'obj_well_2', 'obj_well_3', 'obj_well_4'],
-        parameters: [
-          {
-            id: 'p_drawdown',
-            max: 0.2,
-            min: 0,
-            type: EParameterObjectiveType.ABSOLUTE,
-          },
-        ],
-        type: EObjectiveType.BY_CELLS,
+        cell: [133, 20],
+        max: 0.2,
+        min: 0,
+        parameter: 'drawdown',
+        position: { x: 370, y: 450 },
+        type: EObjectiveType.BY_OBSERVATION,
       },
     ],
     objects: [
@@ -252,23 +248,6 @@ const scenarios: IScenario[] = [
     id: 'scenario_ezousa_02',
     modelId: 'c0d6d9eb-8737-4b43-b7fc-30796e2889cc',
     objectives: [
-      {
-        cells: [
-          '0e35d0d3-21b8-40cc-b950-02b34efc1fd6',
-          'fe73884e-2c94-4d1a-a714-6f83565dbe78',
-          '171c76b2-d5b2-4af7-bc1a-9a846da20d1f',
-          '448f88c5-da72-4007-a8ce-25217127c83b',
-        ],
-        parameters: [
-          {
-            id: 'p_drawdown',
-            max: 0.2,
-            min: 0,
-            type: EParameterObjectiveType.ABSOLUTE,
-          },
-        ],
-        type: EObjectiveType.BY_CELLS,
-      },
       {
         min: 0,
         resourceId: 'res_coins',

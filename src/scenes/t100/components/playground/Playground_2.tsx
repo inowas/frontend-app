@@ -1,6 +1,7 @@
 import { Calculation } from '../../../../core/model/modflow';
 import { Dimmer, Grid, Loader } from 'semantic-ui-react';
 import { EGameObjectType, IDraftGameObject } from '../../../../core/marPro/GameObject.type';
+import { EObjectiveType } from '../../../../core/marPro/Objective.type';
 import { ICost } from '../../../../core/marPro/Tool.type';
 import { IMapScale } from '../types';
 import { IRootReducer } from '../../../../reducers';
@@ -18,6 +19,7 @@ import GameObjectDialog from '../dialogs/GameObjectDialog';
 import GameState from '../../../../core/marPro/GameState';
 import Header from './Header';
 import InfiltrationPond from '../gameObjects/InfiltrationPond';
+import ObservationWell from '../gameObjects/ObservationWell';
 import ResourceManager from '../shared/ResourceManager';
 import ResultModal from './ResultModal';
 import River from '../gameObjects/River';
@@ -223,6 +225,16 @@ const Playground = () => {
     return aGameObjects;
   };
 
+  const renderObservationWells = () => {
+    const wells = gameState.objectives.filter((o) => o.objective.type === EObjectiveType.BY_OBSERVATION);
+
+    if (wells.length === 0) {
+      return null;
+    }
+
+    return wells.map((o, k) => <ObservationWell key={`observation_${k}`} objectiveState={o} />);
+  };
+
   const renderGameObjects = () => {
     const gameObjects: any[] = gameState.objects.map((object, k) => {
       if (object.type === EGameObjectType.RIVER) {
@@ -287,7 +299,9 @@ const Playground = () => {
               >
                 <Layer>{backgroundImage && <Image image={backgroundImage} />}</Layer>
                 {renderZones()}
+
                 <Layer>{renderGameObjects()}</Layer>
+                <Layer>{renderObservationWells()}</Layer>
                 {gameObjectToAdd && (
                   <Layer>
                     <DraftGameObjectComponent

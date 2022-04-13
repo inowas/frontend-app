@@ -37,8 +37,10 @@ class DraftGameObject extends GenericObject<IDraftGameObject> {
   }
 
   public toGameObject(parameters?: IParameter[]) {
+    const id = uuid.v4();
     return new GameObject({
       boundaryType: this._props.tool.boundaryType,
+      boundaryId: this._props.tool.boundaryType ? id : undefined,
       id: uuid.v4(),
       type: this._props.tool.name,
       location: this._props.location,

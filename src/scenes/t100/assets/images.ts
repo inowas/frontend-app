@@ -34,7 +34,7 @@ export const getImage = (slag?: string) => {
   if (slag === EGameObjectType.RIVER) {
     return river;
   }
-  if (slag === EGameObjectType.ABSTRACTION_WELL) {
+  if (slag === EGameObjectType.ABSTRACTION_WELL || slag === EGameObjectType.OBSERVATION_WELL) {
     return well;
   }
   if (slag === EGameObjectType.WASTEWATER_TREATMENT_PLANT) {

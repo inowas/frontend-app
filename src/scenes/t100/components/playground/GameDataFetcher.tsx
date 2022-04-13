@@ -23,14 +23,14 @@ import {
   updateVariableDensity,
 } from '../../actions/actions';
 import { fetchApiWithToken, fetchCalculationDetails, fetchUrl } from '../../../../services/api';
+import { loadSoilmodel } from '../../../../core/model/modflow/soilmodel/services';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import GameState from '../../../../core/marPro/GameState';
+import Playground from './Playground_2';
 import Scenario from '../../../../core/marPro/Scenario';
 import scenarios from '../../../../core/marPro/scenarios';
-import { loadSoilmodel } from '../../../../core/model/modflow/soilmodel/services';
-import Playground from './Playground_2';
 
 const GameDataFetcher = () => {
   const [fetchingGameState, setFetchingGameState] = useState<boolean>(false);

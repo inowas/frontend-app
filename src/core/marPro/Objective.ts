@@ -3,6 +3,18 @@ import { GenericObject } from '../model/genericObject/GenericObject';
 import { IGameState } from './GameState.type';
 
 class Objective extends GenericObject<TObjective> {
+  get max() {
+    return this._props.max;
+  }
+
+  get min() {
+    return this._props.min;
+  }
+
+  get type() {
+    return this._props.type;
+  }
+
   public static fromObject(objective: TObjective) {
     return new Objective(objective);
   }
@@ -10,7 +22,7 @@ class Objective extends GenericObject<TObjective> {
   public check(gameState: IGameState, onSendDebugMessage?: (message: string) => void) {
     const objective = this._props;
     let check = true;
-    if (objective.type === EObjectiveType.BY_CELLS) {
+    if (objective.type === EObjectiveType.BY_OBSERVATION) {
       check = false;
     }
     if (objective.type === EObjectiveType.BY_PARAMETER) {

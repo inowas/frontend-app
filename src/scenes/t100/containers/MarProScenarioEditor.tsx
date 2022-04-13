@@ -1,6 +1,7 @@
 import '../style.css';
 import { AppContainer } from '../../shared';
 import { Breadcrumb, Button, Grid, Header, Icon, List, Search, Segment } from 'semantic-ui-react';
+import { IGameStateSimpleTool } from '../../../core/marPro/GameState.type';
 import { IScenario } from '../../../core/marPro/Scenario.type';
 import { IToolInstance } from '../../types';
 import { asyncSendCommand, fetchUrl, sendCommand } from '../../../services/api';
@@ -63,10 +64,22 @@ const T100 = () => {
 
   const handleDeleteInstance = (i: IToolInstance) => () => {
     setIsLoading(true);
-    sendCommand(
-      deleteToolInstance('marpro', i.id),
-      () => {
-        fetchInstances();
+
+    fetchUrl(
+      `tools/marpro/${i.id}`,
+      (g: IGameStateSimpleTool) => {
+        sendCommand(
+          deleteToolInstance('marpro', i.id),
+          async () => {
+            if (g.data.modelId) {
+              await asyncSendCommand(ModflowModelCommand.deleteModflowModel({ id: g.data.modelId }));
+            }
+            fetchInstances();
+          },
+          () => {
+            setIsLoading(false);
+          }
+        );
       },
       () => {
         setIsLoading(false);

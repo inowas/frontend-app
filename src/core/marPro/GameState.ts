@@ -20,6 +20,10 @@ class GameState extends GenericObject<IGameState> {
     this._props.modelId = value;
   }
 
+  get objectives() {
+    return this._props.objectives;
+  }
+
   get objects() {
     return this._props.objects;
   }
@@ -49,6 +53,13 @@ class GameState extends GenericObject<IGameState> {
       id: uuid.v4(),
       dialogs: [],
       modelId: null,
+      objectives: scenario.objectives.map((objective) => {
+        return {
+          objective: cloneDeep(objective),
+          isAchieved: false,
+          tries: 0,
+        };
+      }),
       objects: cloneDeep(scenario.objects),
       playerId: 'player_001',
       resources: scenario.resources.map((res) => {

@@ -1,7 +1,8 @@
+import { ICell } from '../model/geometry/Cells.type';
 import { IVector2D } from './Geometry.type';
 
 export enum EObjectiveType {
-  BY_CELLS = 'cells',
+  BY_OBSERVATION = 'observation',
   BY_PARAMETER = 'parameter',
   BY_RESOURCE = 'resource',
 }
@@ -11,10 +12,13 @@ export enum EParameterObjectiveType {
   RELATIVE = 'relative',
 }
 
-export interface IObjectiveByCells {
-  cells: Array<IVector2D | string>;
-  parameters: IParameterObjective[];
-  type: EObjectiveType.BY_CELLS;
+export interface IObjectiveByObservation {
+  cell: ICell;
+  max: number;
+  min: number;
+  parameter: string;
+  position: IVector2D;
+  type: EObjectiveType.BY_OBSERVATION;
 }
 
 export interface IObjectiveByResource {
@@ -38,4 +42,11 @@ export interface IParameterObjective {
   type: EParameterObjectiveType;
 }
 
-export type TObjective = IObjectiveByCells | IObjectiveByParameter | IObjectiveByResource;
+export interface IObjectiveState {
+  objective: TObjective;
+  isAchieved: boolean;
+  tries: number;
+  value?: number;
+}
+
+export type TObjective = IObjectiveByObservation | IObjectiveByParameter | IObjectiveByResource;
