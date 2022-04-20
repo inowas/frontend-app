@@ -25,6 +25,11 @@ const scenarios: IScenario[] = [
     modelId: 'c0d6d9eb-8737-4b43-b7fc-30796e2889cc',
     objectives: [
       {
+        min: 0,
+        resourceId: 'res_coins',
+        type: EObjectiveType.BY_RESOURCE,
+      },
+      {
         cell: [133, 20],
         max: 0.2,
         min: 0,

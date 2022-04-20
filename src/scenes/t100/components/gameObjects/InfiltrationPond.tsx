@@ -22,6 +22,8 @@ const InfiltrationPond = (props: IProps) => {
     props.onClick(props.gameObject);
   };
 
+  const handleDragMove = (e: any) => console.log(e);
+
   const handleDragEnd = () => props.onDragEnd(props.gameObject);
 
   const handleMouseOut = (e: any) => {
@@ -41,6 +43,7 @@ const InfiltrationPond = (props: IProps) => {
       draggable={!props.gameObject.locationIsFixed}
       image={image}
       onClick={handleClick}
+      onDragMove={handleDragMove}
       onDragEnd={handleDragEnd}
       onMouseOver={handleMouseOver}
       onMouseOut={handleMouseOut}

@@ -1,5 +1,6 @@
 import { EGameObjectType } from '../../../core/marPro/GameObject.type';
 import gb1 from './mar-gameboard-01-riverbed.png';
+import gb2 from './mar-gameboard-02.jpg';
 import happyPoints from './happy-points.png';
 import infiltrationPond from './infiltration-pond.svg';
 import marCoin from './mar-coin.png';
@@ -17,10 +18,17 @@ interface IGameBoard {
 export const gameBoards: IGameBoard[] = [
   {
     country: 'Cyprus',
-    name: 'Ezousa',
+    name: 'Ezousa 1',
     img: gb1,
     description:
       'The green valley in Cyprus is a protected natural reservoir and thus a pretty interesting place for Managed Aquifer Recharge.',
+  },
+  {
+    country: 'Cyprus',
+    name: 'Ezousa 2',
+    img: gb2,
+    description:
+      'This version of the Ezousa catchment is just showing more detailed information about the landuse around the valley.',
   },
 ];
 

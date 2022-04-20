@@ -47,16 +47,9 @@ const Settings = (props: IProps) => {
           <Accordion styled>
             <Accordion.Title active={activeIndex === 0} index={0} onClick={handleAccordionClick}>
               <Icon name="dropdown" />
-              Game-Objects
-            </Accordion.Title>
-            <Accordion.Content active={activeIndex === 0}>
-              <Button icon="add" />
-            </Accordion.Content>
-            <Accordion.Title active={activeIndex === 1} index={1} onClick={handleAccordionClick}>
-              <Icon name="dropdown" />
               Resources
             </Accordion.Title>
-            <Accordion.Content active={activeIndex === 1}>
+            <Accordion.Content active={activeIndex === 0}>
               <List selection>
                 <List.Item onClick={handleAdd('resource')}>
                   <Icon name="add" />
@@ -67,29 +60,22 @@ const Settings = (props: IProps) => {
                 ))}
               </List>
             </Accordion.Content>
+            <Accordion.Title active={activeIndex === 1} index={1} onClick={handleAccordionClick}>
+              <Icon name="dropdown" />
+              Game Objects
+            </Accordion.Title>
+            <Accordion.Content active={activeIndex === 1}>
+              <List selection>
+                <List.Item onClick={handleAdd('resource')}>
+                  <Icon name="add" />
+                  <List.Content>Add new Game Object</List.Content>
+                </List.Item>
+                {props.scenario.objects.map((o) => (
+                  <List.Item key={o.id}>{o.id}</List.Item>
+                ))}
+              </List>
+            </Accordion.Content>
           </Accordion>
-
-          <Menu fluid tabular vertical>
-            {activeItem === 'objects' ? (
-              <Menu.Item>
-                <Menu.Header>Game Objects</Menu.Header>
-                <Menu.Menu>
-                  {props.scenario.objects.map((object) => (
-                    <Menu.Item key={object.id}>{object.id}</Menu.Item>
-                  ))}
-                </Menu.Menu>
-              </Menu.Item>
-            ) : (
-              <Menu.Item name="objects" active={activeItem === 'objects'} onClick={handleItemClick}>
-                {props.scenario.objects.length > 0 && <Label color="teal">{props.scenario.objects.length}</Label>}
-                Game Objects
-              </Menu.Item>
-            )}
-            <Menu.Item name="ressources" active={activeItem === 'ressources'} onClick={handleItemClick}>
-              Ressources
-              <Icon link name="add" />
-            </Menu.Item>
-          </Menu>
         </Grid.Column>
         <Grid.Column width={12}>{renderContent()}</Grid.Column>
       </Grid>

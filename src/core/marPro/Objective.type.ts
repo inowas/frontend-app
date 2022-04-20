@@ -1,6 +1,15 @@
 import { ICell } from '../model/geometry/Cells.type';
 import { IVector2D } from './Geometry.type';
 
+export const checkObjective = (objectiveState: IObjectiveState) => {
+  return objectiveState.value === undefined
+    ? false
+    : (objectiveState.objective.min === undefined ||
+        (objectiveState.objective.min !== undefined && objectiveState.value >= objectiveState.objective.min)) &&
+        (objectiveState.objective.max === undefined ||
+          (objectiveState.objective.max !== undefined && objectiveState.value <= objectiveState.objective.max));
+};
+
 export enum EObjectiveType {
   BY_OBSERVATION = 'observation',
   BY_PARAMETER = 'parameter',

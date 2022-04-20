@@ -28,6 +28,7 @@ import Tool from '../../../../core/marPro/Tool';
 import Toolbox from './Toolbox';
 import bg from '../../assets/mar-gameboard-01-riverbed.png';
 import useImage from '../../hooks/useImage';
+import Results from './Results';
 
 const scaleBy = 1.3;
 
@@ -278,6 +279,7 @@ const Playground = () => {
               onAddGameObject={handleAddGameObject}
               scenario={scenario}
             />
+            {gameState && <Results gameState={GameState.fromObject(gameState)} />}
           </Grid.Column>
           <Grid.Column width={'thirteen'}>
             {showResourceManager && <ResourceManager onClose={toggleResourceManager} />}
@@ -299,7 +301,6 @@ const Playground = () => {
               >
                 <Layer>{backgroundImage && <Image image={backgroundImage} />}</Layer>
                 {renderZones()}
-
                 <Layer>{renderGameObjects()}</Layer>
                 <Layer>{renderObservationWells()}</Layer>
                 {gameObjectToAdd && (
