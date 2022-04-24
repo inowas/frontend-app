@@ -1,43 +1,95 @@
-import {
-  Accordion,
-  AccordionTitleProps,
-  Button,
-  Grid,
-  Icon,
-  Label,
-  List,
-  Menu,
-  MenuItemProps,
-  Segment,
-} from 'semantic-ui-react';
+import { Accordion, AccordionTitleProps, Button, Grid, Icon, List, Menu, Popup, Segment } from 'semantic-ui-react';
+import { IResourceSettings } from '../../../../core/marPro/Resource.type';
 import { MouseEvent, useState } from 'react';
+import ResourceSettings from '../../../../core/marPro/ResourceSettings';
 import Ressources from './Resources';
 import Scenario from '../../../../core/marPro/Scenario';
+import uuid from 'uuid';
 
 interface IProps {
+  onChange: (scenario: Scenario) => void;
   scenario: Scenario;
 }
 
 const Settings = (props: IProps) => {
-  const [activeIndex, setActiveIndex] = useState<number>(0);
-  const [activeItem, setActiveItem] = useState<string>('objects');
+  const [activeIndex, setActiveIndex] = useState<string>('resources');
+  const [activeResource, setActiveResource] = useState<IResourceSettings>();
 
-  const handleAdd = (type: string) => () => {
-    const cScenario = Scenario.fromObject(props.scenario.toObject());
+  const handleAdd = () => {
+    const cScenario = props.scenario.toObject();
 
-    switch (type) {
-      case 'resource':
-        cScenario.resources.push();
+    if (activeIndex === 'resources') {
+      const newResource = ResourceSettings.fromDefaults();
+      cScenario.resources.push(newResource.toObject());
+      setActiveResource(newResource.toObject());
+    }
+
+    props.onChange(Scenario.fromObject(cScenario));
+  };
+
+  const handleCloneItem = (id: string) => () => {
+    const cScenario = props.scenario.toObject();
+
+    if (activeIndex === 'resources') {
+      const fResource = props.scenario.resources.filter((r) => r.id === id);
+      if (fResource.length > 0) {
+        const newResource = ResourceSettings.fromObject(fResource[0]).getClone();
+        newResource.id = uuid.v4();
+        cScenario.resources.push(newResource.toObject());
+      }
+    }
+
+    props.onChange(Scenario.fromObject(cScenario));
+  };
+
+  const handleDeleteItem = (id: string) => () => {
+    const cScenario = props.scenario.toObject();
+
+    if (activeIndex === 'resources') {
+      cScenario.resources = cScenario.resources.filter((r) => r.id !== id);
+    }
+
+    setActiveResource(undefined);
+    props.onChange(Scenario.fromObject(cScenario));
+  };
+
+  const handleChangeResource = (resource: ResourceSettings) => {
+    const cScenario = props.scenario.toObject();
+
+    const fResource = props.scenario.resources.filter((r) => r.id === resource.id);
+    if (fResource.length > 0) {
+      cScenario.resources = cScenario.resources.map((res) => {
+        if (res.id === resource.id) {
+          return resource.toObject();
+        }
+        return res;
+      });
+    }
+
+    props.onChange(Scenario.fromObject(cScenario));
+    setActiveResource(resource.toObject());
+  };
+
+  const handleItemClick = (id: string) => (e: MouseEvent) => {
+    if (e.currentTarget !== e.target) {
+      return;
+    }
+    if (activeIndex === 'resources') {
+      const fResources = props.scenario.resources.filter((r) => r.id === id);
+      if (fResources.length > 0) {
+        setActiveResource(fResources[0]);
+      }
     }
   };
 
-  const handleItemClick = (e: MouseEvent, { name }: MenuItemProps) => setActiveItem(name || 'objects');
-
-  const handleAccordionClick = (e: MouseEvent, { index }: AccordionTitleProps) =>
-    typeof index === 'number' ? setActiveIndex(index) : null;
+  const handleAccordionClick = (_: MouseEvent, { index }: AccordionTitleProps) =>
+    typeof index === 'string' ? setActiveIndex(index) : null;
 
   const renderContent = () => {
-    return <Ressources />;
+    if (activeIndex === 'resources' && activeResource) {
+      return <Ressources resource={ResourceSettings.fromObject(activeResource)} onChange={handleChangeResource} />;
+    }
+    return null;
   };
 
   return (
@@ -45,28 +97,73 @@ const Settings = (props: IProps) => {
       <Grid>
         <Grid.Column width={4}>
           <Accordion styled>
-            <Accordion.Title active={activeIndex === 0} index={0} onClick={handleAccordionClick}>
+            <Accordion.Title active={activeIndex === 'resources'} index={'resources'} onClick={handleAccordionClick}>
               <Icon name="dropdown" />
               Resources
             </Accordion.Title>
-            <Accordion.Content active={activeIndex === 0}>
-              <List selection>
-                <List.Item onClick={handleAdd('resource')}>
-                  <Icon name="add" />
-                  <List.Content>Add new Resource</List.Content>
-                </List.Item>
+            <Accordion.Content active={activeIndex === 'resources'}>
+              <Menu fluid vertical secondary>
+                <Menu.Item>
+                  <Button fluid icon labelPosition="left" onClick={handleAdd}>
+                    <Icon name="add" />
+                    Add new Resource
+                  </Button>
+                </Menu.Item>
                 {props.scenario.resources.map((r) => (
-                  <List.Item key={r.id}>{r.id}</List.Item>
+                  <Menu.Item
+                    active={activeResource && activeResource.id === r.id && activeIndex === 'resources'}
+                    key={r.id}
+                    onClick={handleItemClick(r.id)}
+                  >
+                    {r.name}
+                    <Popup
+                      trigger={<Icon name="ellipsis horizontal" />}
+                      content={
+                        <Button.Group floated="right" size="small">
+                          <Popup
+                            trigger={<Button icon={'clone'} onClick={handleCloneItem(r.id)} />}
+                            content="Clone"
+                            position="top center"
+                            size="mini"
+                          />
+                          <Popup
+                            trigger={<Button icon={'trash'} onClick={handleDeleteItem(r.id)} />}
+                            content="Delete"
+                            position="top center"
+                            size="mini"
+                          />
+                        </Button.Group>
+                      }
+                      on={'click'}
+                      position={'right center'}
+                    />
+                  </Menu.Item>
+                ))}
+              </Menu>
+            </Accordion.Content>
+            <Accordion.Title active={activeIndex === 'objectives'} index={'objectives'} onClick={handleAccordionClick}>
+              <Icon name="dropdown" />
+              Objectives
+            </Accordion.Title>
+            <Accordion.Content active={activeIndex === 'objectives'}>
+              <List selection>
+                <List.Item onClick={handleAdd}>
+                  <Icon name="add" />
+                  <List.Content>Add new Objective</List.Content>
+                </List.Item>
+                {props.scenario.objectives.map((o) => (
+                  <List.Item key={o.id}>{o.id}</List.Item>
                 ))}
               </List>
             </Accordion.Content>
-            <Accordion.Title active={activeIndex === 1} index={1} onClick={handleAccordionClick}>
+
+            <Accordion.Title active={activeIndex === 'objects'} index={'objects'} onClick={handleAccordionClick}>
               <Icon name="dropdown" />
               Game Objects
             </Accordion.Title>
-            <Accordion.Content active={activeIndex === 1}>
+            <Accordion.Content active={activeIndex === 'objects'}>
               <List selection>
-                <List.Item onClick={handleAdd('resource')}>
+                <List.Item onClick={handleAdd}>
                   <Icon name="add" />
                   <List.Content>Add new Game Object</List.Content>
                 </List.Item>

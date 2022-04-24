@@ -23,6 +23,7 @@ export enum EParameterObjectiveType {
 
 export interface IObjectiveByObservation {
   cell: ICell;
+  id: string;
   max: number;
   min: number;
   parameter: string;
@@ -31,6 +32,7 @@ export interface IObjectiveByObservation {
 }
 
 export interface IObjectiveByResource {
+  id: string;
   max?: number;
   min?: number;
   resourceId: string;
@@ -38,17 +40,11 @@ export interface IObjectiveByResource {
 }
 
 export interface IObjectiveByParameter {
+  id: string;
   max?: number;
   min?: number;
   parameterId: string;
   type: EObjectiveType.BY_PARAMETER;
-}
-
-export interface IParameterObjective {
-  id: string;
-  max: number;
-  min: number;
-  type: EParameterObjectiveType;
 }
 
 export interface IObjectiveState {

@@ -15,6 +15,16 @@ interface IGameBoard {
   description: string;
 }
 
+interface IIcon {
+  name: string;
+  img: string;
+}
+
+export const icons: IIcon[] = [
+  { name: 'happyPoints', img: happyPoints },
+  { name: 'marCoins', img: marCoin },
+];
+
 export const gameBoards: IGameBoard[] = [
   {
     country: 'Cyprus',

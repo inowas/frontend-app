@@ -90,7 +90,7 @@ const Editor = () => {
     }
 
     if (activeStep === 2) {
-      return <Settings scenario={Scenario.fromObject(scenario)} />;
+      return <Settings onChange={handleChangeScenario} scenario={Scenario.fromObject(scenario)} />;
     }
 
     return <div>Select a Step!</div>;

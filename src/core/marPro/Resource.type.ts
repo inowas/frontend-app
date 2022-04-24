@@ -6,6 +6,7 @@ export interface IResource {
 export interface IResourceSettings {
   color?: string;
   id: string;
+  icon?: string;
   max?: number;
   min?: number;
   name: string;

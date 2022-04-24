@@ -25,11 +25,13 @@ const scenarios: IScenario[] = [
     modelId: 'c0d6d9eb-8737-4b43-b7fc-30796e2889cc',
     objectives: [
       {
+        id: 'objective_1',
         min: 0,
         resourceId: 'res_coins',
         type: EObjectiveType.BY_RESOURCE,
       },
       {
+        id: 'objective_2',
         cell: [133, 20],
         max: 0.2,
         min: 0,
@@ -256,16 +258,19 @@ const scenarios: IScenario[] = [
     modelId: 'c0d6d9eb-8737-4b43-b7fc-30796e2889cc',
     objectives: [
       {
+        id: 'objective_1',
         min: 0,
         resourceId: 'res_coins',
         type: EObjectiveType.BY_RESOURCE,
       },
       {
+        id: 'objective_2',
         min: 85,
         resourceId: 'res_happiness',
         type: EObjectiveType.BY_RESOURCE,
       },
       {
+        id: 'objective_3',
         min: 2000,
         parameterId: 'p_ecological_flow',
         type: EObjectiveType.BY_PARAMETER,

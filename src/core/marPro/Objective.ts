@@ -3,6 +3,10 @@ import { GenericObject } from '../model/genericObject/GenericObject';
 import { IGameState } from './GameState.type';
 
 class Objective extends GenericObject<TObjective> {
+  get id() {
+    return this._props.id;
+  }
+
   get max() {
     return this._props.max;
   }
