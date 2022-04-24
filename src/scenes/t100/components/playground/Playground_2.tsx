@@ -13,7 +13,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import ConfirmBuyGameObject from '../dialogs/ConfirmBuyGameObject';
 import DraftGameObject from '../../../../core/marPro/DraftGameObject';
 import DraftGameObjectComponent from '../gameObjects/DraftGameObjectComponent';
-import Footer from './Footer';
 import GameObject from '../../../../core/marPro/GameObject';
 import GameObjectDialog from '../dialogs/GameObjectDialog';
 import GameState from '../../../../core/marPro/GameState';
@@ -22,13 +21,13 @@ import InfiltrationPond from '../gameObjects/InfiltrationPond';
 import ObservationWell from '../gameObjects/ObservationWell';
 import ResourceManager from '../shared/ResourceManager';
 import ResultModal from './ResultModal';
+import Results from './Results';
 import River from '../gameObjects/River';
 import Scenario from '../../../../core/marPro/Scenario';
 import Tool from '../../../../core/marPro/Tool';
 import Toolbox from './Toolbox';
 import bg from '../../assets/mar-gameboard-01-riverbed.png';
 import useImage from '../../hooks/useImage';
-import Results from './Results';
 
 const scaleBy = 1.3;
 
@@ -279,7 +278,7 @@ const Playground = () => {
               onAddGameObject={handleAddGameObject}
               scenario={scenario}
             />
-            {gameState && <Results gameState={GameState.fromObject(gameState)} />}
+            {gameState && <Results gameState={GameState.fromObject(gameState)} onClickCheck={toggleResultModal} />}
           </Grid.Column>
           <Grid.Column width={'thirteen'}>
             {showResourceManager && <ResourceManager onClose={toggleResourceManager} />}
@@ -316,7 +315,6 @@ const Playground = () => {
           </Grid.Column>
         </Grid.Row>
       </Grid>
-      <Footer gameState={GameState.fromObject(gameState)} onClickCheck={toggleResultModal} />
       {showResultModal && <ResultModal onClose={toggleResultModal} />}
     </>
   );

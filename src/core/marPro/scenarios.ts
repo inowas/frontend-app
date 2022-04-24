@@ -113,6 +113,8 @@ const scenarios: IScenario[] = [
           {
             relations: [{ resourceId: 'res_treated_wastewater' }],
             id: 'p_infiltration_rate',
+            min: 0,
+            max: 10000,
             value: 0,
             valuePropertyKey: 0,
           },

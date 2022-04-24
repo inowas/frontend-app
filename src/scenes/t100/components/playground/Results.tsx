@@ -1,12 +1,18 @@
-import { Card, Checkbox, Menu } from 'semantic-ui-react';
+import { Button, Card, Checkbox, Menu } from 'semantic-ui-react';
 import { EObjectiveType, IObjectiveState, checkObjective } from '../../../../core/marPro/Objective.type';
+import CheckButton from './CheckButton';
 import GameState from '../../../../core/marPro/GameState';
 
 interface IProps {
   gameState: GameState;
+  onClickCheck: () => any;
 }
 
 const Results = (props: IProps) => {
+  const handleClickSave = () => {
+    console.log('SAVE');
+  };
+
   const renderObjective = (objectiveState: IObjectiveState) => {
     const objective = objectiveState.objective;
 
@@ -55,6 +61,14 @@ const Results = (props: IProps) => {
     <Menu className="objects" inverted vertical icon="labeled">
       <Menu.Item className="header">Results</Menu.Item>
       {props.gameState.objectives.map((objective) => renderObjective(objective))}
+      <Menu.Item>
+        <CheckButton />
+      </Menu.Item>
+      <Menu.Item>
+        <Button color="green" fluid onClick={handleClickSave}>
+          Save
+        </Button>
+      </Menu.Item>
     </Menu>
   );
 };
