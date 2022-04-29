@@ -1,12 +1,24 @@
 import { BasicTileLayer } from '../../../../services/geoTools/tileLayers';
-import { Card, Divider, Dropdown, DropdownProps, Grid, Image, Label, List, Radio, Segment } from 'semantic-ui-react';
+import {
+  Card,
+  Divider,
+  Dropdown,
+  DropdownProps,
+  Form,
+  Grid,
+  Image,
+  Label,
+  List,
+  Radio,
+  Segment,
+} from 'semantic-ui-react';
 import { IToolInstance } from '../../../types';
 import { Icon } from 'leaflet';
 import { ImageOverlay, Map, Marker } from 'react-leaflet';
 import { ModflowModel } from '../../../../core/model/modflow';
 import { SyntheticEvent, useRef, useState } from 'react';
 import { cloneDeep } from 'lodash';
-import { gameBoards } from '../../assets/images';
+import { gameBoards, getImage, IGameBoard } from '../../assets/images';
 import { renderAreaLayer } from '../../../t03/components/maps/mapLayers';
 import Scenario from '../../../../core/marPro/Scenario';
 import SliderWithTooltip from '../../../shared/complexTools/SliderWithTooltip';
@@ -27,9 +39,11 @@ const Georeferencing = (props: IProps) => {
   const marker1Ref = useRef<any>();
   const marker2Ref = useRef<any>();
 
-  const handleChangeImage = (value: string) => () => {
+  const handleChangeImage = (value: IGameBoard) => () => {
     const scenario = props.scenario.toObject();
-    scenario.backgroundImage = value;
+    scenario.backgroundImage = value.img;
+    scenario.stageSize = value.size;
+
     props.onChange(Scenario.fromObject(scenario));
   };
 
@@ -112,90 +126,111 @@ const Georeferencing = (props: IProps) => {
                   <Card.Description>{gb.description}</Card.Description>
                 </Card.Content>
                 <Card.Content textAlign="center">
-                  <Radio checked={props.scenario.image === gb.img} onChange={handleChangeImage(gb.img)} />
+                  <Radio checked={props.scenario.image === gb.img} onChange={handleChangeImage(gb)} />
                 </Card.Content>
               </Card>
             ))}
           </Card.Group>
         </Grid.Column>
       </Grid.Row>
-      <Grid.Row>
-        <Grid.Column width={12}>
-          <Segment>
-            <Dropdown
-              options={props.t03Instances.map((i, key) => {
-                return {
-                  key,
-                  value: i.id,
-                  text: i.name,
-                };
-              })}
-              onChange={handleChangeModel}
-              placeholder="Select modflow model ..."
-              value={props.scenario.modelId}
-              fluid
-              search
-              selection
-            />
-            {renderMap()}
-          </Segment>
-        </Grid.Column>
-        <Grid.Column width={4}>
-          <Segment>
-            Opacity
-            <SliderWithTooltip
-              defaultValue={0.5}
-              min={0}
-              max={1}
-              step={0.1}
-              value={opacity}
-              onChange={handleChangeOpacity}
-            />
-            <Divider />
-            {props.scenario.referencePoints.length > 0 && (
-              <List>
-                <List.Item>
-                  <List.Header>Reference Points</List.Header>
-                </List.Item>
-                <List.Item>
-                  Point 1
-                  <List.List>
-                    <List.Item>
-                      Latitude
-                      <Label style={{ textAlign: 'right', width: '100%' }}>
-                        {props.scenario.referencePoints[0][0]}
-                      </Label>
-                    </List.Item>
-                    <List.Item>
-                      Longitude
-                      <Label style={{ textAlign: 'right', width: '100%' }}>
-                        {props.scenario.referencePoints[0][1]}
-                      </Label>
-                    </List.Item>
-                  </List.List>
-                </List.Item>
-                <List.Item>
-                  Point 2
-                  <List.List>
-                    <List.Item>
-                      Latitude
-                      <Label style={{ textAlign: 'right', width: '100%' }}>
-                        {props.scenario.referencePoints[1][0]}
-                      </Label>
-                    </List.Item>
-                    <List.Item>
-                      Longitude
-                      <Label style={{ textAlign: 'right', width: '100%' }}>
-                        {props.scenario.referencePoints[1][1]}
-                      </Label>
-                    </List.Item>
-                  </List.List>
-                </List.Item>
-              </List>
-            )}
-          </Segment>
-        </Grid.Column>
-      </Grid.Row>
+      {props.scenario.image && (
+        <Grid.Row>
+          <Grid.Column width={12}>
+            <Segment>
+              <Form>
+                <Form.Group>
+                  <Form.Input
+                    disabled
+                    type="number"
+                    label="Stage width"
+                    name="stageSizeX"
+                    value={props.scenario.stageSize.x}
+                  />
+                  <Form.Input
+                    disabled
+                    type="number"
+                    label="Stage height"
+                    name="stageSizeY"
+                    value={props.scenario.stageSize.y}
+                  />
+                </Form.Group>
+              </Form>
+              <Divider />
+              <Dropdown
+                options={props.t03Instances.map((i, key) => {
+                  return {
+                    key,
+                    value: i.id,
+                    text: i.name,
+                  };
+                })}
+                onChange={handleChangeModel}
+                placeholder="Select modflow model ..."
+                value={props.scenario.modelId}
+                fluid
+                search
+                selection
+              />
+              {renderMap()}
+            </Segment>
+          </Grid.Column>
+          <Grid.Column width={4}>
+            <Segment>
+              Opacity
+              <SliderWithTooltip
+                defaultValue={0.5}
+                min={0}
+                max={1}
+                step={0.1}
+                value={opacity}
+                onChange={handleChangeOpacity}
+              />
+              <Divider />
+              {props.scenario.referencePoints.length > 0 && (
+                <List>
+                  <List.Item>
+                    <List.Header>Reference Points</List.Header>
+                  </List.Item>
+                  <List.Item>
+                    Point 1
+                    <List.List>
+                      <List.Item>
+                        Latitude
+                        <Label style={{ textAlign: 'right', width: '100%' }}>
+                          {props.scenario.referencePoints[0][0]}
+                        </Label>
+                      </List.Item>
+                      <List.Item>
+                        Longitude
+                        <Label style={{ textAlign: 'right', width: '100%' }}>
+                          {props.scenario.referencePoints[0][1]}
+                        </Label>
+                      </List.Item>
+                    </List.List>
+                  </List.Item>
+                  <List.Item>
+                    Point 2
+                    <List.List>
+                      <List.Item>
+                        Latitude
+                        <Label style={{ textAlign: 'right', width: '100%' }}>
+                          {props.scenario.referencePoints[1][0]}
+                        </Label>
+                      </List.Item>
+                      <List.Item>
+                        Longitude
+                        <Label style={{ textAlign: 'right', width: '100%' }}>
+                          {props.scenario.referencePoints[1][1]}
+                        </Label>
+                      </List.Item>
+                    </List.List>
+                  </List.Item>
+                </List>
+              )}
+            </Segment>
+          </Grid.Column>
+        </Grid.Row>
+      )}
     </Grid>
   );
 };

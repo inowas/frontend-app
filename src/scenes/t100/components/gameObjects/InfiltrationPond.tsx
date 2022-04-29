@@ -1,4 +1,5 @@
 import { Image } from 'react-konva';
+import { KonvaEventObject } from 'konva/lib/Node';
 import { getImage } from '../../assets/images';
 import { useState } from 'react';
 import GameObject from '../../../../core/marPro/GameObject';
@@ -7,7 +8,7 @@ import useImage from '../../hooks/useImage';
 interface IProps {
   gameObject: GameObject;
   isDraft?: boolean;
-  onDragEnd: (gameObject: GameObject) => void;
+  onDragEnd: (gameObject: GameObject, e: KonvaEventObject<DragEvent>) => void;
   onClick?: (gameObject: GameObject) => void;
 }
 
@@ -22,9 +23,9 @@ const InfiltrationPond = (props: IProps) => {
     props.onClick(props.gameObject);
   };
 
-  const handleDragMove = (e: any) => console.log(e);
-
-  const handleDragEnd = () => props.onDragEnd(props.gameObject);
+  const handleDragEnd = (e: KonvaEventObject<DragEvent>) => {
+    props.onDragEnd(props.gameObject, e);
+  };
 
   const handleMouseOut = (e: any) => {
     const container = e.target.getStage().container();
@@ -43,7 +44,6 @@ const InfiltrationPond = (props: IProps) => {
       draggable={!props.gameObject.locationIsFixed}
       image={image}
       onClick={handleClick}
-      onDragMove={handleDragMove}
       onDragEnd={handleDragEnd}
       onMouseOver={handleMouseOver}
       onMouseOut={handleMouseOut}

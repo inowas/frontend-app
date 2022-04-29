@@ -19,6 +19,10 @@ class GameObject extends GenericObject<IGameObject> {
     return this._props.id;
   }
 
+  set id(value: string) {
+    this._props.id = value;
+  }
+
   get locationIsFixed() {
     return this._props.locationIsFixed;
   }
@@ -51,7 +55,7 @@ class GameObject extends GenericObject<IGameObject> {
     return new GameObject(value);
   }
 
-  public static createInfiltrationPond = (scenario: Scenario) => {
+  public static createInfiltrationPond = () => {
     return new GameObject({
       id: uuid.v4(),
       type: EGameObjectType.INFILTRATION_POND,

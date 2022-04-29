@@ -11,6 +11,14 @@ export enum EGameObjectType {
   WASTEWATER_TREATMENT_PLANT = 'o_wtp',
 }
 
+export const gameObjectTypes = [
+  { type: EGameObjectType.ABSTRACTION_WELL, size: { x: 44, y: 30 } },
+  { type: EGameObjectType.INFILTRATION_POND, size: { x: 44, y: 30 } },
+  { type: EGameObjectType.OBSERVATION_WELL, size: { x: 44, y: 30 } },
+  { type: EGameObjectType.RIVER, size: { x: 825, y: 664 } },
+  { type: EGameObjectType.WASTEWATER_TREATMENT_PLANT, size: { x: 130, y: 90 } },
+];
+
 export interface IGameObject {
   boundaryId?: string;
   boundaryType?: BoundaryType;

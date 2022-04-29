@@ -1,8 +1,9 @@
+import { BoundaryCollection, ModflowModel } from '../../../../core/model/modflow';
+import { IBoundary } from '../../../../core/model/modflow/boundaries/Boundary.type';
 import { IModflowModel } from '../../../../core/model/modflow/ModflowModel.type';
 import { IScenario } from '../../../../core/marPro/Scenario.type';
 import { IToolInstance } from '../../../types';
 import { Icon, Segment, Step } from 'semantic-ui-react';
-import { ModflowModel } from '../../../../core/model/modflow';
 import { fetchApiWithToken, fetchUrl } from '../../../../services/api';
 import { uniqBy } from 'lodash';
 import { useEffect, useState } from 'react';
@@ -14,6 +15,7 @@ import uuid from 'uuid';
 
 const Editor = () => {
   const [activeStep, setActiveStep] = useState<number>(0);
+  const [boundaries, setBoundaries] = useState<IBoundary[]>([]);
   const [errors, setErrors] = useState<Array<{ id: string; message: string }>>([]);
   const [isFetching, setIsFetching] = useState<boolean>(true);
   const [scenario, setScenario] = useState<IScenario | null>(Scenario.fromDefaults().toObject());
@@ -40,6 +42,19 @@ const Editor = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const fetchBoundaries = async (id: string) => {
+    setIsFetching(true);
+    try {
+      const b = (await fetchApiWithToken(`modflowmodels/${id}/boundaries`)).data;
+      const bc = BoundaryCollection.fromQuery(b);
+      setBoundaries(bc.toObject());
+    } catch (err) {
+      setErrors(errors.concat([{ id: uuid.v4(), message: 'Fetching boundaries failed.' }]));
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
   const fetchModel = (id: string) => {
     setIsFetching(true);
     fetchUrl(
@@ -54,6 +69,7 @@ const Editor = () => {
           setScenario(cScenario.toObject());
         }
 
+        fetchBoundaries(id);
         setSelectedModel(mfModel.toObject());
         setIsFetching(false);
       },
@@ -90,7 +106,13 @@ const Editor = () => {
     }
 
     if (activeStep === 2) {
-      return <Settings onChange={handleChangeScenario} scenario={Scenario.fromObject(scenario)} />;
+      return (
+        <Settings
+          boundaries={BoundaryCollection.fromObject(boundaries)}
+          onChange={handleChangeScenario}
+          scenario={Scenario.fromObject(scenario)}
+        />
+      );
     }
 
     return <div>Select a Step!</div>;

@@ -5,14 +5,19 @@ import happyPoints from './happy-points.png';
 import infiltrationPond from './infiltration-pond.svg';
 import marCoin from './mar-coin.png';
 import river from './river.png';
+import waterDrop from './water-drop.png';
 import well from './structure-well.svg';
 import wtp from './structure-wtp.svg';
 
-interface IGameBoard {
+export interface IGameBoard {
   country: string;
   name: string;
   img: string;
   description: string;
+  size: {
+    x: number;
+    y: number;
+  };
 }
 
 interface IIcon {
@@ -23,6 +28,7 @@ interface IIcon {
 export const icons: IIcon[] = [
   { name: 'happyPoints', img: happyPoints },
   { name: 'marCoins', img: marCoin },
+  { name: 'waterDrop', img: waterDrop },
 ];
 
 export const gameBoards: IGameBoard[] = [
@@ -32,6 +38,10 @@ export const gameBoards: IGameBoard[] = [
     img: gb1,
     description:
       'The green valley in Cyprus is a protected natural reservoir and thus a pretty interesting place for Managed Aquifer Recharge.',
+    size: {
+      x: 1059,
+      y: 791,
+    },
   },
   {
     country: 'Cyprus',
@@ -39,6 +49,10 @@ export const gameBoards: IGameBoard[] = [
     img: gb2,
     description:
       'This version of the Ezousa catchment is just showing more detailed information about the landuse around the valley.',
+    size: {
+      x: 1059,
+      y: 791,
+    },
   },
 ];
 

@@ -1,10 +1,15 @@
 import { EObjectiveType, TObjective } from './Objective.type';
 import { GenericObject } from '../model/genericObject/GenericObject';
 import { IGameState } from './GameState.type';
+import uuid from 'uuid';
 
 class Objective extends GenericObject<TObjective> {
   get id() {
     return this._props.id;
+  }
+
+  set id(value: string) {
+    this._props.id = value;
   }
 
   get max() {
@@ -17,6 +22,32 @@ class Objective extends GenericObject<TObjective> {
 
   get type() {
     return this._props.type;
+  }
+
+  public static fromType(type: string, id: string) {
+    if (type === EObjectiveType.BY_PARAMETER) {
+      return new Objective({
+        id: uuid.v4(),
+        parameterId: id,
+        type: EObjectiveType.BY_PARAMETER,
+      });
+    }
+    if (type === EObjectiveType.BY_RESOURCE) {
+      return new Objective({
+        id: uuid.v4(),
+        resourceId: id,
+        type: EObjectiveType.BY_RESOURCE,
+      });
+    }
+    return new Objective({
+      cell: [0, 0],
+      id: uuid.v4(),
+      max: 0,
+      min: 0,
+      parameter: id,
+      position: { x: 0, y: 0 },
+      type: EObjectiveType.BY_OBSERVATION,
+    });
   }
 
   public static fromObject(objective: TObjective) {

@@ -294,7 +294,6 @@ const Playground = () => {
                 width={1000}
                 height={scenario.stageSize.y}
                 onDragEnd={handleDragStage}
-                onMouseMove={handleMouseMove}
                 onWheel={handleWheel}
                 ref={stageRef}
               >
