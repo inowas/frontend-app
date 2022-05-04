@@ -4,6 +4,7 @@ export interface IParameter {
   isFixed?: boolean;
   max?: number;
   min?: number;
+  name?: string;
   value: number | number[];
   valuePropertyKey?: number;
 }

@@ -1,16 +1,17 @@
 import { BoundaryCollection } from '../../../../core/model/modflow';
-import { Button, Divider, DropdownProps, Form, InputProps, Message, Ref } from 'semantic-ui-react';
+import { Divider, DropdownProps, Form, InputProps, Message, Tab } from 'semantic-ui-react';
+import { Feature, Geometry, Position } from '@turf/turf';
 import { FormEvent, useRef, useState } from 'react';
 import { IGameObject, gameObjectTypes } from '../../../../core/marPro/GameObject.type';
-import { IMapScale } from '../types';
 import { Image, Layer, Stage } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
+import { Point } from 'geojson';
 import GameObject from '../../../../core/marPro/GameObject';
 import InfiltrationPond from '../gameObjects/InfiltrationPond';
+import Parameters from './Parameters';
 import Scenario from '../../../../core/marPro/Scenario';
 import useImage from '../../hooks/useImage';
-import { Point } from 'geojson';
-import { Feature, Geometry, Position } from '@turf/turf';
+import uuid from 'uuid';
 
 interface IProps {
   boundaries: BoundaryCollection;
@@ -57,6 +58,27 @@ const GameObjects = (props: IProps) => {
     const cObject = props.object.toObject();
     cObject.boundaryId = undefined;
     cObject.boundaryType = undefined;
+    props.onChange(GameObject.fromObject(cObject));
+  };
+
+  const handleImportParameters = () => {
+    const boundary = props.boundaries.all.filter((b) => b.id === props.object.boundaryId);
+
+    if (boundary.length < 1) {
+      return;
+    }
+
+    // TODO get value: const spValues = boundary[0].getSpValues()
+
+    const cObject = props.object.toObject();
+    boundary[0].valueProperties.forEach((v, k) => {
+      cObject.parameters.push({
+        id: uuid.v4(),
+        name: v.name,
+        value: 0,
+        valuePropertyKey: k,
+      });
+    });
     props.onChange(GameObject.fromObject(cObject));
   };
 
@@ -135,93 +157,121 @@ const GameObjects = (props: IProps) => {
     props.onChange(gameObject);
   };
 
+  const renderParameters = () => {
+    return <Parameters gameObject={props.object} onChange={props.onChange} />;
+  };
+
+  const renderSpatialSettings = () => {
+    return (
+      <Form>
+        <Form.Group>
+          <Form.Input
+            onBlur={handleBlurVector2D('size')}
+            onChange={handleChange}
+            name="sizeX"
+            type="number"
+            label="Size X"
+            value={activeInput === 'sizeX' ? activeValue : props.object.size.x}
+          />
+          <Form.Input
+            onBlur={handleBlurVector2D('size')}
+            onChange={handleChange}
+            name="sizeY"
+            type="number"
+            label="Size Y"
+            value={activeInput === 'sizeY' ? activeValue : props.object.size.y}
+          />
+          <Form.Input
+            onBlur={handleBlurVector2D('location')}
+            onChange={handleChange}
+            name="locationX"
+            type="number"
+            label="Location X"
+            value={activeInput === 'locationX' ? activeValue : props.object.location.x}
+          />
+          <Form.Input
+            onBlur={handleBlurVector2D('location')}
+            onChange={handleChange}
+            name="locationY"
+            type="number"
+            label="Location Y"
+            value={activeInput === 'locationY' ? activeValue : props.object.location.y}
+          />
+        </Form.Group>
+        <div className="field">
+          <label className="ui form">Set location</label>
+          <Stage
+            width={props.scenario.stageSize.x}
+            height={props.scenario.stageSize.y}
+            ref={stageRef}
+            style={{ overflow: 'scroll' }}
+          >
+            <Layer>{backgroundImage && <Image image={backgroundImage} />}</Layer>
+            <Layer>
+              <InfiltrationPond gameObject={props.object} onDragEnd={handleDragGameObject} />
+            </Layer>
+          </Stage>
+        </div>
+      </Form>
+    );
+  };
+
   return (
-    <Form>
-      <Form.Select
-        name="type"
-        label="Type"
-        options={gameObjectTypes.map((t) => ({ key: t.type, text: t.type, value: t.type }))}
-        onChange={handleChangeType}
-        value={props.object.type}
+    <>
+      <Form>
+        <Form.Select
+          name="type"
+          label="Type"
+          options={gameObjectTypes.map((t) => ({ key: t.type, text: t.type, value: t.type }))}
+          onChange={handleChangeType}
+          value={props.object.type}
+        />
+        <Divider />
+        {props.scenario.modelId && props.boundaries.length > 0 && (
+          <>
+            <Message>
+              You can link a game object to a boundary from the linked model. Since gameObjects are located by only one
+              coordinate, it will import the center of mass of that boundary.
+            </Message>
+            <Form.Group>
+              <Form.Select
+                label="Link to boundary (Leave empty, if it should not be linked to a boundary."
+                onChange={handleChangeBoundary}
+                options={props.boundaries.all.map((b) => ({
+                  key: b.id,
+                  text: b.name,
+                  value: b.id,
+                }))}
+                placeholder="No link"
+                value={props.object.boundaryId}
+              />
+              <Form.Button label="&nbsp;" disabled={!props.object.boundaryId} onClick={handleUnlinkBoundary}>
+                Unlink
+              </Form.Button>
+              <Form.Button label="&nbsp;" disabled={!props.object.boundaryId} onClick={handleImportLocation}>
+                Import location
+              </Form.Button>
+              <Form.Button label="&nbsp;" disabled={!props.object.boundaryId} onClick={handleImportParameters}>
+                Import Parameters
+              </Form.Button>
+            </Form.Group>
+          </>
+        )}
+      </Form>
+      <Tab
+        menu={{ secondary: true, pointing: true }}
+        panes={[
+          {
+            menuItem: 'Spatial Settings',
+            render: () => renderSpatialSettings(),
+          },
+          {
+            menuItem: 'Parameters',
+            render: () => renderParameters(),
+          },
+        ]}
       />
-      <Divider />
-      {props.scenario.modelId && props.boundaries.length > 0 && (
-        <>
-          <Message>
-            You can link a game object to a boundary from the linked model. Since gameObjects are located by only one
-            coordinate, it will import the center of mass of that boundary.
-          </Message>
-          <Form.Group>
-            <Form.Select
-              label="Link to boundary (Leave empty, if it should not be linked to a boundary."
-              onChange={handleChangeBoundary}
-              options={props.boundaries.all.map((b) => ({
-                key: b.id,
-                text: b.name,
-                value: b.id,
-              }))}
-              placeholder="No link"
-              value={props.object.boundaryId}
-            />
-            <Form.Button label="&nbsp;" disabled={!props.object.boundaryId} onClick={handleUnlinkBoundary}>
-              Unlink
-            </Form.Button>
-            <Form.Button label="&nbsp;" disabled={!props.object.boundaryId} onClick={handleImportLocation}>
-              Import location
-            </Form.Button>
-          </Form.Group>
-          <Divider />
-        </>
-      )}
-      <Form.Group>
-        <Form.Input
-          onBlur={handleBlurVector2D('size')}
-          onChange={handleChange}
-          name="sizeX"
-          type="number"
-          label="Size X"
-          value={activeInput === 'sizeX' ? activeValue : props.object.size.x}
-        />
-        <Form.Input
-          onBlur={handleBlurVector2D('size')}
-          onChange={handleChange}
-          name="sizeY"
-          type="number"
-          label="Size Y"
-          value={activeInput === 'sizeY' ? activeValue : props.object.size.y}
-        />
-        <Form.Input
-          onBlur={handleBlurVector2D('location')}
-          onChange={handleChange}
-          name="locationX"
-          type="number"
-          label="Location X"
-          value={activeInput === 'locationX' ? activeValue : props.object.location.x}
-        />
-        <Form.Input
-          onBlur={handleBlurVector2D('location')}
-          onChange={handleChange}
-          name="locationY"
-          type="number"
-          label="Location Y"
-          value={activeInput === 'locationY' ? activeValue : props.object.location.y}
-        />
-      </Form.Group>
-      <div className="field">
-        <label className="ui form">Set location</label>
-        <Stage
-          width={props.scenario.stageSize.x}
-          height={props.scenario.stageSize.y}
-          ref={stageRef}
-          style={{ overflow: 'scroll' }}
-        >
-          <Layer>{backgroundImage && <Image image={backgroundImage} />}</Layer>
-          <Layer>
-            <InfiltrationPond gameObject={props.object} onDragEnd={handleDragGameObject} />
-          </Layer>
-        </Stage>
-      </div>
-    </Form>
+    </>
   );
 };
 

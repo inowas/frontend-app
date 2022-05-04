@@ -5,7 +5,6 @@ import GameState from '../../../../core/marPro/GameState';
 
 interface IProps {
   gameState: GameState;
-  onClickCheck: () => any;
 }
 
 const Results = (props: IProps) => {
@@ -41,7 +40,7 @@ const Results = (props: IProps) => {
         <Card className="object">
           <Card.Content>
             <Card.Header>
-              <Checkbox checked={checkObjective(objectiveState)} />
+              <Checkbox checked={objectiveState.isAchieved} />
               {objective.type === EObjectiveType.BY_PARAMETER
                 ? `Parameter ${objective.parameterId}`
                 : `Resource ${objective.resourceId}`}

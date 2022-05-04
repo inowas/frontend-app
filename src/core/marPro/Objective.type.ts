@@ -2,7 +2,7 @@ import { ICell } from '../model/geometry/Cells.type';
 import { IVector2D } from './Geometry.type';
 
 export const checkObjective = (objectiveState: IObjectiveState) => {
-  return objectiveState.value === undefined
+  return objectiveState.value === undefined || objectiveState.value === null
     ? false
     : (objectiveState.objective.min === undefined ||
         (objectiveState.objective.min !== undefined && objectiveState.value >= objectiveState.objective.min)) &&

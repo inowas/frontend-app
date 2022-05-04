@@ -1,5 +1,4 @@
-import { Calculation } from '../../../../core/model/modflow';
-import { Dimmer, Grid, Loader } from 'semantic-ui-react';
+import { Button, Dimmer, Grid, Loader } from 'semantic-ui-react';
 import { EGameObjectType, IDraftGameObject } from '../../../../core/marPro/GameObject.type';
 import { EObjectiveType } from '../../../../core/marPro/Objective.type';
 import { ICost } from '../../../../core/marPro/Tool.type';
@@ -20,7 +19,6 @@ import Header from './Header';
 import InfiltrationPond from '../gameObjects/InfiltrationPond';
 import ObservationWell from '../gameObjects/ObservationWell';
 import ResourceManager from '../shared/ResourceManager';
-import ResultModal from './ResultModal';
 import Results from './Results';
 import River from '../gameObjects/River';
 import Scenario from '../../../../core/marPro/Scenario';
@@ -28,6 +26,7 @@ import Tool from '../../../../core/marPro/Tool';
 import Toolbox from './Toolbox';
 import bg from '../../assets/mar-gameboard-01-riverbed.png';
 import useImage from '../../hooks/useImage';
+import useResults from '../../hooks/useResults';
 
 const scaleBy = 1.3;
 
@@ -37,14 +36,14 @@ const Playground = () => {
   const stageRef = useRef<any>(null);
   const [gameObjectToAdd, setGameObjectToAdd] = useState<IDraftGameObject | null>(null);
   const [showResourceManager, setShowResourceManager] = useState<boolean>(false);
-  const [showResultModal, setShowResultModal] = useState<boolean>(false);
 
   const [mapScale, setMapScale] = useState<IMapScale>({ offset: { x: 0, y: 0 }, zoom: 0 });
 
   const MarPro = useSelector((state: IRootReducer) => state.MarPro);
   const gameState = MarPro.gameState || null;
   const scenario = MarPro.scenario ? Scenario.fromObject(MarPro.scenario) : null;
-  const calculation = MarPro.calculation ? Calculation.fromObject(MarPro.calculation) : null;
+
+  const { data, isLoading, refetch } = useResults();
 
   const dispatch = useDispatch();
 
@@ -55,8 +54,6 @@ const Playground = () => {
   }
 
   const toggleResourceManager = () => setShowResourceManager(!showResourceManager);
-
-  const toggleResultModal = () => setShowResultModal(!showResultModal);
 
   const handleAddGameObject = (object: DraftGameObject) => setGameObjectToAdd(object.toObject());
 
@@ -273,12 +270,13 @@ const Playground = () => {
       <Grid>
         <Grid.Row className="gameboard">
           <Grid.Column width={'three'}>
+            <Button onClick={() => refetch()}>REFETCH</Button>
             <Toolbox
               gameObjectToAdd={gameObjectToAdd ? DraftGameObject.fromObject(gameObjectToAdd) : null}
               onAddGameObject={handleAddGameObject}
               scenario={scenario}
             />
-            {gameState && <Results gameState={GameState.fromObject(gameState)} onClickCheck={toggleResultModal} />}
+            {gameState && <Results gameState={GameState.fromObject(gameState)} />}
           </Grid.Column>
           <Grid.Column width={'thirteen'}>
             {showResourceManager && <ResourceManager onClose={toggleResourceManager} />}
@@ -314,7 +312,6 @@ const Playground = () => {
           </Grid.Column>
         </Grid.Row>
       </Grid>
-      {showResultModal && <ResultModal onClose={toggleResultModal} />}
     </>
   );
 };

@@ -251,7 +251,7 @@ const Settings = (props: IProps) => {
                 <Menu.Item>
                   <Button fluid positive icon labelPosition="left" onClick={handleAdd()}>
                     <Icon name="add" />
-                    Add new Resource
+                    Add new Game Object
                   </Button>
                 </Menu.Item>
                 {props.scenario.objects.map((o) => (
