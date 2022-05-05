@@ -60,7 +60,7 @@ class GameObject extends GenericObject<IGameObject> {
       id: uuid.v4(),
       type: EGameObjectType.INFILTRATION_POND,
       location: { x: 0, y: 0 },
-      size: { x: 1, y: 1 },
+      size: { x: 44, y: 30 },
       parameters: [],
     });
   };

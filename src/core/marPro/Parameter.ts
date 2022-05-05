@@ -11,6 +11,10 @@ class Parameter extends GenericObject<IParameter> {
     this._props.id = value;
   }
 
+  get isFixed() {
+    return this._props.isFixed;
+  }
+
   get max() {
     return this._props.max;
   }
@@ -21,6 +25,10 @@ class Parameter extends GenericObject<IParameter> {
 
   get name() {
     return this._props.name;
+  }
+
+  get relations() {
+    return this._props.relations;
   }
 
   get value() {
@@ -35,6 +43,7 @@ class Parameter extends GenericObject<IParameter> {
     return new Parameter({
       id: uuid.v4(),
       name: 'New Parameter',
+      relations: [],
       value: 0,
     });
   }

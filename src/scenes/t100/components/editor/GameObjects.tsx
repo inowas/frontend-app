@@ -75,6 +75,7 @@ const GameObjects = (props: IProps) => {
       cObject.parameters.push({
         id: uuid.v4(),
         name: v.name,
+        relations: [],
         value: 0,
         valuePropertyKey: k,
       });
@@ -158,7 +159,7 @@ const GameObjects = (props: IProps) => {
   };
 
   const renderParameters = () => {
-    return <Parameters gameObject={props.object} onChange={props.onChange} />;
+    return <Parameters gameObject={props.object} onChange={props.onChange} scenario={props.scenario} />;
   };
 
   const renderSpatialSettings = () => {

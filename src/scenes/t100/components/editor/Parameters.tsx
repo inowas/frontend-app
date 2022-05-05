@@ -1,12 +1,14 @@
 import { Button, Grid, Icon, Menu, Popup } from 'semantic-ui-react';
 import { IParameter } from '../../../../core/marPro/Parameter.type';
-import { MouseEvent, useState } from 'react';
+import { MouseEvent, useEffect, useState } from 'react';
 import GameObject from '../../../../core/marPro/GameObject';
 import Parameter from '../../../../core/marPro/Parameter';
 import ParameterEditor from './ParameterEditor';
+import Scenario from '../../../../core/marPro/Scenario';
 import uuid from 'uuid';
 
 interface IProps {
+  scenario: Scenario;
   gameObject: GameObject;
   onChange: (gameObject: GameObject) => any;
 }
@@ -14,10 +16,35 @@ interface IProps {
 const Parameters = (props: IProps) => {
   const [selectedParameter, setSelectedParameter] = useState<IParameter>();
 
+  useEffect(() => {
+    if (props.gameObject.parameters.length === 0) {
+      setSelectedParameter(undefined);
+    }
+    setSelectedParameter(props.gameObject.parameters[0]);
+  }, [props.gameObject]);
+
   const handleAddParameter = () => {
     const cGameObject = props.gameObject.toObject();
     cGameObject.parameters.push(Parameter.fromDefaults().toObject());
     props.onChange(GameObject.fromObject(cGameObject));
+  };
+
+  const handleChangeId = (id: string) => {
+    if (!selectedParameter) {
+      return;
+    }
+    const cParameter = Parameter.fromObject(selectedParameter);
+    const cObject = props.gameObject.toObject();
+    cObject.parameters = cObject.parameters.map((p) => {
+      if (p.id === selectedParameter.id) {
+        cParameter.id = id;
+        return cParameter.toObject();
+      }
+      return p;
+    });
+
+    setSelectedParameter(cParameter.toObject());
+    props.onChange(GameObject.fromObject(cObject));
   };
 
   const handleChangeParameter = (parameter: Parameter) => {
@@ -109,7 +136,12 @@ const Parameters = (props: IProps) => {
       </Grid.Column>
       <Grid.Column width={11}>
         {selectedParameter ? (
-          <ParameterEditor parameter={Parameter.fromObject(selectedParameter)} onChange={handleChangeParameter} />
+          <ParameterEditor
+            scenario={props.scenario}
+            parameter={Parameter.fromObject(selectedParameter)}
+            onChange={handleChangeParameter}
+            onChangeId={handleChangeId}
+          />
         ) : (
           'Select Parameter'
         )}

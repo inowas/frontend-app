@@ -71,7 +71,7 @@ const scenarios: IScenario[] = [
           {
             id: 'p_wastewater',
             isFixed: true,
-            relations: [{ isStorage: true, resourceId: 'res_treated_wastewater' }],
+            relations: [{ id: 'rel3', isStorage: true, resourceId: 'res_treated_wastewater', relation: 1 }],
             value: 10000,
           },
         ],
@@ -91,7 +91,7 @@ const scenarios: IScenario[] = [
         },
         parameters: [
           {
-            relations: [{ resourceId: 'res_treated_wastewater' }],
+            relations: [{ id: 'rel4', resourceId: 'res_treated_wastewater', relation: 1 }],
             id: 'p_infiltration_rate',
             value: 0,
             valuePropertyKey: 0,
@@ -113,7 +113,7 @@ const scenarios: IScenario[] = [
         },
         parameters: [
           {
-            relations: [{ resourceId: 'res_treated_wastewater' }],
+            relations: [{ id: 'rel5', resourceId: 'res_treated_wastewater', relation: 1 }],
             id: 'p_infiltration_rate',
             min: 0,
             max: 10000,
@@ -137,7 +137,7 @@ const scenarios: IScenario[] = [
         },
         parameters: [
           {
-            relations: [{ resourceId: 'res_treated_wastewater' }],
+            relations: [{ id: 'rel6', resourceId: 'res_treated_wastewater', relation: 1 }],
             id: 'p_infiltration_rate',
             value: 0,
             valuePropertyKey: 0,
@@ -159,7 +159,7 @@ const scenarios: IScenario[] = [
         },
         parameters: [
           {
-            relations: [{ resourceId: 'res_treated_wastewater' }],
+            relations: [{ id: 'rel1', resourceId: 'res_treated_wastewater', relation: 1 }],
             id: 'p_infiltration_rate',
             value: 0,
             valuePropertyKey: 0,
@@ -210,7 +210,7 @@ const scenarios: IScenario[] = [
         ],
         editParameters: [
           {
-            relations: [{ resourceId: 'res_treated_wastewater' }],
+            relations: [{ id: 'rel2', resourceId: 'res_treated_wastewater', relation: 1 }],
             id: 'p_infiltration_rate',
             value: 0,
             valuePropertyKey: 0,
@@ -308,7 +308,7 @@ const scenarios: IScenario[] = [
           {
             id: 'p_wastewater',
             isFixed: true,
-            relations: [{ resourceId: 'res_treated_wastewater' }],
+            relations: [{ id: 'rel1', resourceId: 'res_treated_wastewater', relation: 1 }],
             value: 10000,
           },
         ],
@@ -327,7 +327,7 @@ const scenarios: IScenario[] = [
         },
         parameters: [
           {
-            relations: [{ resourceId: 'res_treated_wastewater' }],
+            relations: [{ id: 'rel2', resourceId: 'res_treated_wastewater', relation: 1 }],
             id: 'p_infiltration_rate',
             value: 0,
           },
@@ -347,7 +347,7 @@ const scenarios: IScenario[] = [
         },
         parameters: [
           {
-            relations: [{ resourceId: 'res_treated_wastewater' }],
+            relations: [{ id: 'rel3', resourceId: 'res_treated_wastewater', relation: 1 }],
             id: 'p_infiltration_rate',
             value: 0,
           },
@@ -367,7 +367,7 @@ const scenarios: IScenario[] = [
         },
         parameters: [
           {
-            relations: [{ resourceId: 'res_treated_wastewater' }],
+            relations: [{ id: 'rel4', resourceId: 'res_treated_wastewater', relation: 1 }],
             id: 'p_infiltration_rate',
             value: 0,
           },
@@ -387,7 +387,7 @@ const scenarios: IScenario[] = [
         },
         parameters: [
           {
-            relations: [{ resourceId: 'res_treated_wastewater' }],
+            relations: [{ id: 'rel5', resourceId: 'res_treated_wastewater', relation: 1 }],
             id: 'p_infiltration_rate',
             value: 0,
           },
@@ -407,15 +407,15 @@ const scenarios: IScenario[] = [
         },
         parameters: [
           {
-            relations: [{ resourceId: 'res_happiness', relation: -0.03 }],
+            relations: [{ id: 'rel6', resourceId: 'res_happiness', relation: -0.03 }],
             id: 'p_ecological_flow',
             min: 0,
             value: 0,
           },
           {
             relations: [
-              { resourceId: 'res_happiness', relation: 0.01 },
-              { resourceId: 'res_coins', relation: 0.02 },
+              { id: 'rel7', resourceId: 'res_happiness', relation: 0.01 },
+              { id: 'rel8', resourceId: 'res_coins', relation: 0.02 },
             ],
             id: 'p_agricultural_flow',
             min: 0,
@@ -437,15 +437,15 @@ const scenarios: IScenario[] = [
         },
         parameters: [
           {
-            relations: [{ resourceId: 'res_happiness', relation: -0.03 }],
+            relations: [{ id: 'rel9', resourceId: 'res_happiness', relation: -0.03 }],
             id: 'p_ecological_flow',
             min: 0,
             value: 0,
           },
           {
             relations: [
-              { resourceId: 'res_happiness', relation: 0.01 },
-              { resourceId: 'res_coins', relation: 0.02 },
+              { id: 'rel10', resourceId: 'res_happiness', relation: 0.01 },
+              { id: 'rel11', resourceId: 'res_coins', relation: 0.02 },
             ],
             id: 'p_agricultural_flow',
             min: 0,
@@ -467,15 +467,15 @@ const scenarios: IScenario[] = [
         },
         parameters: [
           {
-            relations: [{ resourceId: 'res_happiness', relation: -0.03 }],
+            relations: [{ id: 'rel13', resourceId: 'res_happiness', relation: -0.03 }],
             id: 'p_ecological_flow',
             min: 0,
             value: 0,
           },
           {
             relations: [
-              { resourceId: 'res_happiness', relation: 0.01 },
-              { resourceId: 'res_coins', relation: 0.02 },
+              { id: 'rel14', resourceId: 'res_happiness', relation: 0.01 },
+              { id: 'rel15', resourceId: 'res_coins', relation: 0.02 },
             ],
             id: 'p_agricultural_flow',
             min: 0,
@@ -497,15 +497,15 @@ const scenarios: IScenario[] = [
         },
         parameters: [
           {
-            relations: [{ resourceId: 'res_happiness', relation: -0.03 }],
+            relations: [{ id: 'rel16', resourceId: 'res_happiness', relation: -0.03 }],
             id: 'p_ecological_flow',
             min: 0,
             value: 0,
           },
           {
             relations: [
-              { resourceId: 'res_happiness', relation: 0.01 },
-              { resourceId: 'res_coins', relation: 0.02 },
+              { id: 'rel17', resourceId: 'res_happiness', relation: 0.01 },
+              { id: 'rel18', resourceId: 'res_coins', relation: 0.02 },
             ],
             id: 'p_agricultural_flow',
             min: 0,
@@ -555,7 +555,7 @@ const scenarios: IScenario[] = [
         costs: [],
         editParameters: [
           {
-            relations: [{ resourceId: 'res_treated_wastewater' }],
+            relations: [{ id: 'rel19', resourceId: 'res_treated_wastewater', relation: 1 }],
             id: 'p_infiltration_rate',
             value: 0,
           },
@@ -571,15 +571,15 @@ const scenarios: IScenario[] = [
         costs: [],
         editParameters: [
           {
-            relations: [{ resourceId: 'res_happiness', relation: 0.03 }],
+            relations: [{ id: 'rel20', resourceId: 'res_happiness', relation: 0.03 }],
             id: 'p_ecological_flow',
             min: 0,
             value: 0,
           },
           {
             relations: [
-              { resourceId: 'res_happiness', relation: 0.01 },
-              { resourceId: 'res_coins', relation: 0.02 },
+              { id: 'rel21', resourceId: 'res_happiness', relation: 0.01 },
+              { id: 'rel22', resourceId: 'res_coins', relation: 0.02 },
             ],
             id: 'p_agricultural_flow',
             min: 0,

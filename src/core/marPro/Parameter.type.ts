@@ -1,5 +1,5 @@
 export interface IParameter {
-  relations?: IParameterRelation[];
+  relations: IParameterRelation[];
   id: string;
   isFixed?: boolean;
   max?: number;
@@ -10,7 +10,8 @@ export interface IParameter {
 }
 
 export interface IParameterRelation {
+  id: string;
   isStorage?: boolean;
   resourceId: string;
-  relation?: number;
+  relation: number;
 }
