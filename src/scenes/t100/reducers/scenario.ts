@@ -1,5 +1,5 @@
 import { CLEAR } from './model';
-import { IScenario } from '../../../core/marPro/Scenario.type';
+import { IScenario, IScenarioTool } from '../../../core/marPro/Scenario.type';
 import { LOGOUT, UNAUTHORIZED } from '../../user/actions/actions';
 
 export const UPDATE_SCENARIO = 'MARPRO_UPDATE_SCENARIO';
@@ -7,10 +7,10 @@ export const UPDATE_SCENARIO = 'MARPRO_UPDATE_SCENARIO';
 const initialState = null;
 
 const scenario = (
-  state: IScenario | null = initialState,
+  state: IScenarioTool | null = initialState,
   action: {
     type: string;
-    payload: IScenario;
+    payload: IScenarioTool;
   }
 ) => {
   switch (action.type) {

@@ -39,7 +39,7 @@ const Playground = () => {
 
   const [mapScale, setMapScale] = useState<IMapScale>({ offset: { x: 0, y: 0 }, zoom: 0 });
 
-  const MarPro = useSelector((state: IRootReducer) => state.MarPro);
+  const MarPro = useSelector((state: IRootReducer) => state.MarProReducer);
   const gameState = MarPro.gameState || null;
   const scenario = MarPro.scenario ? Scenario.fromObject(MarPro.scenario) : null;
 
@@ -80,7 +80,7 @@ const Playground = () => {
     }
 
     const gs = GameState.fromObject(gameState);
-    const newGameObject = DraftGameObject.fromObject(gameObjectToAdd).toGameObject(tool.editParameters);
+    const newGameObject = DraftGameObject.fromObject(gameObjectToAdd).toGameObject(tool.parameters);
 
     gs.addGameObject(newGameObject);
     gs.updateResources(tool.costs);

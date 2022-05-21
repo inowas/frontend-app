@@ -2,7 +2,7 @@ import { IBoundary } from '../../../core/model/modflow/boundaries/Boundary.type'
 import { ICalculation } from '../../../core/model/modflow/Calculation.type';
 import { IGameState } from '../../../core/marPro/GameState.type';
 import { IModflowModel } from '../../../core/model/modflow/ModflowModel.type';
-import { IScenario } from '../../../core/marPro/Scenario.type';
+import { IScenario, IScenarioTool } from '../../../core/marPro/Scenario.type';
 import { ISoilmodel } from '../../../core/model/modflow/soilmodel/Soilmodel.type';
 import { ITransport } from '../../../core/model/modflow/transport/Transport.type';
 import { IVariableDensity } from '../../../core/model/modflow/variableDensity/VariableDensity.type';
@@ -17,7 +17,7 @@ import soilmodel from './soilmodel';
 import transport from './transport';
 import variableDensity from './variableDensity';
 
-const MarPro = combineReducers({
+const MarProReducer = combineReducers({
   boundaries,
   calculation,
   gameState,
@@ -29,7 +29,7 @@ const MarPro = combineReducers({
   variableDensity,
 });
 
-export default MarPro;
+export default MarProReducer;
 
 export interface IMarProReducer {
   boundaries: IBoundary[];
@@ -37,7 +37,7 @@ export interface IMarProReducer {
   gameState: IGameState | null;
   model: IModflowModel | null | undefined;
   packages: IPackagesReducer;
-  scenario: IScenario | null;
+  scenario: IScenarioTool | null;
   soilmodel: ISoilmodel | null;
   transport: ITransport | null;
   variableDensity: IVariableDensity;

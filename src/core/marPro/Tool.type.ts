@@ -1,5 +1,4 @@
 import { EBoundaryType } from '../model/modflow/boundaries/Boundary.type';
-import { EGameObjectType } from './GameObject.type';
 import { IParameter } from './Parameter.type';
 import { IVector2D } from './Geometry.type';
 
@@ -8,19 +7,23 @@ export enum EGameObjectCategory {
   STRUCTURES = 'structures',
 }
 
+export const toolCategories = [EGameObjectCategory.LANDUSE, EGameObjectCategory.STRUCTURES];
+
 export interface ICost {
+  id: string;
   amount: number;
   refund?: number;
   resource: string;
 }
 
 export interface ITool {
+  id: string;
   boundaryType?: EBoundaryType;
   category?: EGameObjectCategory;
   costs: ICost[];
-  editParameters?: IParameter[];
   editPosition?: boolean;
   editSize?: boolean;
-  name: EGameObjectType;
+  name: string;
+  parameters: IParameter[];
   size: IVector2D;
 }

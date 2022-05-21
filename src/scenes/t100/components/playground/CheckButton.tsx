@@ -35,7 +35,7 @@ import ModflowModelCommand from '../../../t03/commands/modflowModelCommand';
 import Scenario from '../../../../core/marPro/Scenario';
 
 const CheckButton = () => {
-  const MarPro = useSelector((state: IRootReducer) => state.MarPro);
+  const MarPro = useSelector((state: IRootReducer) => state.MarProReducer);
   const gameState = MarPro.gameState ? GameState.fromObject(MarPro.gameState) : null;
   const scenario = MarPro.scenario ? Scenario.fromObject(MarPro.scenario) : null;
   const model = MarPro.model ? ModflowModel.fromObject(MarPro.model) : null;

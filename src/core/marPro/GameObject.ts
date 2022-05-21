@@ -55,6 +55,13 @@ class GameObject extends GenericObject<IGameObject> {
     return new GameObject(value);
   }
 
+  public static fromType(value: EGameObjectType) {
+    if (value === EGameObjectType.ABSTRACTION_WELL) {
+      return GameObject.createWell();
+    }
+    return GameObject.createInfiltrationPond();
+  }
+
   public static createInfiltrationPond = () => {
     return new GameObject({
       id: uuid.v4(),
