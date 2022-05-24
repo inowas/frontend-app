@@ -5,9 +5,9 @@ export const checkObjective = (objectiveState: IObjectiveState) => {
   return objectiveState.value === undefined || objectiveState.value === null
     ? false
     : (objectiveState.objective.min === undefined ||
-        (objectiveState.objective.min !== undefined && objectiveState.value >= objectiveState.objective.min)) &&
-        (objectiveState.objective.max === undefined ||
-          (objectiveState.objective.max !== undefined && objectiveState.value <= objectiveState.objective.max));
+      (objectiveState.objective.min !== undefined && objectiveState.value >= objectiveState.objective.min)) &&
+    (objectiveState.objective.max === undefined ||
+      (objectiveState.objective.max !== undefined && objectiveState.value <= objectiveState.objective.max));
 };
 
 export enum EObjectiveType {
@@ -24,8 +24,8 @@ export enum EParameterObjectiveType {
 export interface IObjectiveByObservation {
   cell: ICell;
   id: string;
-  max: number;
-  min: number;
+  max?: number;
+  min?: number;
   parameter: string;
   position: IVector2D;
   type: EObjectiveType.BY_OBSERVATION;

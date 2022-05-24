@@ -1,7 +1,9 @@
-import { EObjectiveType, TObjective } from './Objective.type';
+import { EObjectiveType, IObjectiveByObservation, TObjective } from './Objective.type';
 import { GenericObject } from '../model/genericObject/GenericObject';
 import { IGameState } from './GameState.type';
 import uuid from 'uuid';
+import GameObject from './GameObject';
+import { EGameObjectType } from './GameObject.type';
 
 class Objective extends GenericObject<TObjective> {
   get id() {
@@ -91,6 +93,20 @@ class Objective extends GenericObject<TObjective> {
       }
     }
     return { check, value };
+  }
+
+  public toGameObject() {
+    if (this.type !== EObjectiveType.BY_OBSERVATION) {
+      return null;
+    }
+    const o = this._props as IObjectiveByObservation;
+    return GameObject.fromObject({
+      id: `${this.id}_as_object`,
+      location: o.position,
+      parameters: [],
+      size: { x: 44, y: 30 },
+      type: EGameObjectType.OBSERVATION_WELL
+    })
   }
 }
 

@@ -71,6 +71,11 @@ export const menuItems: IMenu = [
         property: 'play',
         icon: <Icon name="play" />,
       },
+      {
+        name: 'Download',
+        property: 'download',
+        icon: <Icon name="download" />,
+      },
     ],
   },
 ];

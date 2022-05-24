@@ -1,6 +1,7 @@
 import { EObjectiveType } from './Objective.type';
 import { GenericObject } from '../model/genericObject/GenericObject';
 import { IGameObject } from './GameObject.type';
+import { IParameter } from './Parameter.type';
 import { IScenarioTool } from './Scenario.type';
 import uuid from 'uuid';
 
@@ -39,6 +40,21 @@ class Scenario extends GenericObject<IScenarioTool> {
 
   set objects(value: IGameObject[]) {
     this._props.data.objects = value;
+  }
+
+  get parameters(): IParameter[] {
+    const parameters: IParameter[] = [];
+
+    this.objects.forEach((object) => {
+      object.parameters.forEach((parameter) => {
+        const fParameters = parameters.filter((p) => p.id === parameter.id);
+        if (fParameters.length === 0) {
+          parameters.push(parameter);
+        }
+      })
+    })
+
+    return parameters;
   }
 
   get public() {

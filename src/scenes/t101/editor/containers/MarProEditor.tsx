@@ -12,8 +12,10 @@ import { menuItems } from '../defaults/menuItems';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
+import Download from '../components/Download';
 import GameObjectsEditor from '../components/GameObjectsEditor';
 import Georeferencing from '../components/Georeferencing';
+import ObjectiveEditor from '../components/ObjectiveEditor';
 import ResourcesEditor from '../components/ResourcesEditor';
 import Scenario from '../../../../core/marPro/Scenario';
 import Setup from '../components/Setup';
@@ -181,12 +183,20 @@ const MarProEditor = () => {
       return <GameObjectsEditor onChange={handleSave} scenario={scenario} />;
     }
 
+    if (property === 'objectives') {
+      return <ObjectiveEditor onChange={handleSave} scenario={scenario} />;
+    }
+
     if (property === 'model') {
       return <Georeferencing onChange={handleSave} scenario={scenario} />;
     }
 
     if (property === 'resources') {
       return <ResourcesEditor onChange={handleSave} scenario={scenario} />;
+    }
+
+    if (property === 'download') {
+      return <Download scenario={scenario} />
     }
 
     return <Setup onChange={handleSave} scenario={scenario} />;

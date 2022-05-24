@@ -6,7 +6,7 @@ interface IItem {
   name: string;
 }
 
-interface IType {
+export interface IType {
   disabled: boolean;
   items?: IType[];
   text: string;
