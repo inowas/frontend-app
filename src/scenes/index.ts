@@ -34,6 +34,8 @@ export {
   LandingPage,
   Login,
   Logout,
+  MarProEditor,
+  MarProMainMenu,
   TermsAndConditions,
   UserCredentials,
   UserProfile,
@@ -73,6 +75,4 @@ export {
   T18,
   T19,
   T20,
-  MarProEditor,
-  MarProMainMenu,
 };
