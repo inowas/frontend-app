@@ -1,6 +1,6 @@
 import { DragEventHandler, ReactNode, useEffect, useRef, useState } from 'react';
 import { Icon, Image } from 'semantic-ui-react';
-import { getImage } from '../../assets/images';
+import { getImage } from '../../../assets/images';
 
 interface IProps {
   header: string;
@@ -49,7 +49,7 @@ const Dialog = (props: IProps) => {
           cursor: isDragging ? 'grabbing' : 'grab',
         }}
       >
-        {!!props.image && <Image as='div' floated="left" src={getImage(props.image)} size="mini" />}
+        {!!props.image && <Image as="div" floated="left" src={getImage(props.image)} size="mini" />}
         {props.header}
         {!!props.onClose && <Icon style={{ float: 'right' }} link name="close" onClick={props.onClose} />}
       </div>

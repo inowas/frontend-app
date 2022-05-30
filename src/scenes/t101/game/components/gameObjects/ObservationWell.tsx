@@ -1,7 +1,7 @@
-import { EGameObjectType } from '../../../../core/marPro/GameObject.type';
-import { EObjectiveType, IObjectiveState } from '../../../../core/marPro/Objective.type';
+import { EGameObjectType } from '../../../../../core/marPro/GameObject.type';
+import { EObjectiveType, IObjectiveState } from '../../../../../core/marPro/Objective.type';
 import { Group, Image, Text } from 'react-konva';
-import { getImage } from '../../assets/images';
+import { getImage } from '../../../assets/images';
 import { useState } from 'react';
 import useImage from '../../hooks/useImage';
 

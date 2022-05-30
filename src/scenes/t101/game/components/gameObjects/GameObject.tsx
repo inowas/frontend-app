@@ -1,4 +1,4 @@
-import { IGameObject } from '../../../../core/marPro/GameObject.type';
+import { IGameObject } from '../../../../../core/marPro/GameObject.type';
 import { ReactNode, useState } from 'react';
 import Dialog from '../shared/Dialog';
 

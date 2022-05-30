@@ -1,5 +1,5 @@
 import { Image, Progress } from 'semantic-ui-react';
-import happyPoints from '../../assets/happy-points.png';
+import happyPoints from '../../../assets/happy-points.png';
 
 interface IProps {
   amount: number;

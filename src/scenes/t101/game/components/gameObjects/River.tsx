@@ -1,8 +1,8 @@
 import { Image } from 'react-konva';
 import { useState } from 'react';
-import GameObject from '../../../../core/marPro/GameObject';
+import GameObject from '../../../../../core/marPro/GameObject';
 import Konva from 'konva';
-import river from '../../assets/river.svg';
+import river from '../../../assets/river.svg';
 import useImage from '../../hooks/useImage';
 
 interface IProps {

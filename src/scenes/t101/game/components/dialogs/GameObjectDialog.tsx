@@ -1,11 +1,11 @@
 import { Button, Grid, Icon, Image, Label, List } from 'semantic-ui-react';
-import { ICost } from '../../../../core/marPro/Tool.type';
+import { ICost } from '../../../../../core/marPro/Tool.type';
 import { isArray } from 'lodash';
 import Dialog from '../shared/Dialog';
-import GameObject from '../../../../core/marPro/GameObject';
+import GameObject from '../../../../../core/marPro/GameObject';
 import React, { useState } from 'react';
 import Slider from 'rc-slider';
-import marCoin from '../../assets/mar-coin.png';
+import marCoin from '../../../assets/mar-coin.png';
 
 interface IProps {
   gameObject: GameObject;

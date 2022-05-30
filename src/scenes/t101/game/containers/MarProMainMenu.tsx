@@ -1,4 +1,4 @@
-import '../style.css';
+import './style.css';
 import { AppContainer } from '../../../shared';
 import { Breadcrumb, Button, Grid, Header, Icon, List, Search, Segment } from 'semantic-ui-react';
 import { IGameStateSimpleTool } from '../../../../core/marPro/GameState.type';
@@ -14,7 +14,6 @@ import Game from '../components/Game';
 import GameState from '../../../../core/marPro/GameState';
 import ModflowModelCommand from '../../../t03/commands/modflowModelCommand';
 import Scenario from '../../../../core/marPro/Scenario';
-import scenarios from '../../../../core/marPro/scenarios';
 import uuid from 'uuid';
 
 const navigation = [
@@ -25,17 +24,19 @@ const navigation = [
   },
 ];
 
-const T100 = () => {
+const MarProMainMenu = () => {
   const [errorLoading, setErrorLoading] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [toolInstances, setToolInstances] = useState<IToolInstance[]>([]);
-  const [scenarios, setScenarios] = useState<IScenarioTool[]>([]);
+  const [scenarios, setScenarios] = useState<IToolInstance[]>([]);
 
   const history = useHistory();
   const { property } = useParams<any>();
   const dispatch = useDispatch();
 
   const fetchingAttempts = useRef<number>(0);
+
+  console.log({ toolInstances, scenarios });
 
   const fetchScenarios = useCallback(() => {
     fetchUrl(
@@ -80,8 +81,9 @@ const T100 = () => {
   }, []);
 
   useEffect(() => {
+    fetchScenarios();
     fetchInstances();
-  }, [fetchInstances]);
+  }, []);
 
   const handleDeleteInstance = (i: IToolInstance) => () => {
     setIsLoading(true);
@@ -112,7 +114,9 @@ const T100 = () => {
     history.push(`marpro/${i.id}`);
   };
 
-  const handleSelectScenario = async (scenario: IScenarioTool) => {
+  const handleSelectScenario = async (id: string) => {
+    // FETCH SCENARIO FROM ID
+    /*
     dispatch(updateScenario(Scenario.fromObject(scenario)));
 
     const newInstance = GameState.fromScenario(Scenario.fromObject(scenario));
@@ -132,11 +136,7 @@ const T100 = () => {
         history.push(`T100/scenario/${newInstance.id}`);
       },
       (e) => console.log('ERROR', e)
-    );
-  };
-
-  const handleClickNewScenario = () => {
-    history.push('T100/editor');
+    );*/
   };
 
   const renderBreadcumbs = () => {
@@ -146,19 +146,19 @@ const T100 = () => {
           Tools
         </Breadcrumb.Section>
         <Breadcrumb.Divider icon="right chevron" />
-        <Breadcrumb.Section active={true}>T100. MarPro - Scenario Editor</Breadcrumb.Section>
+        <Breadcrumb.Section active={true}>MarPro</Breadcrumb.Section>
       </Breadcrumb>
     );
   };
 
-  const renderScenarioListItem = (s: IScenarioTool) => {
+  const renderScenarioListItem = (s: IToolInstance) => {
     const i = toolInstances.filter((i) => i.name === s.id);
 
     const handleClickStart = () => {
       if (i.length > 0) {
         return handleSelectInstance(i[0]);
       }
-      return handleSelectScenario(s);
+      return handleSelectScenario(s.id);
     };
 
     return (
@@ -173,7 +173,7 @@ const T100 = () => {
             </Button>
           )}
         </List.Content>
-        <List.Content floated="left">{s.id}</List.Content>
+        <List.Content floated="left">{s.name}</List.Content>
       </List.Item>
     );
   };
@@ -188,36 +188,11 @@ const T100 = () => {
         <Grid.Row>
           <Grid.Column style={{ paddingTop: '0.3em' }}>{renderBreadcumbs()}</Grid.Column>
         </Grid.Row>
-        <Grid.Row columns={2}>
-          <Grid.Column textAlign="center">
-            <Segment loading={isLoading}>
-              <Header icon>
-                <Icon name="play" />
-                Playground
-              </Header>
-              <List divided>{scenarios.map((s) => renderScenarioListItem(s))}</List>
-            </Segment>
-          </Grid.Column>
-          <Grid.Column textAlign="center">
-            <Segment>
-              <Header icon>
-                <Icon name="upload" />
-                Upload JSON
-              </Header>
-              <Search disabled placeholder="Select file..." />
-            </Segment>
-          </Grid.Column>
-        </Grid.Row>
         <Grid.Row>
           <Grid.Column textAlign="center">
-            <Segment>
-              <Header icon>
-                <Icon name="edit" />
-                Editor
-              </Header>
-              <Button onClick={handleClickNewScenario} primary fluid>
-                Create New Scenario
-              </Button>
+            <Segment loading={isLoading}>
+              <Header>Scenarios</Header>
+              <List divided>{scenarios.map((s) => renderScenarioListItem(s))}</List>
             </Segment>
           </Grid.Column>
         </Grid.Row>
@@ -228,4 +203,4 @@ const T100 = () => {
   return <AppContainer navbarItems={navigation}>{renderContent()}</AppContainer>;
 };
 
-export default T100;
+export default MarProMainMenu;

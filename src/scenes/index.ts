@@ -23,6 +23,7 @@ import Imprint from './imprint';
 import LandingPage from './landingPage/LandingPage';
 import Login from './user/containers/Login';
 import Logout from './user/containers/Logout';
+import MarProMainMenu from './t101/game/containers/MarProMainMenu';
 import SignUp from './user/containers/SignUp';
 import TermsAndConditions from './termsAndConditions';
 import UserCredentials from './user/containers/UserCredentials';
@@ -75,4 +76,5 @@ export {
   T19,
   T20,
   MarProEditor,
+  MarProMainMenu,
 };

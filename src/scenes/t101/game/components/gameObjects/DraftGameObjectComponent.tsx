@@ -1,6 +1,6 @@
 import { Image } from 'react-konva';
-import { getImage } from '../../assets/images';
-import DraftGameObject from '../../../../core/marPro/DraftGameObject';
+import { getImage } from '../../../assets/images';
+import DraftGameObject from '../../../../../core/marPro/DraftGameObject';
 import useImage from '../../hooks/useImage';
 
 interface IProps {

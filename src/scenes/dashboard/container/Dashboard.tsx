@@ -69,7 +69,7 @@ const Dashboard = (props: IProps) => {
   };
 
   const handleToolClick = (slug: string) => {
-    if (slug === 'T01' || slug === 'T04' || slug === 'T06' || slug === 'T11') {
+    if (slug === 'T01' || slug === 'T04' || slug === 'T06' || slug === 'T11' || slug === 'marpro') {
       return props.history.push('/tools/' + slug);
     }
 

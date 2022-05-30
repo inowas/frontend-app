@@ -1,7 +1,7 @@
 import { Image } from 'semantic-ui-react';
 import { useEffect, useRef, useState } from 'react';
-import marCoin from '../../assets/mar-coin.png';
-import sound from '../../assets/sounds/cash.mp3';
+import marCoin from '../../../assets/mar-coin.png';
+import sound from '../../../assets/sounds/cash.mp3';
 
 interface IProps {
   amount: number;

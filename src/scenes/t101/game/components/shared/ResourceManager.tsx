@@ -15,9 +15,9 @@ import {
   Select,
   Table,
 } from 'semantic-ui-react';
-import happyPoints from '../../assets/happy-points.png';
-import infiltrationPond from '../../assets/infiltration-pond.png';
-import marCoin from '../../assets/mar-coin.png';
+import happyPoints from '../../../assets/happy-points.png';
+import infiltrationPond from '../../../assets/infiltration-pond.png';
+import marCoin from '../../../assets/mar-coin.png';
 
 interface IProps {
   onClose: () => any;

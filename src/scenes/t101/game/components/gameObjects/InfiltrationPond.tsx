@@ -1,8 +1,8 @@
 import { Image } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
-import { getImage } from '../../assets/images';
+import { getImage } from '../../../assets/images';
 import { useState } from 'react';
-import GameObject from '../../../../core/marPro/GameObject';
+import GameObject from '../../../../../core/marPro/GameObject';
 import useImage from '../../hooks/useImage';
 
 interface IProps {

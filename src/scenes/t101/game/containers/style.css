@@ -1,0 +1,346 @@
+/* Basic Layout
+-------------- */
+.bg-noise {
+  background: linear-gradient(20deg, rgb(22 29 22 / 88%) 10%, rgb(53 47 39 / 88%) 50%),
+    url(/src/scenes/t100/assets/noise.svg);
+  filter: contrast(155%) brightness(450%);
+  height: 120%;
+  position: fixed;
+  z-index: -1;
+  width: 100%;
+}
+.bg-noise + .ui.grid > .row {
+  padding-bottom: 0.5rem;
+  padding-top: 0rem;
+}
+.ui.grid > .row.gameboard {
+  padding-top: 0;
+}
+.gameboard .konvajs-content {
+  box-shadow: 0px 0px 20px 1px rgb(0 0 0 / 15%);
+}
+
+/* Object Modal
+---------------- */
+.ui.modal.obj-modal-container {
+  background-color: #f5ead6 !important;
+  box-shadow: 0 0 1px 1px #c9b69c;
+  color: #333333;
+  min-height: 240px;
+  width: auto !important;
+}
+.ui.modal.obj-modal-container .ui.header {
+  background-color: #333333;
+  color: #ebe6e0;
+  padding: 10px 15px;
+}
+.ui.modal.obj-modal-container .content {
+  background-color: #f5ead6 !important;
+}
+.ui.modal.obj-modal-container:after {
+  background: #f5ead6;
+  bottom: -0.30714286em;
+  content: ' ';
+  height: 0.71428571em;
+  left: 1em;
+  margin-left: 0;
+  position: absolute;
+  right: auto;
+  transform: rotate(45deg);
+  top: auto;
+  width: 0.71428571em;
+}
+.ui.modal.obj-modal-container span.parameter-name {
+  background-color: #998466;
+    border-radius: 15px;
+    color: #FFFFFF;
+    padding: 0.285714rem 1rem;
+    box-shadow: inset 0 0 3px 0 rgb(0 0 0 / 50%);
+}
+.ui.modal.obj-modal-container p {
+  line-height: 1.8;
+}
+.ui.image.label.object-reward {
+  background: transparent;
+}
+
+/* Toolbox
+----------- */
+.ui.menu.objects .item.header {
+  background-color: #20b142 !important;
+}
+.ui.vertical.inverted.menu.objects .menu .item {
+  padding: 0;
+  min-width: 3em;
+}
+.ui.labeled.icon.menu.objects a.icon.item {
+  padding: 0.3rem 0 0;
+}
+.ui.labeled.icon.menu.objects .item {
+  padding: 0.5rem 1rem;
+}
+.ui.vertical.menu.objects .item:before {
+  height: 0;
+}
+.ui.labeled.icon.menu.objects .button.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff !important;
+}
+.ui.labeled.icon.menu.objects .button {
+  text-transform: uppercase;
+}
+.ui.card.object {
+  background-color: #f5ead6;
+  box-shadow: none;
+  text-align: left;
+  width: 15rem !important;
+}
+.ui.card.object .header {
+  font-size: 14px !important;
+  position: absolute;
+  /* white-space: nowrap; */
+  word-break: break-all;
+}
+.ui.menu.objects a.item:hover {
+  background-color: transparent !important;
+}
+
+/* Resource Icons
+----------------- */
+.ui.message.mission,
+.ui.small.icon.button.resources {
+  background-color: #F5EAD6;
+  box-shadow: none !important;
+}
+.ui.message.mission .info.icon {
+  color: #1481b8;
+  font-size: 2em !important;
+  opacity: 1 !important;
+}
+.ui.button.resources .icon:not(.button) {
+  color: #1481B8;
+  margin-right: 0.6em;
+  opacity: 1
+}
+.ui.message.mission .chevron.right.icon {
+  margin-left: 0.6em;
+}
+.water .ui.image {
+  right: -24px;
+  top: 7px;
+  z-index: 2;
+}
+.water .ui.progress {
+  background-color: #1481b8;
+  display: flex;
+  top: 10px;
+}
+.water .ui.progress .bar.budget {
+  background-color: #0092cc;
+  background-image: linear-gradient(90deg, #1eb1ed, #0092cc);
+  width: 35%;
+}
+.water .ui.progress .bar.infiltration {
+  background-color: #006699;
+  background-image: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.1) 75%,
+    transparent 75%,
+    transparent
+  );
+  background-size: 1rem 1rem;
+  width: 65%;
+  -webkit-animation: infiltration 1.5s linear infinite;
+  animation: infiltration 1.5s linear infinite;
+}
+@keyframes infiltration {
+  from {
+    background-position: 1rem 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+.coins .button {
+  background: transparent !important;
+  width: max-content;
+  z-index: 2;
+}
+.coins .label {
+  border: none !important;
+  /* border-radius: 0 15px 15px 0 !important; */
+  color: #ffffff !important;
+  display: inline-block !important;
+  width: 100px;
+  height: 25px;
+  left: -20px;
+  position: relative;
+  text-align: right;
+  top: 12px;
+  z-index: 1;
+}
+.coins .label.noChange {
+  background-color: #333333 !important;
+  -moz-transition: all 1s ease-in-out;
+  -webkit-transition: all 1s ease-in-out;
+  -o-transition: all 1s ease-in-out;
+  -ms-transition: all 1s ease-in-out;
+  transition: all 1s ease-in-out;
+}
+.coins .label.positiveChange {
+  background-color: #20b142 !important;
+}
+.coins .label.negativeChange {
+  background-color: #ff5500 !important;
+}
+.coins .ui.progress {
+  background-color: #333333;
+  height: 25px;
+  top: 12px;
+  width: 100px;
+}
+.coins .ui.active.indicating.progress .bar {
+  min-width: 1em;
+}
+.coins .ui.active.indicating.progress .bar .progress {
+  left: 0.5rem;
+}
+
+/* Resources Dialog
+-------------------- */
+.ui.segment.calculation {
+  overflow-y: visible !important;
+}
+.ui.floating.label {
+  left: 50% !important;
+}
+.calculation .ui.segment {
+  background: #f5ead6;
+  text-align: left;
+}
+.calculation h3 {
+  text-transform: uppercase;
+}
+.calculation .ui.label {
+  background-color: transparent;
+}
+.calculation .ui.label > .icon {
+  margin: 0 0.75em;
+}
+.calculation .ui.input {
+  background-color: transparent;
+  border: none;
+}
+.calculation .ui.button {
+  border-radius: 50px;
+}
+.calculation .ui.progress.success .bar {
+  background-color: #21ba45 !important;
+}
+
+/* Sliders
+---------- */
+.rc-slider-rail {
+  background-color: rgba(201 182 156 / 50%) !important;
+}
+.rc-slider-track {
+  background-color: #1481b8 !important;
+}
+.rc-slider-handle {
+  background: #ffffff -webkit-linear-gradient(transparent, rgba(0, 0, 0, 0.05));
+  background: #ffffff linear-gradient(transparent, rgba(0, 0, 0, 0.05));
+  border: none;
+  box-shadow: 0px 1px 2px 0 rgb(34 36 38 / 15%), 0 0 0 1px rgb(34 36 38 / 15%) inset;
+}
+.ui.range {
+  width: 100%;
+  padding: 1em 0.5em;
+  position: relative;
+}
+.ui.range .inner {
+  height: 1.5em;
+  position: relative;
+}
+.ui.range .inner .track {
+  width: 100%;
+  height: 0.4em;
+  top: 0.55em;
+  left: 0;
+  position: absolute;
+  border-radius: 4px;
+  background-color: rgba(201 182 156 / 50%);
+}
+.ui.range .inner .track-fill {
+  width: 0;
+  height: 0.4em;
+  top: 0.55em;
+  left: 0;
+  position: absolute;
+  border-radius: 4px;
+  background-color: #1581ba;
+}
+.ui.range .inner .thumb {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 1.5em;
+  width: 1.5em;
+  background: #ffffff -webkit-linear-gradient(transparent, rgba(0, 0, 0, 0.05));
+  background: #ffffff linear-gradient(transparent, rgba(0, 0, 0, 0.05));
+  border-radius: 100%;
+  box-shadow: 0px 1px 2px 0 rgb(34 36 38 / 15%), 0 0 0 1px rgb(34 36 38 / 15%) inset;
+  z-index: 2;
+}
+.ui.labeled.range:not(.vertical) > .labels {
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+.ui.labeled.range > .labels {
+  height: 1.5em;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 50%;
+}
+.ui.labeled.range > .labels .label {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  position: absolute;
+  -webkit-transform: translate(-50%, -100%);
+  transform: translate(-50%, -100%);
+}
+.ui.labeled.range > .labels .label:after {
+  content: ' ';
+  height: 0.75em;
+  width: 2px;
+  background: #333333;
+  position: absolute;
+  top: 20px;
+  left: 50%;
+}
+
+@media only screen and (max-width: 767px) {
+  :not(.unstackable) img,
+  .ui.items:not(.unstackable) > .item > .image > img {
+    max-width: 100% !important;
+    width: auto !important;
+    max-height: 250px !important;
+  }
+}
+@media (max-width: 768px) {
+  .bg-noise {
+    margin-left: calc(-100vw / 2 + 320px / 2);
+  }
+}
+@media (min-width: 1280px) {
+  .bg-noise {
+    margin-left: calc(-100vw / 2 + 1280px / 2);
+    margin-right: calc(-100vw / 2 + 1280px / 2);
+  }
+}

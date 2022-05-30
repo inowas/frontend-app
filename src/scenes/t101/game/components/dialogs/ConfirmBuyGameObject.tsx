@@ -1,7 +1,7 @@
 import { Button, Grid } from 'semantic-ui-react';
 import Dialog from '../shared/Dialog';
 import MarCoins from '../shared/MarCoins';
-import Tool from '../../../../core/marPro/Tool';
+import Tool from '../../../../../core/marPro/Tool';
 
 interface IProps {
   onClickConfirm: (tool: Tool) => any;
