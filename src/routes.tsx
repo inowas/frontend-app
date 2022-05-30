@@ -65,7 +65,6 @@ const getRoutes = () => {
         <Route exact={true} path="/tools/T20/:id/:property?/:pid?" component={Scenes.T20.EditRealTimeModelling} />
         <Route exact={true} path="/tools/T100/:id?/:property?/:pid?" component={Scenes.MarProEditor} />
         <Route exact={true} path="/tools/marpro/:id?" component={Scenes.MarProMainMenu} />
-
         <Route path="/imprint" component={Scenes.Imprint} />
         <Route path="/terms-and-conditions" component={Scenes.TermsAndConditions} />
         <Route path="/login/:id?/:token?" component={Scenes.Login} />
@@ -172,6 +171,8 @@ const getRoutes = () => {
       <PrivateRoute path="/profile" component={Scenes.UserProfile} forRoles={['ROLE_USER']} />
 
       <Route path="/imprint" component={Scenes.Imprint} />
+      <PrivateRoute path="/credentials" component={Scenes.UserCredentials} forRoles={['ROLE_USER']} />
+      <PrivateRoute path="/profile" component={Scenes.UserProfile} forRoles={['ROLE_USER']} />
       <Route path="/terms-and-conditions" component={Scenes.TermsAndConditions} />
       <Route path="/login/:id?/:token?" component={Scenes.Login} />
       <Route path="/logout" component={Scenes.Logout} />

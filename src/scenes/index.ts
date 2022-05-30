@@ -19,7 +19,6 @@ import { QmraTool as T15 } from './t15/containers/QmraTool';
 import { T18 } from './t18/containers';
 import { HeatTransport as T19 } from './t19/containers';
 import Dashboard from './dashboard/container';
-import Imprint from './imprint';
 import LandingPage from './landingPage/LandingPage';
 import Login from './user/containers/Login';
 import Logout from './user/containers/Logout';
@@ -32,7 +31,6 @@ import UserProfile from './user/containers/UserProfile';
 export {
   Admin,
   Dashboard,
-  Imprint,
   LandingPage,
   Login,
   Logout,
