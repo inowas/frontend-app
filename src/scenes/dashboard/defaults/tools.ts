@@ -181,6 +181,14 @@ const availableTools: IToolMenuItem[] = [
     role: ROLE_USER,
     instances: [],
   },
+  {
+    slug: 'marpro',
+    name: 'MarPro - Game',
+    path: '/tools/',
+    subPath: '',
+    role: ROLE_USER,
+    instances: [],
+  }
 ];
 
 export default availableTools;

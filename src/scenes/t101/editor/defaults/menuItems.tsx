@@ -58,6 +58,7 @@ export const menuItems: IMenu = [
       },
       {
         name: 'Zones',
+        disabled: true,
         property: 'zones',
         icon: <Icon name="expand" />,
       },

@@ -123,6 +123,10 @@ const toolNames = [
     slug: 'T100',
     name: 'MarPro - Scenario Editor',
   },
+  {
+    slug: 'marpro',
+    name: 'MarPro - Game'
+  }
 ];
 
 export default toolNames;

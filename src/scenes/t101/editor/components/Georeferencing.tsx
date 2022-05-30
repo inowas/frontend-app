@@ -31,6 +31,7 @@ import marker from '../../assets/marker.png';
 
 interface IProps {
   onChange: (scenario: Scenario) => any;
+  onChangeModel: (id: string) => any;
   scenario: Scenario;
 }
 
@@ -93,6 +94,7 @@ const Georeferencing = (props: IProps) => {
         cScenario.data.modelId = value;
         cScenario.data.referencePoints = mfModel.boundingBox.getBoundsLatLng();
         props.onChange(Scenario.fromObject(cScenario));
+        props.onChangeModel(value);
 
         setIsFetching(false);
       },

@@ -44,7 +44,7 @@ const MarProEditor = () => {
   const [fetchingScenario, setFetchingScenario] = useState<boolean>(false);
   const [fetchingScenarioSuccess, setFetchingScenarioSuccess] = useState<boolean | null>(null);
 
-  const { id, property, pid } = useParams<any>();
+  const { id, property } = useParams<any>();
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -62,63 +62,62 @@ const MarProEditor = () => {
     setErrors([...errors, err]);
   };
 
-  const fetchBoundaries = useCallback(
-    async (id: string) => {
-      setFetchingBoundaries(true);
-      try {
-        const b = (await fetchApiWithToken(`modflowmodels/${id}/boundaries`)).data;
-        const bc = BoundaryCollection.fromQuery(b);
-        dispatch(updateBoundaries(bc));
-        setFetchingBoundariesSuccess(true);
-      } catch (err) {
-        setFetchingBoundariesSuccess(false);
-        handleError('Fetching boundaries failed.');
-      } finally {
-        setFetchingBoundaries(false);
-      }
-    },
-    [dispatch]
-  );
+  const fetchBoundaries = async (id: string) => {
+    setFetchingBoundaries(true);
+    try {
+      const b = (await fetchApiWithToken(`modflowmodels/${id}/boundaries`)).data;
+      const bc = BoundaryCollection.fromQuery(b);
+      dispatch(updateBoundaries(bc));
+      setFetchingBoundariesSuccess(true);
+    } catch (err) {
+      setFetchingBoundariesSuccess(false);
+      handleError('Fetching boundaries failed.');
+    } finally {
+      setFetchingBoundaries(false);
+    }
+  };
 
-  const fetchModel = useCallback(
-    async (id: string) => {
-      setFetchingModel(true);
-      try {
-        const m = (await fetchApiWithToken(`modflowmodels/${id}`)).data;
-        const mfModel = ModflowModel.fromObject(m);
-        dispatch(updateModel(mfModel));
-        setFetchingModelSuccess(true);
-      } catch (err) {
-        setFetchingModelSuccess(false);
-        handleError('Fetching model failed.');
-      } finally {
-        setFetchingModel(false);
-      }
-    },
-    [dispatch]
-  );
+  const fetchModel = async (id: string) => {
+    setFetchingModel(true);
+    try {
+      const m = (await fetchApiWithToken(`modflowmodels/${id}`)).data;
+      const mfModel = ModflowModel.fromObject(m);
+      dispatch(updateModel(mfModel));
+      setFetchingModelSuccess(true);
+    } catch (err) {
+      setFetchingModelSuccess(false);
+      handleError('Fetching model failed.');
+    } finally {
+      setFetchingModel(false);
+    }
+  };
 
-  const fetchScenario = useCallback(
-    async (id: string) => {
-      setFetchingScenario(true);
-      try {
-        const s = (await fetchApiWithToken(`tools/${tool}/${id}`)).data;
-        if (!s) {
-          return;
-        }
-        const sc = Scenario.fromObject(s);
-        dispatch(updateScenario(sc));
-        setFetchingScenarioSuccess(true);
+  const fetchScenario = async (id: string) => {
+    setFetchingScenario(true);
+    try {
+      const s = (await fetchApiWithToken(`tools/${tool}/${id}`)).data;
+      if (!s) {
+        return;
+      }
+      const sc = Scenario.fromObject(s);
+      dispatch(updateScenario(sc));
+      setFetchingScenarioSuccess(true);
+
+      if (sc.modelId) {
         await fetchModel(sc.modelId);
         await fetchBoundaries(sc.modelId);
-      } catch (err) {
-        setFetchingScenarioSuccess(false);
-      } finally {
-        setFetchingScenario(false);
       }
-    },
-    [dispatch, fetchBoundaries, fetchModel]
-  );
+    } catch (err) {
+      setFetchingScenarioSuccess(false);
+    } finally {
+      setFetchingScenario(false);
+    }
+  };
+
+  const handleModelChanged = async (id: string) => {
+    await fetchModel(id);
+    await fetchBoundaries(id);
+  }
 
   useEffect(() => {
     return function () {
@@ -131,10 +130,17 @@ const MarProEditor = () => {
     if (!id) {
       createScenario();
     } else {
-      console.log('FETCH SCENARIO');
       fetchScenario(id);
     }
-  }, [createScenario, fetchScenario, id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  useEffect(() => {
+    if (scenario && (!property || property === '')) {
+      history.push(`/tools/${scenario.tool}/${scenario.id}/scenario`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [property, scenario]);
 
   if (!scenario) {
     return <p>LOADING</p>;
@@ -188,7 +194,7 @@ const MarProEditor = () => {
     }
 
     if (property === 'model') {
-      return <Georeferencing onChange={handleSave} scenario={scenario} />;
+      return <Georeferencing onChange={handleSave} onChangeModel={handleModelChanged} scenario={scenario} />;
     }
 
     if (property === 'resources') {
