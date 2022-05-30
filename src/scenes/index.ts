@@ -2,6 +2,7 @@ import * as T03 from './t03/containers';
 import * as T07 from './t07/containers';
 import * as T20 from './t20/containers';
 import { AdminWrapper as Admin } from './admin';
+import { MarProEditor } from './t101/editor/containers';
 import { T01 } from './t01/containers';
 import { T02 } from './t02/containers';
 import { T04 } from './t04/containers';
@@ -21,6 +22,7 @@ import Dashboard from './dashboard/container';
 import LandingPage from './landingPage/LandingPage';
 import Login from './user/containers/Login';
 import Logout from './user/containers/Logout';
+import MarProMainMenu from './t101/game/containers/MarProMainMenu';
 import SignUp from './user/containers/SignUp';
 import TermsAndConditions from './termsAndConditions';
 import UserCredentials from './user/containers/UserCredentials';
@@ -71,4 +73,6 @@ export {
   T18,
   T19,
   T20,
+  MarProEditor,
+  MarProMainMenu,
 };

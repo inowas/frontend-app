@@ -58,7 +58,6 @@ const TransportResults = (props: IProps) => {
   };
 
   useEffect(() => {
-    console.log('MODEL CHANGED');
     if (model === null) {
       return;
     }
