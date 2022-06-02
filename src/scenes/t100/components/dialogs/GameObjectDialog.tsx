@@ -111,10 +111,10 @@ const GameObjectDialog = (props: IProps) => {
               </Grid.Row>
               {parameter[0].relations &&
                 parameter[0].relations.map((relation) => (
-                  <Grid.Row key={relation.resourceId}>
+                  <Grid.Row key={relation.resourceId} className={"cost"}>
                     <Grid.Column width={16} textAlign="center">
-                    <Label size='medium' image><Image size='mini' src={marCoin} />
-                      {Math.abs((relation.relation || 1) * diff)} {relation.resourceId}</Label>
+                      <Label size='medium' image><Image size='mini' src={marCoin} />
+                        {Math.abs((relation.relation || 1) * diff)} {relation.resourceId}</Label>
                     </Grid.Column>
                   </Grid.Row>
                 ))}
@@ -144,10 +144,10 @@ const GameObjectDialog = (props: IProps) => {
       header={gameObject.type}
       image={gameObject.type}
       content={
-        <List>
+        <List style={{ minWidth: '20rem', width: 'min-content' }}>
           <List.Item>object_id: {gameObject.id}</List.Item>
           <List.Item>
-            [{gameObject.location.x}, {gameObject.location.y}]
+            [x: {gameObject.location.x},y: {gameObject.location.y}]
           </List.Item>
           {gameObject.parameters.map((p) => (
             <React.Fragment key={`${gameObject.id}_${p.id}`}>

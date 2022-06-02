@@ -57,17 +57,18 @@ const Results = (props: IProps) => {
   };
 
   return (
-    <Menu className="objects" inverted vertical icon="labeled">
+    <Menu className="objects results" inverted vertical icon="labeled">
       <Menu.Item className="header">Results</Menu.Item>
       {props.gameState.objectives.map((objective) => renderObjective(objective))}
       <Menu.Item>
-        <CheckButton />
-      </Menu.Item>
-      <Menu.Item>
-        <Button color="green" fluid onClick={handleClickSave}>
+        <Button.Group fluid>
+          <CheckButton />
+          <Button color="green" onClick={handleClickSave}>
           Save
         </Button>
+        </Button.Group>
       </Menu.Item>
+      
     </Menu>
   );
 };

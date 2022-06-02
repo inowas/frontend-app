@@ -23,7 +23,7 @@
 /* Object Modal
 ---------------- */
 .ui.modal.obj-modal-container {
-  background-color: #f5ead6 !important;
+  background-color: #F5EAD6 !important;
   box-shadow: 0 0 1px 1px #c9b69c;
   color: #333333;
   min-height: 240px;
@@ -32,13 +32,14 @@
 .ui.modal.obj-modal-container .ui.header {
   background-color: #333333;
   color: #ebe6e0;
+  font-weight: 600;
   padding: 10px 15px;
 }
 .ui.modal.obj-modal-container .content {
-  background-color: #f5ead6 !important;
+  background-color: #F5EAD6 !important;
 }
 .ui.modal.obj-modal-container:after {
-  background: #f5ead6;
+  background: #F5EAD6;
   bottom: -0.30714286em;
   content: ' ';
   height: 0.71428571em;
@@ -50,12 +51,25 @@
   top: auto;
   width: 0.71428571em;
 }
-.ui.modal.obj-modal-container span.parameter-name {
+.ui.modal.obj-modal-container span.parameter-name,
+.ui.menu.objects span.parameter-name {
   background-color: #998466;
-    border-radius: 15px;
-    color: #FFFFFF;
-    padding: 0.285714rem 1rem;
-    box-shadow: inset 0 0 3px 0 rgb(0 0 0 / 50%);
+  border-radius: 15px;
+  color: #FFFFFF;
+  padding: 0.285714rem 1rem;
+  box-shadow: inset 0 0 3px 0 rgb(0 0 0 / 50%);
+}
+.ui.modal.obj-modal-container .row.cost {
+  background: #fff;
+  border-top: 1px solid #DBCEBD;
+  border-bottom: 1px solid #DBCEBD;
+}
+
+.ui.modal.obj-modal-container .ui.image.label {
+  background: transparent;
+}
+.ui.modal.obj-modal-container .ui.image.label img {
+  vertical-align: middle;
 }
 .ui.modal.obj-modal-container p {
   line-height: 1.8;
@@ -66,8 +80,30 @@
 
 /* Toolbox
 ----------- */
-.ui.menu.objects .item.header {
-  background-color: #20b142 !important;
+.ui.menu.objects {
+  margin-bottom: 0;
+}
+.ui.menu.objects.structures .item.header {
+  background-color: #20B142 !important;
+}
+.ui.menu.objects.results,
+.ui.menu.objects.mission {
+  background-color: #F5EAD6;
+  box-shadow: none;
+}
+.ui.menu.objects.results .item.header {
+  font-size: 0.857rem;
+  padding: 1rem !important;
+  background-color: #1481B8 !important;
+}
+.ui.menu.objects.mission .item.header {
+  color: #FFFFFF;
+  font-size: 0.857rem;
+  padding: 1rem !important;
+  background-color: #7728A4 !important;
+}
+.ui.menu.objects.structures .menu {
+  margin-top: 0;
 }
 .ui.vertical.inverted.menu.objects .menu .item {
   padding: 0;
@@ -90,10 +126,17 @@
   text-transform: uppercase;
 }
 .ui.card.object {
-  background-color: #f5ead6;
+  background-color: #F5EAD6;
   box-shadow: none;
   text-align: left;
   width: 15rem !important;
+}
+.ui.card.object .extra {
+  background-color: #FFFFFF;
+  border-top-color: #DBCEBD !important;
+}
+.ui.card.object .extra .ui.image.label {
+  background-color: transparent;
 }
 .ui.card.object .header {
   font-size: 14px !important;
@@ -103,6 +146,17 @@
 }
 .ui.menu.objects a.item:hover {
   background-color: transparent !important;
+}
+.ui.menu.objects.mission .ui.label {
+  background: transparent;
+  margin: -0.25rem 0 0;
+  padding: 0;
+}
+.ui.menu.objects.mission .ui.steps .step {
+  padding: 0.75rem 1rem;
+}
+.ui.menu.objects.mission .ui.steps .step::before {
+  font-size: 1.5rem;
 }
 
 /* Resource Icons
@@ -219,7 +273,7 @@
   left: 50% !important;
 }
 .calculation .ui.segment {
-  background: #f5ead6;
+  background: #F5EAD6;
   text-align: left;
 }
 .calculation h3 {

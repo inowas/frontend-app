@@ -16,7 +16,7 @@ const ConfirmBuyGameObject = (props: IProps) => {
     <Dialog
       header="Purchase new object"
       content={
-        <Grid style={{ width: '400px' }}>
+        <Grid style={{ minWidth: '24rem', width: 'min-content' }}>
           <Grid.Row>
             <Grid.Column width={16} textAlign="center">
               Do you really want to build this object?

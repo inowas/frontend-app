@@ -1,4 +1,4 @@
-import { Button, Dimmer, Grid, Loader } from 'semantic-ui-react';
+import { Button, Card, Dimmer, Grid, Icon, Label, Loader, Menu, Step } from 'semantic-ui-react';
 import { EGameObjectType, IDraftGameObject } from '../../../../core/marPro/GameObject.type';
 import { EObjectiveType } from '../../../../core/marPro/Objective.type';
 import { ICost } from '../../../../core/marPro/Tool.type';
@@ -270,13 +270,49 @@ const Playground = () => {
       <Grid>
         <Grid.Row className="gameboard">
           <Grid.Column width={'three'}>
-            <Button onClick={() => refetch()}>REFETCH</Button>
+            {/* <Button onClick={() => refetch()}>REFETCH</Button> */}
             <Toolbox
               gameObjectToAdd={gameObjectToAdd ? DraftGameObject.fromObject(gameObjectToAdd) : null}
               onAddGameObject={handleAddGameObject}
               scenario={scenario}
             />
             {gameState && <Results gameState={GameState.fromObject(gameState)} />}
+            <Menu className="objects mission" vertical icon="labeled">
+              <Menu.Item header><Label><Icon size="large" name="info circle" /></Label>Mission Info</Menu.Item>
+              <Menu.Item>
+                <Menu.Header textAlign="left">Mission <Label><span className='parameter-name'>Show details</span></Label></Menu.Header>
+                <Card className="object">
+                  <Card.Content>
+                    <Card.Description>In this story, you will play as the WWTP manager in Paphos, Cyprus, near the Ezousa river.</Card.Description>
+                  </Card.Content>
+                </Card>
+              </Menu.Item>
+              <Menu.Item>
+              <Step.Group ordered>
+                    <Step completed>
+                      <Step.Content>
+                        <Step.Title></Step.Title>
+                        <Step.Description></Step.Description>
+                      </Step.Content>
+                    </Step>
+
+                    <Step completed>
+                      <Step.Content>
+                        <Step.Title></Step.Title>
+                        <Step.Description>
+                        </Step.Description>
+                      </Step.Content>
+                    </Step>
+
+                    <Step active>
+                      <Step.Content>
+                        <Step.Title></Step.Title>
+                      </Step.Content>
+                    </Step>
+                  </Step.Group>
+                <Button color='orange'>Get Hint <Icon name="lightbulb"/></Button>
+              </Menu.Item>
+            </Menu>
           </Grid.Column>
           <Grid.Column width={'thirteen'}>
             {showResourceManager && <ResourceManager onClose={toggleResourceManager} />}

@@ -81,7 +81,7 @@ const Toolbox = (props: IProps) => {
   };
 
   return (
-    <Menu className="objects" inverted vertical icon="labeled">
+    <Menu className="objects structures" inverted vertical icon="labeled">
       <Menu.Item className="header">
         <Menu pagination secondary>
           {categories.length > 1 && <Menu.Item icon="chevron left" as="a" onClick={handleClickChevron('left')} />}

@@ -19,13 +19,14 @@ const Header = (props: IProps) => {
     <Grid>
       <Grid.Row>
         <Grid.Column width={4}>
-          <Message compact icon attached={'bottom'} className={'mission'}>
+          <Button>REFETCH</Button>
+          {/* <Message compact icon attached={'bottom'} className={'mission'}>
             <Icon name="info circle" />
             <Message.Content>
               Mission: Ezousa River, Cyprus
               <Icon name="chevron right" />
             </Message.Content>
-          </Message>
+          </Message> */}
         </Grid.Column>
         <Grid.Column width={6} verticalAlign={'middle'} className="water">
           <Image as="div" floated="left" src={WaterDrop} />

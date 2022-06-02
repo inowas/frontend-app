@@ -300,7 +300,7 @@ const CheckButton = () => {
       {errors.map((err, k) => (
         <Message key={`error_${k}`}>{err}</Message>
       ))}
-      <Button loading={isCalculating} color="blue" fluid onClick={handleClickButton}>
+      <Button loading={isCalculating} color="blue" onClick={handleClickButton}>
         {renderProgress()}
       </Button>
     </>
