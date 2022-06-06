@@ -36,6 +36,10 @@ class GameState extends GenericObject<IGameState> {
     return this._props.resources;
   }
 
+  get scenarioId() {
+    return this._props.scenarioId;
+  }
+
   public getResource(id: string) {
     const res = this._props.resources.filter((r) => r.id === id);
     if (res.length > 0) {

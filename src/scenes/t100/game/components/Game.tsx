@@ -43,7 +43,7 @@ const Playground = () => {
   const gameState = MarPro.gameState || null;
   const scenario = MarPro.scenario ? Scenario.fromObject(MarPro.scenario) : null;
 
-  const { data, isLoading, refetch } = useResults();
+  const { refetch } = useResults(); //data, isLoading,
 
   const dispatch = useDispatch();
 

@@ -17,6 +17,7 @@ import {
   updateGameState,
   updateModel,
   updatePackages,
+  updateScenario,
   updateSoilmodel,
   updateTransport,
   updateVariableDensity,
@@ -29,7 +30,6 @@ import { useParams } from 'react-router-dom';
 import GameState from '../../../../core/marPro/GameState';
 import Playground from './Game';
 import Scenario from '../../../../core/marPro/Scenario';
-import scenarios from '../../../../core/marPro/scenarios';
 
 const GameDataFetcher = () => {
   const [fetchingGameState, setFetchingGameState] = useState<boolean>(false);
@@ -75,6 +75,25 @@ const GameDataFetcher = () => {
   const scenario = MarPro.scenario ? Scenario.fromObject(MarPro.scenario) : null;
   const { model, soilmodel, boundaries, packages, variableDensity, transport } = MarPro;
 
+  const fetchScenario = async (id: string) => {
+    setFetchingScenario(true);
+    try {
+      const s = (await fetchApiWithToken(`tools/T100/${id}`)).data;
+      if (!s) {
+        return;
+      }
+      const sc = Scenario.fromObject(s);
+
+      dispatch(updateScenario(sc));
+
+      setFetchingScenarioSuccess(true);
+    } catch (err) {
+      setFetchingScenarioSuccess(false);
+    } finally {
+      setFetchingScenario(false);
+    }
+  };
+
   useEffect(() => {
     dispatch(clear());
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -88,13 +107,12 @@ const GameDataFetcher = () => {
         (g: IGameStateSimpleTool) => {
           dispatch(updateGameState(GameState.fromObject(g.data)));
 
-          const s = scenarios.filter((s) => 'TODO' === g.data.scenarioId);
-          if (s.length > 0) {
-            //TODO: dispatch(updateScenario(Scenario.fromObject(s[0])));
-          }
-
           setFetchingGameState(false);
           setFetchingGameStateSuccess(true);
+
+          if (!scenario || scenario.id !== g.data.scenarioId) {
+            fetchScenario(g.data.scenarioId);
+          }
         },
         () => {
           setFetchingGameState(false);
@@ -107,11 +125,7 @@ const GameDataFetcher = () => {
   }, [id]);
 
   useEffect(() => {
-    if (scenario) {
-      setFetchingScenario(false);
-      setFetchingScenarioSuccess(true);
-    }
-    if (gameState && gameState.modelId && !model) {
+    if (gameState && gameState.modelId && !model && scenario && scenario.id === gameState.scenarioId) {
       fetchModel(gameState.modelId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

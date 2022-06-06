@@ -1,15 +1,23 @@
 import { Button, Card, Checkbox, Menu } from 'semantic-ui-react';
 import { EObjectiveType, IObjectiveState, checkObjective } from '../../../../core/marPro/Objective.type';
+import { sendCommand } from '../../../../services/api';
+import { useState } from 'react';
 import CheckButton from './CheckButton';
 import GameState from '../../../../core/marPro/GameState';
+import SimpleToolsCommand from '../../../shared/simpleTools/commands/SimpleToolsCommand';
 
 interface IProps {
   gameState: GameState;
 }
 
 const Results = (props: IProps) => {
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+
   const handleClickSave = () => {
-    console.log('SAVE');
+    setIsSaving(true);
+    sendCommand(SimpleToolsCommand.updateToolInstance(props.gameState.toToolInstance()), () => {
+      setIsSaving(false);
+    });
   };
 
   const renderObjective = (objectiveState: IObjectiveState) => {
@@ -64,7 +72,7 @@ const Results = (props: IProps) => {
         <CheckButton />
       </Menu.Item>
       <Menu.Item>
-        <Button color="green" fluid onClick={handleClickSave}>
+        <Button color="green" fluid loading={isSaving} onClick={handleClickSave}>
           Save
         </Button>
       </Menu.Item>

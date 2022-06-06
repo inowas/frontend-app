@@ -1,14 +1,19 @@
 import './style.css';
 import { AppContainer } from '../../../shared';
-import { Breadcrumb, Button, Grid, Header, Icon, List, Segment } from 'semantic-ui-react';
+import { Breadcrumb, Button, Grid, Header, Icon, List, Message, Segment } from 'semantic-ui-react';
 import { IGameStateSimpleTool } from '../../../../core/marPro/GameState.type';
 import { IToolInstance } from '../../../types';
-import { asyncSendCommand, fetchUrl, sendCommand } from '../../../../services/api';
-import { deleteToolInstance } from '../../../dashboard/commands';
+import { asyncSendCommand, fetchApiWithToken, fetchUrl, sendCommand } from '../../../../services/api';
+import { createToolInstance, deleteToolInstance } from '../../../dashboard/commands';
+import { updateGameState, updateScenario } from '../actions/actions';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
-import Game from '../components/Game';
+import GameDataFetcher from '../components/GameDataFetcher';
+import GameState from '../../../../core/marPro/GameState';
 import ModflowModelCommand from '../../../t03/commands/modflowModelCommand';
+import Scenario from '../../../../core/marPro/Scenario';
+import uuid from 'uuid';
 
 const navigation = [
   {
@@ -23,13 +28,52 @@ const MarProMainMenu = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [toolInstances, setToolInstances] = useState<IToolInstance[]>([]);
   const [scenarios, setScenarios] = useState<IToolInstance[]>([]);
+  const [creatingInstance, setCreatingInstance] = useState<boolean>(false);
+  const [creatingInstanceSuccess, setCreatingInstanceSuccess] = useState<boolean | null>(null);
+
+  const dispatch = useDispatch();
 
   const history = useHistory();
-  const { property } = useParams<any>();
+  const { id } = useParams<any>();
 
   const fetchingAttempts = useRef<number>(0);
 
-  console.log({ toolInstances, scenarios });
+  const fetchScenarioAndCreateGameState = async (id: string) => {
+    setCreatingInstance(true);
+    try {
+      const s = (await fetchApiWithToken(`tools/T100/${id}`)).data;
+      if (!s) {
+        return;
+      }
+      const sc = Scenario.fromObject(s);
+
+      dispatch(updateScenario(sc));
+      const newInstance = GameState.fromScenario(sc);
+
+      if (sc.modelId) {
+        const modelId = uuid.v4();
+        await asyncSendCommand(
+          ModflowModelCommand.cloneModflowModel({ id: sc.modelId, newId: modelId, isTool: false })
+        );
+        newInstance.modelId = modelId;
+      }
+
+      sendCommand(
+        createToolInstance('marpro', newInstance.toToolInstance()),
+        () => {
+          dispatch(updateGameState(newInstance));
+          history.push(`marpro/${newInstance.id}`);
+        },
+        (e) => console.log('ERROR', e)
+      );
+
+      setCreatingInstanceSuccess(true);
+    } catch (err) {
+      setCreatingInstanceSuccess(false);
+    } finally {
+      setCreatingInstance(false);
+    }
+  };
 
   const fetchScenarios = useCallback(() => {
     fetchUrl(
@@ -109,31 +153,6 @@ const MarProMainMenu = () => {
     history.push(`marpro/${i.id}`);
   };
 
-  const handleSelectScenario = async (id: string) => {
-    // FETCH SCENARIO FROM ID
-    /*
-    dispatch(updateScenario(Scenario.fromObject(scenario)));
-
-    const newInstance = GameState.fromScenario(Scenario.fromObject(scenario));
-
-    if (scenario.data.modelId) {
-      const modelId = uuid.v4();
-      await asyncSendCommand(
-        ModflowModelCommand.cloneModflowModel({ id: scenario.data.modelId, newId: modelId, isTool: false })
-      );
-      newInstance.modelId = modelId;
-    }
-
-    sendCommand(
-      createToolInstance('marpro', newInstance.toToolInstance()),
-      () => {
-        dispatch(updateGameState(newInstance));
-        history.push(`T100/scenario/${newInstance.id}`);
-      },
-      (e) => console.log('ERROR', e)
-    );*/
-  };
-
   const renderBreadcumbs = () => {
     return (
       <Breadcrumb>
@@ -153,13 +172,13 @@ const MarProMainMenu = () => {
       if (i.length > 0) {
         return handleSelectInstance(i[0]);
       }
-      return handleSelectScenario(s.id);
+      return fetchScenarioAndCreateGameState(s.id);
     };
 
     return (
       <List.Item key={s.id}>
         <List.Content floated="right">
-          <Button onClick={handleClickStart} size="mini">
+          <Button onClick={handleClickStart} loading={creatingInstance} size="mini">
             {i.length > 0 ? 'Continue' : 'Start'}
           </Button>
           {i.length > 0 && (
@@ -174,8 +193,8 @@ const MarProMainMenu = () => {
   };
 
   const renderContent = () => {
-    if (property === 'scenario') {
-      return <Game />;
+    if (id) {
+      return <GameDataFetcher />;
     }
 
     return (
@@ -187,6 +206,8 @@ const MarProMainMenu = () => {
           <Grid.Column textAlign="center">
             <Segment loading={isLoading}>
               <Header>Scenarios</Header>
+              {errorLoading && <Message negative>Error loading scenarios or game states</Message>}
+              {creatingInstanceSuccess === false && <Message negative>Error creating new game instance</Message>}
               <List divided>{scenarios.map((s) => renderScenarioListItem(s))}</List>
             </Segment>
           </Grid.Column>
