@@ -2,13 +2,12 @@ import { Array2D } from '../../../../core/model/geometry/Array2D.type';
 import { BoundingBox, Geometry } from '../../../../core/model/geometry';
 import { CircleMarker, FeatureGroup, GeoJSON, LayersControl } from 'react-leaflet';
 import { EBoundaryType } from '../../../../core/model/modflow/boundaries/Boundary.type';
-import { HeadObservationWell, RechargeBoundary, WellBoundary } from '../../../../core/model/modflow/boundaries';
+import { HeadObservationWell, WellBoundary } from '../../../../core/model/modflow/boundaries';
 import { ModflowModel } from '../../../../core/model/modflow';
 import { getStyle } from '../../../../services/geoTools/mapHelpers';
 import { rasterToContour } from '../../../../services/geoTools/contours';
 import BoundaryCollection from '../../../../core/model/modflow/boundaries/BoundaryCollection';
 import Rainbow from '../../../../services/rainbowvis/Rainbowvis';
-import React from 'react';
 import md5 from 'md5';
 
 export const renderAreaLayer = (geometry: Geometry) => {
@@ -31,7 +30,7 @@ export const renderBoundaryOverlay = (
     <LayersControl.Overlay key={type} name={name} checked={checked}>
       <FeatureGroup>
         {filtered.map((b) => {
-          if (b instanceof WellBoundary || b instanceof HeadObservationWell || b instanceof RechargeBoundary) {
+          if (b instanceof WellBoundary || b instanceof HeadObservationWell) {
             return (
               <CircleMarker
                 key={b.id}
