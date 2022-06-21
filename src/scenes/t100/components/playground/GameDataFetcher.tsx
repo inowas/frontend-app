@@ -71,7 +71,7 @@ const GameDataFetcher = () => {
 
   const [showModal, setShowModal] = useState<boolean>(true);
 
-  const MarPro = useSelector((state: IRootReducer) => state.MarPro);
+  const MarPro = useSelector((state: IRootReducer) => state.MarProReducer);
   const gameState = MarPro.gameState ? GameState.fromObject(MarPro.gameState) : null;
   const scenario = MarPro.scenario ? Scenario.fromObject(MarPro.scenario) : null;
   const { model, soilmodel, boundaries, packages, variableDensity, transport } = MarPro;
@@ -89,9 +89,9 @@ const GameDataFetcher = () => {
         (g: IGameStateSimpleTool) => {
           dispatch(updateGameState(GameState.fromObject(g.data)));
 
-          const s = scenarios.filter((s) => s.id === g.data.scenarioId);
+          const s = scenarios.filter((s) => 'TODO' === g.data.scenarioId);
           if (s.length > 0) {
-            dispatch(updateScenario(Scenario.fromObject(s[0])));
+            //TODO: dispatch(updateScenario(Scenario.fromObject(s[0])));
           }
 
           setFetchingGameState(false);

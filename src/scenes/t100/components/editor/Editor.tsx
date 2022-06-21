@@ -14,7 +14,7 @@ import Setup from './Setup';
 import uuid from 'uuid';
 
 const Editor = () => {
-  const [activeStep, setActiveStep] = useState<number>(0);
+  /*const [activeStep, setActiveStep] = useState<number>(0);
   const [boundaries, setBoundaries] = useState<IBoundary[]>([]);
   const [errors, setErrors] = useState<Array<{ id: string; message: string }>>([]);
   const [isFetching, setIsFetching] = useState<boolean>(true);
@@ -150,7 +150,8 @@ const Editor = () => {
       </Segment>
       {renderContent()}
     </>
-  );
+  );*/
+  return <p>Editor</p>;
 };
 
 export default Editor;

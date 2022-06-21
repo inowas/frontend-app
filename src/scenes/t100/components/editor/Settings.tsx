@@ -29,19 +29,19 @@ const Settings = (props: IProps) => {
 
     if (activeIndex === 'resources') {
       const newResource = ResourceSettings.fromDefaults();
-      cScenario.resources.push(newResource.toObject());
+      cScenario.data.resources.push(newResource.toObject());
       setActiveResource(newResource.toObject());
     }
 
     if (activeIndex === 'objects') {
       const newGameObject = GameObject.createInfiltrationPond();
-      cScenario.objects.push(newGameObject.toObject());
+      cScenario.data.objects.push(newGameObject.toObject());
       setActiveObject(newGameObject.toObject());
     }
 
     if (activeIndex === 'objectives' && type && id) {
       const newObjective = Objective.fromType(type, id);
-      cScenario.objectives.push(newObjective.toObject());
+      cScenario.data.objectives.push(newObjective.toObject());
       setActiveObjective(newObjective.toObject());
     }
 
@@ -56,7 +56,7 @@ const Settings = (props: IProps) => {
       if (fResource.length > 0) {
         const newResource = ResourceSettings.fromObject(fResource[0]).getClone();
         newResource.id = uuid.v4();
-        cScenario.resources.push(newResource.toObject());
+        cScenario.data.resources.push(newResource.toObject());
       }
     }
 
@@ -65,7 +65,7 @@ const Settings = (props: IProps) => {
       if (fObject.length > 0) {
         const newObject = GameObject.fromObject(fObject[0]).getClone();
         newObject.id = uuid.v4();
-        cScenario.objects.push(newObject.toObject());
+        cScenario.data.objects.push(newObject.toObject());
       }
     }
 
@@ -74,7 +74,7 @@ const Settings = (props: IProps) => {
       if (fObjective.length > 0) {
         const newObjective = Objective.fromObject(fObjective[0]).getClone();
         newObjective.id = uuid.v4();
-        cScenario.objectives.push(newObjective.toObject());
+        cScenario.data.objectives.push(newObjective.toObject());
       }
     }
 
@@ -85,15 +85,15 @@ const Settings = (props: IProps) => {
     const cScenario = props.scenario.toObject();
 
     if (activeIndex === 'resources') {
-      cScenario.resources = cScenario.resources.filter((r) => r.id !== id);
+      cScenario.data.resources = cScenario.data.resources.filter((r) => r.id !== id);
     }
 
     if (activeIndex === 'objects') {
-      cScenario.objects = cScenario.objects.filter((o) => o.id !== id);
+      cScenario.data.objects = cScenario.data.objects.filter((o) => o.id !== id);
     }
 
     if (activeIndex === 'objectives') {
-      cScenario.objectives = cScenario.objectives.filter((o) => o.id !== id);
+      cScenario.data.objectives = cScenario.data.objectives.filter((o) => o.id !== id);
     }
 
     setActiveResource(undefined);
@@ -105,7 +105,7 @@ const Settings = (props: IProps) => {
 
     const fResource = props.scenario.resources.filter((r) => r.id === resource.id);
     if (fResource.length > 0) {
-      cScenario.resources = cScenario.resources.map((res) => {
+      cScenario.data.resources = cScenario.data.resources.map((res) => {
         if (res.id === resource.id) {
           return resource.toObject();
         }
@@ -122,7 +122,7 @@ const Settings = (props: IProps) => {
 
     const fObject = props.scenario.objects.filter((o) => o.id === object.id);
     if (fObject.length > 0) {
-      cScenario.objects = cScenario.objects.map((obj) => {
+      cScenario.data.objects = cScenario.data.objects.map((obj) => {
         if (obj.id === object.id) {
           return object.toObject();
         }

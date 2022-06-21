@@ -14,7 +14,7 @@ interface IProps {
 }
 
 const Footer = (props: IProps) => {
-  const MarPro = useSelector((state: IRootReducer) => state.MarPro);
+  const MarPro = useSelector((state: IRootReducer) => state.MarProReducer);
   const model = MarPro.model ? ModflowModel.fromObject(MarPro.model) : null;
   const boundaries = MarPro.boundaries ? BoundaryCollection.fromObject(MarPro.boundaries) : null;
 
@@ -29,8 +29,7 @@ const Footer = (props: IProps) => {
       </div>
       <div className="ui center aligned grid">
         <div className="one column row">
-          <div className="column">
-          </div>
+          <div className="column"></div>
         </div>
         <div className="four column row">
           <div className="five wide column">

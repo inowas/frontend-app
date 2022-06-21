@@ -15,10 +15,10 @@ const Setup = (props: IProps) => {
     const scenario = props.scenario.toObject();
 
     if (activeInput === 'title') {
-      scenario.title = activeValue;
+      scenario.data.title = activeValue;
     }
     if (activeInput === 'subtitle') {
-      scenario.subtitle = activeValue;
+      scenario.data.subtitle = activeValue;
     }
     if (activeInput === 'description') {
       scenario.description = activeValue;

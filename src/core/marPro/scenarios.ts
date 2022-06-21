@@ -21,7 +21,6 @@ const scenarios: IScenario[] = [
       'Find out which well is most sensitive to higher abstraction.',
       'You could try to locate the ponds upstream of the extraction wells.',
     ],
-    id: 'scenario_ezousa_01',
     modelId: 'c0d6d9eb-8737-4b43-b7fc-30796e2889cc',
     objectives: [
       {
@@ -199,16 +198,18 @@ const scenarios: IScenario[] = [
     title: 'Ezousa Catchment',
     tools: [
       {
+        id: 'tool1',
         boundaryType: EBoundaryType.RCH,
         category: EGameObjectCategory.STRUCTURES,
         costs: [
           {
+            id: 'cost_1',
             amount: 10,
             refund: 10,
             resource: 'res_coins',
           },
         ],
-        editParameters: [
+        parameters: [
           {
             relations: [{ id: 'rel2', resourceId: 'res_treated_wastewater', relation: 1 }],
             id: 'p_infiltration_rate',
@@ -254,7 +255,6 @@ const scenarios: IScenario[] = [
       'Find out which well is most sensitive to higher abstraction.',
       'As soon as you fulfill the new environmental law, you receive 60 happiness points.',
     ],
-    id: 'scenario_ezousa_02',
     modelId: 'c0d6d9eb-8737-4b43-b7fc-30796e2889cc',
     objectives: [
       {
@@ -551,9 +551,10 @@ const scenarios: IScenario[] = [
     title: 'Ezousa Catchment',
     tools: [
       {
+        id: 'tool1',
         category: EGameObjectCategory.STRUCTURES,
         costs: [],
-        editParameters: [
+        parameters: [
           {
             relations: [{ id: 'rel19', resourceId: 'res_treated_wastewater', relation: 1 }],
             id: 'p_infiltration_rate',
@@ -567,9 +568,10 @@ const scenarios: IScenario[] = [
         },
       },
       {
+        id: 'tool2',
         category: EGameObjectCategory.STRUCTURES,
         costs: [],
-        editParameters: [
+        parameters: [
           {
             relations: [{ id: 'rel20', resourceId: 'res_happiness', relation: 0.03 }],
             id: 'p_ecological_flow',

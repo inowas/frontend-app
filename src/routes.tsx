@@ -63,8 +63,8 @@ const getRoutes = () => {
         <Route exact={true} path="/tools/T19/:id?" component={Scenes.T19} />
         <Route exact={true} path="/tools/T20" component={Scenes.T20.CreateRealTimeModelling} />
         <Route exact={true} path="/tools/T20/:id/:property?/:pid?" component={Scenes.T20.EditRealTimeModelling} />
-        <Route exact={true} path="/tools/T100/:property?" component={Scenes.T100} />
-
+        <Route exact={true} path="/tools/T100/:id?/:property?/:pid?" component={Scenes.MarProEditor} />
+        <Route exact={true} path="/tools/marpro/:id?" component={Scenes.MarProMainMenu} />
         <Route path="/imprint" component={Scenes.Imprint} />
         <Route path="/terms-and-conditions" component={Scenes.TermsAndConditions} />
         <Route path="/login/:id?/:token?" component={Scenes.Login} />
@@ -160,11 +160,19 @@ const getRoutes = () => {
         component={Scenes.T20.EditRealTimeModelling}
         forRoles={['ROLE_USER']}
       />
-      <PrivateRoute exact={true} path="/tools/T100/:property?/:id?" component={Scenes.T100} forRoles={['ROLE_USER']} />
+      <PrivateRoute
+        exact={true}
+        path="/tools/T100/:id?/:property?/:pid?"
+        component={Scenes.MarProEditor}
+        forRoles={['ROLE_USER']}
+      />
+      <PrivateRoute exact={true} path="/tools/marpro/:id?" component={Scenes.MarProMainMenu} forRoles={['ROLE_USER']} />
       <PrivateRoute path="/credentials" component={Scenes.UserCredentials} forRoles={['ROLE_USER']} />
       <PrivateRoute path="/profile" component={Scenes.UserProfile} forRoles={['ROLE_USER']} />
 
       <Route path="/imprint" component={Scenes.Imprint} />
+      <PrivateRoute path="/credentials" component={Scenes.UserCredentials} forRoles={['ROLE_USER']} />
+      <PrivateRoute path="/profile" component={Scenes.UserProfile} forRoles={['ROLE_USER']} />
       <Route path="/terms-and-conditions" component={Scenes.TermsAndConditions} />
       <Route path="/login/:id?/:token?" component={Scenes.Login} />
       <Route path="/logout" component={Scenes.Logout} />

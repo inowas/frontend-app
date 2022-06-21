@@ -14,7 +14,7 @@ const useResults = () => {
   const [data, setData] = useState<Array2D<number> | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const MarPro = useSelector((state: IRootReducer) => state.MarPro);
+  const MarPro = useSelector((state: IRootReducer) => state.MarProReducer);
   const gameState = MarPro.gameState ? GameState.fromObject(MarPro.gameState) : null;
 
   const dispatch = useDispatch();

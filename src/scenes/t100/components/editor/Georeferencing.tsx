@@ -12,13 +12,13 @@ import {
   Radio,
   Segment,
 } from 'semantic-ui-react';
+import { IGameBoard, gameBoards } from '../../assets/images';
 import { IToolInstance } from '../../../types';
 import { Icon } from 'leaflet';
 import { ImageOverlay, Map, Marker } from 'react-leaflet';
 import { ModflowModel } from '../../../../core/model/modflow';
 import { SyntheticEvent, useRef, useState } from 'react';
 import { cloneDeep } from 'lodash';
-import { gameBoards, getImage, IGameBoard } from '../../assets/images';
 import { renderAreaLayer } from '../../../t03/components/maps/mapLayers';
 import Scenario from '../../../../core/marPro/Scenario';
 import SliderWithTooltip from '../../../shared/complexTools/SliderWithTooltip';
@@ -41,8 +41,8 @@ const Georeferencing = (props: IProps) => {
 
   const handleChangeImage = (value: IGameBoard) => () => {
     const scenario = props.scenario.toObject();
-    scenario.backgroundImage = value.img;
-    scenario.stageSize = value.size;
+    scenario.data.backgroundImage = value.img;
+    scenario.data.stageSize = value.size;
 
     props.onChange(Scenario.fromObject(scenario));
   };
@@ -52,7 +52,7 @@ const Georeferencing = (props: IProps) => {
       return null;
     }
     const scenario = props.scenario.toObject();
-    scenario.modelId = value;
+    scenario.data.modelId = value;
     props.onChange(Scenario.fromObject(scenario));
     props.onChangeModel(value);
   };
@@ -71,7 +71,7 @@ const Georeferencing = (props: IProps) => {
     const newPoints = cloneDeep(props.scenario.referencePoints);
     newPoints[key] = [coords.lat, coords.lng];
     const scenario = props.scenario.toObject();
-    scenario.referencePoints = newPoints;
+    scenario.data.referencePoints = newPoints;
     props.onChange(Scenario.fromObject(scenario));
   };
 

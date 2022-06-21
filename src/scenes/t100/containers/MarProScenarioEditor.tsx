@@ -32,10 +32,16 @@ const T100 = () => {
   const [toolInstances, setToolInstances] = useState<IToolInstance[]>([]);
 
   const history = useHistory();
-  const { property } = useParams<any>();
+  const { id, property } = useParams<any>();
   const dispatch = useDispatch();
 
-  const fetchingAttempts = useRef<number>(0);
+  if (!id) {
+    return <Editor />;
+  }
+
+  return <div>TEST</div>;
+
+  /*const fetchingAttempts = useRef<number>(0);
 
   const fetchInstances = useCallback(() => {
     fetchUrl(
@@ -208,7 +214,7 @@ const T100 = () => {
     );
   };
 
-  return <AppContainer navbarItems={navigation}>{renderContent()}</AppContainer>;
+  return <AppContainer navbarItems={navigation}>{renderContent()}</AppContainer>;*/
 };
 
-export default withRouter(T100);
+export default T100;

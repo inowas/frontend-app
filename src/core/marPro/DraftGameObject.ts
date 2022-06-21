@@ -1,5 +1,5 @@
+import { EGameObjectType, IDraftGameObject } from './GameObject.type';
 import { GenericObject } from '../model/genericObject/GenericObject';
-import { IDraftGameObject } from './GameObject.type';
 import { IParameter } from './Parameter.type';
 import GameObject from './GameObject';
 import Tool from './Tool';
@@ -32,7 +32,7 @@ class DraftGameObject extends GenericObject<IDraftGameObject> {
       hasBeenPlaced: false,
       location: { x: 0, y: 0 },
       tool: tool.toObject(),
-      type: tool.name,
+      type: tool.name as EGameObjectType,
     });
   }
 
@@ -42,7 +42,7 @@ class DraftGameObject extends GenericObject<IDraftGameObject> {
       boundaryType: this._props.tool.boundaryType,
       boundaryId: this._props.tool.boundaryType ? id : undefined,
       id: uuid.v4(),
-      type: this._props.tool.name,
+      type: this._props.tool.name as EGameObjectType,
       location: this._props.location,
       size: this._props.tool.size,
       parameters: parameters || [],

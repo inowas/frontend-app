@@ -19,7 +19,7 @@ class Geometry {
     return new Geometry(obj);
   }
 
-  constructor(private readonly _geometry: GeoJson) {}
+  constructor(private readonly _geometry: GeoJson) { }
 
   get type() {
     return this._geometry.type;
@@ -43,6 +43,7 @@ class Geometry {
     }
     switch (this._geometry.type) {
       case 'MultiPolygon':
+        // TODO:
         return this._geometry.coordinates.map((c) => this.getLatLngFromXY(c[0]));
       case 'Polygon':
         return this.getLatLngFromXY(this._geometry.coordinates[0]);
