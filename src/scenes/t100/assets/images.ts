@@ -57,8 +57,14 @@ export const gameBoards: IGameBoard[] = [
 ];
 
 export const getImage = (slag?: string) => {
-  if (slag === 'res_coins') {
+  if (slag === 'res_coins' || slag === 'marCoins') {
     return marCoin;
+  }
+  if (slag === 'res_coins' || slag === 'marCoins') {
+    return marCoin;
+  }
+  if (slag === 'waterDrop') {
+    return waterDrop;
   }
   if (slag === 'res_happiness') {
     return happyPoints;

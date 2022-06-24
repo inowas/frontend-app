@@ -1,14 +1,15 @@
-import { Button, Dimmer, Grid, Loader } from 'semantic-ui-react';
+import { Button, Grid } from 'semantic-ui-react';
 import { EGameObjectType, IDraftGameObject } from '../../../../core/marPro/GameObject.type';
 import { EObjectiveType } from '../../../../core/marPro/Objective.type';
 import { ICost } from '../../../../core/marPro/Tool.type';
 import { IMapScale } from './types';
 import { IRootReducer } from '../../../../reducers';
-import { Image, Layer, Path, Stage } from 'react-konva';
 import { KonvaEventObject } from 'konva/lib/Node';
+import { Layer, Path, Stage } from 'react-konva';
 import { ReactNode, useRef, useState } from 'react';
 import { updateGameState } from '../actions/actions';
 import { useDispatch, useSelector } from 'react-redux';
+import Background from './Background';
 import ConfirmBuyGameObject from './dialogs/ConfirmBuyGameObject';
 import DraftGameObject from '../../../../core/marPro/DraftGameObject';
 import DraftGameObjectComponent from './gameObjects/DraftGameObjectComponent';
@@ -19,20 +20,18 @@ import Header from './Header';
 import InfiltrationPond from './gameObjects/InfiltrationPond';
 import ObservationWell from './gameObjects/ObservationWell';
 import ResourceManager from './shared/ResourceManager';
+import Resources from './Resources';
 import Results from './Results';
 import River from './gameObjects/River';
 import Scenario from '../../../../core/marPro/Scenario';
 import Tool from '../../../../core/marPro/Tool';
 import Toolbox from './Toolbox';
-import bg from '../../assets/mar-gameboard-01-riverbed.png';
-import useImage from '../hooks/useImage';
 import useResults from '../hooks/useResults';
 
 const scaleBy = 1.3;
 
 const Playground = () => {
   const [activeGameObjects, setActiveGameObjects] = useState<string[]>([]);
-  const [backgroundImage] = useImage(bg);
   const stageRef = useRef<any>(null);
   const [gameObjectToAdd, setGameObjectToAdd] = useState<IDraftGameObject | null>(null);
   const [showResourceManager, setShowResourceManager] = useState<boolean>(false);
@@ -271,44 +270,41 @@ const Playground = () => {
         <Grid.Row className="gameboard">
           <Grid.Column width={'three'}>
             <Button onClick={() => refetch()}>REFETCH</Button>
+            <Resources gameState={GameState.fromObject(gameState)} scenario={scenario} />
             <Toolbox
               gameObjectToAdd={gameObjectToAdd ? DraftGameObject.fromObject(gameObjectToAdd) : null}
               onAddGameObject={handleAddGameObject}
               scenario={scenario}
             />
-            {gameState && <Results gameState={GameState.fromObject(gameState)} />}
+            {gameState && <Results gameState={GameState.fromObject(gameState)} scenario={scenario} />}
           </Grid.Column>
           <Grid.Column width={'thirteen'}>
             {showResourceManager && <ResourceManager onClose={toggleResourceManager} />}
             {renderGameObjectDialogs()}
             {renderDraftGameObjectDialogs()}
-            {!backgroundImage ? (
-              <Dimmer active inverted>
-                <Loader inverted>Loading</Loader>
-              </Dimmer>
-            ) : (
-              <Stage
-                draggable
-                width={1000}
-                height={scenario.stageSize.y}
-                onDragEnd={handleDragStage}
-                onWheel={handleWheel}
-                ref={stageRef}
-              >
-                <Layer>{backgroundImage && <Image image={backgroundImage} />}</Layer>
-                {renderZones()}
-                <Layer>{renderGameObjects()}</Layer>
-                <Layer>{renderObservationWells()}</Layer>
-                {gameObjectToAdd && (
-                  <Layer>
-                    <DraftGameObjectComponent
-                      gameObject={DraftGameObject.fromObject(gameObjectToAdd)}
-                      onClick={handleClickDraftGameObject}
-                    />
-                  </Layer>
-                )}
-              </Stage>
-            )}
+            <Stage
+              draggable
+              width={1000}
+              height={scenario.stageSize.y}
+              onDragEnd={handleDragStage}
+              onWheel={handleWheel}
+              ref={stageRef}
+            >
+              <Layer>
+                <Background img={scenario.backgroundImage} />
+              </Layer>
+              {renderZones()}
+              <Layer>{renderGameObjects()}</Layer>
+              <Layer>{renderObservationWells()}</Layer>
+              {gameObjectToAdd && (
+                <Layer>
+                  <DraftGameObjectComponent
+                    gameObject={DraftGameObject.fromObject(gameObjectToAdd)}
+                    onClick={handleClickDraftGameObject}
+                  />
+                </Layer>
+              )}
+            </Stage>
           </Grid.Column>
         </Grid.Row>
       </Grid>

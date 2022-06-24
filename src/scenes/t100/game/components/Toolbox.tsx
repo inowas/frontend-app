@@ -1,5 +1,5 @@
 import { Button, Card, Image, Label, Menu, Popup } from 'semantic-ui-react';
-import { EGameObjectCategory, ITool } from '../../../../core/marPro/Tool.type';
+import { EGameObjectCategory, ICost, ITool } from '../../../../core/marPro/Tool.type';
 import { getImage } from '../../assets/images';
 import { useEffect, useState } from 'react';
 import DraftGameObject from '../../../../core/marPro/DraftGameObject';
@@ -47,9 +47,21 @@ const Toolbox = (props: IProps) => {
     }
   };
 
-  const renderTool = (tool: ITool) => {
+  const renderCost = (cost: ICost, tool: ITool, key: number) => {
+    const resource = props.scenario.resources.filter((r) => r.id === cost.resource);
+    const icon = resource.length > 0 ? resource[0].icon : 'NONE';
+
     return (
-      <Menu.Item>
+      <Label key={`cost_${tool.name}_${key}`} image>
+        <Image src={getImage(icon)} />
+        {cost.amount}
+      </Label>
+    );
+  };
+
+  const renderTool = (tool: ITool, key: number) => {
+    return (
+      <Menu.Item key={key}>
         <Card className="object">
           <Card.Content>
             <Image floated="right" size="mini" src={getImage(tool.name)} />
@@ -57,12 +69,7 @@ const Toolbox = (props: IProps) => {
             <Card.Description>Property</Card.Description>
           </Card.Content>
           <Card.Content textAlign="center" extra>
-            {tool.costs.map((cost, key) => (
-              <Label key={`cost_${tool.name}_${key}`} image>
-                <Image src={getImage(cost.resource)} />
-                {cost.amount}
-              </Label>
-            ))}
+            {tool.costs.map((cost, key) => renderCost(cost, tool, key))}
             {props.gameObjectToAdd && props.gameObjectToAdd.type === tool.name ? (
               <Popup
                 trigger={<Button positive loading={true} circular icon="add" />}
@@ -92,7 +99,9 @@ const Toolbox = (props: IProps) => {
         </Menu>
       </Menu.Item>
       <Menu.Item icon="angle up" as="a" />
-      {props.scenario.tools.filter((tool) => tool.category === categories[categoryKey]).map((tool) => renderTool(tool))}
+      {props.scenario.tools
+        .filter((tool) => tool.category === categories[categoryKey])
+        .map((tool, k) => renderTool(tool, k))}
       <Menu.Item icon="angle down" as="a" />
     </Menu>
   );
