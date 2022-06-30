@@ -139,7 +139,7 @@ const Playground = () => {
     setMapScale({ ...mapScale, offset: e.target._lastPos });
   };
 
-  /*const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
+  const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
     if (!gameObjectToAdd || gameObjectToAdd.hasBeenPlaced) {
       return null;
     }
@@ -160,7 +160,7 @@ const Playground = () => {
         y: pointerPosition.y - 15,
       },
     });
-  };*/
+  };
 
   const handleWheel = (e: KonvaEventObject<WheelEvent>) => {
     e.evt.preventDefault();
@@ -197,6 +197,7 @@ const Playground = () => {
       <ConfirmBuyGameObject
         onClickCancel={handleCancelPurchaseGameObject}
         onClickConfirm={handleConfirmPurchaseGameObject}
+        scenario={scenario}
         tool={Tool.fromObject(tool[0])}
       />
     );
@@ -211,6 +212,7 @@ const Playground = () => {
           <GameObjectDialog
             key={g[0].id}
             gameObject={GameObject.fromObject(g[0])}
+            scenario={scenario}
             onChange={handleChangeGameObject}
             onClose={handleCloseDialog}
             onDelete={handleDeleteGameObject}
@@ -287,6 +289,7 @@ const Playground = () => {
               width={1000}
               height={scenario.stageSize.y}
               onDragEnd={handleDragStage}
+              onMouseMove={handleMouseMove}
               onWheel={handleWheel}
               ref={stageRef}
             >
