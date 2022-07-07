@@ -167,17 +167,18 @@ const Playground = () => {
     e.evt.preventDefault();
     if (stageRef.current !== null) {
       const stage = stageRef.current;
+      const scaleBy = 1.02;
       const oldScale = stage.scaleX();
       const { x: pointerX, y: pointerY } = stage.getPointerPosition();
       const mousePointTo = {
         x: (pointerX - stage.x()) / oldScale,
         y: (pointerY - stage.y()) / oldScale,
       };
-      const newScale = e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy;
+      const newScale = e.evt.deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy;
       stage.scale({ x: newScale, y: newScale });
       const newPos = {
-        x: pointerX - mousePointTo.x * newScale,
-        y: pointerY - mousePointTo.y * newScale,
+        x: (pointerX / newScale - mousePointTo.x) * newScale,
+        y: (pointerY / newScale - mousePointTo.y) * newScale,
       };
       stage.position(newPos);
       stage.batchDraw();
