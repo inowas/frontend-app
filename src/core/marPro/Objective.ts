@@ -1,9 +1,9 @@
+import { EGameObjectType } from './GameObject.type';
 import { EObjectiveType, IObjectiveByObservation, TObjective } from './Objective.type';
 import { GenericObject } from '../model/genericObject/GenericObject';
 import { IGameState } from './GameState.type';
-import uuid from 'uuid';
 import GameObject from './GameObject';
-import { EGameObjectType } from './GameObject.type';
+import uuid from 'uuid';
 
 class Objective extends GenericObject<TObjective> {
   get id() {
@@ -105,8 +105,8 @@ class Objective extends GenericObject<TObjective> {
       location: o.position,
       parameters: [],
       size: { x: 44, y: 30 },
-      type: EGameObjectType.OBSERVATION_WELL
-    })
+      type: EGameObjectType.OBSERVATION_WELL,
+    });
   }
 }
 

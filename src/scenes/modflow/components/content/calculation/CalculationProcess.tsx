@@ -1,7 +1,6 @@
 import { Calculation, ModflowModel } from '../../../../../core/model/modflow';
 import { ICalculation } from '../../../../../core/model/modflow/Calculation.type';
 import { IFlopyPackages } from '../../../../../core/model/flopy/packages/FlopyPackages.type';
-import { IMarProReducer } from '../../../../t100/reducers';
 import { IT03Reducer } from '../../../../t03/reducers';
 import { IT20Reducer } from '../../../../t20/reducers';
 import { Message } from 'semantic-ui-react';
@@ -30,7 +29,7 @@ import VariableDensity from '../../../../../core/model/modflow/variableDensity';
 interface IProps {
   boundaries?: BoundaryCollection;
   model?: ModflowModel;
-  reducer: IT03Reducer | IT20Reducer | IMarProReducer;
+  reducer: IT03Reducer | IT20Reducer;
   updateCalculation: (calculation: Calculation) => { type: string; payload: ICalculation };
   updateProcessedPackages: (packages: FlopyPackages) => { type: string; payload: IFlopyPackages };
   updateProcessingPackages: () => { type: string };
