@@ -1,6 +1,7 @@
 import { EGameObjectType } from '../../../core/marPro/GameObject.type';
 import gb1 from './mar-gameboard-01-riverbed.png';
 import gb2 from './mar-gameboard-02.jpg';
+import gb3 from './mar-gameboard-03.jpg';
 import happyPoints from './happy-points.png';
 import infiltrationPond from './infiltration-pond.svg';
 import marCoin from './mar-coin.png';
@@ -54,11 +55,27 @@ export const gameBoards: IGameBoard[] = [
       y: 791,
     },
   },
+  {
+    country: 'Kazakhstan',
+    name: 'Nur-Sultan',
+    img: gb3,
+    description: 'This is a draft version of our research area in Nur-Sultan.',
+    size: {
+      x: 3662,
+      y: 2655,
+    },
+  },
 ];
 
 export const getImage = (slag?: string) => {
-  if (slag === 'res_coins') {
+  if (slag === 'res_coins' || slag === 'marCoins') {
     return marCoin;
+  }
+  if (slag === 'res_coins' || slag === 'marCoins') {
+    return marCoin;
+  }
+  if (slag === 'waterDrop') {
+    return waterDrop;
   }
   if (slag === 'res_happiness') {
     return happyPoints;

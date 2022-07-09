@@ -4,10 +4,12 @@ import { sendCommand } from '../../../../services/api';
 import { useState } from 'react';
 import CheckButton from './CheckButton';
 import GameState from '../../../../core/marPro/GameState';
+import Scenario from '../../../../core/marPro/Scenario';
 import SimpleToolsCommand from '../../../shared/simpleTools/commands/SimpleToolsCommand';
 
 interface IProps {
   gameState: GameState;
+  scenario: Scenario;
 }
 
 const Results = (props: IProps) => {
@@ -43,15 +45,26 @@ const Results = (props: IProps) => {
       );
     }
 
+    let name = '';
+    if (objective.type === EObjectiveType.BY_PARAMETER) {
+      const filteredParameters = props.scenario.parameters.filter((p) => p.id === objective.parameterId);
+      name =
+        filteredParameters.length > 0 && filteredParameters[0].name
+          ? filteredParameters[0].name
+          : `Parameter ${objective.parameterId}`;
+    }
+    if (objective.type === EObjectiveType.BY_RESOURCE) {
+      const filteredResources = props.scenario.resources.filter((r) => r.id === objective.resourceId);
+      name = filteredResources.length > 0 ? filteredResources[0].name : `Resource ${objective.resourceId}`;
+    }
+
     return (
       <Menu.Item>
         <Card className="object">
           <Card.Content>
             <Card.Header>
               <Checkbox checked={objectiveState.isAchieved} />
-              {objective.type === EObjectiveType.BY_PARAMETER
-                ? `Parameter ${objective.parameterId}`
-                : `Resource ${objective.resourceId}`}
+              {name}
             </Card.Header>
           </Card.Content>
           <Card.Content textAlign="center" extra>

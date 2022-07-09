@@ -225,35 +225,6 @@ const CheckButton = () => {
     return null;
   };
 
-  /*const calculatePackages = () => {
-    if (!boundaries || !model || !soilmodel || !transport || !variableDensity) {
-      return;
-    }
-
-    setUpdatingPackages(true);
-    asyncWorker({
-      type: CALCULATE_PACKAGES_INPUT,
-      data: {
-        packages: packages ? packages.toObject() : null,
-        model: model.toObject(),
-        soilmodel: soilmodel.toObject(),
-        boundaries: boundaries.toObject(),
-        transport: transport.toObject(),
-        variableDensity: variableDensity.toObject(),
-      } as ICalculatePackagesInputData,
-    })
-      .then((data: IFlopyPackages) => {
-        setUpdatingPackages(false);
-        dispatch(updatePackages(FlopyPackages.fromObject(data)));
-        startCalculation();
-      })
-      .catch((err) => {
-        console.log({ err });
-        setErrors([...errors, 'Error while updating packages.']);
-        setUpdatingPackages(false);
-      });
-  };*/
-
   const calculateBoundaries = () => {
     console.log('CALCULATE BOUNDARIES');
     if (!boundaries || !model || !gameState || !scenario) {

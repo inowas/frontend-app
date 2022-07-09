@@ -1,14 +1,18 @@
-import { Button, Grid, Icon, Image, Label, List } from 'semantic-ui-react';
+import { Button, Grid, Icon, List } from 'semantic-ui-react';
 import { ICost } from '../../../../../core/marPro/Tool.type';
+import { IParameterRelation } from '../../../../../core/marPro/Parameter.type';
 import { isArray } from 'lodash';
 import Dialog from '../shared/Dialog';
 import GameObject from '../../../../../core/marPro/GameObject';
 import React, { useState } from 'react';
+import ResourceLabel from '../shared/ResourceLabel';
+import ResourceSettings from '../../../../../core/marPro/ResourceSettings';
+import Scenario from '../../../../../core/marPro/Scenario';
 import Slider from 'rc-slider';
-import marCoin from '../../../assets/mar-coin.png';
 
 interface IProps {
   gameObject: GameObject;
+  scenario: Scenario;
   onChange: (gameObject: GameObject, costs: ICost[]) => void;
   onClose: (id: string) => void;
   onDelete: (gameObject: GameObject, costs: ICost[]) => void;
@@ -65,6 +69,29 @@ const GameObjectDialog = (props: IProps) => {
     setIsAfterChange(false);
   };
 
+  const renderRelation = (relation: IParameterRelation, diff: number) => {
+    const amount = Math.abs((relation.relation || 1) * diff);
+    const resource = props.scenario.resources.filter((r) => r.id === relation.resourceId);
+
+    if (resource.length === 0) {
+      return (
+        <Grid.Row key={relation.resourceId}>
+          <Grid.Column width={16} textAlign="center">
+            {relation.resourceId}: {amount}
+          </Grid.Column>
+        </Grid.Row>
+      );
+    }
+
+    return (
+      <Grid.Row key={relation.resourceId}>
+        <Grid.Column width={16} textAlign="center">
+          <ResourceLabel amount={amount} resource={ResourceSettings.fromObject(resource[0])} />
+        </Grid.Column>
+      </Grid.Row>
+    );
+  };
+
   const handleSell = () => {
     let costs: ICost[] = [];
 
@@ -108,23 +135,17 @@ const GameObjectDialog = (props: IProps) => {
               <Grid.Row>
                 <Grid.Column>
                   <p>
-                    Change the value of parameter <span className="parameter-name">{parameter[0].id}</span> to{' '}
-                    <strong>{activeValue}</strong>? <br />
-                    This will <b>{diff < 0 ? 'earn' : 'cost'}</b> you:
+                    Change the value of parameter <span className="parameter-name">{parameter[0].name}</span> to{' '}
+                    <strong>{activeValue}</strong>?
                   </p>
+                  {parameter[0].relations.length > 0 && (
+                    <p>
+                      This will <b>{diff < 0 ? 'earn' : 'cost'}</b> you:
+                    </p>
+                  )}
                 </Grid.Column>
               </Grid.Row>
-              {parameter[0].relations &&
-                parameter[0].relations.map((relation) => (
-                  <Grid.Row key={relation.resourceId}>
-                    <Grid.Column width={16} textAlign="center">
-                      <Label size="medium" image>
-                        <Image size="mini" src={marCoin} />
-                        {Math.abs((relation.relation || 1) * diff)} {relation.resourceId}
-                      </Label>
-                    </Grid.Column>
-                  </Grid.Row>
-                ))}
+              {parameter[0].relations && parameter[0].relations.map((relation) => renderRelation(relation, diff))}
               <Grid.Row>
                 <Grid.Column>
                   <Button.Group fluid widths={2}>
@@ -152,14 +173,10 @@ const GameObjectDialog = (props: IProps) => {
       image={gameObject.type}
       content={
         <List>
-          <List.Item>object_id: {gameObject.id}</List.Item>
-          <List.Item>
-            [{gameObject.location.x}, {gameObject.location.y}]
-          </List.Item>
           {gameObject.parameters.map((p) => (
             <React.Fragment key={`${gameObject.id}_${p.id}`}>
               <List.Item>
-                {p.id}: {activeSlider === p.id ? activeValue : p.value}
+                {p.name || p.id}: {activeSlider === p.id ? activeValue : p.value}
               </List.Item>
               {!p.isFixed && !isArray(p.value) && (
                 <>
@@ -187,7 +204,7 @@ const GameObjectDialog = (props: IProps) => {
             <List.Item>
               <Button icon labelPosition="left" negative floated="right" onClick={handleSell}>
                 <Icon name="eraser" />
-                Sell
+                Remove
               </Button>
             </List.Item>
           )}

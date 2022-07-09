@@ -6,6 +6,10 @@ import { IScenarioTool } from './Scenario.type';
 import uuid from 'uuid';
 
 class Scenario extends GenericObject<IScenarioTool> {
+  get backgroundImage() {
+    return this._props.data.backgroundImage;
+  }
+
   get description() {
     return this._props.data.description;
   }
@@ -51,8 +55,8 @@ class Scenario extends GenericObject<IScenarioTool> {
         if (fParameters.length === 0) {
           parameters.push(parameter);
         }
-      })
-    })
+      });
+    });
 
     return parameters;
   }
