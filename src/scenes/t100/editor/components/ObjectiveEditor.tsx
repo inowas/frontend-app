@@ -1,4 +1,9 @@
-import { EObjectiveType, TObjective } from '../../../../core/marPro/Objective.type';
+import {
+  EObjectiveType,
+  IObjectiveByParameter,
+  IObjectiveByResource,
+  TObjective,
+} from '../../../../core/marPro/Objective.type';
 import { EResultType } from '../../../modflow/components/content/results/flowResults';
 import { Grid, Segment } from 'semantic-ui-react';
 import { useEffect, useState } from 'react';
@@ -25,11 +30,11 @@ const getTypes = (scenario: Scenario): IType[] => {
         return {
           disabled: false,
           text: resource.name,
-          value: resource.id
-        }
+          value: resource.id,
+        };
       }),
       text: 'Depending on Resource',
-      value: EObjectiveType.BY_RESOURCE
+      value: EObjectiveType.BY_RESOURCE,
     },
     {
       disabled: parameters.length === 0,
@@ -37,29 +42,31 @@ const getTypes = (scenario: Scenario): IType[] => {
         return {
           disabled: false,
           text: parameter.name || '',
-          value: parameter.id
-        }
+          value: parameter.id,
+        };
       }),
       text: 'Depending on Parameter',
-      value: EObjectiveType.BY_PARAMETER
+      value: EObjectiveType.BY_PARAMETER,
     },
     {
       disabled: !scenario.modelId,
-      items: [{
-        disabled: false,
-        text: 'Drawdown',
-        value: EResultType.DRAWDOWN
-      },
-      {
-        disabled: false,
-        text: 'Head',
-        value: EResultType.HEAD
-      }],
+      items: [
+        {
+          disabled: false,
+          text: 'Drawdown',
+          value: EResultType.DRAWDOWN,
+        },
+        {
+          disabled: false,
+          text: 'Head',
+          value: EResultType.HEAD,
+        },
+      ],
       text: 'Depending on Observation',
-      value: EObjectiveType.BY_OBSERVATION
-    }
+      value: EObjectiveType.BY_OBSERVATION,
+    },
   ];
-}
+};
 
 const ObjectiveEditor = (props: IProps) => {
   const [selectedObjective, setSelectedObjective] = useState<TObjective>();
@@ -70,7 +77,7 @@ const ObjectiveEditor = (props: IProps) => {
 
   useEffect(() => {
     setTypes(getTypes(props.scenario));
-  }, [props.scenario])
+  }, [props.scenario]);
 
   useEffect(() => {
     if (pid) {
@@ -134,13 +141,33 @@ const ObjectiveEditor = (props: IProps) => {
     history.push(`${baseUrl}/${id}/${property}`);
   };
 
+  const renderResource = (obj: IObjectiveByResource | IObjectiveByParameter) => {
+    if (obj.type === EObjectiveType.BY_RESOURCE) {
+      const resource = props.scenario.resources.find((r) => r.id === obj.resourceId);
+      if (resource) {
+        return `resource ${resource.name}`;
+      }
+    }
+    if (obj.type === EObjectiveType.BY_PARAMETER) {
+      const parameter = props.scenario.parameters.find((p) => p.id === obj.parameterId);
+      if (parameter) {
+        return `parameter ${parameter.name}`;
+      }
+    }
+
+    return `${obj.type} ${obj.id}`;
+  };
+
   return (
     <Segment color="black">
       <Grid>
         <Grid.Column width={4}>
           <ItemsList
             items={props.scenario.objectives.map((r) => {
-              return { id: r.id, name: r.type === EObjectiveType.BY_OBSERVATION ? `${r.type} ${r.parameter}` : `${r.type} ${r.id}` };
+              return {
+                id: r.id,
+                name: r.type === EObjectiveType.BY_OBSERVATION ? `${r.type} ${r.parameter}` : renderResource(r),
+              };
             })}
             onAdd={handleAdd}
             onClone={handleClone}
