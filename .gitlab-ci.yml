@@ -129,7 +129,7 @@ build:prod:
   stage: build
   script:
     - yarn install
-    - REACT_APP_VERSION=$(git describe --tags --always --dirty=+) REACT_APP_API_URL=https://api.dss.inowas.com REACT_APP_DISABLE_TOOL=T10 yarn build
+    - REACT_APP_VERSION=$(git describe --tags --always --dirty=+) REACT_APP_API_URL=https://api.dss.inowas.com yarn build
     - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
   artifacts:
     paths:
