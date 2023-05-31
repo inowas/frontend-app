@@ -8,7 +8,7 @@ test:
   stage: test
 
   script:
-    - yarn --ignore-platform
+    - yarn install --ignore-platform
     - CI=true yarn test --all --colors
 
 build:dev:
@@ -16,8 +16,7 @@ build:dev:
   stage: build
 
   script:
-    - export NODE_OPTIONS="--max-old-space-size=8192"
-    - yarn install
+    - yarn install --ignore-platform
     - REACT_APP_VERSION=$(git describe --tags --always --dirty=+) REACT_APP_API_URL=https://api.dev.inowas.com yarn build
     - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
 
@@ -56,7 +55,7 @@ build:smart-control:
   image: node:16
   stage: build
   script:
-    - yarn install
+    - yarn install --ignore-platform
     - REACT_APP_VERSION=$(git describe --tags --always --dirty=+) REACT_APP_API_URL=https://api.dss.smart-control.inowas.com REACT_APP_USERS_CAN_REGISTER=false REACT_APP_PUBLIC_PROJECTS_ACCESS=false yarn build
     - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
   artifacts:
@@ -92,7 +91,7 @@ build:training:
   image: node:16
   stage: build
   script:
-    - yarn install
+    - yarn install --ignore-platform
     - REACT_APP_VERSION=$(git describe --tags --always --dirty=+) REACT_APP_API_URL=https://api.training.inowas.com yarn build
     - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
   artifacts:
@@ -128,7 +127,7 @@ build:prod:
   image: node:16
   stage: build
   script:
-    - yarn install
+    - yarn install --ignore-platform
     - REACT_APP_VERSION=$(git describe --tags --always --dirty=+) REACT_APP_API_URL=https://api.dss.inowas.com yarn build
     - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
   artifacts:
