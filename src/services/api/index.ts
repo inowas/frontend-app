@@ -19,6 +19,7 @@ export const {
   JSON_SCHEMA_URL,
   MODFLOW_CALCULATION_URL,
   TIMEPROCESSING_URL,
+  ENABLE_BACKEND_PHP_STORM_XDEBUG
 } = getConfig();
 
 // TODO: Check all callback function generics
@@ -39,7 +40,12 @@ const createApi = (token: string | null = null) => {
     headers.Authorization = 'Bearer ' + token;
   }
 
-  return axios.create({ baseURL: BASE_URL, headers });
+  const defaultParams: {[key: string]: string} = {};
+  if (ENABLE_BACKEND_PHP_STORM_XDEBUG) {
+    defaultParams['XDEBUG_SESSION_START'] = 'PHPSTORM';
+  }
+
+  return axios.create({ baseURL: BASE_URL, headers, params: defaultParams });
 };
 
 export const sendCommand = (

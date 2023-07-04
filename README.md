@@ -40,3 +40,25 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+## Local development
+
+Create file .env.development.local with the following content:
+```
+REACT_APP_API_URL=http://localhost:8080
+REACT_APP_ENABLE_BACKEND_PHP_STORM_XDEBUG=true
+```
+
+## Troubleshooting
+
+### Linux
+Error: 
+```
+System limit for number of file watchers reached
+```
+Solution (temporary):
+```
+sudo sysctl fs.inotify.max_user_watches=131070
+sudo sysctl -p
+```
+
