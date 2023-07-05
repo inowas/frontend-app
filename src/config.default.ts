@@ -10,7 +10,8 @@ const getConfig = () => ({
     MODFLOW_CALCULATION_URL: process.env.REACT_APP_MODFLOW_CALCULATION_URL || 'https://modflow.inowas.com',
     PUBLIC_PROJECTS_ACCESS: process.env.REACT_APP_PUBLIC_PROJECTS_ACCESS !== 'false',
     USERS_CAN_REGISTER: process.env.REACT_APP_USERS_CAN_REGISTER !== 'false',
-    VERSION: process.env.REACT_APP_VERSION || 'dev'
+    VERSION: process.env.REACT_APP_VERSION || 'dev',
+    ENABLE_BACKEND_PHP_STORM_XDEBUG: process.env.REACT_APP_ENABLE_BACKEND_PHP_STORM_XDEBUG === 'true'
 });
 
 export default getConfig;
