@@ -18,15 +18,16 @@ import { HeadObservationWell } from '../../../../../../core/model/modflow/bounda
 import { IHeadObservationWell } from '../../../../../../core/model/modflow/boundaries/HeadObservationWell.type';
 import { IRootReducer } from '../../../../../../reducers';
 import { MODFLOW_CALCULATION_URL, fetchApiWithToken } from '../../../../../../services/api';
+import { SyntheticEvent, useEffect, useState } from 'react';
 import { cloneDeep } from 'lodash';
 import { distinct } from '../../../../../modflow/defaults/colorScales';
 import { misc } from '../../../../defaults/colorScales';
-import { SyntheticEvent, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import React from 'react';
 
 interface IData {
   sp: string;
+
   [cell: string]: number | string;
 }
 
@@ -78,7 +79,7 @@ const ChartTimeSeries = () => {
             delete row[`${hob.id}_observed`];
             delete row[`${hob.id}_simulated`];
             return row;
-          })
+          }),
         );
         setSelectedWells([...selectedWells].filter((sw) => value.filter((w) => w === sw.id).length > 0));
       }
@@ -89,7 +90,7 @@ const ChartTimeSeries = () => {
       if (hob instanceof HeadObservationWell) {
         setIsFetching(true);
         const c = await fetchApiWithToken(
-          `${MODFLOW_CALCULATION_URL}/${model?.calculationId}/timeseries/types/${EResultType.HEAD}/layers/0/rows/${hob.row}/columns/${hob.column}`
+          `${MODFLOW_CALCULATION_URL}/${model?.calculationId}/timeseries/types/${EResultType.HEAD}/layers/0/rows/${hob.row}/columns/${hob.column}`,
         );
 
         const d = data.map((row) => {
@@ -129,7 +130,7 @@ const ChartTimeSeries = () => {
     return Stressperiods.dateTimeFromTotim(
       model.stressperiods.startDateTime,
       Number(value),
-      model.stressperiods.timeUnit
+      model.stressperiods.timeUnit,
     ).format(user.settings.dateFormat);
   };
 
@@ -152,7 +153,7 @@ const ChartTimeSeries = () => {
     <>
       <Form>
         <Form.Select
-          label="Head observation well"
+          label='Head observation well'
           multiple
           onChange={handleChangeSelectedWell}
           options={hobs.map((hob) => {
@@ -169,32 +170,32 @@ const ChartTimeSeries = () => {
         <Segment raised={true} loading={isFetching}>
           <ResponsiveContainer aspect={1.5}>
             <LineChart data={data}>
-              <XAxis dataKey="sp" />
+              <XAxis dataKey='sp' />
               <YAxis label={getYAxisLabel()} />
-              <CartesianGrid strokeDasharray="3 3" />
+              <CartesianGrid strokeDasharray='3 3' />
               <Tooltip formatter={tooltipFormatter} labelFormatter={labelFormatter} />
-              <ReferenceLine stroke="#000" strokeDasharray="3 3" />
+              <ReferenceLine stroke='#000' strokeDasharray='3 3' />
               {selectedWells.map((hob, key) => (
                 <React.Fragment key={`${hob.id}_${key}`}>
                   <Line
-                    type="monotone"
+                    type='monotone'
                     dataKey={`${hob.id}_simulated`}
                     stroke={key < distinct.length ? distinct[key] : distinct[misc.length - 1]}
                     activeDot={{ r: 8 }}
                   />
                   <Line
-                    type="monotone"
+                    type='monotone'
                     dataKey={`${hob.id}_observed`}
                     stroke={key < distinct.length ? distinct[key] : distinct[misc.length - 1]}
-                    strokeDasharray="2"
+                    strokeDasharray='2'
                     activeDot={{ r: 4 }}
                   />
                 </React.Fragment>
               ))}
               <Legend
-                iconType="plainline"
+                iconType='plainline'
                 iconSize={30}
-                verticalAlign="bottom"
+                verticalAlign='bottom'
                 wrapperStyle={{ bottom: -10, left: 0 }}
                 formatter={legendFormatter}
               />
