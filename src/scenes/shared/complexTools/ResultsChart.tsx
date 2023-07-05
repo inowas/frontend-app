@@ -8,7 +8,6 @@ import {
   ReferenceLine,
   ResponsiveContainer,
   Tooltip,
-  TooltipProps,
   XAxis,
   YAxis,
 } from 'recharts';
@@ -49,7 +48,8 @@ interface IProps {
   yLabel?: string;
 }
 
-const renderTooltip = (show: string) => (e: TooltipProps) => {
+// eslint-disable-next-line react/display-name
+const renderTooltip = (show: string) => (e: any) => {
   const data = e.payload && e.payload.length >= 1 ? e.payload[0].payload : { name: '', value: 0 };
   let name = 'Column';
 
@@ -87,7 +87,7 @@ const getYAxisLabel = (type: string): LabelProps => {
   return {};
 };
 
-const resultsChart = ({ data, selectedModels, row, col, show, yLabel = '' }: IProps) => {
+const ResultsChart = ({ data, selectedModels, row, col, show, yLabel = '' }: IProps) => {
   if (data) {
     let processedData: Array<{ name: number; value: number }> = [];
     let referenceTo;
@@ -192,4 +192,4 @@ const resultsChart = ({ data, selectedModels, row, col, show, yLabel = '' }: IPr
   return null;
 };
 
-export default resultsChart;
+export default ResultsChart;

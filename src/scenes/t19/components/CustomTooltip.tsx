@@ -23,7 +23,7 @@ const styles = {
   },
 };
 
-type IProps = TooltipProps & {
+type IProps = TooltipProps<any, any> & {
   colors: {
     obs: string;
     sim: string;
@@ -49,7 +49,7 @@ const CustomTooltip = (props: IProps) => {
   return (
     <div style={styles.customTooltip}>
       <p style={styles.label}>{renderDate()}</p>
-      {props.payload.map((row, key: number) => (
+      {props.payload.map((row: any, key: number) => (
         <p
           key={key}
           style={{

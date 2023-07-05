@@ -78,7 +78,10 @@ const Calculate = (props: IProps) => {
                     <div>
                         <Header as={'h3'}>Log</Header>
                         <Segment color={'black'}>
-                            <Terminal content={calculation.message} styles={{fontSize: 8}}/>
+                            <Terminal
+                              content={calculation.message}
+                              styles={{fontSize: 8} as any}
+                            />
                         </Segment>
                     </div>
                 );

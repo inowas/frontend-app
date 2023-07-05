@@ -2,7 +2,6 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  LabelFormatter,
   LabelProps,
   Legend,
   Line,
@@ -10,7 +9,6 @@ import {
   ReferenceLine,
   ResponsiveContainer,
   Tooltip,
-  TooltipFormatter,
   XAxis,
   YAxis,
 } from 'recharts';
@@ -61,7 +59,7 @@ const BoundaryDateTimeValuesChart = (props: IProps) => {
     };
   };
 
-  const labelFormatter: LabelFormatter = (value) => {
+  const labelFormatter = (value: any) => {
     return Stressperiods.dateTimeFromTotim(
       props.stressperiods.startDateTime,
       Number(value),
@@ -69,7 +67,7 @@ const BoundaryDateTimeValuesChart = (props: IProps) => {
     ).format(user.settings.dateFormat);
   };
 
-  const tooltipFormatter: TooltipFormatter = (value, name) => {
+  const tooltipFormatter = (value: any, name: any) => {
     const p = properties.filter((prop) => prop.name === name);
     if (p.length > 0) {
       return `${value} ${p[0].unit}`;

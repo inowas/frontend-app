@@ -42,6 +42,7 @@ const createApi = (token: string | null = null) => {
 
   const defaultParams: {[key: string]: string} = {};
   if (ENABLE_BACKEND_PHP_STORM_XDEBUG) {
+    console.log('Enable backend PHPStorm XDebug');
     defaultParams['XDEBUG_SESSION_START'] = 'PHPSTORM';
   }
 

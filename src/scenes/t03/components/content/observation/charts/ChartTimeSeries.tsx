@@ -1,16 +1,13 @@
 import { BoundaryCollection, ModflowModel, Stressperiods } from '../../../../../../core/model/modflow';
 import {
   CartesianGrid,
-  LabelFormatter,
   LabelProps,
   Legend,
-  LegendValueFormatter,
   Line,
   LineChart,
   ReferenceLine,
   ResponsiveContainer,
   Tooltip,
-  TooltipFormatter,
   XAxis,
   YAxis,
 } from 'recharts';
@@ -21,11 +18,10 @@ import { HeadObservationWell } from '../../../../../../core/model/modflow/bounda
 import { IHeadObservationWell } from '../../../../../../core/model/modflow/boundaries/HeadObservationWell.type';
 import { IRootReducer } from '../../../../../../reducers';
 import { MODFLOW_CALCULATION_URL, fetchApiWithToken } from '../../../../../../services/api';
-import { SyntheticEvent } from 'react-router/node_modules/@types/react';
 import { cloneDeep } from 'lodash';
 import { distinct } from '../../../../../modflow/defaults/colorScales';
 import { misc } from '../../../../defaults/colorScales';
-import { useEffect, useState } from 'react';
+import { SyntheticEvent, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import React from 'react';
 
@@ -120,12 +116,12 @@ const ChartTimeSeries = () => {
     }
   };
 
-  const legendFormatter: LegendValueFormatter = (value) => {
+  const legendFormatter = (value: any) => {
     const hob = boundaries.findById(value.substr(0, value.indexOf('_')));
     return hob ? value.replace(hob.id, hob.name) : value;
   };
 
-  const labelFormatter: LabelFormatter = (value) => {
+  const labelFormatter = (value: any) => {
     if (!model) {
       return value;
     }
@@ -137,7 +133,7 @@ const ChartTimeSeries = () => {
     ).format(user.settings.dateFormat);
   };
 
-  const tooltipFormatter: TooltipFormatter = (value, name, entry) => {
+  const tooltipFormatter = (value: any, name: any, entry: any) => {
     if (typeof name !== 'string') {
       return value;
     }

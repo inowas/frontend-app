@@ -23,10 +23,12 @@ const styles = {
   },
 };
 
-type IProps = TooltipProps & {
+type IProps = TooltipProps<any, any> & {
   legend: {
     [key: string]: ILegendRowProps;
   };
+  payload?: any;
+  label?: string | number;
   dateTimeFormat: string;
 };
 
@@ -63,7 +65,7 @@ const CustomTooltip = (props: IProps) => {
   return (
     <div style={styles.customTooltip}>
       <p style={styles.label}>{renderDate()}</p>
-      {props.payload.map((row, key) => renderRow(row, key))}
+      {props.payload.map((row: any, key: number) => renderRow(row, key))}
     </div>
   );
 };

@@ -44,6 +44,8 @@ const ExportUI = () => {
     // @ts-ignore
     if (window.navigator.msSaveBlob) {
       // FOR IE BROWSER
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       navigator.msSaveBlob(blob, filename);
     } else {
       // FOR OTHER BROWSERS

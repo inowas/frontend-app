@@ -1,13 +1,11 @@
 import {
   Bar,
   BarChart,
-  LabelFormatter,
   Line,
   LineChart,
   ReferenceLine,
   ResponsiveContainer,
   Tooltip,
-  TooltipFormatter,
   XAxis,
   YAxis,
 } from 'recharts';
@@ -40,13 +38,13 @@ const BoundaryDateTimeValuesPreviewChart = (props: IProps) => {
 
   const user = useSelector((state: IRootReducer) => state.user);
 
-  const labelFormatter: LabelFormatter = (value) => {
+  const labelFormatter = (value: any) => {
     if (typeof value === 'number') {
       return moment.unix(value).utc().format(user.settings.dateFormat);
     }
   };
 
-  const tooltipFormatter: TooltipFormatter = (value, name) => {
+  const tooltipFormatter = (value: any, name: any) => {
     const p = properties.filter((prop) => prop.name === name);
     if (p.length > 0) {
       return `${value} ${p[0].unit}`;

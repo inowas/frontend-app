@@ -168,7 +168,7 @@ const Users = () => {
       await sendCommandAsync(UserCommand.deleteUser(userId));
       sortAndSetSelectedUsers(users.filter(user => user.id !== userId));
     } catch (e) {
-      setErrorLoading(e);
+      setErrorLoading(true);
     } finally {
       setIsLoading(false);
       setDeleteUser(null);
