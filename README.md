@@ -43,11 +43,21 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 
 ## Local development
 
+### env file
+
 Create file .env.development.local with the following content:
 ```
 REACT_APP_API_URL=http://localhost:8080
 REACT_APP_ENABLE_BACKEND_PHP_STORM_XDEBUG=true
 ```
+
+### nodejs
+
+Use node version v16.17.0. If you have [nvm](https://github.com/nvm-sh/nvm) installed, you can type
+```
+nvm use
+```
+in the project root.
 
 ## Troubleshooting
 
