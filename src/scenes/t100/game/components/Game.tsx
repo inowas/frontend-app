@@ -139,7 +139,7 @@ const Playground = () => {
     setMapScale({ ...mapScale, offset: e.target._lastPos });
   };
 
-  const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
+  const handleMouseMove = () => {
     if (!gameObjectToAdd || gameObjectToAdd.hasBeenPlaced) {
       return null;
     }
@@ -216,7 +216,7 @@ const Playground = () => {
             onChange={handleChangeGameObject}
             onClose={handleCloseDialog}
             onDelete={handleDeleteGameObject}
-          />
+          />,
         );
       }
     });
@@ -234,7 +234,7 @@ const Playground = () => {
   };
 
   const renderGameObjects = () => {
-    const gameObjects: any[] = gameState.objects.map((object, k) => {
+    const gameObjects: any[] = gameState.objects.map((object) => {
       if (object.type === EGameObjectType.RIVER) {
         return <River key={object.id} gameObject={GameObject.fromObject(object)} onClick={handleClickGameObject} />;
       }
@@ -266,10 +266,10 @@ const Playground = () => {
 
   return (
     <>
-      <div className="bg-noise"></div>
+      <div className='bg-noise'></div>
       <Header gameState={GameState.fromObject(gameState)} onToggleResourceManager={toggleResourceManager} />
       <Grid>
-        <Grid.Row className="gameboard">
+        <Grid.Row className='gameboard'>
           <Grid.Column width={'three'}>
             <Button onClick={() => refetch()}>REFETCH</Button>
             <Resources gameState={GameState.fromObject(gameState)} scenario={scenario} />

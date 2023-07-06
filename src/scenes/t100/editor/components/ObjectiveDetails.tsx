@@ -134,7 +134,7 @@ const GameObjectsDetails = (props: IProps) => {
         props.onChange(Objective.fromObject(objective));
         setError(null);
       })
-      .catch((e) => {
+      .catch(() => {
         setError('Observation well has been placed outside of model bounding box.');
       });
   };
@@ -148,26 +148,26 @@ const GameObjectsDetails = (props: IProps) => {
     const o = props.objective.toObject() as IObjectiveByResource | IObjectiveByParameter;
     return (
       <Form>
-        <Form.Group widths="equal">
+        <Form.Group widths='equal'>
           <Form.Field>
             <label>Min</label>
             <ToggleableInput
-              name="min"
+              name='min'
               onChange={handleChangeTogglableInput}
-              placeholder="Min"
+              placeholder='Min'
               readOnly={false}
-              type="number"
+              type='number'
               value={o.min !== undefined ? o.min : null}
             />
           </Form.Field>
           <Form.Field>
             <label>Max</label>
             <ToggleableInput
-              name="max"
+              name='max'
               onChange={handleChangeTogglableInput}
-              placeholder="Max"
+              placeholder='Max'
               readOnly={false}
-              type="number"
+              type='number'
               value={o.max !== undefined ? o.max : null}
             />
           </Form.Field>
@@ -181,55 +181,55 @@ const GameObjectsDetails = (props: IProps) => {
 
   return (
     <Form>
-      <Form.Group widths="equal">
+      <Form.Group widths='equal'>
         <Form.Field>
           <label>Min</label>
           <ToggleableInput
-            name="min"
+            name='min'
             onChange={handleChangeTogglableInput}
-            placeholder="Min"
+            placeholder='Min'
             readOnly={false}
-            type="number"
+            type='number'
             value={o.min !== undefined ? o.min : null}
           />
         </Form.Field>
         <Form.Field>
           <label>Max</label>
           <ToggleableInput
-            name="max"
+            name='max'
             onChange={handleChangeTogglableInput}
-            placeholder="Max"
+            placeholder='Max'
             readOnly={false}
-            type="number"
+            type='number'
             value={o.max !== undefined ? o.max : null}
           />
         </Form.Field>
       </Form.Group>
-      <Form.Group widths="equal">
+      <Form.Group widths='equal'>
         <Form.Input
           onBlur={handleBlurVector2D}
           onChange={handleChange}
-          name="x"
-          type="number"
-          label="Location X"
+          name='x'
+          type='number'
+          label='Location X'
           value={activeInput === 'x' ? activeValue : o.position.x}
         />
         <Form.Input
           onBlur={handleBlurVector2D}
           onChange={handleChange}
-          name="y"
-          type="number"
-          label="Location Y"
+          name='y'
+          type='number'
+          label='Location Y'
           value={activeInput === 'y' ? activeValue : o.position.y}
         />
       </Form.Group>
       {error && <Message negative>{error}</Message>}
-      <Form.Group widths="equal">
-        <Form.Input label="Cell X" readOnly={true} value={o.cell[0]} />
-        <Form.Input label="Cell Y" readOnly={true} value={o.cell[1]} />
+      <Form.Group widths='equal'>
+        <Form.Input label='Cell X' readOnly={true} value={o.cell[0]} />
+        <Form.Input label='Cell Y' readOnly={true} value={o.cell[1]} />
       </Form.Group>
-      <div className="field">
-        <label className="ui form">Set location</label>
+      <div className='field'>
+        <label className='ui form'>Set location</label>
         <Stage
           width={props.scenario.stageSize.x}
           height={props.scenario.stageSize.y}

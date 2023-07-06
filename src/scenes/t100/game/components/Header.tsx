@@ -6,6 +6,7 @@ interface IProps {
   onToggleResourceManager: () => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const Header = (props: IProps) => {
   return (
     <Grid>

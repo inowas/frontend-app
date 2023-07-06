@@ -50,6 +50,7 @@ export const useSensorDatasource = (ds: SensorDataSource | null) => {
         }
       });
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       fetchMetaData(ds.server, async (d) => {
         setDataSource(ds.toObject());
       });
@@ -85,7 +86,7 @@ export const useSensorDatasource = (ds: SensorDataSource | null) => {
       },
       () => {
         setIsFetching(false);
-      }
+      },
     );
     if (onSuccess) {
       onSuccess([]);

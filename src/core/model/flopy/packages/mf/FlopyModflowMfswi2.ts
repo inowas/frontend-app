@@ -1,343 +1,344 @@
-import {IPropertyValueObject} from '../../../types';
+import { IPropertyValueObject } from '../../../types';
 import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
 import FlopyModflowPackage from './FlopyModflowPackage';
 import Soilmodel from '../../../modflow/soilmodel/Soilmodel';
 
 export interface IFlopyModflowMfswi2 {
-    nsrf: number;
-    istrat: number;
-    nobs: number;
-    iswizt: number | null;
-    ipakcb: number | null;
-    iswiobs: number;
-    options: number | null;
-    nsolver: number;
-    iprsol: number;
-    mutsol: number;
-    solver2params: ISolver2params;
-    toeslope: number;
-    tipslope: number;
-    alpha: number | null;
-    beta: number;
-    nadptmx: number;
-    nadptmn: number;
-    adptfct: number;
-    nu: number;
-    zeta: number[];
-    ssz: number;
-    isource: number;
-    obsnam: number | null;
-    obslrc: number | null;
-    npln: number | null;
-    extension: string;
-    unitnumber: number | null;
-    filenames: null | string | string[];
+  nsrf: number;
+  istrat: number;
+  nobs: number;
+  iswizt: number | null;
+  ipakcb: number | null;
+  iswiobs: number;
+  options: number | null;
+  nsolver: number;
+  iprsol: number;
+  mutsol: number;
+  solver2params: ISolver2params;
+  toeslope: number;
+  tipslope: number;
+  alpha: number | null;
+  beta: number;
+  nadptmx: number;
+  nadptmn: number;
+  adptfct: number;
+  nu: number;
+  zeta: number[];
+  ssz: number;
+  isource: number;
+  obsnam: number | null;
+  obslrc: number | null;
+  npln: number | null;
+  extension: string;
+  unitnumber: number | null;
+  filenames: null | string | string[];
 }
 
 export interface ISolver2params {
-    'damp': number;
-    'dampt': number;
-    'iter1': number;
-    'mxiter': number;
-    'nbpol': number;
-    'npcond': number;
-    'rclose': number;
-    'relax': number;
-    'zclose': number;
+  'damp': number;
+  'dampt': number;
+  'iter1': number;
+  'mxiter': number;
+  'nbpol': number;
+  'npcond': number;
+  'rclose': number;
+  'relax': number;
+  'zclose': number;
 }
 
 export const defaults: IFlopyModflowMfswi2 = {
-    nsrf: 1,
-    istrat: 1,
-    nobs: 0,
-    iswizt: null,
-    ipakcb: null,
-    iswiobs: 0,
-    options: null,
-    nsolver: 1,
-    iprsol: 0,
-    mutsol: 3,
-    solver2params: {
-        damp: 1.0,
-        dampt: 1.0,
-        iter1: 20,
-        mxiter: 100,
-        nbpol: 2,
-        npcond: 1,
-        rclose: 0.0001,
-        relax: 1.0,
-        zclose: 0.001
-    },
-    toeslope: 0.05,
-    tipslope: 0.05,
-    alpha: null,
-    beta: 0.1,
-    nadptmx: 1,
-    nadptmn: 1,
-    adptfct: 1.0,
-    nu: 0.025,
-    zeta: [0.0],
-    ssz: 0.25,
-    isource: 0,
-    obsnam: null,
-    obslrc: null,
-    npln: null,
-    extension: 'swi2',
-    unitnumber: null,
-    filenames: null,
+  nsrf: 1,
+  istrat: 1,
+  nobs: 0,
+  iswizt: null,
+  ipakcb: null,
+  iswiobs: 0,
+  options: null,
+  nsolver: 1,
+  iprsol: 0,
+  mutsol: 3,
+  solver2params: {
+    damp: 1.0,
+    dampt: 1.0,
+    iter1: 20,
+    mxiter: 100,
+    nbpol: 2,
+    npcond: 1,
+    rclose: 0.0001,
+    relax: 1.0,
+    zclose: 0.001,
+  },
+  toeslope: 0.05,
+  tipslope: 0.05,
+  alpha: null,
+  beta: 0.1,
+  nadptmx: 1,
+  nadptmn: 1,
+  adptfct: 1.0,
+  nu: 0.025,
+  zeta: [0.0],
+  ssz: 0.25,
+  isource: 0,
+  obsnam: null,
+  obslrc: null,
+  npln: null,
+  extension: 'swi2',
+  unitnumber: null,
+  filenames: null,
 };
 
 export default class FlopyModflowMfswi2 extends FlopyModflowFlowPackage<IFlopyModflowMfswi2> {
 
-    public static create(soilmodel: Soilmodel) {
-        return this.fromDefault().update(soilmodel);
+  public static create(soilmodel: Soilmodel) {
+    return this.fromDefault().update(soilmodel);
+  }
+
+  public static fromDefault() {
+    return this.fromObject({});
+  }
+
+  public static fromObject(obj: IPropertyValueObject): FlopyModflowMfswi2 {
+    const d: any = FlopyModflowPackage.cloneDeep(defaults);
+    for (const key in d) {
+      if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
+        d[key] = obj[key];
+      }
     }
 
-    public static fromDefault() {
-        return this.fromObject({});
-    }
+    return new this(d);
+  }
 
-    public static fromObject(obj: IPropertyValueObject): FlopyModflowMfswi2 {
-        const d: any = FlopyModflowPackage.cloneDeep(defaults);
-        for (const key in d) {
-            if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                d[key] = obj[key];
-            }
-        }
+  // TODO
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public update(soilmodel: Soilmodel) {
+    return this;
+  }
 
-        return new this(d);
-    }
+  get nsrf() {
+    return this._props.nsrf;
+  }
 
-    // TODO
-    public update(soilmodel: Soilmodel) {
-        return this;
-    }
+  set nsrf(value) {
+    this._props.nsrf = value;
+  }
 
-    get nsrf() {
-        return this._props.nsrf;
-    }
+  get istrat() {
+    return this._props.istrat;
+  }
 
-    set nsrf(value) {
-        this._props.nsrf = value;
-    }
+  set istrat(value) {
+    this._props.istrat = value;
+  }
 
-    get istrat() {
-        return this._props.istrat;
-    }
+  get nobs() {
+    return this._props.nobs;
+  }
 
-    set istrat(value) {
-        this._props.istrat = value;
-    }
+  set nobs(value) {
+    this._props.nobs = value;
+  }
 
-    get nobs() {
-        return this._props.nobs;
-    }
+  get iswizt() {
+    return this._props.iswizt;
+  }
 
-    set nobs(value) {
-        this._props.nobs = value;
-    }
+  set iswizt(value) {
+    this._props.iswizt = value;
+  }
 
-    get iswizt() {
-        return this._props.iswizt;
-    }
+  get ipakcb() {
+    return this._props.ipakcb;
+  }
 
-    set iswizt(value) {
-        this._props.iswizt = value;
-    }
+  set ipakcb(value) {
+    this._props.ipakcb = value;
+  }
 
-    get ipakcb() {
-        return this._props.ipakcb;
-    }
+  get iswiobs() {
+    return this._props.iswiobs;
+  }
 
-    set ipakcb(value) {
-        this._props.ipakcb = value;
-    }
+  set iswiobs(value) {
+    this._props.iswiobs = value;
+  }
 
-    get iswiobs() {
-        return this._props.iswiobs;
-    }
+  get options() {
+    return this._props.options;
+  }
 
-    set iswiobs(value) {
-        this._props.iswiobs = value;
-    }
+  set options(value) {
+    this._props.options = value;
+  }
 
-    get options() {
-        return this._props.options;
-    }
+  get nsolver() {
+    return this._props.nsolver;
+  }
 
-    set options(value) {
-        this._props.options = value;
-    }
+  set nsolver(value) {
+    this._props.nsolver = value;
+  }
 
-    get nsolver() {
-        return this._props.nsolver;
-    }
+  get iprsol() {
+    return this._props.iprsol;
+  }
 
-    set nsolver(value) {
-        this._props.nsolver = value;
-    }
+  set iprsol(value) {
+    this._props.iprsol = value;
+  }
 
-    get iprsol() {
-        return this._props.iprsol;
-    }
+  get mutsol() {
+    return this._props.mutsol;
+  }
 
-    set iprsol(value) {
-        this._props.iprsol = value;
-    }
+  set mutsol(value) {
+    this._props.mutsol = value;
+  }
 
-    get mutsol() {
-        return this._props.mutsol;
-    }
+  get solver2params() {
+    return this._props.solver2params;
+  }
 
-    set mutsol(value) {
-        this._props.mutsol = value;
-    }
+  set solver2params(value) {
+    this._props.solver2params = value;
+  }
 
-    get solver2params() {
-        return this._props.solver2params;
-    }
+  get toeslope() {
+    return this._props.toeslope;
+  }
 
-    set solver2params(value) {
-        this._props.solver2params = value;
-    }
+  set toeslope(value) {
+    this._props.toeslope = value;
+  }
 
-    get toeslope() {
-        return this._props.toeslope;
-    }
+  get tipslope() {
+    return this._props.tipslope;
+  }
 
-    set toeslope(value) {
-        this._props.toeslope = value;
-    }
+  set tipslope(value) {
+    this._props.tipslope = value;
+  }
 
-    get tipslope() {
-        return this._props.tipslope;
-    }
+  get alpha() {
+    return this._props.alpha;
+  }
 
-    set tipslope(value) {
-        this._props.tipslope = value;
-    }
+  set alpha(value) {
+    this._props.alpha = value;
+  }
 
-    get alpha() {
-        return this._props.alpha;
-    }
+  get beta() {
+    return this._props.beta;
+  }
 
-    set alpha(value) {
-        this._props.alpha = value;
-    }
+  set beta(value) {
+    this._props.beta = value;
+  }
 
-    get beta() {
-        return this._props.beta;
-    }
+  get nadptmx() {
+    return this._props.nadptmx;
+  }
 
-    set beta(value) {
-        this._props.beta = value;
-    }
+  set nadptmx(value) {
+    this._props.nadptmx = value;
+  }
 
-    get nadptmx() {
-        return this._props.nadptmx;
-    }
+  get nadptmn() {
+    return this._props.nadptmn;
+  }
 
-    set nadptmx(value) {
-        this._props.nadptmx = value;
-    }
+  set nadptmn(value) {
+    this._props.nadptmn = value;
+  }
 
-    get nadptmn() {
-        return this._props.nadptmn;
-    }
+  get adptfct() {
+    return this._props.adptfct;
+  }
 
-    set nadptmn(value) {
-        this._props.nadptmn = value;
-    }
+  set adptfct(value) {
+    this._props.adptfct = value;
+  }
 
-    get adptfct() {
-        return this._props.adptfct;
-    }
+  get nu() {
+    return this._props.nu;
+  }
 
-    set adptfct(value) {
-        this._props.adptfct = value;
-    }
+  set nu(value) {
+    this._props.nu = value;
+  }
 
-    get nu() {
-        return this._props.nu;
-    }
+  get zeta() {
+    return this._props.zeta;
+  }
 
-    set nu(value) {
-        this._props.nu = value;
-    }
+  set zeta(value) {
+    this._props.zeta = value;
+  }
 
-    get zeta() {
-        return this._props.zeta;
-    }
+  get ssz() {
+    return this._props.ssz;
+  }
 
-    set zeta(value) {
-        this._props.zeta = value;
-    }
+  set ssz(value) {
+    this._props.ssz = value;
+  }
 
-    get ssz() {
-        return this._props.ssz;
-    }
+  get isource() {
+    return this._props.isource;
+  }
 
-    set ssz(value) {
-        this._props.ssz = value;
-    }
+  set isource(value) {
+    this._props.isource = value;
+  }
 
-    get isource() {
-        return this._props.isource;
-    }
+  get obsnam() {
+    return this._props.obsnam;
+  }
 
-    set isource(value) {
-        this._props.isource = value;
-    }
+  set obsnam(value) {
+    this._props.obsnam = value;
+  }
 
-    get obsnam() {
-        return this._props.obsnam;
-    }
+  get obslrc() {
+    return this._props.obslrc;
+  }
 
-    set obsnam(value) {
-        this._props.obsnam = value;
-    }
+  set obslrc(value) {
+    this._props.obslrc = value;
+  }
 
-    get obslrc() {
-        return this._props.obslrc;
-    }
+  get npln() {
+    return this._props.npln;
+  }
 
-    set obslrc(value) {
-        this._props.obslrc = value;
-    }
+  set npln(value) {
+    this._props.npln = value;
+  }
 
-    get npln() {
-        return this._props.npln;
-    }
+  get extension() {
+    return this._props.extension;
+  }
 
-    set npln(value) {
-        this._props.npln = value;
-    }
+  set extension(value) {
+    this._props.extension = value;
+  }
 
-    get extension() {
-        return this._props.extension;
-    }
+  get unitnumber() {
+    return this._props.unitnumber;
+  }
 
-    set extension(value) {
-        this._props.extension = value;
-    }
+  set unitnumber(value) {
+    this._props.unitnumber = value;
+  }
 
-    get unitnumber() {
-        return this._props.unitnumber;
-    }
+  get filenames() {
+    return this._props.filenames;
+  }
 
-    set unitnumber(value) {
-        this._props.unitnumber = value;
-    }
+  set filenames(value) {
+    this._props.filenames = value;
+  }
 
-    get filenames() {
-        return this._props.filenames;
-    }
-
-    set filenames(value) {
-        this._props.filenames = value;
-    }
-
-    public supportedModflowVersions() {
-        return [];
-    }
+  public supportedModflowVersions() {
+    return [];
+  }
 }

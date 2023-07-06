@@ -79,7 +79,7 @@ export default class HeadObservationWell extends PointBoundary {
     layers: number[],
     cells: ICells,
     dateTimes: string[],
-    spValues: ISpValues
+    spValues: ISpValues,
   ) {
     return new this({
       id,
@@ -104,7 +104,7 @@ export default class HeadObservationWell extends PointBoundary {
       obj.layers,
       Cells.fromGeometry(Geometry.fromGeoJson(obj.geometry), boundingBox, gridSize).toObject(),
       obj.date_times,
-      obj.sp_values
+      obj.sp_values,
     );
   }
 
@@ -117,7 +117,7 @@ export default class HeadObservationWell extends PointBoundary {
   public getDateTimes = (stressperiods: Stressperiods): Moment[] => {
     if (!this._props.properties.date_times) {
       this._props.properties.date_times = stressperiods.stressperiods.map((sp) =>
-        sp.startDateTime.format('YYYY-MM-DD')
+        sp.startDateTime.format('YYYY-MM-DD'),
       );
     }
     return this._props.properties.date_times.map((dt: string) => moment.utc(dt));
@@ -130,7 +130,7 @@ export default class HeadObservationWell extends PointBoundary {
         const newDateTime = moment.utc(dateTimes[dateTimes.length - 1]).add(amount, unit);
         this._props.properties.date_times.push(newDateTime.format('YYYY-MM-DD'));
         this._props.properties.sp_values.push(
-          this._props.properties.sp_values[this._props.properties.sp_values.length - 1]
+          this._props.properties.sp_values[this._props.properties.sp_values.length - 1],
         );
         return this;
       }
@@ -140,6 +140,7 @@ export default class HeadObservationWell extends PointBoundary {
     return this;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public changeDateTime(value: string, idx: number, opId?: string) {
     const dateTimes = this.dateTimes;
     if (dateTimes.length > idx) {

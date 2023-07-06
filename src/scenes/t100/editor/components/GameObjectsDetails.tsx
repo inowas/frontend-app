@@ -133,7 +133,7 @@ const GameObjectsDetails = (props: IProps) => {
     setActiveValue(value);
   };
 
-  const handleChangeType = (_: FormEvent, { name, value }: DropdownProps) => {
+  const handleChangeType = (_: FormEvent, { value }: DropdownProps) => {
     const types = gameObjectTypes.filter((t) => t.type === value);
 
     if (types.length < 1) {
@@ -165,44 +165,44 @@ const GameObjectsDetails = (props: IProps) => {
   const renderSpatialSettings = () => {
     return (
       <Form>
-        <Form.Group widths="equal">
+        <Form.Group widths='equal'>
           <Form.Input
             onBlur={handleBlurVector2D('size')}
             onChange={handleChange}
-            name="sizeX"
-            type="number"
-            label="Size X"
+            name='sizeX'
+            type='number'
+            label='Size X'
             value={activeInput === 'sizeX' ? activeValue : props.object.size.x}
           />
           <Form.Input
             onBlur={handleBlurVector2D('size')}
             onChange={handleChange}
-            name="sizeY"
-            type="number"
-            label="Size Y"
+            name='sizeY'
+            type='number'
+            label='Size Y'
             value={activeInput === 'sizeY' ? activeValue : props.object.size.y}
           />
         </Form.Group>
-        <Form.Group widths="equal">
+        <Form.Group widths='equal'>
           <Form.Input
             onBlur={handleBlurVector2D('location')}
             onChange={handleChange}
-            name="locationX"
-            type="number"
-            label="Location X"
+            name='locationX'
+            type='number'
+            label='Location X'
             value={activeInput === 'locationX' ? activeValue : props.object.location.x}
           />
           <Form.Input
             onBlur={handleBlurVector2D('location')}
             onChange={handleChange}
-            name="locationY"
-            type="number"
-            label="Location Y"
+            name='locationY'
+            type='number'
+            label='Location Y'
             value={activeInput === 'locationY' ? activeValue : props.object.location.y}
           />
         </Form.Group>
-        <div className="field">
-          <label className="ui form">Set location</label>
+        <div className='field'>
+          <label className='ui form'>Set location</label>
           <Stage
             width={props.scenario.stageSize.x}
             height={props.scenario.stageSize.y}
@@ -223,8 +223,8 @@ const GameObjectsDetails = (props: IProps) => {
     <>
       <Form>
         <Form.Select
-          name="type"
-          label="Type"
+          name='type'
+          label='Type'
           options={gameObjectTypes.map((t) => ({ key: t.type, text: t.type, value: t.type }))}
           onChange={handleChangeType}
           value={props.object.type}
@@ -238,24 +238,24 @@ const GameObjectsDetails = (props: IProps) => {
             </Message>
 
             <Form.Select
-              label="Link to boundary (Leave empty, if it should not be linked to a boundary."
+              label='Link to boundary (Leave empty, if it should not be linked to a boundary.'
               onChange={handleChangeBoundary}
               options={props.boundaries.all.map((b) => ({
                 key: b.id,
                 text: b.name,
                 value: b.id,
               }))}
-              placeholder="No link"
+              placeholder='No link'
               value={props.object.boundaryId}
             />
             <Form.Group>
-              <Form.Button label="&nbsp;" disabled={!props.object.boundaryId} onClick={handleUnlinkBoundary}>
+              <Form.Button label='&nbsp;' disabled={!props.object.boundaryId} onClick={handleUnlinkBoundary}>
                 Unlink
               </Form.Button>
-              <Form.Button label="&nbsp;" disabled={!props.object.boundaryId} onClick={handleImportLocation}>
+              <Form.Button label='&nbsp;' disabled={!props.object.boundaryId} onClick={handleImportLocation}>
                 Import location
               </Form.Button>
-              <Form.Button label="&nbsp;" disabled={!props.object.boundaryId} onClick={handleImportParameters}>
+              <Form.Button label='&nbsp;' disabled={!props.object.boundaryId} onClick={handleImportParameters}>
                 Import Parameters
               </Form.Button>
             </Form.Group>
