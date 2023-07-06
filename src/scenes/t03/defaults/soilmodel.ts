@@ -69,12 +69,12 @@ export const soilmodelParameters: IParameter[] = [
     {
         name: 'ss',
         description: 'Specific storage',
-        unit: '-'
+        unit: '1/m'
     },
     {
         name: 'sy',
         description: 'Specific yield',
-        unit: '1/m'
+        unit: '-'
     }
 ];
 
@@ -123,14 +123,14 @@ export const defaultSoilmodelParameters: IRasterParameter[] = [
         isActive: true,
         id: 'ss',
         title: 'Specific storage',
-        unit: '-'
+        unit: '1/m'
     },
     {
         defaultValue: 0.15,
         isActive: true,
         id: 'sy',
         title: 'Specific yield',
-        unit: '1/m'
+        unit: '-'
     },
     {
         defaultValue: 1,
