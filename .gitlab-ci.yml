@@ -20,7 +20,7 @@ build:dev:
 
   script:
     - yarn install --ignore-platform
-    - REACT_APP_VERSION=$(git describe --tags --always --dirty=+) REACT_APP_API_URL=https://api.dev.inowas.com yarn build
+    - REACT_APP_VERSION=$(git describe --tags --always --dirty=+) REACT_APP_API_URL=https://api.dev.inowas.com NODE_OPTIONS=--max_old_space_size=4096 yarn build
     - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
 
   artifacts:
