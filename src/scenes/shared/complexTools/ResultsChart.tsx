@@ -92,12 +92,12 @@ const ResultsChart = ({ data, selectedModels, row, col, show, yLabel = '' }: IPr
     let processedData: Array<{ name: number; value: number }> = [];
     let referenceTo;
 
-    if (show === 'row' && row) {
+    if (show === 'row' && row !== undefined) {
       processedData = data[row].map((v, colIdx) => ({ name: colIdx, value: v }));
       referenceTo = col;
     }
 
-    if (show === 'col' && col) {
+    if (show === 'col' && col !== undefined) {
       processedData = data.map((r, idx) => ({ name: idx, value: r[col] })).reverse();
       referenceTo = row;
     }
