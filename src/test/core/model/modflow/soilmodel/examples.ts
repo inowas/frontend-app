@@ -248,7 +248,7 @@ export const eSoilmodelLegacy = {
                     isActive: true,
                     label: 'ss',
                     name: 'Specific storage',
-                    unit: '-',
+                    unit: '1/m',
                     value: 2.0e-5
                 },
                 sy: {
@@ -256,7 +256,7 @@ export const eSoilmodelLegacy = {
                     isActive: true,
                     label: 'sy',
                     name: 'Specific yield',
-                    unit: '1/m',
+                    unit: '-',
                     value: 0.15
                 }
             }, {
@@ -323,7 +323,7 @@ export const eSoilmodelLegacy = {
                     isActive: false,
                     label: 'param',
                     name: 'Soilmodel Parameter',
-                    unit: '-',
+                    unit: '1/m',
                     value: 0
                 },
                 sy: {
