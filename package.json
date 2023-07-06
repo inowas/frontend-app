@@ -83,7 +83,7 @@
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-sort-imports-es6-autofix": "^0.6.0",
     "prop-types": "^15.7.2",
-    "react-error-overlay": "^6.0.9",
+    "react-error-overlay": "6.0.9",
     "redux-devtools-extension": "2.13.9",
     "worker-loader": "^2.0.0",
     "yarn-audit-fix": "^5.0.3"
