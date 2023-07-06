@@ -3,6 +3,9 @@ stages:
   - build
   - deploy
 
+image:
+  ubuntu:jammy
+
 test:
   image: node:16
   stage: test
@@ -28,6 +31,7 @@ build:dev:
     - dev
 
 deploy:dev:
+  image: ubuntu:latest
   stage: deploy
   dependencies:
     - build:dev
