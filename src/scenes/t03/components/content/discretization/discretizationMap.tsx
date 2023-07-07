@@ -13,7 +13,7 @@ import { IRowsAndColumns, getRowsAndColumnsFromGeoJson } from '../../../../../se
 import { Polygon } from 'react-leaflet';
 import { addMessage } from '../../../actions/actions';
 import { asyncWorker } from '../../../../modflow/worker/worker';
-import { getCellFromClick, rotateCoordinateAroundPoint } from '../../../../../services/geoTools/getCellFromClick';
+import { getCellFromClick } from '../../../../../services/geoTools/getCellFromClick';
 import { messageError } from '../../../defaults/messages';
 import { renderBoundaryOverlays, renderBoundingBoxLayer } from '../../maps/mapLayers';
 import { useDispatch } from 'react-redux';
@@ -187,56 +187,50 @@ const DiscretizationMap = (props: IProps) => {
       !cellsRef.current ||
       !props.boundingBox ||
       !props.gridSize ||
-      !props.geometry ||
-      latlng.lat < props.boundingBox.yMin ||
-      latlng.lat > props.boundingBox.yMax ||
-      latlng.lng < props.boundingBox.xMin ||
-      latlng.lng > props.boundingBox.xMax
+      !props.geometry
     ) {
       return null;
     }
 
-    const latlngRot = props.rotation
-      ? rotateCoordinateAroundPoint(latlng, props.geometry.centerOfMass, props.rotation)
-      : latlng;
+    try {
+      const clickedCell = getCellFromClick(
+        props.boundingBox,
+        props.gridSize,
+        latlng,
+        props.rotation,
+        props.geometry.centerOfMass,
+      );
 
-    const clickedCell = getCellFromClick(
-      props.boundingBox,
-      props.gridSize,
-      latlngRot,
-      props.rotation,
-      props.geometry.centerOfMass
-    );
-
-    const c: Cells = cellsRef.current;
-    c.toggle(clickedCell, props.boundingBox, props.gridSize, false);
-    cellsRef.current = _.cloneDeep(c);
-    props.onChangeCells(c);
+      const c: Cells = cellsRef.current;
+      c.toggle(clickedCell, props.boundingBox, props.gridSize, false);
+      cellsRef.current = _.cloneDeep(c);
+      props.onChangeCells(c);
+    } catch (e) {
+      return null;
+    }
   };
 
   const handleToggleDrawing = (m: string) => () => setMode(m);
 
   const renderActiveCellsLayer = () => {
-    if (!props.cells) {
+    if (!props.cells || !props.geometry) {
       return null;
     }
-    if (props.geometry && props.rotation && props.rotation % 360 !== 0) {
-      return (
-        <AffectedCellsLayer
-          boundingBox={props.boundingBox}
-          gridSize={props.gridSize}
-          cells={props.cells}
-          rotation={{ geometry: props.geometry, angle: props.rotation }}
-        />
-      );
-    }
-    return <AffectedCellsLayer boundingBox={props.boundingBox} gridSize={props.gridSize} cells={props.cells} />;
+
+    const angle = props.rotation && props.rotation % 360 || 0;
+
+    return <AffectedCellsLayer
+      boundingBox={props.boundingBox}
+      gridSize={props.gridSize}
+      cells={props.cells}
+      rotation={angle !== 0 ? { geometry: props.geometry, angle } : undefined}
+    />;
   };
 
   return (
-    <React.Fragment>
+    <>
       {!props.readOnly && (
-        <Button.Group attached="top">
+        <Button.Group attached='top'>
           <Button primary={mode === 'single'} onClick={handleToggleDrawing('single')}>
             Single Selection
           </Button>
@@ -258,7 +252,7 @@ const DiscretizationMap = (props: IProps) => {
         {!props.readOnly && (
           <FeatureGroup>
             <EditControl
-              position="topright"
+              position='topleft'
               draw={{
                 circle: false,
                 circlemarker: false,
@@ -284,7 +278,9 @@ const DiscretizationMap = (props: IProps) => {
           </FeatureGroup>
         )}
         {props.boundaries.length > 0 && (
-          <LayersControl position="topright">{renderBoundaryOverlays(props.boundaries)}</LayersControl>
+          <LayersControl position='topright'>
+            {renderBoundaryOverlays(props.boundaries)}
+          </LayersControl>
         )}
         {mode !== 'refinement' && renderActiveCellsLayer()}
         {renderBoundingBoxLayer(props.boundingBox, props.rotation, props.geometry || undefined)}
@@ -316,7 +312,7 @@ const DiscretizationMap = (props: IProps) => {
           />
         </div>
       )}
-    </React.Fragment>
+    </>
   );
 };
 

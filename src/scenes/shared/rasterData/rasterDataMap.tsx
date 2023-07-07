@@ -46,7 +46,7 @@ interface IProps {
   children?: Children;
   data?: number | Array2D<number>;
   model: ModflowModel;
-  onClickCell?: (latlng: [number, number]) => void;
+  onClickCell?: (latLng: { lat: number, lng: number }) => void;
   unit: string;
   zones?: Array<{
     color: string;
@@ -61,7 +61,7 @@ const RasterDataMap = (props: IProps) => {
 
   const handleClickCell = (e: LeafletMouseEvent) => {
     if (props.onClickCell) {
-      props.onClickCell([e.latlng.lng, e.latlng.lat]);
+      props.onClickCell({ lat: e.latlng.lat, lng: e.latlng.lng });
     }
   };
 
@@ -75,10 +75,10 @@ const RasterDataMap = (props: IProps) => {
       <BasicTileLayer />
       {renderBoundingBoxLayer(model.boundingBox, model.rotation, model.geometry)}
       {props.boundaries && props.boundaries.length > 0 && (
-        <LayersControl position="topright">{renderBoundaryOverlays(props.boundaries)}</LayersControl>
+        <LayersControl position='topright'>{renderBoundaryOverlays(props.boundaries)}</LayersControl>
       )}
       {props.zones && (
-        <LayersControl position="topright">
+        <LayersControl position='topright'>
           {props.zones.map((r, k) => (
             <LayersControl.Overlay key={k} name={r.name} checked={true}>
               <GeoJSON

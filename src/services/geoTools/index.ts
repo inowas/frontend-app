@@ -29,7 +29,7 @@ export const getGridCells = (boundingBox: BoundingBox, gridSize: GridSize) => {
           lineString([
             [boundingBox.xMin + x * dx, boundingBox.yMax - (gridSize.nY - y) * dy],
             [boundingBox.xMin + (x + 1) * dx, boundingBox.yMax - (gridSize.nY - y - 1) * dy],
-          ])
+          ]),
         ),
       });
     }
@@ -67,7 +67,7 @@ export const getGridCellsFromVariableGrid = (boundingBox: BoundingBox, gridSize:
               boundingBox.xMin + gridSize.getDistancesXEnd()[x] * dx,
               boundingBox.yMax - gridSize.getDistancesYEnd()[gridSize.nY - y - 1] * dy,
             ],
-          ])
+          ]),
         ),
       });
     }
@@ -76,11 +76,7 @@ export const getGridCellsFromVariableGrid = (boundingBox: BoundingBox, gridSize:
   return cells;
 };
 
-export const getActiveCellFromCoordinate = (
-  coordinate: number[],
-  boundingBox: BoundingBox,
-  gridSize: GridSize
-): ICell => {
+export const getActiveCellFromCoordinate = (coordinate: number[], boundingBox: BoundingBox, gridSize: GridSize): ICell => {
   const [x, y] = coordinate;
   if (x < boundingBox.xMin || x > boundingBox.xMax) {
     throw Error('Outside BoundingBox.');
@@ -106,7 +102,7 @@ export const calculateActiveCells = (
   geometry: Geometry,
   boundingBox: BoundingBox,
   gridSize: GridSize,
-  intersection = 0
+  intersection = 0,
 ): Cells => {
   const activeCells = new Cells([]);
 
@@ -179,7 +175,7 @@ export const getRowsAndColumnsFromCoordinate = (coordinate: any, boundingBox: Bo
 export const getRowsAndColumnsFromGeoJson = (
   geoJson: AllGeoJSON,
   boundingBox: BoundingBox,
-  gridSize: GridSize
+  gridSize: GridSize,
 ): IRowsAndColumns => {
   const bbox = BoundingBox.fromGeoJson(geoJson);
 
