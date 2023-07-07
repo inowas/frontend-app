@@ -1,4 +1,4 @@
-import ibound from './ibound';
+import ibound from './IBound';
 import regular from './regular';
 
 export {

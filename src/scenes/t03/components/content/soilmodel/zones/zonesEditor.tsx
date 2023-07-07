@@ -20,7 +20,7 @@ import {
 import {ModflowModel} from '../../../../../../core/model/modflow';
 import {RasterDataMap, RasterfileUploadModal} from '../../../../../shared/rasterData';
 import {distinct} from '../../../../../modflow/defaults/colorScales';
-import {getActiveCellFromCoordinate} from '../../../../../../services/geoTools';
+import { getCellFromClick } from '../../../../../../services/geoTools/getCellFromClick';
 import {rasterDownload} from '../../../../../shared/rasterData/helpers';
 import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import CellAnalyzer, {CellAnalyzerParameters} from '../../../../../shared/rasterData/CellAnalyzer';
@@ -60,7 +60,7 @@ interface ISmoothParametersWithId {
 }
 
 interface ICellInformation {
-  latlng: [number, number];
+  latLng: { lat: number, lng: number };
   cell: ICell;
   parameters: CellAnalyzerParameters;
 }
@@ -134,27 +134,41 @@ const ZonesEditor = (props: IProps) => {
     props.onChange(LayerParameterZonesCollection.fromObject(cRelations), props.parameter.id);
   };
 
-  const handleClickCell = (latlng: [number, number]) => {
-    const cell = getActiveCellFromCoordinate(latlng, props.model.boundingBox, props.model.gridSize);
-    if (
-      cell[0] < 0 || cell[0] > (props.model.gridSize.nX - 1) || cell[1] < 0 || cell[1] > (props.model.gridSize.nY - 1)
-    ) {
+  const handleClickCell = (latLng: {lat: number, lng: number}) => {
+    try {
+      const cell = getCellFromClick(
+        props.model.boundingBox,
+        props.model.gridSize,
+        latLng,
+        props.model.rotation
+      );
+
+      if (cell[0] < 0 || cell[0] > (props.model.gridSize.nX - 1)) {
+        setCellInfo(null);
+        return;
+      }
+
+      if (cell[1] < 0 || cell[1] > (props.model.gridSize.nY - 1)) {
+        setCellInfo(null);
+        return;
+      }
+
+      const params = props.layer.parameters.map((p) => {
+        const value = props.layer.getValueOfParameter(p.id);
+        if (typeof value === 'number') {
+          return {name: p.id, value};
+        }
+        if (Array.isArray(value) && value.length >= cell[1] && value[cell[1]].length >= cell[0]) {
+          return {name: p.id, value: value[cell[1]][cell[0]]}
+        }
+        return {name: p.id, value: NaN};
+      })
+
+      setCellInfo({latLng, cell, parameters: params});
+    } catch (e) {
       setCellInfo(null);
       return;
     }
-
-    const params = props.layer.parameters.map((p) => {
-      const value = props.layer.getValueOfParameter(p.id);
-      if (typeof value === 'number') {
-        return {name: p.id, value};
-      }
-      if (Array.isArray(value) && value.length >= cell[1] && value[cell[1]].length >= cell[0]) {
-        return {name: p.id, value: value[cell[1]][cell[0]]}
-      }
-      return {name: p.id, value: NaN};
-    })
-
-    setCellInfo({latlng, cell, parameters: params});
   };
 
   const handleCancelUploadModal = () => setRasterUploadModal(false);
@@ -222,7 +236,7 @@ const ZonesEditor = (props: IProps) => {
     return (
       <CellAnalyzer
         cell={cellInfo ? cellInfo.cell : undefined}
-        latlng={cellInfo ? cellInfo.latlng : undefined}
+        latLng={cellInfo ? cellInfo.latLng : undefined}
         onDismiss={handleDismiss}
         open={cellInfo !== null}
         parameters={cellInfo ? cellInfo.parameters : undefined}

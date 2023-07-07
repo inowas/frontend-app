@@ -25,6 +25,7 @@ export const getCellFromClick = (
 ): [number, number] => {
   const rot = rotation && center && rotation % 360 !== 0 ?
     rotateCoordinateAroundPoint(latLon, center, rotation) : latLon;
+  console.log(rot);
   const x = rot.lng;
   const y = rot.lat;
 

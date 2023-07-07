@@ -7,7 +7,7 @@ export type CellAnalyzerParameters = Array<{ name: string; value: number; }>;
 interface IProps {
   cell?: ICell;
   children: ReactNode;
-  latlng?: [number, number];
+  latLng?: { lat: number; lng: number; };
   onDismiss: () => void;
   open: boolean;
   parameters?: CellAnalyzerParameters;
@@ -18,15 +18,15 @@ const CellAnalyzer = (props: IProps) => {
     return (
       <List>
         <List.Item><List.Header>Coordinates</List.Header></List.Item>
-        {props.latlng &&
+        {props.latLng &&
         <React.Fragment>
           <List.Item>
             <span style={{float: 'left'}}>lat:</span>&nbsp;
-            <span style={{float: 'right'}}>{props.latlng[1].toFixed(4)}</span>
+            <span style={{float: 'right'}}>{props.latLng.lng.toFixed(4)}</span>
           </List.Item>
           <List.Item>
             <span style={{float: 'left'}}>lng:</span>&nbsp;
-            <span style={{float: 'right'}}>{props.latlng[0].toFixed(4)}</span>
+            <span style={{float: 'right'}}>{props.latLng.lat.toFixed(4)}</span>
           </List.Item>
         </React.Fragment>
         }
