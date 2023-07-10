@@ -94,9 +94,10 @@ export default class RechargeBoundary extends Boundary {
       obj.geometry,
       obj.name,
       obj.layers,
-      Cells.fromGeometry(Geometry.fromGeoJson(obj.geometry), boundingBox, gridSize).toObject(),
+      obj.cells || Cells.fromGeometry(Geometry.fromGeoJson(obj.geometry), boundingBox, gridSize).toObject(),
       obj.sp_values,
-      obj.nrchop
+      obj.nrchop,
+      obj.is_excluded_from_calculation,
     );
   }
 
@@ -111,13 +112,21 @@ export default class RechargeBoundary extends Boundary {
         description: 'Recharge rate into layer',
         unit: 'm/day',
         decimals: 5,
-        default: 0
-      }
+        default: 0,
+      },
     ];
   }
 
-  public static create(id: string, geometry: Polygon, name: string,
-                       layers: number[], cells: ICells, spValues: ISpValues, nrchop: INrchop = 1) {
+  public static create(
+    id: string,
+    geometry: Polygon,
+    name: string,
+    layers: number[],
+    cells: ICells,
+    spValues: ISpValues,
+    nrchop: INrchop = 1,
+    isExcludedFromCalculation = false,
+  ) {
 
     return new this({
       id,
@@ -129,8 +138,9 @@ export default class RechargeBoundary extends Boundary {
         cells,
         layers,
         sp_values: spValues,
-        nrchop
-      }
+        nrchop,
+        isExcludedFromCalculation,
+      },
     });
   }
 
@@ -157,9 +167,11 @@ export default class RechargeBoundary extends Boundary {
     type: this.type,
     name: this.name,
     geometry: this.geometry.toObject() as Polygon,
+    cells: this.cells.toObject(),
     layers: this.layers,
     nrchop: this.nrchop ? this.nrchop : 1,
-    sp_values: this.getSpValues(stressPeriods)
+    sp_values: this.getSpValues(stressPeriods),
+    is_excluded_from_calculation: this.isExcludedFromCalculation,
   });
 
   public toObject(): IRechargeBoundary {

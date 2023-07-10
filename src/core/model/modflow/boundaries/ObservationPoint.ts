@@ -3,7 +3,7 @@ import {ISpValues} from './Boundary.type';
 import {Point} from 'geojson';
 import {cloneDeep} from 'lodash';
 import Boundary from './Boundary';
-import Stressperiods from '../Stressperiods';
+import StressPeriods from '../Stressperiods';
 import moment, {Moment} from 'moment';
 
 export default class ObservationPoint {
@@ -123,7 +123,7 @@ export default class ObservationPoint {
         return this;
     }
 
-    public getDateTimes(stressPeriods: Stressperiods) {
+    public getDateTimes(stressPeriods: StressPeriods) {
         if (!this._props.properties.date_times) {
             return stressPeriods.stressperiods.map((sp) => sp.startDateTime);
         }
@@ -131,17 +131,17 @@ export default class ObservationPoint {
         return this._props.properties.date_times.map((dt: string) => moment.utc(dt));
     }
 
-    public getSpValues(stressperiods: Stressperiods) {
+    public getSpValues(stressPeriods: StressPeriods) {
         const spValues = this._props.properties.sp_values;
-        if (this.getDateTimes(stressperiods).length > 0) {
-            return this.getDateTimes(stressperiods).map((dt, idx) => {
+        if (this.getDateTimes(stressPeriods).length > 0) {
+            return this.getDateTimes(stressPeriods).map((dt, idx) => {
                 if (Array.isArray(spValues[idx])) {
                     return spValues[idx];
                 }
                 return spValues[spValues.length - 1];
             });
         }
-        return Boundary.mergeStressperiodsWithSpValues(stressperiods, spValues);
+        return Boundary.mergeStressperiodsWithSpValues(stressPeriods, spValues);
     }
 
     public toObject(): IObservationPoint {

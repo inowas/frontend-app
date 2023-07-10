@@ -74,7 +74,7 @@ class BoundaryCollection extends Collection<Boundary> {
   };
 
   public toExport = (stressPeriods: Stressperiods) => {
-    return this.all.map((b) => b.toExport(stressPeriods));
+    return this.all.map((boundary) => boundary.toExport(stressPeriods));
   };
 
   public filter = (callable: (b: Boundary) => boolean) => {

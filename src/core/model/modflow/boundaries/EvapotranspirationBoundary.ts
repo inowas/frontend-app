@@ -3,7 +3,7 @@ import { ICells } from '../../geometry/Cells.type';
 import {
   IEvapotranspirationBoundary,
   IEvapotranspirationBoundaryExport,
-  INevtop
+  INevtop,
 } from './EvapotranspirationBoundary.type';
 import { ISpValues, IValueProperty } from './Boundary.type';
 import { Polygon } from 'geojson';
@@ -88,8 +88,16 @@ export default class EvapotranspirationBoundary extends Boundary {
     this._props.properties.isExcludedFromCalculation = isExcluded;
   }
 
-  public static create(id: string, geometry: Polygon, name: string, layers: number[],
-                       cells: ICells, spValues: ISpValues, nevtop = 1) {
+  public static create(
+    id: string,
+    geometry: Polygon,
+    name: string,
+    layers: number[],
+    cells: ICells,
+    spValues: ISpValues,
+    nevtop = 1,
+    isExcludedFromCalculation = false,
+  ) {
 
     return new this({
       id,
@@ -101,8 +109,9 @@ export default class EvapotranspirationBoundary extends Boundary {
         cells,
         layers,
         sp_values: spValues,
-        nevtop
-      }
+        nevtop,
+        isExcludedFromCalculation,
+      },
     });
   }
 
@@ -112,9 +121,9 @@ export default class EvapotranspirationBoundary extends Boundary {
       obj.geometry,
       obj.name,
       obj.layers,
-      Cells.fromGeometry(Geometry.fromGeoJson(obj.geometry), boundingBox, gridSize).toObject(),
+      obj.cells || Cells.fromGeometry(Geometry.fromGeoJson(obj.geometry), boundingBox, gridSize).toObject(),
       obj.sp_values,
-      obj.nevtop
+      obj.nevtop,
     );
   }
 
@@ -133,22 +142,22 @@ export default class EvapotranspirationBoundary extends Boundary {
         description: 'Maximum Evapotranspiration on flux',
         unit: 'm/day',
         decimals: 5,
-        default: 0
+        default: 0,
       },
       {
         name: 'EVT Surface',
         description: 'Evapotranspiration of surface',
         unit: 'm',
         decimals: 5,
-        default: 0
+        default: 0,
       },
       {
         name: 'Extinction Depth',
         description: 'Evapotranspiration on depth',
         unit: 'm',
         decimals: 5,
-        default: 0
-      }
+        default: 0,
+      },
     ];
   }
 
@@ -170,14 +179,16 @@ export default class EvapotranspirationBoundary extends Boundary {
     this._props.properties.sp_values = spValues;
   }
 
-  public toExport = (stressperiods: Stressperiods): IEvapotranspirationBoundaryExport => ({
+  public toExport = (stressPeriods: Stressperiods): IEvapotranspirationBoundaryExport => ({
     id: this.id,
     type: this.type,
     name: this.name,
     geometry: this.geometry.toObject() as Polygon,
+    cells: this.cells.toObject(),
     layers: this.layers,
     nevtop: this.nevtop ? this.nevtop : 1,
-    sp_values: this.getSpValues(stressperiods)
+    sp_values: this.getSpValues(stressPeriods),
+    is_excluded_from_calculation: this.isExcludedFromCalculation,
   });
 
   public toObject(): IEvapotranspirationBoundary {
