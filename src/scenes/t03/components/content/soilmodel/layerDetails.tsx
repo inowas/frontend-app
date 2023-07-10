@@ -165,6 +165,7 @@ const LayerDetails = (props: IProps) => {
     const renderContent = () => {
         const {activeParam, parameters, readOnly} = props;
         if (activeParam && parameters.filter((p) => p.name === activeParam).length > 0) {
+
             const parameter = props.soilmodel.parametersCollection.findById(activeParam);
 
             if (parameter) {
