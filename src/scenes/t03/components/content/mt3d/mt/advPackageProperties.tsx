@@ -14,7 +14,6 @@ import { documentation } from '../../../../defaults/transport';
 import FlopyMt3dMtadv, { IFlopyMt3dMtAdv } from '../../../../../../core/model/flopy/packages/mt/FlopyMt3dMtadv';
 import InfoPopup from '../../../../../shared/InfoPopup';
 import React, { ChangeEvent, FormEvent, MouseEvent, SyntheticEvent, useEffect, useState } from 'react';
-import FlopyMt3dMtbtn from '../../../../../../core/model/flopy/packages/mt/FlopyMt3dMtbtn';
 
 interface IProps {
   mtPackage: FlopyMt3dMtadv;
