@@ -12,7 +12,6 @@ import {
 import { Button, Dimmer, Grid, Header, List, Loader, Modal, Segment } from 'semantic-ui-react';
 import { ChangeEvent, useState } from 'react';
 import { CoordinateSystemDisclaimer } from '../../shared/complexTools';
-import { FlopyPackages } from '../../../core/model/flopy';
 import { IBoundary } from '../../../core/model/modflow/boundaries/Boundary.type';
 import { IFlopyPackages } from '../../../core/model/flopy/packages/FlopyPackages.type';
 import { IModflowModel } from '../../../core/model/modflow/ModflowModel.type';

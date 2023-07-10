@@ -1,3 +1,5 @@
+import { BoundingBox, GridSize } from '../../geometry';
+import { Cells, Geometry } from '../index';
 import { ICells } from '../../geometry/Cells.type';
 import { IDrainageBoundary, IDrainageBoundaryExport } from './DrainageBoundary.type';
 import { ISpValues, IValueProperty } from './Boundary.type';
@@ -6,8 +8,6 @@ import { cloneDeep } from 'lodash';
 import LineBoundary from './LineBoundary';
 import Stressperiods from '../Stressperiods';
 import Uuid from 'uuid';
-import { BoundingBox, GridSize } from '../../geometry';
-import { Cells, Geometry } from '../index';
 
 export default class DrainageBoundary extends LineBoundary {
 
