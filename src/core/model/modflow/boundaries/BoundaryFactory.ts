@@ -100,7 +100,7 @@ export default abstract class BoundaryFactory {
     layers: number[],
     cells: ICells,
     spValues: ISpValues,
-    dateTimes: string[] = []
+    dateTimes: string[] = [],
   ) {
     switch (type) {
       case 'chd':

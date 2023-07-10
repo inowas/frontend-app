@@ -7,7 +7,7 @@ import { cloneDeep, orderBy } from 'lodash';
 import BoundingBox from '../../geometry/BoundingBox';
 import GridSize from '../../geometry/GridSize';
 import PointBoundary from './PointBoundary';
-import Stressperiods from '../Stressperiods';
+import StressPeriods from '../Stressperiods';
 import Uuid from 'uuid';
 import moment, { DurationInputArg1, DurationInputArg2, Moment } from 'moment';
 
@@ -80,6 +80,7 @@ export default class HeadObservationWell extends PointBoundary {
     cells: ICells,
     dateTimes: string[],
     spValues: ISpValues,
+    isExcludedFromCalculation = false,
   ) {
     return new this({
       id,
@@ -92,6 +93,7 @@ export default class HeadObservationWell extends PointBoundary {
         cells,
         date_times: dateTimes,
         sp_values: spValues,
+        isExcludedFromCalculation,
       },
     });
   }
@@ -102,9 +104,10 @@ export default class HeadObservationWell extends PointBoundary {
       obj.geometry,
       obj.name,
       obj.layers,
-      Cells.fromGeometry(Geometry.fromGeoJson(obj.geometry), boundingBox, gridSize).toObject(),
+      obj.cells || Cells.fromGeometry(Geometry.fromGeoJson(obj.geometry), boundingBox, gridSize).toObject(),
       obj.date_times,
       obj.sp_values,
+      obj.is_excluded_from_calculation,
     );
   }
 
@@ -114,16 +117,16 @@ export default class HeadObservationWell extends PointBoundary {
     this._class = HeadObservationWell;
   }
 
-  public getDateTimes = (stressperiods: Stressperiods): Moment[] => {
+  public getDateTimes = (stressPeriods: StressPeriods): Moment[] => {
     if (!this._props.properties.date_times) {
-      this._props.properties.date_times = stressperiods.stressperiods.map((sp) =>
+      this._props.properties.date_times = stressPeriods.stressperiods.map((sp) =>
         sp.startDateTime.format('YYYY-MM-DD'),
       );
     }
     return this._props.properties.date_times.map((dt: string) => moment.utc(dt));
   };
 
-  public addDateTime(amount: DurationInputArg1, unit: DurationInputArg2, opId?: string, stressperiods?: Stressperiods) {
+  public addDateTime(amount: DurationInputArg1, unit: DurationInputArg2, opId?: string, stressperiods?: StressPeriods) {
     if (stressperiods) {
       const dateTimes = this._props.properties.date_times;
       if (this._props.properties.date_times.length > 0) {
@@ -140,8 +143,7 @@ export default class HeadObservationWell extends PointBoundary {
     return this;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public changeDateTime(value: string, idx: number, opId?: string) {
+  public changeDateTime(value: string, idx: number) {
     const dateTimes = this.dateTimes;
     if (dateTimes.length > idx) {
       dateTimes[idx] = moment.utc(value);
@@ -172,10 +174,10 @@ export default class HeadObservationWell extends PointBoundary {
     return this;
   }
 
-  public getSpValues(stressperiods: Stressperiods): ISpValues {
+  public getSpValues(stressPeriods: StressPeriods): ISpValues {
     const spValues = this._props.properties.sp_values;
 
-    return this.getDateTimes(stressperiods).map((dt, idx) => {
+    return this.getDateTimes(stressPeriods).map((dt, idx) => {
       if (Array.isArray(spValues[idx])) {
         return spValues[idx];
       }
@@ -183,14 +185,16 @@ export default class HeadObservationWell extends PointBoundary {
     });
   }
 
-  public toExport = (stressPeriods: Stressperiods): IHeadObservationWellExport => ({
+  public toExport = (stressPeriods: StressPeriods): IHeadObservationWellExport => ({
     id: this.id,
     type: this.type,
     name: this.name,
     geometry: this.geometry.toObject() as Point,
+    cells: this.cells.toObject(),
     layers: this.layers,
     date_times: this.getDateTimes(stressPeriods).map((dt: Moment) => dt.format('YYYY-MM-DD')),
     sp_values: this.getSpValues(stressPeriods),
+    is_excluded_from_calculation: this.isExcludedFromCalculation,
   });
 
   public toObject(): IHeadObservationWell {

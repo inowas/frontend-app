@@ -68,7 +68,7 @@ const ModflowModelImport = (props: RouteComponentProps) => {
       const gridSize = Array.isArray(data.discretization.grid_size)
         ? GridSize.fromArray(data.discretization.grid_size)
         : GridSize.fromObject(data.discretization.grid_size);
-      const stressperiods = Stressperiods.fromImport(data.discretization.stressperiods);
+      const stressPeriods = Stressperiods.fromImport(data.discretization.stressperiods);
 
       const nPayload: IPayload = {
         id,
@@ -79,16 +79,16 @@ const ModflowModelImport = (props: RouteComponentProps) => {
           geometry: geometry.toObject(),
           bounding_box: boundingBox.toObject(),
           grid_size: gridSize.toObject(),
-          cells: Cells.fromGeometry(geometry, boundingBox, gridSize).toObject(),
-          stressperiods: stressperiods.toObject(),
+          cells: data.cells ? Cells.fromObject(data.cells).toObject() : Cells.fromGeometry(geometry, boundingBox, gridSize).toObject(),
+          stressperiods: stressPeriods.toObject(),
           length_unit: data.discretization.length_unit,
           time_unit: data.discretization.time_unit,
         },
         permissions: 'rwx',
-        calculation_id: '',
+        calculation_id: data.calculation_id,
         is_scenario: false,
         boundaries: BoundaryCollection.fromExport(data.boundaries, boundingBox, gridSize).toObject(),
-        packages: FlopyPackages.fromObject(data.packages).toObject(),
+        packages: { ...data.packages, model_id: id },
         soilmodel: Soilmodel.fromExport(data.soilmodel).toObject(),
         transport: Transport.fromObject(data.transport).toObject(),
         variableDensity: VariableDensity.fromObject(data.variableDensity).toObject(),
@@ -103,7 +103,7 @@ const ModflowModelImport = (props: RouteComponentProps) => {
   const sendImportCommand = () => {
     if (payload) {
       sendCommand(ModflowModelCommand.importModflowModel(payload), () =>
-        props.history.push('/tools/T03/' + payload.id)
+        props.history.push('/tools/T03/' + payload.id),
       );
     }
   };
@@ -123,35 +123,35 @@ const ModflowModelImport = (props: RouteComponentProps) => {
     const geometry = Geometry.fromObject(discretization.geometry);
     const isPublic = cPayload.public;
     return (
-      <Segment color="blue">
-        <Header as="h3" style={{ textAlign: 'left' }}>
+      <Segment color='blue'>
+        <Header as='h3' style={{ textAlign: 'left' }}>
           Metadata
         </Header>
         <List>
           <List.Item>
-            <List.Icon name="file outline" />
+            <List.Icon name='file outline' />
             <List.Content>{name}</List.Content>
           </List.Item>
           <List.Item>
-            <List.Icon name="file alternate outline" />
+            <List.Icon name='file alternate outline' />
             <List.Content>{description}</List.Content>
           </List.Item>
           <List.Item>
-            <List.Icon name="chess board" />
+            <List.Icon name='chess board' />
             <List.Content>
               Cols: {grid_size.n_x}, Rows: {grid_size.n_y}
             </List.Content>
           </List.Item>
           <List.Item>
-            <List.Icon name="eye" />
+            <List.Icon name='eye' />
             <List.Content>{(isPublic && 'public') || 'private'}</List.Content>
           </List.Item>
           <List.Item>
-            <List.Icon name="arrows alternate horizontal" />
+            <List.Icon name='arrows alternate horizontal' />
             <List.Content>{dxGeometry(geometry) + ' m'}</List.Content>
           </List.Item>
           <List.Item>
-            <List.Icon name="arrows alternate vertical" />
+            <List.Icon name='arrows alternate vertical' />
             <List.Content>{dyGeometry(geometry) + ' m'}</List.Content>
           </List.Item>
         </List>
@@ -160,14 +160,14 @@ const ModflowModelImport = (props: RouteComponentProps) => {
   };
 
   const renderValidationErrors = (cErrors: ValidationError[]) => (
-    <Segment color="red" inverted={true}>
-      <Header as="h3" style={{ textAlign: 'left' }}>
+    <Segment color='red' inverted={true}>
+      <Header as='h3' style={{ textAlign: 'left' }}>
         Validation Errors
       </Header>
       <List>
         {cErrors.map((e, idx) => (
           <List.Item key={idx}>
-            <List.Icon name="eye" />
+            <List.Icon name='eye' />
             <List.Content>{e.message}</List.Content>
           </List.Item>
         ))}
@@ -182,8 +182,8 @@ const ModflowModelImport = (props: RouteComponentProps) => {
     const geometry = Geometry.fromObject(discretization.geometry);
 
     return (
-      <Segment color="blue">
-        <Header as="h3" style={{ textAlign: 'left' }}>
+      <Segment color='blue'>
+        <Header as='h3' style={{ textAlign: 'left' }}>
           Map
         </Header>
         <ModelImportMap boundaries={boundaries} boundingBox={boundingBox} geometry={geometry} />
@@ -206,7 +206,7 @@ const ModflowModelImport = (props: RouteComponentProps) => {
               )}
               {!isLoading && (
                 <Segment color={'green'}>
-                  <Header as="h3" style={{ textAlign: 'left' }}>
+                  <Header as='h3' style={{ textAlign: 'left' }}>
                     File Requirements
                   </Header>
                   <List bulleted={true}>
@@ -214,9 +214,9 @@ const ModflowModelImport = (props: RouteComponentProps) => {
                     <List.Item>
                       The file will be validated against&nbsp;
                       <a
-                        href="https://schema.inowas.com/import/modflowModel.json"
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        href='https://schema.inowas.com/import/modflowModel.json'
+                        target='_blank'
+                        rel='noopener noreferrer'
                       >
                         this
                       </a>{' '}
@@ -225,9 +225,9 @@ const ModflowModelImport = (props: RouteComponentProps) => {
                     <List.Item>
                       Examples can be found&nbsp;
                       <a
-                        href="https://github.com/inowas/inowas-dss-cra/blob/master/imports"
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        href='https://github.com/inowas/inowas-dss-cra/blob/master/imports'
+                        target='_blank'
+                        rel='noopener noreferrer'
                       >
                         here
                       </a>
@@ -237,13 +237,13 @@ const ModflowModelImport = (props: RouteComponentProps) => {
                   <Button
                     primary={true}
                     fluid={true}
-                    as="label"
+                    as='label'
                     htmlFor={'inputField'}
-                    icon="file alternate"
-                    content="Select File"
-                    labelPosition="left"
+                    icon='file alternate'
+                    content='Select File'
+                    labelPosition='left'
                   />
-                  <input hidden={true} type="file" id="inputField" onChange={handleUploadJson} />
+                  <input hidden={true} type='file' id='inputField' onChange={handleUploadJson} />
                 </Segment>
               )}
             </Grid.Column>
@@ -268,7 +268,7 @@ const ModflowModelImport = (props: RouteComponentProps) => {
 
   return (
     <div>
-      <Button primary={true} icon="upload" content="Import" labelPosition="left" onClick={handleClickUpload} />
+      <Button primary={true} icon='upload' content='Import' labelPosition='left' onClick={handleClickUpload} />
       {showJSONImportModal && renderJSONImportModal()}
     </div>
   );

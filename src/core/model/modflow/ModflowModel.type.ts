@@ -18,15 +18,6 @@ export interface IDiscretization {
   time_unit: ITimeUnit;
 }
 
-export interface IDiscretizationImport {
-  geometry?: GeoJson;
-  bounding_box?: IBoundingBox;
-  grid_size?: IGridSize;
-  stressperiods?: IStressPeriods;
-  length_unit?: ILengthUnit;
-  time_unit?: ITimeUnit;
-}
-
 export interface IModflowModel {
   id: string;
   is_scenario: boolean;

@@ -31,4 +31,5 @@ export interface ILineBoundaryExport {
   layers: number[];
   cells?: ICells;
   ops: IObservationPointExport[];
+  is_excluded_from_calculation: boolean;
 }

@@ -25,7 +25,8 @@ export interface IRechargeBoundaryExport {
   name: string;
   geometry: Polygon;
   layers: number[];
-  cells?: ICells;
+  cells: ICells;
   sp_values: ISpValues;
   nrchop: INrchop;
+  is_excluded_from_calculation: boolean;
 }

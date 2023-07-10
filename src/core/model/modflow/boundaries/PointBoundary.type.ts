@@ -14,7 +14,7 @@ export interface IPointBoundaryProperties {
   cells: ICells;
   layers: number[];
   sp_values: ISpValues;
-  isExcludedFromCalculation?: boolean;
+  isExcludedFromCalculation: boolean;
 }
 
 export interface IPointBoundaryExport {
@@ -24,4 +24,5 @@ export interface IPointBoundaryExport {
   layers: number[];
   cells?: ICells;
   sp_values: ISpValues;
+  is_excluded_from_calculation: boolean;
 }

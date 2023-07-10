@@ -15,8 +15,8 @@ export interface IEvapotranspirationBoundary {
     layers: number[];
     nevtop: INevtop;
     sp_values: ISpValues;
-    isExcludedFromCalculation?: boolean;
-  }
+    isExcludedFromCalculation: boolean;
+  };
 }
 
 export interface IEvapotranspirationBoundaryExport {
@@ -24,8 +24,9 @@ export interface IEvapotranspirationBoundaryExport {
   id?: string;
   name: string;
   geometry: Polygon;
+  cells: ICells;
   layers: number[];
-  cells?: ICells;
-  sp_values: ISpValues;
   nevtop: INevtop;
+  sp_values: ISpValues;
+  is_excluded_from_calculation: boolean;
 }

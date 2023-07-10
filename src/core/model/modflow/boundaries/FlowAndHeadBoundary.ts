@@ -1,3 +1,4 @@
+import { BoundingBox, GridSize } from '../../geometry';
 import { Cells, Geometry } from '../index';
 import { ICells } from '../../geometry/Cells.type';
 import {
@@ -9,10 +10,8 @@ import { IObservationPoint } from './ObservationPoint.type';
 import { ISpValues, IValueProperty } from './Boundary.type';
 import { LineString } from 'geojson';
 import { cloneDeep, orderBy, sortedUniq } from 'lodash';
-import BoundingBox from '../../geometry/BoundingBox';
-import GridSize from '../../geometry/GridSize';
 import LineBoundary from './LineBoundary';
-import Stressperiods from '../Stressperiods';
+import StressPeriods from '../Stressperiods';
 import Uuid from 'uuid';
 import moment, { DurationInputArg1, DurationInputArg2, Moment } from 'moment';
 
@@ -24,7 +23,8 @@ export default class FlowAndHeadBoundary extends LineBoundary {
     layers: number[],
     cells: ICells,
     dateTimes: string[],
-    spValues: ISpValues
+    spValues: ISpValues,
+    isExcludedFromCalculation = false,
   ) {
     return new this({
       type: 'FeatureCollection',
@@ -39,6 +39,7 @@ export default class FlowAndHeadBoundary extends LineBoundary {
             name,
             layers,
             cells,
+            isExcludedFromCalculation,
           },
         },
         {
@@ -66,9 +67,10 @@ export default class FlowAndHeadBoundary extends LineBoundary {
       obj.geometry,
       obj.name,
       obj.layers,
-      Cells.fromGeometry(Geometry.fromGeoJson(obj.geometry), boundingBox, gridSize).toObject(),
+      obj.cells || Cells.fromGeometry(Geometry.fromGeoJson(obj.geometry), boundingBox, gridSize).toObject(),
       [],
-      []
+      [],
+      obj.is_excluded_from_calculation,
     );
 
     const opIdToRemove = boundary.observationPoints[0].id;
@@ -141,7 +143,7 @@ export default class FlowAndHeadBoundary extends LineBoundary {
     return FlowAndHeadBoundary.valueProperties();
   }
 
-  public addDateTime(amount: DurationInputArg1, unit: DurationInputArg2, opId?: string, stressperiods?: Stressperiods) {
+  public addDateTime(amount: DurationInputArg1, unit: DurationInputArg2, opId?: string, stressperiods?: StressPeriods) {
     if (opId && stressperiods) {
       const observationPoint = this.findObservationPointById(opId);
       const dateTimes = observationPoint.getDateTimes(stressperiods);
@@ -149,27 +151,27 @@ export default class FlowAndHeadBoundary extends LineBoundary {
         const newDateTime = moment.utc(dateTimes[dateTimes.length - 1]).add(amount, unit);
         observationPoint.addDateTimeValue(
           newDateTime,
-          observationPoint.getSpValues(stressperiods)[observationPoint.getSpValues(stressperiods).length - 1]
+          observationPoint.getSpValues(stressperiods)[observationPoint.getSpValues(stressperiods).length - 1],
         );
         this.updateObservationPoint(
           opId,
           observationPoint.name,
           observationPoint.geometry,
           observationPoint.spValues,
-          observationPoint.dateTimes
+          observationPoint.dateTimes,
         );
         return this;
       }
       observationPoint.addDateTimeValue(
         stressperiods.startDateTime,
-        this.valueProperties.map((v) => v.default)
+        this.valueProperties.map((v) => v.default),
       );
       this.updateObservationPoint(
         opId,
         observationPoint.name,
         observationPoint.geometry,
         observationPoint.spValues,
-        observationPoint.dateTimes
+        observationPoint.dateTimes,
       );
     }
 
@@ -192,8 +194,8 @@ export default class FlowAndHeadBoundary extends LineBoundary {
           (o: Moment) => {
             return o.format('YYYYMMDD');
           },
-          ['asc']
-        )
+          ['asc'],
+        ),
       );
     }
     return this;
@@ -218,14 +220,14 @@ export default class FlowAndHeadBoundary extends LineBoundary {
           observationPoint.name,
           observationPoint.geometry,
           observationPoint.spValues,
-          observationPoint.dateTimes
+          observationPoint.dateTimes,
         );
       }
     }
     return this;
   }
 
-  public getDateTimes = (stressperiods: Stressperiods, opId?: string): Moment[] => {
+  public getDateTimes = (stressperiods: StressPeriods, opId?: string): Moment[] => {
     if (opId) {
       const observationPoint = this.findObservationPointById(opId);
       return observationPoint.getDateTimes(stressperiods);
@@ -233,25 +235,27 @@ export default class FlowAndHeadBoundary extends LineBoundary {
 
     let dateTimeStamps: number[] = [];
     this.observationPoints.forEach(
-      (op) => (dateTimeStamps = dateTimeStamps.concat(op.getDateTimes(stressperiods).map((dt) => dt.unix())))
+      (op) => (dateTimeStamps = dateTimeStamps.concat(op.getDateTimes(stressperiods).map((dt) => dt.unix()))),
     );
 
     return sortedUniq(dateTimeStamps).map((dts) => moment.unix(dts));
   };
 
-  public toExport(stressperiods: Stressperiods): IFlowAndHeadBoundaryExport {
+  public toExport(stressPeriods: StressPeriods): IFlowAndHeadBoundaryExport {
     return {
       id: this.id,
       type: this.type,
       name: this.name,
       geometry: this.geometry.toObject() as LineString,
       layers: this.layers,
+      cells: this.cells.toObject(),
       ops: this.observationPoints.map((op) => ({
         name: op.name,
         geometry: op.geometry,
-        date_times: op.getDateTimes(stressperiods).map((dt) => dt.format('YYYY-MM-DD')),
-        sp_values: op.getSpValues(stressperiods),
+        date_times: op.getDateTimes(stressPeriods).map((dt) => dt.format('YYYY-MM-DD')),
+        sp_values: op.getSpValues(stressPeriods),
       })),
+      is_excluded_from_calculation: this.isExcludedFromCalculation,
     };
   }
 
