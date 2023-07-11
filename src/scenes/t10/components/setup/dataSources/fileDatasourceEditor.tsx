@@ -34,7 +34,7 @@ const FileDatasourceEditor = (props: IProps) => {
   const [parameterField, setParameterField] = useState<number | null>(null);
 
   const { dataSource, isParsing, metadata, updateData, updateDataSource, uploadFile } = useFileDatasource(
-    props.dataSource || null
+    props.dataSource || null,
   );
 
   const handleSave = () => {
@@ -44,7 +44,7 @@ const FileDatasourceEditor = (props: IProps) => {
     props.onSave(dataSource);
   };
 
-  const handleBlur = () => {
+  const handleBlur = (field?: string) => {
     if (!dataSource) {
       return;
     }
@@ -57,10 +57,10 @@ const FileDatasourceEditor = (props: IProps) => {
       dataSource.max = parseFloat(activeValue);
     }
 
-    if (activeInput === 'dateTimeFormat') {
-      setDateTimeFormat(activeValue);
-      setActiveInput(null);
-      return;
+    if (field === 'dateTimeFormat') {
+      if (dateTimeField !== null && parameterField !== null) {
+        updateData(firstRowIsHeader, dateTimeField, parameterField, dateTimeFormat);
+      }
     }
 
     updateDataSource(dataSource);
@@ -88,9 +88,14 @@ const FileDatasourceEditor = (props: IProps) => {
     setActiveValue(value);
   };
 
+  const handleChangeDateTimeFormat = (e: ChangeEvent<HTMLInputElement>) => {
+    setDateTimeFormat(e.target.value);
+  };
+
   const handleChangeCheckbox = () => setFirstRowIsHeader(!firstRowIsHeader);
 
   const handleChangeDropdown = (e: SyntheticEvent<Element>, { name, value }: DropdownProps) => {
+
     if (typeof value !== 'number') {
       return;
     }
@@ -149,20 +154,20 @@ const FileDatasourceEditor = (props: IProps) => {
                       Upload File
                     </Label>
                     <Form.Group>
-                      <Form.Input onChange={handleUploadFile} label="File" name="file" type="file" width={6} />
+                      <Form.Input onChange={handleUploadFile} label='File' name='file' type='file' width={6} />
                       <Form.Input
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        label="Datetime format"
+                        onBlur={() => handleBlur('dateTimeFormat')}
+                        onChange={handleChangeDateTimeFormat}
+                        label='Datetime format'
                         name={'dateTimeFormat'}
-                        value={activeInput === 'dateTimeFormat' ? activeValue : dateTimeFormat}
+                        value={dateTimeFormat}
                       />
                       <Form.Checkbox
                         style={{ marginTop: '30px' }}
                         toggle={true}
                         onChange={handleChangeCheckbox}
                         checked={firstRowIsHeader}
-                        label="First row is header."
+                        label='First row is header.'
                       />
                     </Form.Group>
                   </Segment>
@@ -185,7 +190,7 @@ const FileDatasourceEditor = (props: IProps) => {
                               <List.Header>
                                 {e.type}: {e.code}
                               </List.Header>
-                              <List.Description as="a">
+                              <List.Description as='a'>
                                 {e.message} in row {e.row}
                               </List.Description>
                             </List.Content>
@@ -242,8 +247,8 @@ const FileDatasourceEditor = (props: IProps) => {
                     <Form>
                       <Form.Group>
                         <Form.Field>
-                          <Button icon onClick={handleReset} size="small" name="begin" style={{ marginTop: '22px' }}>
-                            <Icon name="refresh" />
+                          <Button icon onClick={handleReset} size='small' name='begin' style={{ marginTop: '22px' }}>
+                            <Icon name='refresh' />
                           </Button>
                         </Form.Field>
                         <DatePicker
@@ -257,8 +262,8 @@ const FileDatasourceEditor = (props: IProps) => {
                       </Form.Group>
                       <Form.Group>
                         <Form.Field>
-                          <Button icon onClick={handleReset} size="small" name="end" style={{ marginTop: '22px' }}>
-                            <Icon name="refresh" />
+                          <Button icon onClick={handleReset} size='small' name='end' style={{ marginTop: '22px' }}>
+                            <Icon name='refresh' />
                           </Button>
                         </Form.Field>
                         <DatePicker
@@ -281,8 +286,8 @@ const FileDatasourceEditor = (props: IProps) => {
                     <Form>
                       <Form.Group>
                         <Form.Field>
-                          <Button icon onClick={handleReset} size="small" name="max" style={{ marginTop: '22px' }}>
-                            <Icon name="refresh" />
+                          <Button icon onClick={handleReset} size='small' name='max' style={{ marginTop: '22px' }}>
+                            <Icon name='refresh' />
                           </Button>
                         </Form.Field>
                         <Form.Input
@@ -296,8 +301,8 @@ const FileDatasourceEditor = (props: IProps) => {
                       </Form.Group>
                       <Form.Group>
                         <Form.Field>
-                          <Button icon onClick={handleReset} size="small" name="min" style={{ marginTop: '22px' }}>
-                            <Icon name="refresh" />
+                          <Button icon onClick={handleReset} size='small' name='min' style={{ marginTop: '22px' }}>
+                            <Icon name='refresh' />
                           </Button>
                         </Form.Field>
                         <Form.Input
