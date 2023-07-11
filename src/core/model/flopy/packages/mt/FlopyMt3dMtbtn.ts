@@ -39,7 +39,7 @@ export interface IFlopyMt3dMtBtn extends IPropertyValueObject {
     ifmtdp: number;
     savucn: boolean;
     nprs: number;
-    timprs: null;
+    timprs: null | number[];
     obs: [] | null;
     nprobs: number;
     chkmas: boolean;
