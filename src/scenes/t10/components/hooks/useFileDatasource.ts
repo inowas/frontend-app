@@ -25,7 +25,7 @@ export const useFileDatasource = (ds: FileDataSource | null) => {
     firstRowIsHeader: boolean,
     dateTimeColumn: number,
     parameterColumn: number,
-    dateTimeFormat: string
+    dateTimeFormat: string,
   ) => {
     if (!metadata) {
       return;
@@ -35,6 +35,7 @@ export const useFileDatasource = (ds: FileDataSource | null) => {
     if (firstRowIsHeader) {
       fData.shift();
     }
+
     const cData: IDateTimeValue[] = fData
       .map((r) => ({
         timeStamp: moment.utc(r[dateTimeColumn], dateTimeFormat).unix(),
