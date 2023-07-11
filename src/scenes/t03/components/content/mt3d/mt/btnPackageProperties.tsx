@@ -8,6 +8,7 @@ import {
   Icon,
   Input,
 } from 'semantic-ui-react';
+import { Stressperiods } from '../../../../../../core/model/modflow';
 import { documentation } from '../../../../defaults/transport';
 import FlopyMt3dMtbtn, { IFlopyMt3dMtBtn } from '../../../../../../core/model/flopy/packages/mt/FlopyMt3dMtbtn';
 import InfoPopup from '../../../../../shared/InfoPopup';
@@ -15,6 +16,7 @@ import React, { ChangeEvent, FormEvent, MouseEvent, useEffect, useState } from '
 
 interface IProps {
   mtPackage: FlopyMt3dMtbtn;
+  stressPeriods: Stressperiods;
   onChange: (p: FlopyMt3dMtbtn) => any;
   readOnly: boolean;
 }
@@ -27,8 +29,6 @@ const BtnPackageProperties = (props: IProps) => {
   useEffect(() => {
     setMtPackage(props.mtPackage.toObject());
   }, [props.mtPackage]);
-
-  console.log('mtPackage', mtPackage);
 
   const handleClickAccordion = (e: MouseEvent, titleProps: AccordionTitleProps) => {
     const { index } = titleProps;
@@ -43,15 +43,23 @@ const BtnPackageProperties = (props: IProps) => {
     return setMtPackage({ ...mtPackage, [name]: value });
   };
 
-  const handleOnChangeCheckbox = (e: FormEvent<HTMLInputElement>, data: CheckboxProps) => {
+  const handleChangeNprs = (e: FormEvent<HTMLInputElement>, data: CheckboxProps) => {
 
     const { name, checked } = data;
-    if (name === undefined) {
+    if (name !== 'nprs') {
       return;
     }
 
-    setMtPackage({ ...mtPackage, [name]: checked ? 1 : 0 });
-    props.onChange(FlopyMt3dMtbtn.fromObject({ ...mtPackage, [name]: checked ? 1 : 0 }));
+    if (checked) {
+      const newMtPackage = { ...mtPackage, timprs: props.stressPeriods.totims as number[], nprs: props.stressPeriods.totims.length };
+      setMtPackage(newMtPackage);
+      props.onChange(FlopyMt3dMtbtn.fromObject(newMtPackage));
+      return;
+    }
+
+    setMtPackage({ ...mtPackage, timprs: null, nprs: 0 });
+    props.onChange(FlopyMt3dMtbtn.fromObject({ ...mtPackage, timprs: null, nprs: 0 }));
+    return;
   };
 
   const handleOnBlur = (cast?: (v: any) => any) => (e: ChangeEvent<HTMLInputElement>) => {
@@ -284,7 +292,7 @@ const BtnPackageProperties = (props: IProps) => {
                       disabled={readOnly}
                       name={'nprs'}
                       checked={Boolean(mtPackage.nprs)}
-                      onChange={handleOnChangeCheckbox}
+                      onChange={handleChangeNprs}
                     />
                   </Form.Field>
                   <Form.Field width={1}>

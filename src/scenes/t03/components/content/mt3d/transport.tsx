@@ -150,6 +150,7 @@ const Transport = (props: IProps) => {
             mtPackage={mt3d.getPackage(type) as FlopyMt3dMtbtn}
             onChange={handleChangePackage}
             readOnly={readOnly}
+            stressPeriods={props.model.stressperiods}
           />
         );
       case 'dsp':
