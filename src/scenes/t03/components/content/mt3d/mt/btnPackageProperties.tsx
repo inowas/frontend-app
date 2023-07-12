@@ -51,7 +51,8 @@ const BtnPackageProperties = (props: IProps) => {
     }
 
     if (checked) {
-      const newMtPackage = { ...mtPackage, timprs: props.stressPeriods.totims as number[], nprs: props.stressPeriods.totims.length };
+      const timprs = props.stressPeriods.totims as number[];
+      const newMtPackage = { ...mtPackage, timprs: timprs, nprs: timprs.length };
       setMtPackage(newMtPackage);
       props.onChange(FlopyMt3dMtbtn.fromObject(newMtPackage));
       return;
