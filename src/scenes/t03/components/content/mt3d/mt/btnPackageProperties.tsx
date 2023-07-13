@@ -51,10 +51,11 @@ const BtnPackageProperties = (props: IProps) => {
     }
 
     if (checked) {
-      const timprs = props.stressPeriods.totims as number[];
-      const newMtPackage = { ...mtPackage, timprs: timprs, nprs: timprs.length };
-      setMtPackage(newMtPackage);
-      props.onChange(FlopyMt3dMtbtn.fromObject(newMtPackage));
+      // We disable this for now
+      // const timprs = props.stressPeriods.totims as number[];
+      //const newMtPackage = { ...mtPackage, timprs: timprs, nprs: timprs.length };
+      // setMtPackage(newMtPackage);
+      // props.onChange(FlopyMt3dMtbtn.fromObject(newMtPackage));
       return;
     }
 
