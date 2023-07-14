@@ -60,7 +60,7 @@ build:smart-control:
   stage: build
   script:
     - yarn install --ignore-platform
-    - REACT_APP_VERSION=$(git describe --tags --always --dirty=+) REACT_APP_API_URL=https://api.dss.smart-control.inowas.com REACT_APP_USERS_CAN_REGISTER=false REACT_APP_PUBLIC_PROJECTS_ACCESS=false yarn build
+    - REACT_APP_VERSION=$(git describe --tags --always --dirty=+) REACT_APP_API_URL=https://api.dss.smart-control.inowas.com REACT_APP_USERS_CAN_REGISTER=false REACT_APP_PUBLIC_PROJECTS_ACCESS=false NODE_OPTIONS=--max_old_space_size=4096 yarn build
     - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
   artifacts:
     paths:
@@ -96,7 +96,7 @@ build:training:
   stage: build
   script:
     - yarn install --ignore-platform
-    - REACT_APP_VERSION=$(git describe --tags --always --dirty=+) REACT_APP_API_URL=https://api.training.inowas.com yarn build
+    - REACT_APP_VERSION=$(git describe --tags --always --dirty=+) REACT_APP_API_URL=https://api.training.inowas.com NODE_OPTIONS=--max_old_space_size=4096 yarn build
     - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
   artifacts:
     paths:
@@ -132,7 +132,7 @@ build:prod:
   stage: build
   script:
     - yarn install --ignore-platform
-    - REACT_APP_VERSION=$(git describe --tags --always --dirty=+) REACT_APP_API_URL=https://api.dss.inowas.com yarn build
+    - REACT_APP_VERSION=$(git describe --tags --always --dirty=+) REACT_APP_API_URL=https://api.dss.inowas.com NODE_OPTIONS=--max_old_space_size=4096 yarn build
     - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
   artifacts:
     paths:
