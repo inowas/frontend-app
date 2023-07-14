@@ -26,7 +26,7 @@ export default class FlopySeawat extends GenericObject<IFlopySeawat> {
       enabled: variableDensity.enabled,
       swt: FlopySeawatSwt.fromDefaults().toObject(),
       vdf: variableDensity.vdfEnabled ? FlopySeawatSwtvdf.fromDefaults().toObject() : undefined,
-      vsc: variableDensity.vscEnabled ? FlopySeawatSwtvsc.fromDefaults().toObject() : undefined
+      vsc: variableDensity.vscEnabled ? FlopySeawatSwtvsc.fromDefaults().toObject() : undefined,
     });
   }
 
@@ -36,10 +36,21 @@ export default class FlopySeawat extends GenericObject<IFlopySeawat> {
 
   public recalculate = (variableDensity: VariableDensity) => {
     this.enabled = variableDensity.enabled;
+
     this._props.vdf = this._props.vdf ? FlopySeawatSwtvdf.fromObject(this._props.vdf).update().toObject() :
       variableDensity.vdfEnabled ? FlopySeawatSwtvdf.fromDefaults().toObject() : undefined;
     this._props.vsc = this._props.vsc ? FlopySeawatSwtvsc.fromObject(this._props.vsc).update().toObject() :
       variableDensity.vscEnabled ? FlopySeawatSwtvsc.fromDefaults().toObject() : undefined;
+
+    if (!variableDensity.vscEnabled) {
+      this._props.vsc = undefined;
+    }
+
+    if (!variableDensity.vdfEnabled) {
+      this._props.vdf = undefined;
+    }
+
+    console.log(this._props);
 
     return this;
   };
@@ -88,7 +99,7 @@ export default class FlopySeawat extends GenericObject<IFlopySeawat> {
     return {
       swt: this._props.swt,
       vdf: this._props.vdf,
-      vsc: this._props.vsc
+      vsc: this._props.vsc,
     };
   }
 
@@ -115,8 +126,21 @@ export default class FlopySeawat extends GenericObject<IFlopySeawat> {
     // @ts-ignore
     delete obj.enabled;
 
-    return {
-      ...obj, packages: Object.keys(obj)
-    };
+    if (obj.vdf === undefined) {
+      delete obj.vdf;
+    }
+
+    if (obj.vsc === undefined) {
+      delete obj.vsc;
+    }
+
+    const packages = Object.keys(obj).map((key) => {
+      if (obj[key] === undefined) {
+        return null;
+      }
+      return key;
+    }).filter((key) => key !== null);
+
+    return { ...obj, packages };
   };
 }
