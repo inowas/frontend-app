@@ -44,7 +44,7 @@ const FileDatasourceEditor = (props: IProps) => {
     props.onSave(dataSource);
   };
 
-  const handleBlur = (field?: string) => {
+  const handleBlur = async (field?: string) => {
     if (!dataSource) {
       return;
     }
@@ -59,15 +59,15 @@ const FileDatasourceEditor = (props: IProps) => {
 
     if (field === 'dateTimeFormat') {
       if (dateTimeField !== null && parameterField !== null) {
-        updateData(firstRowIsHeader, dateTimeField, parameterField, dateTimeFormat);
+        await updateData(firstRowIsHeader, dateTimeField, parameterField, dateTimeFormat);
       }
     }
 
-    updateDataSource(dataSource);
+    await updateDataSource(dataSource);
     setActiveInput(null);
   };
 
-  const handleChangeDate = (e: SyntheticEvent<Element>, { name, value }: IDatePickerProps) => {
+  const handleChangeDate = async (e: SyntheticEvent<Element>, { name, value }: IDatePickerProps) => {
     if (!dataSource) {
       return;
     }
@@ -80,7 +80,7 @@ const FileDatasourceEditor = (props: IProps) => {
       dataSource.end = value ? value.valueOf() / 1000 : null;
     }
 
-    updateDataSource(dataSource);
+    await updateDataSource(dataSource);
   };
 
   const handleChange = (e: SyntheticEvent<Element>, { name, value }: InputProps) => {
@@ -94,7 +94,7 @@ const FileDatasourceEditor = (props: IProps) => {
 
   const handleChangeCheckbox = () => setFirstRowIsHeader(!firstRowIsHeader);
 
-  const handleChangeDropdown = (e: SyntheticEvent<Element>, { name, value }: DropdownProps) => {
+  const handleChangeDropdown = async (e: SyntheticEvent<Element>, { name, value }: DropdownProps) => {
 
     if (typeof value !== 'number') {
       return;
@@ -107,7 +107,7 @@ const FileDatasourceEditor = (props: IProps) => {
     setParameterField(parameterColumn);
 
     if (dateTimeColumn !== null && parameterColumn !== null) {
-      updateData(firstRowIsHeader, dateTimeColumn, parameterColumn, dateTimeFormat);
+      await updateData(firstRowIsHeader, dateTimeColumn, parameterColumn, dateTimeFormat);
     }
   };
 
