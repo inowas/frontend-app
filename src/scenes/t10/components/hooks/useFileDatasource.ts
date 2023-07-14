@@ -21,12 +21,7 @@ export const useFileDatasource = (ds: FileDataSource | null) => {
     }
   }, [ds]);
 
-  const updateData = async (
-    firstRowIsHeader: boolean,
-    dateTimeColumn: number,
-    parameterColumn: number,
-    dateTimeFormat: string,
-  ) => {
+  const updateData = async (firstRowIsHeader: boolean, dateTimeColumn: number, parameterColumn: number, dateTimeFormat: string) => {
     if (!metadata) {
       return;
     }
@@ -53,9 +48,9 @@ export const useFileDatasource = (ds: FileDataSource | null) => {
     setDataSource(cDataSource.toObject());
   };
 
-  const updateDataSource = async (ds: FileDataSource) => {
-    await ds.loadData();
-    setDataSource(ds.toObject());
+  const updateDataSource = async (fileDataSource: FileDataSource) => {
+    await fileDataSource.loadData();
+    setDataSource(fileDataSource.toObject());
   };
 
   const uploadFile = (e: ChangeEvent<HTMLInputElement>) => {
