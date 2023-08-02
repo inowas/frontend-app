@@ -85,11 +85,6 @@ export const menuItems: IMenu = [
                 icon: <Icon name="chart bar outline"/>,
             },
             {
-                name: 'Budget',
-                property: 'budget',
-                icon: <Icon name="chart bar outline"/>
-            },
-            {
                 name: 'Concentration',
                 property: 'concentration',
                 icon: <Icon name="chart bar outline"/>

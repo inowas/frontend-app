@@ -1,10 +1,11 @@
 import { BoundaryCollection } from '../../../../../core/model/modflow/boundaries';
+import { Button, Grid, Header, Menu, Segment } from 'semantic-ui-react';
 import { Calculation, ModflowModel, Soilmodel } from '../../../../../core/model/modflow';
-import { Grid, Header, Menu, Segment } from 'semantic-ui-react';
 import { IT03Reducer } from '../../../../t03/reducers';
 import { IT20Reducer } from '../../../../t20/reducers';
 import { sendCommand } from '../../../../../services/api';
 import { useHistory } from 'react-router-dom';
+import BudgetResults from './budgetResults';
 import CrossSection from './crossSection';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import React, { useState } from 'react';
@@ -24,6 +25,7 @@ interface IProps {
 enum EMode {
   CROSS_SECTION,
   TIME_SERIES,
+  BUDGET,
 }
 
 const FlowResults = (props: IProps) => {
@@ -57,10 +59,10 @@ const FlowResults = (props: IProps) => {
         model.id,
         'New scenario analysis ' + model.name,
         '',
-        model.isPublic
+        model.isPublic,
       ),
       () => history.push('/tools/T07/' + scenarioAnalysisId),
-      () => null
+      () => null,
     );
   };
 
@@ -77,9 +79,18 @@ const FlowResults = (props: IProps) => {
       );
     }
     if (mode === EMode.TIME_SERIES) {
-      return <TimeSeries boundaries={boundaries} calculation={calculation} model={model} soilmodel={soilmodel} />;
+      return <TimeSeries
+        boundaries={boundaries}
+        calculation={calculation}
+        model={model}
+        soilmodel={soilmodel}
+      />;
+    }
+    if (mode === EMode.BUDGET) {
+      return <BudgetResults reducer={props.reducer} />;
     }
   };
+
 
   return (
     <Segment color={'grey'}>
@@ -93,10 +104,17 @@ const FlowResults = (props: IProps) => {
               <Menu.Item active={mode === EMode.TIME_SERIES} onClick={handleChangeMode(EMode.TIME_SERIES)}>
                 Time Series
               </Menu.Item>
-              <Menu.Item disabled={model.readOnly} onClick={handleCreateScenarioAnalysisClick}>
-                Scenario Analysis
+              <Menu.Item active={mode === EMode.BUDGET} onClick={handleChangeMode(EMode.BUDGET)}>
+                Budget
               </Menu.Item>
             </Menu>
+            {!model.readOnly && <Button
+              style={{ marginTop: '10px' }}
+              primary={true}
+              onClick={handleCreateScenarioAnalysisClick}
+            >
+              Create Scenario Analysis
+            </Button>}
           </Grid.Column>
           <Grid.Column width={13}>{renderMode()}</Grid.Column>
         </Grid.Row>
