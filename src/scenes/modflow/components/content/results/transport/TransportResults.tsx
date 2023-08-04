@@ -1,22 +1,16 @@
-import { BoundaryCollection } from '../../../../../core/model/modflow/boundaries';
+import { BoundaryCollection } from '../../../../../../core/model/modflow/boundaries';
 import { Button, Grid, Header, Menu, Segment } from 'semantic-ui-react';
-import { Calculation, ModflowModel, Soilmodel } from '../../../../../core/model/modflow';
-import { IT03Reducer } from '../../../../t03/reducers';
-import { IT20Reducer } from '../../../../t20/reducers';
-import { sendCommand } from '../../../../../services/api';
+import { Calculation, ModflowModel, Soilmodel, Transport } from '../../../../../../core/model/modflow';
+import { IT03Reducer } from '../../../../../t03/reducers';
+import { IT20Reducer } from '../../../../../t20/reducers';
+import { sendCommand } from '../../../../../../services/api';
 import { useHistory } from 'react-router-dom';
-import BudgetResults from './budgetResults';
-import CrossSection from './crossSection';
-import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
+import ConcentrationCrossSectionResults from './ConcentrationCrossSectionResults';
+import ConcentrationTimeSeriesResults from './ConcentrationTimeSeriesResults';
+import MassBudgetResults from './MassBudgetResults';
 import React, { useState } from 'react';
-import ScenarioAnalysisCommand from '../../../../t07/commands/scenarioAnalysisCommand';
-import TimeSeries from './timeSeries';
+import ScenarioAnalysisCommand from '../../../../../t07/commands/scenarioAnalysisCommand';
 import Uuid from 'uuid';
-
-export enum EResultType {
-  DRAWDOWN = 'drawdown',
-  HEAD = 'head',
-}
 
 interface IProps {
   reducer: IT03Reducer | IT20Reducer;
@@ -28,17 +22,18 @@ enum EMode {
   BUDGET,
 }
 
-const FlowResults = (props: IProps) => {
+const TransportResults = (props: IProps) => {
   const [mode, setMode] = useState<EMode>(EMode.CROSS_SECTION);
+
   const boundaries = props.reducer.boundaries ? BoundaryCollection.fromObject(props.reducer.boundaries) : null;
   const calculation = props.reducer.calculation ? Calculation.fromObject(props.reducer.calculation) : null;
   const model = props.reducer.model ? ModflowModel.fromObject(props.reducer.model) : null;
-  const packages = props.reducer.packages.data ? FlopyPackages.fromObject(props.reducer.packages.data) : null;
   const soilmodel = props.reducer.soilmodel ? Soilmodel.fromObject(props.reducer.soilmodel) : null;
+  const transport = props.reducer.transport ? Transport.fromObject(props.reducer.transport) : null;
 
   const history = useHistory();
 
-  if (!boundaries || !calculation || !model || !packages || !soilmodel) {
+  if (!boundaries || !calculation || !model || !soilmodel || !transport) {
     return (
       <Segment color={'grey'}>
         <Header as={'h2'}>
@@ -69,26 +64,29 @@ const FlowResults = (props: IProps) => {
   const renderMode = () => {
     if (mode === EMode.CROSS_SECTION) {
       return (
-        <CrossSection
+        <ConcentrationCrossSectionResults
           boundaries={boundaries}
           calculation={calculation}
           model={model}
-          packages={packages}
+          transport={transport}
           soilmodel={soilmodel}
         />
       );
     }
+
     if (mode === EMode.TIME_SERIES) {
-      return <TimeSeries
-        boundaries={boundaries}
-        calculation={calculation}
-        model={model}
-        soilmodel={soilmodel}
-      />;
+      return (
+        <ConcentrationTimeSeriesResults />
+      );
     }
+
     if (mode === EMode.BUDGET) {
-      return <BudgetResults reducer={props.reducer} />;
+      return (
+        <MassBudgetResults />
+      );
     }
+
+    return null;
   };
 
 
@@ -98,14 +96,25 @@ const FlowResults = (props: IProps) => {
         <Grid.Row>
           <Grid.Column width={3}>
             <Menu fluid={true} vertical={true} tabular={true}>
-              <Menu.Item active={mode === EMode.CROSS_SECTION} onClick={handleChangeMode(EMode.CROSS_SECTION)}>
+              <Menu.Item
+                active={mode === EMode.CROSS_SECTION}
+                onClick={handleChangeMode(EMode.CROSS_SECTION)}
+              >
                 Cross Section
               </Menu.Item>
-              <Menu.Item active={mode === EMode.TIME_SERIES} onClick={handleChangeMode(EMode.TIME_SERIES)}>
+              <Menu.Item
+                active={mode === EMode.TIME_SERIES}
+                onClick={handleChangeMode(EMode.TIME_SERIES)}
+                disabled={true}
+              >
                 Time Series
               </Menu.Item>
-              <Menu.Item active={mode === EMode.BUDGET} onClick={handleChangeMode(EMode.BUDGET)}>
-                Budget
+              <Menu.Item
+                active={mode === EMode.BUDGET}
+                onClick={handleChangeMode(EMode.BUDGET)}
+                disabled={true}
+              >
+                Mass Budget
               </Menu.Item>
             </Menu>
             {!model.readOnly && <Button
@@ -123,4 +132,4 @@ const FlowResults = (props: IProps) => {
   );
 };
 
-export default FlowResults;
+export default TransportResults;

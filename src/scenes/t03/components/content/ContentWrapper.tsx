@@ -1,12 +1,10 @@
 import * as Content from './index';
 import { BoundaryFactory } from '../../../../core/model/modflow/boundaries';
 import { BoundaryType } from '../../../../core/model/modflow/boundaries/Boundary.type';
-import { BudgetResults, FlowResults } from '../../../modflow/components/content/results';
 import { IRootReducer } from '../../../../reducers';
 import { Redirect, useLocation, useParams, useRouteMatch } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import React from 'react';
-import TransportResults from '../../../modflow/components/content/results/transportResults';
 
 interface IRouterProps {
   id: string;
@@ -39,7 +37,7 @@ const ContentWrapper = () => {
 
   if (property === 'head_observations') {
     if (type === 'hob') {
-      return <Content.CreateBoundary type="hob" />;
+      return <Content.CreateBoundary type='hob' />;
     }
 
     return <Content.Boundaries types={['hob']} />;
@@ -62,20 +60,21 @@ const ContentWrapper = () => {
   }
 
   if (property === 'flow') {
-    return <FlowResults reducer={T03} />;
+    return <Content.FlowResults reducer={T03} />;
   }
-  if (property === 'budget') {
-    return <BudgetResults reducer={T03} />;
-  }
+
   if (property === 'modpath') {
     return <Content.Modpath />;
   }
+
   if (property === 'concentration') {
-    return <TransportResults reducer={T03} />;
+    return <Content.TransportResults reducer={T03} />;
   }
+
   if (property === 'optimization') {
     return <Content.Optimization />;
   }
+
   if (property === 'export') {
     return <Content.Export />;
   }

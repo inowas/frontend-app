@@ -12,7 +12,7 @@ import {
   YAxis,
 } from 'recharts';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { EResultType } from './flowResults';
+import { EResultType } from './flow/FlowResults';
 import { HeadObservationWell } from '../../../../../core/model/modflow/boundaries';
 import { Stressperiods } from '../../../../../core/model/modflow';
 import { cloneDeep } from 'lodash';

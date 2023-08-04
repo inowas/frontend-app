@@ -1,16 +1,16 @@
-import * as colors from '../../../defaults/colorScales';
+import * as colors from '../../../../defaults/colorScales';
 import { AxiosError } from 'axios';
 import { Bar, BarChart, CartesianGrid, Cell, Tooltip, XAxis, YAxis } from 'recharts';
 import { Button, Checkbox, CheckboxProps, Grid, Header, Icon, List, Message, Segment } from 'semantic-ui-react';
-import { Calculation, ModflowModel } from '../../../../../core/model/modflow';
-import { IBudgetData, IBudgetType } from '../../../../../services/api/types';
-import { IT03Reducer } from '../../../../t03/reducers';
-import { IT20Reducer } from '../../../../t20/reducers';
+import { Calculation, ModflowModel } from '../../../../../../core/model/modflow';
+import { IBudgetData, IBudgetType } from '../../../../../../services/api/types';
+import { IT03Reducer } from '../../../../../t03/reducers';
+import { IT20Reducer } from '../../../../../t20/reducers';
 import { connect } from 'react-redux';
-import { exportChartData, exportChartImage } from '../../../../shared/simpleTools/helpers';
-import { fetchCalculationResultsBudget } from '../../../../../services/api';
+import { exportChartData, exportChartImage } from '../../../../../shared/simpleTools/helpers';
+import { fetchCalculationResultsBudget } from '../../../../../../services/api';
 import React, { useEffect, useRef, useState } from 'react';
-import ResultsSelectorBudget from '../../../../shared/complexTools/ResultsSelectorBudget';
+import ResultsSelectorBudget from '../../../../../shared/complexTools/ResultsSelectorBudget';
 
 type budgetData = Array<{ name: string, value: number, active: boolean, position: number }> | null;
 
@@ -18,7 +18,7 @@ interface IProps {
   reducer: IT03Reducer | IT20Reducer;
 }
 
-const BudgetResults = (props: IProps) => {
+const FlowBudgetResults = (props: IProps) => {
   const calculation = props.reducer.calculation ? Calculation.fromObject(props.reducer.calculation) : null;
   const model = props.reducer.model ? ModflowModel.fromObject(props.reducer.model) : null;
 
@@ -278,4 +278,4 @@ const mapStateToProps = (state: any) => {
   };
 };
 
-export default connect(mapStateToProps)(BudgetResults);
+export default connect(mapStateToProps)(FlowBudgetResults);

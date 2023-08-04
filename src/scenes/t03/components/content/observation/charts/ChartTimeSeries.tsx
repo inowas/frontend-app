@@ -13,7 +13,7 @@ import {
 } from 'recharts';
 import { DropdownProps, Form, Segment } from 'semantic-ui-react';
 import { EBoundaryType } from '../../../../../../core/model/modflow/boundaries/Boundary.type';
-import { EResultType } from '../../../../../modflow/components/content/results/flowResults';
+import { EResultType } from '../../../../../modflow/components/content/results/flow/FlowResults';
 import { HeadObservationWell } from '../../../../../../core/model/modflow/boundaries';
 import { IHeadObservationWell } from '../../../../../../core/model/modflow/boundaries/HeadObservationWell.type';
 import { IRootReducer } from '../../../../../../reducers';

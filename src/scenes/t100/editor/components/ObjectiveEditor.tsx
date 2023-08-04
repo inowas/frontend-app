@@ -4,7 +4,7 @@ import {
   IObjectiveByResource,
   TObjective,
 } from '../../../../core/marPro/Objective.type';
-import { EResultType } from '../../../modflow/components/content/results/flowResults';
+import { EResultType } from '../../../modflow/components/content/results/flow/FlowResults';
 import { Grid, Segment } from 'semantic-ui-react';
 import { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
