@@ -1,7 +1,7 @@
-import BudgetResults from './budgetResults';
-import FlowResults from './flowResults';
+import FlowResults from './flow/FlowResults';
+import TransportResults from './transport/TransportResults';
 
 export {
-    BudgetResults,
-    FlowResults
+  FlowResults,
+  TransportResults,
 };

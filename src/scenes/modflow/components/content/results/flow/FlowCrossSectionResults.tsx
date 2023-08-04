@@ -1,14 +1,14 @@
-import { Array2D } from '../../../../../core/model/geometry/Array2D.type';
-import { BoundaryCollection, Calculation, ModflowModel, Soilmodel } from '../../../../../core/model/modflow';
-import { EResultType } from './flowResults';
-import { FlopyModflowMfbas } from '../../../../../core/model/flopy/packages/mf';
-import { FlopyPackages } from '../../../../../core/model/flopy';
+import { Array2D } from '../../../../../../core/model/geometry/Array2D.type';
+import { BoundaryCollection, Calculation, ModflowModel, Soilmodel } from '../../../../../../core/model/modflow';
+import { EResultType } from './FlowResults';
+import { FlopyModflowMfbas } from '../../../../../../core/model/flopy/packages/mf';
+import { FlopyPackages } from '../../../../../../core/model/flopy';
 import { Grid, Header, Segment } from 'semantic-ui-react';
-import { fetchCalculationResultsFlow } from '../../../../../services/api';
+import { fetchCalculationResultsFlow } from '../../../../../../services/api';
 import React, { useEffect, useState } from 'react';
-import ResultsChart from '../../../../shared/complexTools/ResultsChart';
-import ResultsMap from '../../maps/resultsMap';
-import ResultsSelectorFlow from '../../../../shared/complexTools/ResultsSelectorFlow';
+import ResultsChart from '../../../../../shared/complexTools/ResultsChart';
+import ResultsMap from '../../../maps/resultsMap';
+import ResultsSelectorFlow from '../../../../../shared/complexTools/ResultsSelectorFlow';
 
 interface IProps {
   boundaries: BoundaryCollection;
@@ -18,7 +18,7 @@ interface IProps {
   soilmodel: Soilmodel;
 }
 
-const CrossSection = (props: IProps) => {
+const FlowCrossSectionResults = (props: IProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedLay, setSelectedLay] = useState<number>(0);
   const [selectedRow, setSelectedRow] = useState<number>(0);
@@ -164,4 +164,4 @@ const CrossSection = (props: IProps) => {
   );
 };
 
-export default CrossSection;
+export default FlowCrossSectionResults;

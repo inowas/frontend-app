@@ -1,15 +1,15 @@
-import { Array2D } from '../../../../../core/model/geometry/Array2D.type';
-import { BoundaryCollection, Calculation, ModflowModel, Soilmodel } from '../../../../../core/model/modflow';
+import { Array2D } from '../../../../../../core/model/geometry/Array2D.type';
+import { BoundaryCollection, Calculation, ModflowModel, Soilmodel } from '../../../../../../core/model/modflow';
 import { DropdownProps, Form, Grid, Icon, Label, Segment } from 'semantic-ui-react';
-import { EResultType } from './flowResults';
-import { HeadObservationWell } from '../../../../../core/model/modflow/boundaries';
-import { IHeadObservationWell } from '../../../../../core/model/modflow/boundaries/HeadObservationWell.type';
-import { MODFLOW_CALCULATION_URL, fetchApiWithToken } from '../../../../../services/api';
+import { EResultType } from './FlowResults';
+import { HeadObservationWell } from '../../../../../../core/model/modflow/boundaries';
+import { IHeadObservationWell } from '../../../../../../core/model/modflow/boundaries/HeadObservationWell.type';
+import { MODFLOW_CALCULATION_URL, fetchApiWithToken } from '../../../../../../services/api';
 import { cloneDeep, flatten, uniq, upperFirst } from 'lodash';
-import { misc } from '../../../defaults/colorScales';
+import { misc } from '../../../../defaults/colorScales';
 import React, { SyntheticEvent, useEffect, useState } from 'react';
-import TimeSeriesChart from './timeSeriesChart';
-import TimeSeriesMap from './timeSeriesMap';
+import TimeSeriesChart from '../timeSeriesChart';
+import TimeSeriesMap from '../timeSeriesMap';
 import _ from 'lodash';
 
 interface IProps {
@@ -19,7 +19,7 @@ interface IProps {
   soilmodel: Soilmodel;
 }
 
-const TimeSeries = (props: IProps) => {
+const FlowTimeSeriesResults = (props: IProps) => {
   const [activeHobs, setActiveHobs] = useState<IHeadObservationWell[]>([]);
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [layerValues, setLayerValues] = useState<string[][] | null>(null);
@@ -210,4 +210,4 @@ const TimeSeries = (props: IProps) => {
   );
 };
 
-export default TimeSeries;
+export default FlowTimeSeriesResults;
