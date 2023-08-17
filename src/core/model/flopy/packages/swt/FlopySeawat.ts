@@ -50,8 +50,6 @@ export default class FlopySeawat extends GenericObject<IFlopySeawat> {
       this._props.vdf = undefined;
     }
 
-    console.log(this._props);
-
     return this;
   };
 

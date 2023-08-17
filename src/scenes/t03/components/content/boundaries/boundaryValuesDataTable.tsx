@@ -1,7 +1,7 @@
 import { AdvancedCsvUpload } from '../../../../shared/upload';
 import { Boundary, LineBoundary } from '../../../../../core/model/modflow/boundaries';
 import { Button, Icon, Input, InputProps, Label, Message, Pagination, PaginationProps, Table } from 'semantic-ui-react';
-import { ChangeEvent, FormEvent, MouseEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, MouseEvent, useMemo, useState } from 'react';
 import { ISpValues } from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import { Stressperiods } from '../../../../../core/model/modflow';
 import { cloneDeep } from 'lodash';
@@ -25,6 +25,8 @@ interface IProps {
   stressperiods: Stressperiods;
 }
 
+const dataTableCellsPerRow = 4;
+
 const BoundaryValuesDataTable = (props: IProps) => {
   const [activeInput, setActiveInput] = useState<IActiveInput | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +44,8 @@ const BoundaryValuesDataTable = (props: IProps) => {
     return boundary.getSpValues(props.stressperiods);
   };
 
-  const spValues: ISpValues | null = getSpValues();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const spValues: ISpValues | null = useMemo(() => getSpValues(), [boundary, selectedOP, props.stressperiods]);
 
   const handleToggleUploadModal = () => setShowUploadModal(!showUploadModal);
 
@@ -95,7 +98,7 @@ const BoundaryValuesDataTable = (props: IProps) => {
             return newRow;
           }
           return newRow;
-        }
+        },
       );
       boundary.setSpValues(updatedSpValues as ISpValues, selectedOP);
     }
@@ -106,7 +109,7 @@ const BoundaryValuesDataTable = (props: IProps) => {
     if (spValues && data.length !== spValues.length) {
       setError(
         'Number of rows in file must be equal to number of stressperiods, when assigning by keys. ' +
-          'Try to assign rows by datetime.'
+        'Try to assign rows by datetime.',
       );
       return null;
     }
@@ -121,30 +124,23 @@ const BoundaryValuesDataTable = (props: IProps) => {
   };
 
   const getCellStyle = (numberOfCells: number) => {
-    switch (numberOfCells) {
-      case 2:
-        return {
-          maxWidth: '130px',
-          padding: 0,
-          border: 0,
-        };
-      case 3:
-        return {
-          maxWidth: '130px',
-          padding: 0,
-          border: 0,
-        };
-      default:
-        return {
-          maxWidth: '150px',
-          padding: 0,
-          border: 0,
-        };
+    if (numberOfCells === 1) {
+      return {
+        maxWidth: '150px',
+        padding: 0,
+        border: 0,
+      };
     }
+
+    return {
+      maxWidth: '120px',
+      padding: 0,
+      border: 0,
+    };
   };
 
   const body = () => {
-    const { stressperiods } = props;
+    const {boundary, stressperiods } = props;
 
     const dateTimes = stressperiods.dateTimes;
 
@@ -159,39 +155,46 @@ const BoundaryValuesDataTable = (props: IProps) => {
     const startingIndex = (paginationPage - 1) * stressperiodsPerPage;
     const endingIndex = startingIndex + stressperiodsPerPage;
 
-    return spValues.slice(startingIndex, endingIndex).map((spValue, spIdx) => (
-      <Table.Row key={spIdx}>
-        <Table.Cell width={4}>
-          <Input
-            style={getCellStyle(1)}
-            disabled={true}
-            id={spIdx}
-            name={'dateTime'}
-            type={'date'}
-            value={moment(dateTimes[startingIndex + spIdx]).format('YYYY-MM-DD')}
-          />
-        </Table.Cell>
-        {spValue.map((v, vIdx) => (
-          <Table.Cell key={vIdx}>
-            <Input
-              style={getCellStyle(spValue.length)}
-              disabled={props.readOnly}
-              id={spIdx}
-              col={vIdx}
-              name={'dateTimeValue'}
-              onBlur={handleSpValuesChange}
-              onChange={handleLocalChange(startingIndex + spIdx, vIdx)}
-              type={'number'}
-              value={
-                activeInput && activeInput.col === vIdx && activeInput.row === startingIndex + spIdx
-                  ? activeInput.value
-                  : v
+    return spValues.slice(startingIndex, endingIndex)
+      .map((spValue, spIdx) => {
+        const numberOfRows = Math.ceil(boundary.valueProperties.length / dataTableCellsPerRow);
+        return new Array(numberOfRows).fill(0).map((r, rIdx) => (
+          <Table.Row key={`${spIdx}_${rIdx}`}>
+            <Table.Cell width={4}>
+              {rIdx === 0 && (
+                <Input
+                  style={getCellStyle(1)}
+                  disabled={true}
+                  id={spIdx}
+                  name={'dateTime'}
+                  type={'date'}
+                  value={moment(dateTimes[startingIndex + spIdx]).format('YYYY-MM-DD')}
+                />)
               }
-            />
-          </Table.Cell>
-        ))}
-      </Table.Row>
-    ));
+            </Table.Cell>
+            {spValue.slice(rIdx * dataTableCellsPerRow, (rIdx + 1) * dataTableCellsPerRow)
+              .map((v, vIdx) => (
+                <Table.Cell key={`${vIdx}_${rIdx}`}>
+                  <Input
+                    style={getCellStyle(spValue.length)}
+                    disabled={props.readOnly}
+                    id={spIdx}
+                    col={vIdx}
+                    name={'dateTimeValue'}
+                    onBlur={handleSpValuesChange}
+                    onChange={handleLocalChange(startingIndex + spIdx, vIdx)}
+                    type={'number'}
+                    value={
+                      activeInput && activeInput.col === vIdx && activeInput.row === startingIndex + spIdx
+                        ? activeInput.value
+                        : v
+                    }
+                  />
+                </Table.Cell>
+              ))}
+          </Table.Row>
+        ));
+      });
   };
 
   return (
@@ -222,16 +225,16 @@ const BoundaryValuesDataTable = (props: IProps) => {
       {!props.readOnly && (
         <p style={{ marginTop: '10px' }}>
           <b>Time dependent boundary values{boundary instanceof LineBoundary ? ' observation point' : ''}</b>
-          <Button.Group floated="right" size="mini">
+          <Button.Group floated='right' size='mini'>
             <Button
               icon={true}
-              labelPosition="left"
+              labelPosition='left'
               onClick={handleToggleUploadModal}
               primary={true}
-              floated="right"
-              size="mini"
+              floated='right'
+              size='mini'
             >
-              <Icon name="upload" />
+              <Icon name='upload' />
               Upload csv
             </Button>
             <BoundaryDateTimeImporter
@@ -248,7 +251,7 @@ const BoundaryValuesDataTable = (props: IProps) => {
         <Pagination
           activePage={paginationPage}
           onPageChange={handleChangePagination}
-          size="mini"
+          size='mini'
           totalPages={Math.ceil(spValues.length / stressperiodsPerPage)}
         />
       )}
@@ -256,9 +259,12 @@ const BoundaryValuesDataTable = (props: IProps) => {
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell>Start Date</Table.HeaderCell>
-            {boundary.valueProperties.map((p, idx) => (
+            {new Array(dataTableCellsPerRow).fill(0).map((p, idx) => (
               <Table.HeaderCell key={idx}>
-                {p.name} ({p.unit})
+                {(boundary.valueProperties.length > idx) &&
+                  <div>{boundary.valueProperties[idx].name} [{boundary.valueProperties[idx].unit}]</div>}
+                {(boundary.valueProperties.length > (idx + dataTableCellsPerRow)) &&
+                  <div>{boundary.valueProperties[idx + dataTableCellsPerRow].name} [{boundary.valueProperties[idx + dataTableCellsPerRow].unit}]</div>}
               </Table.HeaderCell>
             ))}
           </Table.Row>
@@ -273,12 +279,12 @@ const BoundaryValuesDataTable = (props: IProps) => {
                 <Table.Cell key={`percentage_chance_${idx}`} width={2}>
                   <Input
                     label={{ icon: 'percent' }}
-                    labelPosition="left corner"
+                    labelPosition='left corner'
                     name={`percentage_${idx}`}
                     onBlur={handleBlurPercentage(idx)}
                     onChange={handleChangePercentage}
-                    placeholder="% Change"
-                    type="number"
+                    placeholder='% Change'
+                    type='number'
                     style={getCellStyle(boundary.valueProperties.length)}
                     value={activeInput && activeInput.name === `percentage_${idx}` ? activeInput.value : 0}
                   />
@@ -287,7 +293,7 @@ const BoundaryValuesDataTable = (props: IProps) => {
             </Table.Row>
           )}
           {spValues && body()}
-        </Table.Body>
+        </Table.Body>;
       </Table>
     </div>
   );

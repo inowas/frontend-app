@@ -1,6 +1,7 @@
 import {Array2D} from '../../../geometry/Array2D.type';
 import {IPropertyValueObject} from '../../../types';
 import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
+import FlopyModflowMflak from './FlopyModflowMflak';
 import FlopyModflowPackage from './FlopyModflowPackage';
 import Soilmodel from '../../../modflow/soilmodel/Soilmodel';
 
@@ -90,11 +91,47 @@ export default class FlopyModflowMflpf extends FlopyModflowFlowPackage<IFlopyMod
         this.chani = layers.map(() => 0);
         this.layvka = layers.map(() => 0);
         this.laywet = layers.map((l) => l.laywet);
+
         this.hk = soilmodel.getParameterValue('hk');
         this.hani = soilmodel.getParameterValue('hani');
         this.vka = soilmodel.getParameterValue('vka');
         this.ss = soilmodel.getParameterValue('ss');
         this.sy = soilmodel.getParameterValue('sy');
+        return this;
+    }
+
+    public applyLakPackage(mfLak: FlopyModflowMflak, nLay: number, nRow: number, nCol: number) {
+
+        let wetdry: Array2D<number>[] | undefined = undefined;
+
+        if (!Array.isArray(this._props.wetdry)) {
+            wetdry = new Array(nLay).fill(0)
+              .map(() => new Array(nRow).fill(0)
+                .map(() => new Array(nCol).fill(this._props.wetdry as number)));
+        }
+
+        if (Array.isArray(this._props.wetdry)) {
+            wetdry = this._props.wetdry as Array2D<number>[];
+        }
+
+        if (wetdry === undefined) {
+            throw new Error('wetdry is undefined');
+        }
+
+        if (mfLak.lakarr !== null) {
+            mfLak.lakarr.forEach((layer, layerIdx) => {
+                layer.forEach((row, rowIdx) => {
+                    row.forEach((col, colIdx) => {
+                        if (col !== 0 && wetdry !== undefined) {
+                            wetdry[layerIdx][rowIdx][colIdx] = 0;
+                        }
+                    });
+                });
+            });
+        }
+
+        this._props.wetdry = wetdry;
+
         return this;
     }
 

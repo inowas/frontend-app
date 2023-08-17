@@ -1,10 +1,12 @@
 import { Array3D } from '../../../geometry/Array2D.type';
 import { IPropertyValueObject } from '../../../types';
 import { IStressPeriodData } from './FlopyModflow.type';
+import { ModflowModel, Soilmodel } from '../../../modflow';
+import { cloneDeep } from 'lodash';
 import BoundaryCollection from '../../../modflow/boundaries/BoundaryCollection';
 import FlopyModflowBoundary from './FlopyModflowBoundary';
 import FlopyModflowPackage from './FlopyModflowPackage';
-import Stressperiods from '../../../modflow/Stressperiods';
+import LakeBoundary from '../../../modflow/boundaries/LakeBoundary';
 
 export interface IFlopyModflowMflak {
   nlakes: number;
@@ -13,7 +15,7 @@ export interface IFlopyModflowMflak {
   nssitr: number;
   sscncr: number;
   surfdep: number;
-  stages: number | number[];
+  stages: number[];
   stage_range: Array<[number, number]> | null;
   lakarr: Array3D<number> | null;
   bdlknc: Array3D<number> | null;
@@ -28,11 +30,11 @@ export interface IFlopyModflowMflak {
 export const defaults: IFlopyModflowMflak = {
   nlakes: 1,
   ipakcb: null,
-  theta: -1.0,
+  theta: 1.0,
   nssitr: 0,
-  sscncr: 0.0,
+  sscncr: 0.001,
   surfdep: 0.0,
-  stages: 1.0,
+  stages: [1.0],
   stage_range: null,
   lakarr: null,
   bdlknc: null,
@@ -46,8 +48,8 @@ export const defaults: IFlopyModflowMflak = {
 
 export default class FlopyModflowMflak extends FlopyModflowBoundary<IFlopyModflowMflak> {
 
-  public static create(boundaries: BoundaryCollection, stressPeriods: Stressperiods) {
-    return this.fromDefault().update(boundaries, stressPeriods);
+  public static create(boundaries: BoundaryCollection, model: ModflowModel, soilmodel: Soilmodel) {
+    return this.fromDefault().update(boundaries, model, soilmodel);
   }
 
   public static fromDefault() {
@@ -66,11 +68,53 @@ export default class FlopyModflowMflak extends FlopyModflowBoundary<IFlopyModflo
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public update = (boundaries: BoundaryCollection, stressPeriods: Stressperiods) => {
-    const bd = boundaries.all.filter((b) => b.type === 'lak');
-    if (bd.length === 0) {
+  public update = (boundaries: BoundaryCollection, model: ModflowModel, soilmodel: Soilmodel) => {
+    const lakeBoundaries = boundaries.all.filter((b) => b.type === 'lak') as LakeBoundary[];
+    if (lakeBoundaries.length === 0) {
       return null;
     }
+
+    this.nlakes = lakeBoundaries.length;
+
+    const lakeArray: Array3D<number> = new Array(soilmodel.numberOfLayers).fill(0)
+      .map(() => new Array(model.gridSize.nY).fill(0)
+        .map(() => new Array(model.gridSize.nX).fill(0))) as Array3D<number>;
+
+    const bdLknc: Array3D<number> = cloneDeep(lakeArray);
+
+    lakeBoundaries.forEach((lakeBoundary, bIdx) => {
+      lakeBoundary.layers.forEach((l) => {
+        lakeBoundary.cells.toArray().forEach((c) => {
+          lakeArray[l][c[1]][c[0]] = bIdx + 1;
+          bdLknc[l][c[1]][c[0]] = lakeBoundary.bedLeakance;
+        });
+      });
+    });
+
+    this.lakarr = lakeArray;
+    this.bdlknc = bdLknc;
+
+    let fluxData: Exclude<typeof this.flux_data, null> = [];
+    lakeBoundaries.forEach((lakeBoundary, idx) => {
+      const spValues = lakeBoundary.getSpValues(model.stressperiods) as Array<[number, number, number, number]>;
+      if (idx === 0) {
+        fluxData = spValues.map((spValue) => [[...spValue, lakeBoundary.initialStage, lakeBoundary.initialStage]]);
+      }
+
+      if (idx > 0) {
+        spValues.forEach((spValue, spIdx) => {
+          if (!this.flux_data || !this.flux_data[spIdx]) {
+            return;
+          }
+          fluxData[spIdx].push([...spValue, lakeBoundary.stageRange[0], lakeBoundary.stageRange[1]]);
+        });
+      }
+    });
+
+    this.flux_data = fluxData;
+
+    this.stages = lakeBoundaries.map((b) => b.initialStage);
+    this.stage_range = lakeBoundaries.map((b) => b.stageRange);
 
     return this;
   };

@@ -2,6 +2,7 @@ import {Array2D} from '../../../geometry/Array2D.type';
 import {IPropertyValueObject} from '../../../types';
 import {SoilmodelLayer} from '../../../modflow/soilmodel';
 import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
+import FlopyModflowMflak from './FlopyModflowMflak';
 import Soilmodel from '../../../modflow/soilmodel/Soilmodel';
 
 export interface IFlopyModflowMfbcf {
@@ -19,7 +20,7 @@ export interface IFlopyModflowMfbcf {
     vcont: number | Array<number | Array2D<number>>;
     sf1: number | Array<number | Array2D<number>>;
     sf2: number | Array<number | Array2D<number>>;
-    wetdry: number;
+    wetdry: number | Array<number | Array2D<number>>;
     extension: string;
     unitnumber: number | null;
     filenames: null | string | string[];
@@ -95,6 +96,41 @@ export default class FlopyModflowMfbcf extends FlopyModflowFlowPackage<IFlopyMod
         this.hy = soilmodel.getParameterValue('hk');
         this.sf1 = soilmodel.getParameterValue('ss');
         this.sf2 = soilmodel.getParameterValue('sy');
+        return this;
+    }
+
+    public applyLakPackage(mfLak: FlopyModflowMflak, nLay: number, nRow: number, nCol: number) {
+
+        let wetdry: Array2D<number>[] | undefined = undefined;
+
+        if (!Array.isArray(this._props.wetdry)) {
+            wetdry = new Array(nLay).fill(0)
+              .map(() => new Array(nRow).fill(0)
+                .map(() => new Array(nCol).fill(this._props.wetdry as number)));
+        }
+
+        if (Array.isArray(this._props.wetdry)) {
+            wetdry = this._props.wetdry as Array2D<number>[];
+        }
+
+        if (wetdry === undefined) {
+            throw new Error('wetdry is undefined');
+        }
+
+        if (mfLak.lakarr !== null) {
+            mfLak.lakarr.forEach((layer, layerIdx) => {
+                layer.forEach((row, rowIdx) => {
+                    row.forEach((col, colIdx) => {
+                        if (col !== 0 && wetdry !== undefined) {
+                            wetdry[layerIdx][rowIdx][colIdx] = 0;
+                        }
+                    });
+                });
+            });
+        }
+
+        this._props.wetdry = wetdry;
+
         return this;
     }
 

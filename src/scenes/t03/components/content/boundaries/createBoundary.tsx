@@ -31,7 +31,7 @@ interface IOwnProps {
 type Props = IOwnProps & RouteComponentProps<{
   id: string;
   property?: string;
-  type?: string;
+  type?: BoundaryType;
 }>;
 
 const CreateBoundary = (props: Props) => {
@@ -160,8 +160,7 @@ const CreateBoundary = (props: Props) => {
     }
 
     // Add boundary types, for which multiple layers may be selected:
-    const multipleLayers = ['chd', 'ghb'].includes(type);
-    console.log(multipleLayers, layers);
+    const multipleLayers = ['chd', 'ghb', 'lak'].includes(type);
     return (
       <Form.Dropdown
         label={'Selected layers'}

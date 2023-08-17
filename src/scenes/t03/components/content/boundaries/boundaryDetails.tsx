@@ -10,7 +10,7 @@ import {
   Button,
   Dropdown,
   DropdownProps,
-  Form,
+  Form, Grid,
   Icon,
   InputOnChangeData,
   List,
@@ -27,6 +27,7 @@ import BoundaryMap from '../../maps/boundaryMap';
 import BoundaryValuesDataTable from './boundaryValuesDataTable';
 import EvapotranspirationBoundary from '../../../../../core/model/modflow/boundaries/EvapotranspirationBoundary';
 import FlowAndHeadBoundary from '../../../../../core/model/modflow/boundaries/FlowAndHeadBoundary';
+import LakeBoundary from '../../../../../core/model/modflow/boundaries/LakeBoundary';
 import NoContent from '../../../../shared/complexTools/noContent';
 import ObservationPointEditor from './observationPointEditor';
 import React, { ChangeEvent, MouseEvent, SyntheticEvent, useEffect, useState } from 'react';
@@ -67,7 +68,7 @@ const BoundaryDetails = (props: IProps) => {
 
   const handleChange = (
     e: SyntheticEvent<HTMLElement, Event> | ChangeEvent<HTMLInputElement>,
-    data: DropdownProps | InputOnChangeData
+    data: DropdownProps | InputOnChangeData,
   ) => {
     let value = data.value;
     const name = data.name;
@@ -187,7 +188,7 @@ const BoundaryDetails = (props: IProps) => {
 
   const renderLayerSelection = (props: IProps) => {
     const cBoundary = props.boundary;
-    const multipleLayers = ['chd', 'ghb', 'fhb', 'riv'].includes(cBoundary.type);
+    const multipleLayers = ['chd', 'fhb', 'ghb', 'lak', 'riv'].includes(cBoundary.type);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let options;
@@ -210,7 +211,7 @@ const BoundaryDetails = (props: IProps) => {
     }
 
     return (
-      <React.Fragment>
+      <>
         {(boundary instanceof RechargeBoundary || boundary instanceof EvapotranspirationBoundary) && (
           <Form.Dropdown
             label={boundary.type === 'rch' ? 'Recharge option' : 'Evapotranspiration option'}
@@ -243,15 +244,14 @@ const BoundaryDetails = (props: IProps) => {
           name={'layers'}
           onChange={handleChange}
         />
-      </React.Fragment>
+      </>
     );
   };
 
-  const renderLengthInformation = (props: IProps) => {
+  const renderGeometryInformation = (boundary: Boundary) => {
     if (boundary.geometry.type === 'LineString') {
       return (
         <Form.Input
-          width={8}
           label={'Length [m]'}
           value={turf.length(boundary.geometry.toGeoJSON(), { units: 'meters' }).toFixed(6)}
           type={'number'}
@@ -262,12 +262,68 @@ const BoundaryDetails = (props: IProps) => {
     if (boundary.geometry.type === 'Polygon' || boundary.geometry.type === 'MultiPolygon') {
       return (
         <Form.Input
-          width={8}
-          label={'Area from affected cells [sqm]'}
-          value={boundary.calculateAreaByCells(props.model.boundingBox, props.model.gridSize).toFixed(6)}
+          label={'Area (cells) [sqm]'}
+          value={boundary.calculateAreaByCells(props.model.boundingBox, props.model.gridSize).toFixed(2)}
           type={'number'}
           readOnly={true}
         />
+      );
+    }
+  };
+
+  const renderAdditionalInputs = (boundary: Boundary) => {
+    if (boundary instanceof LakeBoundary) {
+      return (
+        <>
+          <Grid.Column width={3}>
+            <Form.Input
+              label={'Init stage [m]'}
+              value={boundary.initialStage}
+              onChange={(e, data) => {
+                boundary.initialStage = Number(data.value);
+                return props.onChange(boundary);
+              }}
+              type={'number'}
+              disabled={props.readOnly}
+            />
+          </Grid.Column>
+          <Grid.Column width={3}>
+            <Form.Input
+              label={'Min stage [m]'}
+              value={boundary.stageRange[0]}
+              onChange={(e, data) => {
+                boundary.stageRange[0] = Number(data.value);
+                return props.onChange(boundary);
+              }}
+              type={'number'}
+              disabled={props.readOnly}
+            />
+          </Grid.Column>
+          <Grid.Column width={3}>
+            <Form.Input
+              label={'Max stage [m]'}
+              value={boundary.stageRange[1]}
+              onChange={(e, data) => {
+                boundary.stageRange[1] = Number(data.value);
+                return props.onChange(boundary);
+              }}
+              type={'number'}
+              disabled={props.readOnly}
+            />
+          </Grid.Column>
+          <Grid.Column width={3}>
+            <Form.Input
+              label={'Bed leak [m/d]'}
+              value={boundary.bedLeakance}
+              onChange={(e, data) => {
+                boundary.bedLeakance = Number(data.value);
+                return props.onChange(boundary);
+              }}
+              type={'number'}
+              disabled={props.readOnly}
+            />
+          </Grid.Column>
+        </>
       );
     }
   };
@@ -298,8 +354,8 @@ const BoundaryDetails = (props: IProps) => {
   return (
     <div>
       <Form style={{ marginTop: '1rem' }}>
-        <Form.Group widths="equal">
-          <Form.Input value={boundary.type.toUpperCase()} label="Type" readOnly={true} width={5} />
+        <Form.Group widths='equal'>
+          <Form.Input value={boundary.type.toUpperCase()} label='Type' readOnly={true} width={4} />
 
           <Form.Input
             label={'Name'}
@@ -353,12 +409,19 @@ const BoundaryDetails = (props: IProps) => {
             />
           </Form.Group>
         )}
-        {renderLengthInformation(props)}
+        <Grid>
+          <Grid.Row>
+            <Grid.Column width={4}>
+              {renderGeometryInformation(props.boundary)}
+            </Grid.Column>
+            {renderAdditionalInputs(props.boundary)}
+          </Grid.Row>
+        </Grid>
       </Form>
 
       {!props.readOnly && (
         <List horizontal={true}>
-          <List.Item as="a" onClick={handleClickShowBoundaryEditor}>
+          <List.Item as='a' onClick={handleClickShowBoundaryEditor}>
             Edit boundary on map
           </List.Item>
         </List>
@@ -384,40 +447,40 @@ const BoundaryDetails = (props: IProps) => {
                   onChange={handleSelectObservationPoint}
                 />
               }
-              size="mini"
-              content="Select Observation Point"
+              size='mini'
+              content='Select Observation Point'
             />
             <Popup
               trigger={<Button icon={'edit'} onClick={handleEditPoint} disabled={props.readOnly} />}
-              size="mini"
-              content="Edit point"
+              size='mini'
+              content='Edit point'
             />
             <Popup
               trigger={<Button icon={'clone'} onClick={handleCloneClick} disabled={props.readOnly} />}
-              size="mini"
-              content="Clone point"
+              size='mini'
+              content='Clone point'
             />
             <Popup
               trigger={
                 <Button
-                  icon="trash"
+                  icon='trash'
                   onClick={handleRemoveClick}
                   disabled={props.readOnly || boundary.observationPoints.length === 1}
                 />
               }
-              size="mini"
-              content="Delete point"
+              size='mini'
+              content='Delete point'
             />
           </Button>
         </div>
       )}
       <Menu tabular>
-        <Menu.Item name="table" active={activeItem === 'table'} onClick={handleMenuClick}>
-          <Icon name="table" />
+        <Menu.Item name='table' active={activeItem === 'table'} onClick={handleMenuClick}>
+          <Icon name='table' />
           Table
         </Menu.Item>
-        <Menu.Item name="chart" active={activeItem === 'chart'} onClick={handleMenuClick}>
-          <Icon name="chart area" />
+        <Menu.Item name='chart' active={activeItem === 'chart'} onClick={handleMenuClick}>
+          <Icon name='chart area' />
           Chart
         </Menu.Item>
       </Menu>

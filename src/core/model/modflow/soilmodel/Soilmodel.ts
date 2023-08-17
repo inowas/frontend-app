@@ -18,6 +18,10 @@ class Soilmodel {
         this._props.layers = value.toObject();
     }
 
+    get numberOfLayers() {
+        return this._props.layers.length;
+    }
+
     get parametersCollection() {
         return RasterParametersCollection.fromObject(this._props.properties.parameters);
     }

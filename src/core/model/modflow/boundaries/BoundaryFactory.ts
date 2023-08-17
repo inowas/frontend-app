@@ -8,6 +8,7 @@ import { IEvapotranspirationBoundary, IEvapotranspirationBoundaryExport } from '
 import { IFlowAndHeadBoundary, IFlowAndHeadBoundaryExport } from './FlowAndHeadBoundary.type';
 import { IGeneralHeadBoundary, IGeneralHeadBoundaryExport } from './GeneralHeadBoundary.type';
 import { IHeadObservationWell, IHeadObservationWellExport } from './HeadObservationWell.type';
+import { ILakeBoundary } from './LakeBoundary.type';
 import { IObservationPoint } from './ObservationPoint.type';
 import { IRechargeBoundary, IRechargeBoundaryExport } from './RechargeBoundary.type';
 import { IRiverBoundary, IRiverBoundaryExport } from './RiverBoundary.type';
@@ -21,12 +22,13 @@ import FlowAndHeadBoundary from './FlowAndHeadBoundary';
 import GeneralHeadBoundary from './GeneralHeadBoundary';
 import GridSize from '../../geometry/GridSize';
 import HeadObservationWell from './HeadObservationWell';
+import LakeBoundary from './LakeBoundary';
 import RechargeBoundary from './RechargeBoundary';
 import RiverBoundary from './RiverBoundary';
 import WellBoundary from './WellBoundary';
 
 export default abstract class BoundaryFactory {
-  public static availableTypes = ['chd', 'drn', 'evt', 'fhb', 'ghb', 'hob', 'rch', 'riv', 'wel'];
+  public static availableTypes = ['chd', 'drn', 'evt', 'fhb', 'ghb', 'hob', 'lak', 'rch', 'riv', 'wel'];
 
   public static fromObject = (obj: IBoundary): Boundary => {
     let type;
@@ -55,6 +57,8 @@ export default abstract class BoundaryFactory {
         return new GeneralHeadBoundary(obj as IGeneralHeadBoundary);
       case 'hob':
         return new HeadObservationWell(obj as IHeadObservationWell);
+      case 'lak':
+        return new LakeBoundary(obj as ILakeBoundary);
       case 'rch':
         return new RechargeBoundary(obj as IRechargeBoundary);
       case 'riv':
@@ -115,6 +119,8 @@ export default abstract class BoundaryFactory {
         return GeneralHeadBoundary.create(id, geometry as LineString, name, layers, cells, spValues);
       case 'hob':
         return HeadObservationWell.create(id, geometry as Point, name, layers, cells, dateTimes, spValues);
+      case 'lak':
+        return LakeBoundary.create(id, geometry as Polygon, name, layers, cells, spValues);
       case 'rch':
         return RechargeBoundary.create(id, geometry as Polygon, name, layers, cells, spValues, 1);
       case 'riv':
@@ -140,6 +146,8 @@ export default abstract class BoundaryFactory {
         return GeneralHeadBoundary.valueProperties();
       case 'hob':
         return HeadObservationWell.valueProperties();
+      case 'lak':
+        return LakeBoundary.valueProperties();
       case 'rch':
         return RechargeBoundary.valueProperties();
       case 'riv':
@@ -165,6 +173,8 @@ export default abstract class BoundaryFactory {
         return GeneralHeadBoundary.geometryType();
       case 'hob':
         return HeadObservationWell.geometryType();
+      case 'lak':
+        return LakeBoundary.geometryType();
       case 'rch':
         return RechargeBoundary.geometryType();
       case 'riv':

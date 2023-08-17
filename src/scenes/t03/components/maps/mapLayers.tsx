@@ -62,6 +62,7 @@ export const renderBoundaryOverlays = (boundaries: BoundaryCollection) => {
     renderBoundaryOverlay(boundaries, 'Flow and head boundaries', EBoundaryType.FHB),
     renderBoundaryOverlay(boundaries, 'General head boundaries', EBoundaryType.GHB),
     renderBoundaryOverlay(boundaries, 'Head observations', EBoundaryType.HOB),
+    renderBoundaryOverlay(boundaries, 'Lake boundaries', EBoundaryType.LAK),
     renderBoundaryOverlay(boundaries, 'Recharge', EBoundaryType.RCH),
     renderBoundaryOverlay(boundaries, 'Rivers', EBoundaryType.RIV, true),
     renderBoundaryOverlay(boundaries, 'Wells', EBoundaryType.WEL, true),

@@ -1,24 +1,25 @@
 import {
   IConstantHeadBoundary,
   IConstantHeadBoundaryExport,
-  IConstantHeadBoundaryFeature
+  IConstantHeadBoundaryFeature,
 } from './ConstantHeadBoundary.type';
 import { IDrainageBoundary, IDrainageBoundaryExport, IDrainageBoundaryFeature } from './DrainageBoundary.type';
 import {
   IEvapotranspirationBoundary,
-  IEvapotranspirationBoundaryExport
+  IEvapotranspirationBoundaryExport,
 } from './EvapotranspirationBoundary.type';
 import {
   IFlowAndHeadBoundary,
   IFlowAndHeadBoundaryExport,
-  IFlowAndHeadBoundaryFeature
+  IFlowAndHeadBoundaryFeature,
 } from './FlowAndHeadBoundary.type';
 import {
   IGeneralHeadBoundary,
   IGeneralHeadBoundaryExport,
-  IGeneralHeadBoundaryFeature
+  IGeneralHeadBoundaryFeature,
 } from './GeneralHeadBoundary.type';
 import { IHeadObservationWell, IHeadObservationWellExport } from './HeadObservationWell.type';
+import { ILakeBoundary, ILakeBoundaryExport } from './LakeBoundary.type';
 import { IRechargeBoundary, IRechargeBoundaryExport } from './RechargeBoundary.type';
 import { IRiverBoundary, IRiverBoundaryExport, IRiverBoundaryFeature } from './RiverBoundary.type';
 import { IWellBoundary, IWellBoundaryExport } from './WellBoundary.type';
@@ -27,7 +28,7 @@ import { LineBoundaryType } from './LineBoundary.type';
 export type BoundaryType = 'evt' | 'rch' | 'wel' | 'hob' | 'lak' | LineBoundaryType;
 
 export type IBoundary = IConstantHeadBoundary | IGeneralHeadBoundary | IDrainageBoundary | IEvapotranspirationBoundary |
-  IFlowAndHeadBoundary | IHeadObservationWell | IRechargeBoundary | IRiverBoundary | IWellBoundary;
+  IFlowAndHeadBoundary | IHeadObservationWell | ILakeBoundary | IRechargeBoundary | IRiverBoundary | IWellBoundary;
 
 export type IBoundaryFeature =
   IConstantHeadBoundaryFeature
@@ -39,12 +40,13 @@ export type IBoundaryFeature =
 export type IBoundaryExport =
   IConstantHeadBoundaryExport
   | IDrainageBoundaryExport
-  | IGeneralHeadBoundaryExport
-  | IRiverBoundaryExport
-  | IFlowAndHeadBoundaryExport
   | IEvapotranspirationBoundaryExport
+  | IFlowAndHeadBoundaryExport
+  | IGeneralHeadBoundaryExport
   | IHeadObservationWellExport
+  | ILakeBoundaryExport
   | IRechargeBoundaryExport
+  | IRiverBoundaryExport
   | IWellBoundaryExport;
 
 export type BoundarySelection = 'all' | BoundaryType;
@@ -67,6 +69,7 @@ export enum EBoundaryType {
   FHB = 'fhb',
   GHB = 'ghb',
   HOB = 'hob',
+  LAK = 'lak',
   RCH = 'rch',
   RIV = 'riv',
   WEL = 'wel'

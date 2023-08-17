@@ -40,16 +40,6 @@ const RivPackageProperties = (props: IProps) => {
         });
     }
 
-    /*
-    const basPackage = mfPackages.getPackage('bas');
-    const {ibound} = basPackage;
-    const affectedCellsLayers = ibound.map(l => l.map(r => r.map(() => 0)));
-    Object.values(mfPackage.stress_period_data)[0].forEach(spv => {
-        const [lay, row, col] = spv;
-        affectedCellsLayers[lay][row][col] = 1;
-    });
-    */
-
     const renderInfoPopup = (description: string | JSX.Element, title: string) => (
         <InfoPopup description={description} title={title}/>
     );

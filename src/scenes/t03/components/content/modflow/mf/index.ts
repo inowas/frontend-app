@@ -9,6 +9,7 @@ import FlowPackageProperties from './flowPackageProperties';
 import GhbPackageProperties from './ghbPackageProperties';
 import GmgPackageProperties from './gmgPackageProperties';
 import HobPackageProperties from './hobPackageProperties';
+import LakPackageProperties from './lakPackageProperties';
 import MfPackageProperties from './mfPackageProperties';
 import NwtPackageProperties from './nwtPackageProperties';
 import OcPackageProperties from './ocPackageProperties';
@@ -23,27 +24,28 @@ import SorPackageProperties from './sorPackageProperties';
 import WelPackageProperties from './welPackageProperties';
 
 export {
-    BasPackageProperties,
-    ChdPackageProperties,
-    De4PackageProperties,
-    DisPackageProperties,
-    DrnPackageProperties,
-    EvtPackageProperties,
-    FhbPackageProperties,
-    FlowPackageProperties,
-    GhbPackageProperties,
-    GmgPackageProperties,
-    HobPackageProperties,
-    MfPackageProperties,
-    NwtPackageProperties,
-    OcPackageProperties,
-    PcgPackageProperties,
-    PcgnPackageProperties,
-    RchPackageProperties,
-    RivPackageProperties,
-    SipPackageProperties,
-    SmsPackageProperties,
-    SolverPackageProperties,
-    SorPackageProperties,
-    WelPackageProperties
+  BasPackageProperties,
+  ChdPackageProperties,
+  De4PackageProperties,
+  DisPackageProperties,
+  DrnPackageProperties,
+  EvtPackageProperties,
+  FhbPackageProperties,
+  FlowPackageProperties,
+  GhbPackageProperties,
+  GmgPackageProperties,
+  HobPackageProperties,
+  LakPackageProperties,
+  MfPackageProperties,
+  NwtPackageProperties,
+  OcPackageProperties,
+  PcgPackageProperties,
+  PcgnPackageProperties,
+  RchPackageProperties,
+  RivPackageProperties,
+  SipPackageProperties,
+  SmsPackageProperties,
+  SolverPackageProperties,
+  SorPackageProperties,
+  WelPackageProperties,
 };
