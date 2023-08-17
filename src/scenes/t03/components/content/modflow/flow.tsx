@@ -8,6 +8,7 @@ import {
   FlowPackageProperties,
   GhbPackageProperties,
   HobPackageProperties,
+  LakPackageProperties,
   MfPackageProperties,
   OcPackageProperties,
   RchPackageProperties,
@@ -27,6 +28,7 @@ import {
   FlopyModflowMffhb,
   FlopyModflowMfghb,
   FlopyModflowMfhob,
+  FlopyModflowMflak,
   FlopyModflowMfoc,
   FlopyModflowMfrch,
   FlopyModflowMfriv,
@@ -56,15 +58,16 @@ const sideBar = (boundaries: BoundaryCollection) => ([
   {id: 'chd', name: 'Constant head package', enabled: boundaries.countByType('chd') > 0},
   {id: 'drn', name: 'Drainage package', enabled: boundaries.countByType('drn') > 0},
   {id: 'evt', name: 'Evapotranspiration package', enabled: boundaries.countByType('evt') > 0},
+  {id: 'flow', name: 'Flow packages', enabled: true},
   {id: 'fhb', name: 'Flow and head package', enabled: boundaries.countByType('fhb') > 0},
   {id: 'ghb', name: 'General head package', enabled: boundaries.countByType('ghb') > 0},
+  {id: 'hob', name: 'Head observation package', enabled: boundaries.countByType('hob') > 0},
+  {id: 'lak', name: 'Lake package', enabled: boundaries.countByType('lak') > 0},
+  {id: 'oc', name: 'Output control', enabled: true},
   {id: 'rch', name: 'Recharge package', enabled: boundaries.countByType('rch') > 0},
   {id: 'riv', name: 'River package', enabled: boundaries.countByType('riv') > 0},
-  {id: 'wel', name: 'Well package', enabled: boundaries.countByType('wel') > 0},
-  {id: 'hob', name: 'Head observation package', enabled: boundaries.countByType('hob') > 0},
-  {id: 'flow', name: 'Flow packages', enabled: true},
   {id: 'solver', name: 'Solver package', enabled: true},
-  {id: 'oc', name: 'Output control', enabled: true}
+  {id: 'wel', name: 'Well package', enabled: boundaries.countByType('wel') > 0}
 ]);
 
 interface IProps {
@@ -292,6 +295,15 @@ const Flow = (props: IProps) => {
         return (
           <HobPackageProperties
             mfPackage={iMf.getPackage(type) as FlopyModflowMfhob}
+            mfPackages={iMf}
+            onChange={handleChangePackage}
+            readonly={readOnly}
+          />
+        );
+      case 'lak':
+        return (
+          <LakPackageProperties
+            mfPackage={iMf.getPackage(type) as FlopyModflowMflak}
             mfPackages={iMf}
             onChange={handleChangePackage}
             readonly={readOnly}

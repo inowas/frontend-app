@@ -1,157 +1,207 @@
-import {Array2D} from '../../../geometry/Array2D.type';
-import {IPropertyValueObject} from '../../../types';
-import {ModflowModel} from '../../../modflow';
-import {SoilmodelLayer} from '../../../modflow/soilmodel';
+import { Array2D } from '../../../geometry/Array2D.type';
+import { IPropertyValueObject } from '../../../types';
+import { ModflowModel } from '../../../modflow';
+import { SoilmodelLayer } from '../../../modflow/soilmodel';
+import FlopyModflowMflak from './FlopyModflowMflak';
 import FlopyModflowPackage from './FlopyModflowPackage';
 import Soilmodel from '../../../modflow/soilmodel/Soilmodel';
 
 export interface IFlopyModflowMfbas extends IPropertyValueObject {
-    ibound: Array<number | Array2D<number>> | number;
-    strt: Array<number | Array2D<number>> | number;
-    ifrefm: boolean;
-    ixsec: boolean;
-    ichflg: boolean;
-    stoper: number | null;
-    hnoflo: number;
-    extension: string;
-    unitnumber: number | null;
-    filenames: null | string | string[];
+  ibound: number | Array2D<number>[];
+  strt: number | Array2D<number>[];
+  ifrefm: boolean;
+  ixsec: boolean;
+  ichflg: boolean;
+  stoper: number | null;
+  hnoflo: number;
+  extension: string;
+  unitnumber: number | null;
+  filenames: null | string | string[];
 }
 
 export const defaults: IFlopyModflowMfbas = {
-    ibound: 1,
-    strt: 1,
-    ifrefm: true,
-    ixsec: false,
-    ichflg: false,
-    stoper: null,
-    hnoflo: -999.99,
-    extension: 'bas',
-    unitnumber: null,
-    filenames: null
+  ibound: 1,
+  strt: 1,
+  ifrefm: true,
+  ixsec: false,
+  ichflg: false,
+  stoper: null,
+  hnoflo: -999.99,
+  extension: 'bas',
+  unitnumber: null,
+  filenames: null,
 };
 
 export default class FlopyModflowMfbas extends FlopyModflowPackage<IFlopyModflowMfbas> {
 
-    public static create(model: ModflowModel, soilmodel: Soilmodel) {
-        return this.fromDefault().update(model, soilmodel);
+  public static create(model: ModflowModel, soilmodel: Soilmodel) {
+    return this.fromDefault().update(model, soilmodel);
+  }
+
+  public static fromDefault() {
+    return this.fromObject({});
+  }
+
+  public static fromObject(obj: IPropertyValueObject): FlopyModflowMfbas {
+    const d: any = FlopyModflowPackage.cloneDeep(defaults);
+    for (const key in d) {
+      if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
+        d[key] = obj[key];
+      }
     }
 
-    public static fromDefault() {
-        return this.fromObject({});
+    return new this(d);
+  }
+
+  public update(model: ModflowModel, soilmodel: Soilmodel) {
+    this.ibound = soilmodel.layersCollection.all.map((l) => {
+      const value = SoilmodelLayer.fromObject(l).getValueOfParameter('ibound');
+
+      if (value === undefined) {
+        return model.cells.calculateIBound(model.gridSize.nY, model.gridSize.nX) as Array2D<number>;
+      }
+
+      if (Array.isArray(value)) {
+        return value;
+      }
+
+      return new Array(model.gridSize.nY).fill(0)
+        .map(() => new Array(model.gridSize.nX).fill(value)) as Array2D<number>;
+
+    }) as Array<Array2D<number>>;
+
+    this.strt = soilmodel.layersCollection.all.map((l) => {
+      const value = SoilmodelLayer.fromObject(l).getValueOfParameter('strt');
+
+      if (value === undefined) {
+        return soilmodel.top as Array2D<number>;
+      }
+
+      if (Array.isArray(value)) {
+        return value;
+      }
+
+      return new Array(model.gridSize.nY).fill(0)
+        .map(() => new Array(model.gridSize.nX).fill(value)) as Array2D<number>;
+
+
+    }) as Array<Array2D<number>>;
+
+    return this;
+  }
+
+  public applyLakPackage(mfLak: FlopyModflowMflak, nLay: number, nRow: number, nCol: number) {
+
+    let ibound: Array2D<number>[] | undefined = undefined;
+
+    if (!Array.isArray(this._props.ibound)) {
+      ibound = new Array(nLay).fill(0)
+        .map(() => new Array(nRow).fill(0)
+          .map(() => new Array(nCol).fill(this._props.ibound as number)));
     }
 
-    public static fromObject(obj: IPropertyValueObject): FlopyModflowMfbas {
-        const d: any = FlopyModflowPackage.cloneDeep(defaults);
-        for (const key in d) {
-            if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                d[key] = obj[key];
+    if (Array.isArray(this._props.ibound)) {
+      ibound = this._props.ibound as Array2D<number>[];
+    }
+
+    if (ibound === undefined) {
+      throw new Error('ibound is undefined');
+    }
+
+    if (mfLak.lakarr !== null) {
+      mfLak.lakarr.forEach((layer, layerIdx) => {
+        layer.forEach((row, rowIdx) => {
+          row.forEach((col, colIdx) => {
+            if (col !== 0 && ibound !== undefined) {
+              ibound[layerIdx][rowIdx][colIdx] = 0;
             }
-        }
-
-        return new this(d);
-    }
-
-    public update(model: ModflowModel, soilmodel: Soilmodel) {
-        this.ibound = soilmodel.layersCollection.all.map((l) => {
-            const value = SoilmodelLayer.fromObject(l).getValueOfParameter('ibound');
-
-            if (value !== undefined) {
-                return value;
-            }
-
-            return model.cells.calculateIBound(model.gridSize.nY, model.gridSize.nX);
+          });
         });
-
-        this.strt = soilmodel.layersCollection.all.map((l) => {
-            const value = SoilmodelLayer.fromObject(l).getValueOfParameter('strt');
-            if (value !== undefined) {
-                return value;
-            }
-
-            return soilmodel.top as Array2D<number>;
-        });
-
-        return this;
+      });
     }
 
-    get ibound() {
-        return this._props.ibound;
-    }
+    this._props.ibound = ibound;
 
-    set ibound(value) {
-        this._props.ibound = value;
-    }
+    return this;
+  }
 
-    get strt() {
-        return this._props.strt;
-    }
+  get ibound() {
+    return this._props.ibound;
+  }
 
-    set strt(value) {
-        this._props.strt = value;
-    }
+  set ibound(value) {
+    this._props.ibound = value;
+  }
 
-    get ifrefm() {
-        return this._props.ifrefm;
-    }
+  get strt() {
+    return this._props.strt;
+  }
 
-    set ifrefm(value) {
-        this._props.ifrefm = value;
-    }
+  set strt(value) {
+    this._props.strt = value;
+  }
 
-    get ixsec() {
-        return this._props.ixsec;
-    }
+  get ifrefm() {
+    return this._props.ifrefm;
+  }
 
-    set ixsec(value) {
-        this._props.ixsec = value;
-    }
+  set ifrefm(value) {
+    this._props.ifrefm = value;
+  }
 
-    get ichflg() {
-        return this._props.ichflg;
-    }
+  get ixsec() {
+    return this._props.ixsec;
+  }
 
-    set ichflg(value) {
-        this._props.ichflg = value;
-    }
+  set ixsec(value) {
+    this._props.ixsec = value;
+  }
 
-    get stoper() {
-        return this._props.stoper;
-    }
+  get ichflg() {
+    return this._props.ichflg;
+  }
 
-    set stoper(value) {
-        this._props.stoper = value;
-    }
+  set ichflg(value) {
+    this._props.ichflg = value;
+  }
 
-    get hnoflo() {
-        return this._props.hnoflo;
-    }
+  get stoper() {
+    return this._props.stoper;
+  }
 
-    set hnoflo(value) {
-        this._props.hnoflo = value;
-    }
+  set stoper(value) {
+    this._props.stoper = value;
+  }
 
-    get extension() {
-        return this._props.extension;
-    }
+  get hnoflo() {
+    return this._props.hnoflo;
+  }
 
-    set extension(value) {
-        this._props.extension = value;
-    }
+  set hnoflo(value) {
+    this._props.hnoflo = value;
+  }
 
-    get unitnumber() {
-        return this._props.unitnumber;
-    }
+  get extension() {
+    return this._props.extension;
+  }
 
-    set unitnumber(value) {
-        this._props.unitnumber = value;
-    }
+  set extension(value) {
+    this._props.extension = value;
+  }
 
-    get filenames() {
-        return this._props.filenames;
-    }
+  get unitnumber() {
+    return this._props.unitnumber;
+  }
 
-    set filenames(value) {
-        this._props.filenames = value;
-    }
+  set unitnumber(value) {
+    this._props.unitnumber = value;
+  }
+
+  get filenames() {
+    return this._props.filenames;
+  }
+
+  set filenames(value) {
+    this._props.filenames = value;
+  }
 }

@@ -34,7 +34,7 @@ const ContentWrapper = () => {
     if (type && BoundaryFactory.availableTypes.indexOf(type) > -1) {
       return <Content.CreateBoundary type={type as BoundaryType} />;
     }
-    return <Content.Boundaries types={['chd', 'drn', 'evt', 'fhb', 'ghb', 'rch', 'riv', 'wel']} />;
+    return <Content.Boundaries types={['chd', 'drn', 'evt', 'fhb', 'ghb', 'lak', 'rch', 'riv', 'wel']} />;
   }
 
   if (property === 'head_observations') {

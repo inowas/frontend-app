@@ -215,7 +215,7 @@ const ResultsMap = (props: IProps) => {
   };
 
   const filteredData = _.sortBy(_.flatten(props.data).filter((n) => n !== null));
-  const q = Math.floor(QUANTILE / 100 * filteredData.length);
+  const q = Math.floor(QUANTILE / 100 * filteredData.length) || 1;
 
   let minData = filteredData[q];
   let maxData = filteredData[filteredData.length - q];

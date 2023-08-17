@@ -1,7 +1,7 @@
-import {GenericObject} from '../../../genericObject/GenericObject';
-import {IFlopyModflow} from './FlopyModflow.type';
-import {IPropertyValueObject} from '../../../types';
-import {ModflowModel} from '../../../modflow';
+import { GenericObject } from '../../../genericObject/GenericObject';
+import { IFlopyModflow } from './FlopyModflow.type';
+import { IPropertyValueObject } from '../../../types';
+import { ModflowModel } from '../../../modflow';
 import BoundaryCollection from '../../../modflow/boundaries/BoundaryCollection';
 import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
 import FlopyModflowMf from './FlopyModflowMf';
@@ -99,7 +99,7 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
       pcg: FlopyModflowMfpcg.create().toObject(),
 
       // Output control
-      oc: FlopyModflowMfoc.create(model).toObject()
+      oc: FlopyModflowMfoc.create(model).toObject(),
     };
 
     // Boundaries
@@ -124,7 +124,7 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
     const hob = FlopyModflowMfhob.create(boundaries, model.stressperiods);
     hob ? obj.hob = hob.toObject() : delete obj.hob;
 
-    const lak = FlopyModflowMflak.create(boundaries, model.stressperiods);
+    const lak = FlopyModflowMflak.create(boundaries, model, soilmodel);
     lak ? obj.lak = lak.toObject() : delete obj.lak;
 
     const rch = FlopyModflowMfrch.create(boundaries, model.stressperiods, model.gridSize);
@@ -139,6 +139,29 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
     const wel = FlopyModflowMfwel.create(boundaries, model.stressperiods);
     wel ? obj.wel = wel.toObject() : delete obj.wel;
 
+    // Post Processing steps
+    // Apply LAK Package (if set) to BCF, LPF and BAS
+    if (obj.lak) {
+      const nLay = soilmodel.numberOfLayers;
+      const nRow = model.gridSize.nY;
+      const nCol = model.gridSize.nX;
+      obj.bas = FlopyModflowMfbas.fromObject(obj.bas)
+        .applyLakPackage(FlopyModflowMflak.fromObject(obj.lak), nLay, nRow, nCol)
+        .toObject();
+
+      if (obj.lpf) {
+        obj.lpf = FlopyModflowMflpf.fromObject(obj.lpf)
+          .applyLakPackage(FlopyModflowMflak.fromObject(obj.lak), nLay, nRow, nCol)
+          .toObject();
+      }
+
+      if (obj.bcf) {
+        obj.bcf = FlopyModflowMfbcf.fromObject(obj.bcf)
+          .applyLakPackage(FlopyModflowMflak.fromObject(obj.lak), nLay, nRow, nCol)
+          .toObject();
+      }
+    }
+
     return new this(obj);
   }
 
@@ -147,8 +170,8 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
   }
 
   public recalculate = (model: ModflowModel, soilmodel: Soilmodel, boundaries: BoundaryCollection) => {
-      // Recalculate Discretization
-      ['bas', 'dis'].forEach((p: string) => this.recalculatePackage(p, model, soilmodel, boundaries));
+    // Recalculate Discretization
+    ['bas', 'dis'].forEach((p: string) => this.recalculatePackage(p, model, soilmodel, boundaries));
 
     // Recalculate Output Control
     ['oc'].forEach((p: string) => this.recalculatePackage(p, model, soilmodel, boundaries));
@@ -163,6 +186,28 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
     // Recalculate Flow Packages
     ['flow'].forEach((p: string) => this.recalculatePackage(p, model, soilmodel, boundaries));
 
+    // Adapt bas-package (ibound) and flow-packages (wetdry) when LAK-Boundary is present
+    if (this._props.lak) {
+      const nLay = soilmodel.numberOfLayers;
+      const nRow = model.gridSize.nY;
+      const nCol = model.gridSize.nX;
+      this._props.bas = FlopyModflowMfbas.fromObject(this._props.bas)
+        .applyLakPackage(FlopyModflowMflak.fromObject(this._props.lak), nLay, nRow, nCol)
+        .toObject();
+
+      if (this._props.lpf) {
+        this._props.lpf = FlopyModflowMflpf.fromObject(this._props.lpf)
+          .applyLakPackage(FlopyModflowMflak.fromObject(this._props.lak), nLay, nRow, nCol)
+          .toObject();
+      }
+
+      if (this._props.bcf) {
+        this._props.bcf = FlopyModflowMfbcf.fromObject(this._props.bcf)
+          .applyLakPackage(FlopyModflowMflak.fromObject(this._props.lak), nLay, nRow, nCol)
+          .toObject();
+      }
+    }
+
     return this;
   };
 
@@ -170,7 +215,7 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
     p: string[] | string | null,
     model: ModflowModel,
     soilmodel: Soilmodel,
-    boundaries: BoundaryCollection
+    boundaries: BoundaryCollection,
   ) => {
     if (p === null) {
       this.recalculate(model, soilmodel, boundaries);
@@ -275,14 +320,14 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
   };
 
   public toFlopyCalculation = () => {
-    return {...this._props, packages: Object.keys(this._props)};
+    return { ...this._props, packages: Object.keys(this._props) };
   };
 
   private recalculatePackage = (
     pType: string,
     model: ModflowModel,
     soilmodel: Soilmodel,
-    boundaries: BoundaryCollection
+    boundaries: BoundaryCollection,
   ) => {
     if (pType === 'bas') {
       this._props.bas = FlopyModflowMfbas.fromObject(this._props.bas).update(model, soilmodel).toObject();
@@ -299,7 +344,7 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
         oc = FlopyModflowMfoc.create(model);
 
       if (oc) {
-        this._props.oc = oc.toObject()
+        this._props.oc = oc.toObject();
       }
     }
 
@@ -355,8 +400,8 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
     if (pType === 'lak') {
       let lak;
       this._props.lak ?
-        lak = FlopyModflowMflak.fromObject(this._props.lak).update(boundaries, model.stressperiods) :
-        lak = FlopyModflowMflak.create(boundaries, model.stressperiods);
+        lak = FlopyModflowMflak.fromObject(this._props.lak).update(boundaries, model, soilmodel) :
+        lak = FlopyModflowMflak.create(boundaries, model, soilmodel);
       lak ? this._props.lak = lak.toObject() : delete this._props.lak;
     }
 
@@ -415,10 +460,14 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
 
     if (pType === 'flow') {
       if (this._props.lpf) {
-        this._props.lpf = FlopyModflowMflpf.fromObject(this._props.lpf).update(soilmodel).toObject();
+        this._props.lpf = FlopyModflowMflpf.fromObject(this._props.lpf)
+          .update(soilmodel)
+          .toObject();
       }
       if (this._props.bcf) {
-        this._props.bcf = FlopyModflowMfbcf.fromObject(this._props.bcf).update(soilmodel).toObject();
+        this._props.bcf = FlopyModflowMfbcf.fromObject(this._props.bcf)
+          .update(soilmodel)
+          .toObject();
       }
     }
 

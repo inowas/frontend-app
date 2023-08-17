@@ -108,7 +108,7 @@ const CrossSection = (props: IProps) => {
   };
 
   return (
-    <React.Fragment>
+    <>
       {totalTimes && layerValues && (
         <ResultsSelectorFlow
           data={{
@@ -160,7 +160,7 @@ const CrossSection = (props: IProps) => {
           </Grid.Column>
         </Grid.Row>
       </Grid>
-    </React.Fragment>
+    </>
   );
 };
 
