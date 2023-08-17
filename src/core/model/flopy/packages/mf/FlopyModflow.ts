@@ -252,7 +252,9 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
       solverPackages.forEach((t) => delete this._props[t]);
     }
 
-    return this._props[type] = pck.toObject();
+    this._props[type] = pck.toObject();
+
+    return this;
   };
 
   public getTypeFromPackage = (pck: FlopyModflowPackage<any>) => {
