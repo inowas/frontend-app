@@ -80,10 +80,7 @@ interface IProps {
 const Flow = (props: IProps) => {
   const [mf, setMf] = useState<IFlopyModflow>(props.packages.mf.toObject());
 
-  const mfRef = useRef<IFlopyModflow>();
-  const packagesRef = useRef<FlopyPackages>();
   const editingState = useRef<IEditingState>(initialEditingState);
-
   const T03 = useSelector((state: IRootReducer) => state.T03);
   const messages = MessagesCollection.fromObject(T03.messages);
 
@@ -105,25 +102,18 @@ const Flow = (props: IProps) => {
   }, [messages]);
 
   useEffect(() => {
-    if (mf) {
-      mfRef.current = mf;
-    }
-  }, [mf]);
-
-  useEffect(() => {
     setMf(props.packages.mf.toObject());
-    packagesRef.current = props.packages;
   }, [props.packages]);
 
   const handleSave = () => {
-    if (!editingState.current.dirty || !mfRef.current || !packagesRef.current) {
+    if (!editingState.current.dirty) {
       return null;
     }
     const message = messageSaving('modflow');
     dispatch(addMessage(message));
-    const packages = packagesRef.current;
+    const packages = props.packages;
     packages.modelId = props.model.id;
-    packages.mf = FlopyModflow.fromObject(mfRef.current);
+    packages.mf = FlopyModflow.fromObject(mf);
     sendCommand(
       ModflowModelCommand.updateFlopyPackages(props.model.id, packages),
       () => {
@@ -153,9 +143,10 @@ const Flow = (props: IProps) => {
   };
 
   const handleChangePackage = (p: FlopyModflowPackage<IFlopyModflowPackage>) => {
-    const cMf = FlopyModflow.fromObject(mf);
-    cMf.setPackage(p);
-    setMf(cMf.toObject());
+    const updatedFlopyModflow = FlopyModflow.fromObject(mf).setPackage(p);
+    const packages = props.packages;
+    packages.mf = updatedFlopyModflow;
+    dispatch(updatePackages(packages));
     if (!editingState.current.dirty) {
       dispatch(addMessage(messageDirty('modflow')));
     }

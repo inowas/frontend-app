@@ -84,11 +84,11 @@ const LakPackageProperties = (props: IProps) => {
         <Form.Dropdown
           label={'THETA'}
           options={[
-            { key: 0, value: 1.0, text: '1.0' },
+            { key: 0, value: 1, text: '1.0' },
             { key: 1, value: 0.5, text: '0.5' },
-            { key: 2, value: 0.0, text: '0.0' },
+            { key: 2, value: 0, text: '0.0' },
             { key: 3, value: -0.5, text: '-0.5' },
-            { key: 4, value: -1.0, text: '-1.0' },
+            { key: 4, value: -1, text: '-1.0' },
           ]}
           name={'theta'}
           selection={true}
@@ -98,7 +98,6 @@ const LakPackageProperties = (props: IProps) => {
           width={5}
         />
         <Form.Field width={1}>
-
           <label>&nbsp;</label>
           <InfoPopup
             description={documentation.lak.theta}
@@ -119,7 +118,7 @@ const LakPackageProperties = (props: IProps) => {
             icon={renderInfoPopup(documentation.lak.nssitr, 'NNSITR')}
             onBlur={handleOnBlur(parseInt)}
             onChange={handleOnChange}
-            disabled={mfPackage.theta <= 0}
+            disabled={mfPackage.theta >= 0}
           />
         </Form.Field>
         <Form.Field>
@@ -132,7 +131,7 @@ const LakPackageProperties = (props: IProps) => {
             icon={renderInfoPopup(documentation.lak.sscncr, 'SSCNCR')}
             onBlur={handleOnBlur(parseFloat)}
             onChange={handleOnChange}
-            disabled={mfPackage.theta <= 0}
+            disabled={mfPackage.theta >= 0}
           />
         </Form.Field>
         <Form.Field>
@@ -145,7 +144,7 @@ const LakPackageProperties = (props: IProps) => {
             icon={renderInfoPopup(documentation.lak.surfdepth, 'SURFDEP')}
             onBlur={handleOnBlur(parseFloat)}
             onChange={handleOnChange}
-            disabled={mfPackage.theta <= 0}
+            disabled={mfPackage.theta >= 0}
           />
         </Form.Field>
       </Form.Group>
