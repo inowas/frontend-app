@@ -53,7 +53,7 @@ export const defaults: IFlopyModflowMfdis = {
     xul: null,
     yul: null,
     rotation: 0.0,
-    proj4_str: null,
+    proj4_str: 'EPSG:28992',
     start_datetime: null
 };
 
@@ -102,7 +102,7 @@ export default class FlopyModflowMfdis extends FlopyModflowPackage<IFlopyModflow
 
         this.xul = model.boundingBox.xMin;
         this.yul = model.boundingBox.yMax;
-        this.proj4_str = 'EPSG:4326';
+        this.proj4_str = 'EPSG:28992';
         this.start_datetime = stressperiods.startDateTime.format('YYYY-MM-DD');
         return this;
     }
