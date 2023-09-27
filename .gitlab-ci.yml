@@ -29,6 +29,7 @@ build:dev:
 
   only:
     - dev
+    - tags
 
 deploy:dev:
   image: ubuntu:latest
@@ -54,6 +55,7 @@ deploy:dev:
     url: https://dev.inowas.com
   only:
     - dev
+    - tags
 
 build:smart-control:
   image: node:16
