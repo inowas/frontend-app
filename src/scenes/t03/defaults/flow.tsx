@@ -66,7 +66,7 @@ export const documentation = {
     yul: <div>y coordinate of upper left corner of the grid, default is None</div>,
     rotation: <div>Clockwise rotation (in degrees) of the grid about the upper left corner. default is 0.0</div>,
     proj4_str: <div>PROJ4 string that defines the xul-yul coordinate system (.e.g. ‘+proj=longlat +ellps=WGS84
-      +datum=WGS84 +no_defs ‘). Can be an EPSG code (e.g. ‘EPSG:28992’). Default is ‘EPSG:28992’</div>,
+      +datum=WGS84 +no_defs ‘). Can be an EPSG code (e.g. ‘EPSG:4326’). Default is ‘EPSG:4326’</div>,
     start_datetime: <div>Starting datetime of the simulation. default is ‘1/1/1970’</div>,
   },
 

@@ -79,6 +79,21 @@ const LakPackageProperties = (props: IProps) => {
         </Grid.Row>
       </Grid>
 
+      <Grid divided={'vertically'}>
+        <Grid.Row columns={2}>
+          {mfPackage.bdlknc?.map((layer: any, idx) => (
+            <Grid.Column key={idx}>
+              <Label>Layer {idx + 1}</Label>
+              <RasterDataImage
+                data={layer}
+                gridSize={GridSize.fromData(layer)}
+                unit={''}
+              />
+            </Grid.Column>
+          ))}
+        </Grid.Row>
+      </Grid>
+
       <Header as={'h4'} dividing={true}></Header>
       <Form.Group>
         <Form.Dropdown

@@ -91,8 +91,8 @@ export default class FlopyModflowMflak extends FlopyModflowBoundary<IFlopyModflo
       });
     });
 
+    this.bdlknc = this.extendValuesToNeighbourCells(bdLknc);
     this.lakarr = lakeArray;
-    this.bdlknc = bdLknc;
 
     let fluxData: Exclude<typeof this.flux_data, null> = [];
     lakeBoundaries.forEach((lakeBoundary, idx) => {
@@ -117,6 +117,56 @@ export default class FlopyModflowMflak extends FlopyModflowBoundary<IFlopyModflo
     this.stage_range = lakeBoundaries.map((b) => b.stageRange);
 
     return this;
+  };
+
+  private extendValuesToNeighbourCells = (bdLknc: Array3D<number>) => {
+    for (let lIdx = 0; lIdx < bdLknc.length; lIdx++) {
+      for (let rIdx = 0; rIdx < bdLknc[lIdx].length; rIdx++) {
+        for (let cIdx = 0; cIdx < bdLknc[lIdx][rIdx].length - 1; cIdx++) {
+          if (bdLknc[lIdx][rIdx][cIdx] === 0 && bdLknc[lIdx][rIdx][cIdx + 1] !== 0) {
+            bdLknc[lIdx][rIdx][cIdx] = bdLknc[lIdx][rIdx][cIdx + 1];
+          }
+        }
+
+        for (let cIdx = bdLknc[lIdx][rIdx].length - 1; cIdx > 0; cIdx--) {
+          if (bdLknc[lIdx][rIdx][cIdx] === 0 && bdLknc[lIdx][rIdx][cIdx - 1] !== 0) {
+            bdLknc[lIdx][rIdx][cIdx] = bdLknc[lIdx][rIdx][cIdx - 1];
+          }
+        }
+      }
+
+      for (let cIdx = 0; cIdx < bdLknc[lIdx][0].length; cIdx++) {
+        for (let rIdx = 0; rIdx < bdLknc[lIdx].length - 1; rIdx++) {
+          if (bdLknc[lIdx][rIdx][cIdx] === 0 && bdLknc[lIdx][rIdx + 1][cIdx] !== 0) {
+            bdLknc[lIdx][rIdx][cIdx] = bdLknc[lIdx][rIdx + 1][cIdx];
+          }
+        }
+
+        for (let rIdx = bdLknc[lIdx].length - 1; rIdx > 0; rIdx--) {
+          if (bdLknc[lIdx][rIdx][cIdx] === 0 && bdLknc[lIdx][rIdx - 1][cIdx] !== 0) {
+            bdLknc[lIdx][rIdx][cIdx] = bdLknc[lIdx][rIdx - 1][cIdx];
+          }
+        }
+      }
+    }
+
+    for (let rIdx = 0; rIdx < bdLknc[0].length; rIdx++) {
+      for (let cIdx = 0; cIdx < bdLknc[0][rIdx].length; cIdx++) {
+        for (let lIdx = 0; lIdx < bdLknc.length - 1; lIdx++) {
+          if (bdLknc[lIdx][rIdx][cIdx] === 0 && bdLknc[lIdx + 1][rIdx][cIdx] !== 0) {
+            bdLknc[lIdx][rIdx][cIdx] = bdLknc[lIdx + 1][rIdx][cIdx];
+          }
+        }
+
+        for (let lIdx = bdLknc.length - 1; lIdx > 0; lIdx--) {
+          if (bdLknc[lIdx][rIdx][cIdx] === 0 && bdLknc[lIdx - 1][rIdx][cIdx] !== 0) {
+            bdLknc[lIdx][rIdx][cIdx] = bdLknc[lIdx - 1][rIdx][cIdx];
+          }
+        }
+      }
+    }
+
+    return cloneDeep(bdLknc);
   };
 
   get nlakes() {

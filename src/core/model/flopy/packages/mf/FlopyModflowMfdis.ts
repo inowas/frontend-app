@@ -1,293 +1,293 @@
-import {Array2D} from '../../../geometry/Array2D.type';
-import {IPropertyValueObject} from '../../../types';
-import {ModflowModel} from '../../../modflow';
-import {delc, delr} from '../../../../../services/geoTools/distance';
+import { Array2D } from '../../../geometry/Array2D.type';
+import { IPropertyValueObject } from '../../../types';
+import { ModflowModel } from '../../../modflow';
+import { delc, delr } from '../../../../../services/geoTools/distance';
 import FlopyModflowPackage from './FlopyModflowPackage';
 import Soilmodel from '../../../modflow/soilmodel/Soilmodel';
 
 export interface IFlopyModflowMfdis {
-    nlay: number;
-    nrow: number;
-    ncol: number;
-    nper: number;
-    delr: number|Array<number>;
-    delc: number|Array<number>;
-    laycbd: number | number[];
-    top: Array2D<number> | number;
-    botm: Array<number | Array2D<number>> | number;
-    perlen: number | number[];
-    nstp: number | number[];
-    tsmult: number | number[];
-    steady: boolean | boolean[];
-    itmuni: number;
-    lenuni: number;
-    extension: string;
-    unitnumber: number | null;
-    filenames: null | string | string[];
-    xul: number | null;
-    yul: number | null;
-    rotation: number;
-    proj4_str: string | null;
-    start_datetime: string | null;
+  nlay: number;
+  nrow: number;
+  ncol: number;
+  nper: number;
+  delr: number | Array<number>;
+  delc: number | Array<number>;
+  laycbd: number | number[];
+  top: Array2D<number> | number;
+  botm: Array<number | Array2D<number>> | number;
+  perlen: number | number[];
+  nstp: number | number[];
+  tsmult: number | number[];
+  steady: boolean | boolean[];
+  itmuni: number;
+  lenuni: number;
+  extension: string;
+  unitnumber: number | null;
+  filenames: null | string | string[];
+  xul: number | null;
+  yul: number | null;
+  rotation: number;
+  proj4_str: string | null;
+  start_datetime: string | null;
 }
 
 export const defaults: IFlopyModflowMfdis = {
-    nlay: 1,
-    nrow: 2,
-    ncol: 2,
-    nper: 1,
-    delr: 1.0,
-    delc: 1.0,
-    laycbd: 0,
-    top: 1,
-    botm: 0,
-    perlen: 1,
-    nstp: 1,
-    tsmult: 1,
-    steady: true,
-    itmuni: 4,
-    lenuni: 2,
-    extension: 'dis',
-    unitnumber: null,
-    filenames: null,
-    xul: null,
-    yul: null,
-    rotation: 0.0,
-    proj4_str: 'EPSG:28992',
-    start_datetime: null
+  nlay: 1,
+  nrow: 2,
+  ncol: 2,
+  nper: 1,
+  delr: 1.0,
+  delc: 1.0,
+  laycbd: 0,
+  top: 1,
+  botm: 0,
+  perlen: 1,
+  nstp: 1,
+  tsmult: 1,
+  steady: true,
+  itmuni: 4,
+  lenuni: 2,
+  extension: 'dis',
+  unitnumber: null,
+  filenames: null,
+  xul: null,
+  yul: null,
+  rotation: 0.0,
+  proj4_str: 'EPSG:4326',
+  start_datetime: null,
 };
 
 export default class FlopyModflowMfdis extends FlopyModflowPackage<IFlopyModflowMfdis> {
 
-    public static create(model: ModflowModel, soilmodel: Soilmodel) {
-        return this.fromDefault().update(model, soilmodel);
+  public static create(model: ModflowModel, soilmodel: Soilmodel) {
+    return this.fromDefault().update(model, soilmodel);
+  }
+
+  public static fromDefault() {
+    return this.fromObject({});
+  }
+
+  public static fromObject(obj: IPropertyValueObject): FlopyModflowMfdis {
+    const d: any = FlopyModflowPackage.cloneDeep(defaults);
+    for (const key in d) {
+      if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
+        d[key] = obj[key];
+      }
     }
 
-    public static fromDefault() {
-        return this.fromObject({});
-    }
+    return new this(d);
+  }
 
-    public static fromObject(obj: IPropertyValueObject): FlopyModflowMfdis {
-        const d: any = FlopyModflowPackage.cloneDeep(defaults);
-        for (const key in d) {
-            if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                d[key] = obj[key];
-            }
-        }
+  public update(model: ModflowModel, soilmodel: Soilmodel) {
+    this.nlay = soilmodel.layersCollection.length;
+    this.nrow = model.gridSize.nY;
+    this.ncol = model.gridSize.nX;
+    this.nper = model.stressperiods.count;
+    this.delr = delr(model.boundingBox, model.gridSize);
+    this.delc = delc(model.boundingBox, model.gridSize);
 
-        return new this(d);
-    }
+    const layers = soilmodel.layersCollection.orderBy('number').all;
+    this.laycbd = layers.map(() => 0);
+    soilmodel.top ? this.top = soilmodel.top : this.top = defaults.top;
+    this.botm = soilmodel.getParameterValue('botm');
 
-    public update(model: ModflowModel, soilmodel: Soilmodel) {
-        this.nlay = soilmodel.layersCollection.length;
-        this.nrow = model.gridSize.nY;
-        this.ncol = model.gridSize.nX;
-        this.nper = model.stressperiods.count;
-        this.delr = delr(model.boundingBox, model.gridSize);
-        this.delc = delc(model.boundingBox, model.gridSize);
+    const stressperiods = model.stressperiods;
+    this.perlen = stressperiods.perlens;
+    this.nstp = stressperiods.stressperiods.map((sp) => sp.nstp);
+    this.tsmult = stressperiods.stressperiods.map((sp) => sp.tsmult);
+    this.steady = stressperiods.stressperiods.map((sp) => sp.steady);
 
-        const layers = soilmodel.layersCollection.orderBy('number').all;
-        this.laycbd = layers.map(() => 0);
-        soilmodel.top ? this.top = soilmodel.top : this.top = defaults.top;
-        this.botm = soilmodel.getParameterValue('botm');
+    this.itmuni = model.timeUnit.toInt();
+    this.lenuni = model.lengthUnit.toInt();
 
-        const stressperiods = model.stressperiods;
-        this.perlen = stressperiods.perlens;
-        this.nstp = stressperiods.stressperiods.map((sp) => sp.nstp);
-        this.tsmult = stressperiods.stressperiods.map((sp) => sp.tsmult);
-        this.steady = stressperiods.stressperiods.map((sp) => sp.steady);
+    this.xul = model.boundingBox.xMin;
+    this.yul = model.boundingBox.yMax;
+    this.proj4_str = 'EPSG:4326';
+    this.start_datetime = stressperiods.startDateTime.format('YYYY-MM-DD');
+    return this;
+  }
 
-        this.itmuni = model.timeUnit.toInt();
-        this.lenuni = model.lengthUnit.toInt();
+  get nlay() {
+    return this._props.nlay;
+  }
 
-        this.xul = model.boundingBox.xMin;
-        this.yul = model.boundingBox.yMax;
-        this.proj4_str = 'EPSG:28992';
-        this.start_datetime = stressperiods.startDateTime.format('YYYY-MM-DD');
-        return this;
-    }
+  set nlay(value) {
+    this._props.nlay = value;
+  }
 
-    get nlay() {
-        return this._props.nlay;
-    }
+  get nrow() {
+    return this._props.nrow;
+  }
 
-    set nlay(value) {
-        this._props.nlay = value;
-    }
+  set nrow(value) {
+    this._props.nrow = value;
+  }
 
-    get nrow() {
-        return this._props.nrow;
-    }
+  get ncol() {
+    return this._props.ncol;
+  }
 
-    set nrow(value) {
-        this._props.nrow = value;
-    }
+  set ncol(value) {
+    this._props.ncol = value;
+  }
 
-    get ncol() {
-        return this._props.ncol;
-    }
+  get nper() {
+    return this._props.nper;
+  }
 
-    set ncol(value) {
-        this._props.ncol = value;
-    }
+  set nper(value) {
+    this._props.nper = value;
+  }
 
-    get nper() {
-        return this._props.nper;
-    }
+  get delr() {
+    return this._props.delr;
+  }
 
-    set nper(value) {
-        this._props.nper = value;
-    }
+  set delr(value) {
+    this._props.delr = value;
+  }
 
-    get delr() {
-        return this._props.delr;
-    }
+  get delc() {
+    return this._props.delc;
+  }
 
-    set delr(value) {
-        this._props.delr = value;
-    }
+  set delc(value) {
+    this._props.delc = value;
+  }
 
-    get delc() {
-        return this._props.delc;
-    }
+  get laycbd() {
+    return this._props.laycbd;
+  }
 
-    set delc(value) {
-        this._props.delc = value;
-    }
+  set laycbd(value) {
+    this._props.laycbd = value;
+  }
 
-    get laycbd() {
-        return this._props.laycbd;
-    }
+  get top() {
+    return this._props.top;
+  }
 
-    set laycbd(value) {
-        this._props.laycbd = value;
-    }
+  set top(value) {
+    this._props.top = value;
+  }
 
-    get top() {
-        return this._props.top;
-    }
+  get botm() {
+    return this._props.botm;
+  }
 
-    set top(value) {
-        this._props.top = value;
-    }
+  set botm(value) {
+    this._props.botm = value;
+  }
 
-    get botm() {
-        return this._props.botm;
-    }
+  get perlen() {
+    return this._props.perlen;
+  }
 
-    set botm(value) {
-        this._props.botm = value;
-    }
+  set perlen(value) {
+    this._props.perlen = value;
+  }
 
-    get perlen() {
-        return this._props.perlen;
-    }
+  get nstp() {
+    return this._props.nstp;
+  }
 
-    set perlen(value) {
-        this._props.perlen = value;
-    }
+  set nstp(value) {
+    this._props.nstp = value;
+  }
 
-    get nstp() {
-        return this._props.nstp;
-    }
+  get tsmult() {
+    return this._props.tsmult;
+  }
 
-    set nstp(value) {
-        this._props.nstp = value;
-    }
+  set tsmult(value) {
+    this._props.tsmult = value;
+  }
 
-    get tsmult() {
-        return this._props.tsmult;
-    }
+  get steady() {
+    return this._props.steady;
+  }
 
-    set tsmult(value) {
-        this._props.tsmult = value;
-    }
+  set steady(value) {
+    this._props.steady = value;
+  }
 
-    get steady() {
-        return this._props.steady;
-    }
+  get itmuni() {
+    return this._props.itmuni;
+  }
 
-    set steady(value) {
-        this._props.steady = value;
-    }
+  set itmuni(value) {
+    this._props.itmuni = value;
+  }
 
-    get itmuni() {
-        return this._props.itmuni;
-    }
+  get lenuni() {
+    return this._props.lenuni;
+  }
 
-    set itmuni(value) {
-        this._props.itmuni = value;
-    }
+  set lenuni(value) {
+    this._props.lenuni = value;
+  }
 
-    get lenuni() {
-        return this._props.lenuni;
-    }
+  get extension() {
+    return this._props.extension;
+  }
 
-    set lenuni(value) {
-        this._props.lenuni = value;
-    }
+  set extension(value) {
+    this._props.extension = value;
+  }
 
-    get extension() {
-        return this._props.extension;
-    }
+  get unitnumber() {
+    return this._props.unitnumber;
+  }
 
-    set extension(value) {
-        this._props.extension = value;
-    }
+  set unitnumber(value) {
+    this._props.unitnumber = value;
+  }
 
-    get unitnumber() {
-        return this._props.unitnumber;
-    }
+  get filenames() {
+    return this._props.filenames;
+  }
 
-    set unitnumber(value) {
-        this._props.unitnumber = value;
-    }
+  set filenames(value) {
+    this._props.filenames = value;
+  }
 
-    get filenames() {
-        return this._props.filenames;
-    }
+  get xul() {
+    return this._props.xul;
+  }
 
-    set filenames(value) {
-        this._props.filenames = value;
-    }
+  set xul(value) {
+    this._props.xul = value;
+  }
 
-    get xul() {
-        return this._props.xul;
-    }
+  get yul() {
+    return this._props.yul;
+  }
 
-    set xul(value) {
-        this._props.xul = value;
-    }
+  set yul(value) {
+    this._props.yul = value;
+  }
 
-    get yul() {
-        return this._props.yul;
-    }
+  get rotation() {
+    return this._props.rotation;
+  }
 
-    set yul(value) {
-        this._props.yul = value;
-    }
+  set rotation(value) {
+    this._props.rotation = value;
+  }
 
-    get rotation() {
-        return this._props.rotation;
-    }
+  get proj4_str() {
+    return this._props.proj4_str;
+  }
 
-    set rotation(value) {
-        this._props.rotation = value;
-    }
+  set proj4_str(value) {
+    this._props.proj4_str = value;
+  }
 
-    get proj4_str() {
-        return this._props.proj4_str;
-    }
+  get start_datetime() {
+    return this._props.start_datetime;
+  }
 
-    set proj4_str(value) {
-        this._props.proj4_str = value;
-    }
-
-    get start_datetime() {
-        return this._props.start_datetime;
-    }
-
-    set start_datetime(value) {
-        this._props.start_datetime = value;
-    }
+  set start_datetime(value) {
+    this._props.start_datetime = value;
+  }
 }
