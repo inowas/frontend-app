@@ -41,7 +41,7 @@ deploy:dev:
     - mkdir -p ~/.ssh
     - eval $(ssh-agent -s)
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-    - ssh-add <(echo "$STAGING_PRIVATE_KEY")
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
     - apt-get install rsync -y
   script:
     - ssh -p22 $SSH_CREDENTIALS_DEVELOPMENT_SERVER "mkdir -p $DEVELOPMENT_PATH.tmp/"

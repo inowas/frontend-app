@@ -1,0 +1,43 @@
+version: "3.8"
+services:
+  frontend:
+    build:
+      context: ${PWD}
+      dockerfile: ./docker/Dockerfile
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-frontend-http.entrypoints=web"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-frontend-http.rule=Host(`${FRONTEND_HOST}`)"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-frontend-http.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-frontend.entrypoints=websecure"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-frontend.rule=Host(`${FRONTEND_HOST}`)"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-frontend.tls=true"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-frontend.tls.certresolver=${TRAEFIK_CERT_RESOLVER}"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-frontend.service=${COMPOSE_PROJECT_NAME}-frontend"
+      - "traefik.http.services.${COMPOSE_PROJECT_NAME}-frontend.loadbalancer.server.port=8080"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-frontend-alternative-http.entrypoints=web"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-frontend-alternative-http.rule=Host(`${FRONTEND_HOST_ALTERNATIVE}`)"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-frontend-alternative-http.middlewares=redirect-to-https"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-frontend-alternative.entrypoints=websecure"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-frontend-alternative.rule=Host(`${FRONTEND_HOST_ALTERNATIVE}`)"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-frontend-alternative.tls=true"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-frontend-alternative.tls.certresolver=${TRAEFIK_CERT_RESOLVER}"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-frontend-alternative.service=${COMPOSE_PROJECT_NAME}-frontend-alternative"
+      - "traefik.http.services.${COMPOSE_PROJECT_NAME}-frontend-alternative.loadbalancer.server.port=8080"
+      - "traefik.docker.network=${TRAEFIK_NETWORK}"
+    networks:
+      - traefik
+    restart: always
+    read_only: true
+    tmpfs:
+      - /var/run:mode=777,size=100m
+      - /var/cache/nginx:mode=777,size=100m
+    volumes:
+      - ./public:/usr/share/nginx/html
+
+networks:
+  traefik:
+    name: ${TRAEFIK_NETWORK}
+    external: true
