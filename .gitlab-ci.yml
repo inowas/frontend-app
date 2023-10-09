@@ -78,14 +78,14 @@ deploy:smart-control:
     - mkdir -p ~/.ssh
     - eval $(ssh-agent -s)
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-    - ssh-add <(echo "$STAGING_PRIVATE_KEY")
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
     - apt-get install rsync -y
+
   script:
-    - ssh -p22 $SSH_CREDENTIALS_SMART_CONTROL_SERVER "mkdir -p $SMART_CONTROL_PATH.tmp/"
-    - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_SMART_CONTROL_SERVER:/$SMART_CONTROL_PATH.tmp/
-    - ssh -p22 $SSH_CREDENTIALS_SMART_CONTROL_SERVER "mv $SMART_CONTROL_PATH $SMART_CONTROL_PATH.old"
-    - ssh -p22 $SSH_CREDENTIALS_SMART_CONTROL_SERVER "mv $SMART_CONTROL_PATH.tmp $SMART_CONTROL_PATH"
-    - ssh -p22 $SSH_CREDENTIALS_SMART_CONTROL_SERVER "rm -rf $SMART_CONTROL_PATH.old"
+    - ssh -p22 $SSH_CREDENTIALS_SMART_CONTROL_SERVER "cd $SMART_CONTROL_PATH && docker compose down"
+    - ssh -p22 $SSH_CREDENTIALS_SMART_CONTROL_SERVER "cd $SMART_CONTROL_PATH && rm -rf public && mkdir -p public"
+    - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_SMART_CONTROL_SERVER:/$SMART_CONTROL_PATH/public/
+    - ssh -p22 $SSH_CREDENTIALS_SMART_CONTROL_SERVER "cd $DEVELOPMENT_PATH && docker compose up -d --force-recreate"
   environment:
     name: smart-control
     url: https://dss.smart-control.inowas.com
@@ -114,14 +114,13 @@ deploy:training:
     - mkdir -p ~/.ssh
     - eval $(ssh-agent -s)
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-    - ssh-add <(echo "$STAGING_PRIVATE_KEY")
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
     - apt-get install rsync -y
   script:
-    - ssh -p22 $SSH_CREDENTIALS_TRAINING_SERVER "mkdir -p $TRAINING_PATH.tmp/"
-    - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_TRAINING_SERVER:/$TRAINING_PATH.tmp/
-    - ssh -p22 $SSH_CREDENTIALS_TRAINING_SERVER "mv $TRAINING_PATH $TRAINING_PATH.old"
-    - ssh -p22 $SSH_CREDENTIALS_TRAINING_SERVER "mv $TRAINING_PATH.tmp $TRAINING_PATH"
-    - ssh -p22 $SSH_CREDENTIALS_TRAINING_SERVER "rm -rf $TRAINING_PATH.old"
+    - ssh -p22 $SSH_CREDENTIALS_TRAINING_SERVER "cd $TRAINING_PATH && docker compose down"
+    - ssh -p22 $SSH_CREDENTIALS_TRAINING_SERVER "cd $TRAINING_PATH && rm -rf public && mkdir -p public"
+    - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_TRAINING_SERVER:/$TRAINING_PATH/public/
+    - ssh -p22 $SSH_CREDENTIALS_TRAINING_SERVER "cd $TRAINING_PATH && docker compose up -d --force-recreate"
   environment:
     name: training
     url: https://training.inowas.com
@@ -150,14 +149,13 @@ deploy:prod:staging:
     - mkdir -p ~/.ssh
     - eval $(ssh-agent -s)
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-    - ssh-add <(echo "$STAGING_PRIVATE_KEY")
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
     - apt-get install rsync -y
   script:
-    - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "mkdir -p $STAGING_PATH.tmp/"
-    - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_STAGING_SERVER:/$STAGING_PATH.tmp/
-    - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "mv $STAGING_PATH $STAGING_PATH.old"
-    - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "mv $STAGING_PATH.tmp $STAGING_PATH"
-    - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "rm -rf $STAGING_PATH.old"
+    - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "cd $STAGING_PATH && docker compose down"
+    - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "cd $STAGING_PATH && rm -rf public && mkdir -p public"
+    - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_STAGING_SERVER:/$STAGING_PATH/public/
+    - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "cd $STAGING_PATH && docker compose up -d --force-recreate"
   environment:
     name: staging
     url: https://staging.inowas.com
@@ -176,11 +174,10 @@ deploy:prod:production:
     - ssh-add <(echo "$STAGING_PRIVATE_KEY")
     - apt-get install rsync -y
   script:
-    - ssh -p22 $SSH_CREDENTIALS_PRODUCTION_SERVER "mkdir -p $PRODUCTION_PATH.tmp/"
-    - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_PRODUCTION_SERVER:/$PRODUCTION_PATH.tmp/
-    - ssh -p22 $SSH_CREDENTIALS_PRODUCTION_SERVER "mv $PRODUCTION_PATH $PRODUCTION_PATH.old"
-    - ssh -p22 $SSH_CREDENTIALS_PRODUCTION_SERVER "mv $PRODUCTION_PATH.tmp $PRODUCTION_PATH"
-    - ssh -p22 $SSH_CREDENTIALS_PRODUCTION_SERVER "rm -rf $PRODUCTION_PATH.old"
+    - ssh -p22 $SSH_CREDENTIALS_PRODUCTION_SERVER "cd $PRODUCTION_PATH && docker compose down"
+    - ssh -p22 $SSH_CREDENTIALS_PRODUCTION_SERVER "cd $PRODUCTION_PATH && rm -rf public && mkdir -p public"
+    - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_PRODUCTION_SERVER:/$PRODUCTION_PATH/public/
+    - ssh -p22 $SSH_CREDENTIALS_PRODUCTION_SERVER "cd $PRODUCTION_PATH && docker compose up -d --force-recreate"
   environment:
     name: production
     url: https://dss.inowas.com
