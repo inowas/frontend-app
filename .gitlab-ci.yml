@@ -45,11 +45,10 @@ deploy:dev:
     - ssh-add <(echo "$SSH_PRIVATE_KEY")
     - apt-get install rsync -y
   script:
-    - ssh -p22 $SSH_CREDENTIALS_DEVELOPMENT_SERVER "mkdir -p $DEVELOPMENT_PATH.tmp/"
-    - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_DEVELOPMENT_SERVER:/$DEVELOPMENT_PATH.tmp/
-    - ssh -p22 $SSH_CREDENTIALS_DEVELOPMENT_SERVER "mv $DEVELOPMENT_PATH $DEVELOPMENT_PATH.old"
-    - ssh -p22 $SSH_CREDENTIALS_DEVELOPMENT_SERVER "mv $DEVELOPMENT_PATH.tmp $DEVELOPMENT_PATH"
-    - ssh -p22 $SSH_CREDENTIALS_DEVELOPMENT_SERVER "rm -rf $DEVELOPMENT_PATH.old"
+    - ssh -p22 $SSH_CREDENTIALS_DEVELOPMENT_SERVER "cd $DEVELOPMENT_PATH && docker compose down"
+    - ssh -p22 $SSH_CREDENTIALS_DEVELOPMENT_SERVER "cd $DEVELOPMENT_PATH && rm -rf public && mkdir -p public"
+    - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_DEVELOPMENT_SERVER:/$DEVELOPMENT_PATH/public/
+    - ssh -p22 $SSH_CREDENTIALS_DEVELOPMENT_SERVER "cd $DEVELOPMENT_PATH && docker compose up -d --force-recreate"
   environment:
     name: development
     url: https://dev.inowas.com
