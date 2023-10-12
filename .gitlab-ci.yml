@@ -85,7 +85,7 @@ deploy:smart-control:
     - ssh -p22 $SSH_CREDENTIALS_SMART_CONTROL_SERVER "cd $SMART_CONTROL_PATH && docker compose down"
     - ssh -p22 $SSH_CREDENTIALS_SMART_CONTROL_SERVER "cd $SMART_CONTROL_PATH && rm -rf public && mkdir -p public"
     - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_SMART_CONTROL_SERVER:/$SMART_CONTROL_PATH/public/
-    - ssh -p22 $SSH_CREDENTIALS_SMART_CONTROL_SERVER "cd $DEVELOPMENT_PATH && docker compose up -d --force-recreate"
+    - ssh -p22 $SSH_CREDENTIALS_SMART_CONTROL_SERVER "cd $SMART_CONTROL_PATH && docker compose up -d --force-recreate"
   environment:
     name: smart-control
     url: https://dss.smart-control.inowas.com
