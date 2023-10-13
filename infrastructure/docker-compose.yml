@@ -14,7 +14,6 @@ services:
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-frontend.entrypoints=websecure"
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-frontend.rule=Host(`${FRONTEND_HOST}`)"
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-frontend.tls=true"
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-frontend.minTLSVersion=VersionTLS13"
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-frontend.tls.certresolver=${TRAEFIK_CERT_RESOLVER}"
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-frontend.service=${COMPOSE_PROJECT_NAME}-frontend"
       - "traefik.http.services.${COMPOSE_PROJECT_NAME}-frontend.loadbalancer.server.port=8080"
