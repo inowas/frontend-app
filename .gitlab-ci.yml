@@ -47,6 +47,7 @@ deploy:dev:
   script:
     - ssh -p22 $SSH_CREDENTIALS_DEVELOPMENT_SERVER "cd $DEVELOPMENT_PATH && docker compose down"
     - ssh -p22 $SSH_CREDENTIALS_DEVELOPMENT_SERVER "cd $DEVELOPMENT_PATH && rm -rf public && mkdir -p public"
+    - scp -P22 ./infrastructure/docker-compose.yml $SSH_CREDENTIALS_DEVELOPMENT_SERVER:/$DEVELOPMENT_PATH/docker-compose.yml
     - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_DEVELOPMENT_SERVER:/$DEVELOPMENT_PATH/public/
     - ssh -p22 $SSH_CREDENTIALS_DEVELOPMENT_SERVER "cd $DEVELOPMENT_PATH && docker compose up -d --force-recreate"
   environment:
@@ -84,6 +85,7 @@ deploy:smart-control:
   script:
     - ssh -p22 $SSH_CREDENTIALS_SMART_CONTROL_SERVER "cd $SMART_CONTROL_PATH && docker compose down"
     - ssh -p22 $SSH_CREDENTIALS_SMART_CONTROL_SERVER "cd $SMART_CONTROL_PATH && rm -rf public && mkdir -p public"
+    - scp -P22 ./infrastructure/docker-compose.yml $SSH_CREDENTIALS_SMART_CONTROL_SERVER:/$SMART_CONTROL_PATH/docker-compose.yml
     - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_SMART_CONTROL_SERVER:/$SMART_CONTROL_PATH/public/
     - ssh -p22 $SSH_CREDENTIALS_SMART_CONTROL_SERVER "cd $SMART_CONTROL_PATH && docker compose up -d --force-recreate"
   environment:
@@ -119,6 +121,7 @@ deploy:training:
   script:
     - ssh -p22 $SSH_CREDENTIALS_TRAINING_SERVER "cd $TRAINING_PATH && docker compose down"
     - ssh -p22 $SSH_CREDENTIALS_TRAINING_SERVER "cd $TRAINING_PATH && rm -rf public && mkdir -p public"
+    - scp -P22 ./infrastructure/docker-compose.yml $SSH_CREDENTIALS_TRAINING_SERVER:/$TRAINING_PATH/docker-compose.yml
     - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_TRAINING_SERVER:/$TRAINING_PATH/public/
     - ssh -p22 $SSH_CREDENTIALS_TRAINING_SERVER "cd $TRAINING_PATH && docker compose up -d --force-recreate"
   environment:
@@ -154,6 +157,7 @@ deploy:prod:staging:
   script:
     - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "cd $STAGING_PATH && docker compose down"
     - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "cd $STAGING_PATH && rm -rf public && mkdir -p public"
+    - scp -P22 ./infrastructure/docker-compose.yml $SSH_CREDENTIALS_STAGING_SERVER:/$STAGING_PATH/docker-compose.yml
     - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_STAGING_SERVER:/$STAGING_PATH/public/
     - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "cd $STAGING_PATH && docker compose up -d --force-recreate"
   environment:
@@ -176,6 +180,7 @@ deploy:prod:production:
   script:
     - ssh -p22 $SSH_CREDENTIALS_PRODUCTION_SERVER "cd $PRODUCTION_PATH && docker compose down"
     - ssh -p22 $SSH_CREDENTIALS_PRODUCTION_SERVER "cd $PRODUCTION_PATH && rm -rf public && mkdir -p public"
+    - scp -P22 ./infrastructure/docker-compose.yml $SSH_CREDENTIALS_PRODUCTION_SERVER:/$PRODUCTION_PATH/docker-compose.yml
     - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_PRODUCTION_SERVER:/$PRODUCTION_PATH/public/
     - ssh -p22 $SSH_CREDENTIALS_PRODUCTION_SERVER "cd $PRODUCTION_PATH && docker compose up -d --force-recreate"
   environment:
