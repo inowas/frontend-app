@@ -1,7 +1,7 @@
 import { IPrometheusResponseData, ISensorData, IServerSensorData } from './Sensor.type';
 import moment from 'moment';
 
-export async function retrieveData(sensorData: ISensorData, caching = false) {
+export async function retrieveData(sensorData: ISensorData) {
   const url = new URL(`${sensorData.url}`);
   const response = await fetch(url.toString(), {
     method: 'get',

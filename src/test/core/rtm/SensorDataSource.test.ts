@@ -6,7 +6,7 @@ import SensorDataSource from '../../../core/model/rtm/monitoring/SensorDataSourc
 test('SensorDataSource URL-props and regex pattern-matching', () => {
     const obj: ISensorDataSource = {
         id: Uuid.v4(),
-        url: 'https://uit-sensors.inowas.com/sensors/project/DEU1/sensor/I-6/property/ec'
+        url: 'https://uit-sensors.inowas.com/sensors/project/DEU1/sensor/I-6/parameter/ec'
             + '?timeResolution=1D&begin=1&end=10'
     };
 
@@ -16,7 +16,7 @@ test('SensorDataSource URL-props and regex pattern-matching', () => {
     expect(ds.url.toString()).toEqual(obj.url);
     expect(ds.urlProtocol).toEqual('https:');
     expect(ds.urlHostName).toEqual('uit-sensors.inowas.com');
-    expect(ds.urlPathName).toEqual('/sensors/project/DEU1/sensor/I-6/property/ec');
+    expect(ds.urlPathName).toEqual('/sensors/project/DEU1/sensor/I-6/parameter/ec');
     expect(ds.project).toEqual('DEU1');
     expect(ds.sensor).toEqual('I-6');
     expect(ds.parameter).toEqual('ec');

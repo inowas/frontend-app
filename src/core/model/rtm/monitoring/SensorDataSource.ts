@@ -275,11 +275,7 @@ class SensorDataSource extends GenericObject<ISensorDataSource> {
     }
     this.url = url;
   }
-
-  get isIdempotent() {
-    return this.end !== null;
-  }
-
+  
   get fetching() {
     return this._props.fetching;
   }
@@ -308,7 +304,7 @@ class SensorDataSource extends GenericObject<ISensorDataSource> {
     });
 
     if (!pathIsValid(ds.urlPathName)) {
-      console.error(`Invalid path: ${ds.urlPathName}`)
+      console.error(`Invalid path: ${ds.urlPathName}`);
       return null;
     }
 
@@ -334,7 +330,7 @@ class SensorDataSource extends GenericObject<ISensorDataSource> {
     this._props.fetching = true;
     this._props.data = null;
     try {
-      const data = await retrieveData({ url: this.url.toString() }, this.isIdempotent);
+      const data = await retrieveData({ url: this.url.toString() });
       this._props.data = cloneDeep(data);
       this.sortData();
       this._props.fetching = false;
