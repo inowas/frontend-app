@@ -32,7 +32,7 @@ const SensorDatasourceEditor = (props: IProps) => {
   const [activeValue, setActiveValue] = useState<string>('');
 
   const { dataSource, isFetching, metaData, updateDataSource, updateServer } = useSensorDatasource(
-    props.dataSource || null
+    props.dataSource || null,
   );
 
   const handleBlur = () => {
@@ -194,9 +194,15 @@ const SensorDatasourceEditor = (props: IProps) => {
                     width={6}
                     name={'server'}
                     selection={true}
-                    value={dataSource ? dataSource.server : servers[0].url}
+                    value={dataSource ? dataSource.server : servers[0].hostname}
                     onChange={handleChangeDropdown}
-                    options={servers.map((s) => ({ key: uuid.v4(), value: s.url, text: s.url }))}
+                    options={servers.map(
+                      (s) => ({
+                        key: uuid.v4(),
+                        value: s.hostname,
+                        text: s.hostname,
+                      }),
+                    )}
                   />
                 </Segment>
               </Form>
@@ -284,8 +290,8 @@ const SensorDatasourceEditor = (props: IProps) => {
                   <Form>
                     <Form.Group>
                       <Form.Field>
-                        <Button icon onClick={handleReset} size="small" name="begin" style={{ marginTop: '22px' }}>
-                          <Icon name="refresh" />
+                        <Button icon onClick={handleReset} size='small' name='begin' style={{ marginTop: '22px' }}>
+                          <Icon name='refresh' />
                         </Button>
                       </Form.Field>
                       <DatePicker
@@ -299,8 +305,8 @@ const SensorDatasourceEditor = (props: IProps) => {
                     </Form.Group>
                     <Form.Group>
                       <Form.Field>
-                        <Button icon onClick={handleReset} size="small" name="end" style={{ marginTop: '22px' }}>
-                          <Icon name="refresh" />
+                        <Button icon onClick={handleReset} size='small' name='end' style={{ marginTop: '22px' }}>
+                          <Icon name='refresh' />
                         </Button>
                       </Form.Field>
                       <DatePicker
@@ -314,11 +320,11 @@ const SensorDatasourceEditor = (props: IProps) => {
                       <Form.Field>
                         <Button
                           basic
-                          labelPosition="left"
+                          labelPosition='left'
                           primary={!dataSource.end}
                           icon
                           onClick={handleClearEnd}
-                          size="small"
+                          size='small'
                           style={{ marginTop: '22px', width: '100px' }}
                         >
                           <Icon name={!dataSource.end ? 'check circle outline' : 'circle outline'} />
@@ -337,8 +343,8 @@ const SensorDatasourceEditor = (props: IProps) => {
                   <Form>
                     <Form.Group>
                       <Form.Field>
-                        <Button icon onClick={handleReset} size="small" name="max" style={{ marginTop: '22px' }}>
-                          <Icon name="refresh" />
+                        <Button icon onClick={handleReset} size='small' name='max' style={{ marginTop: '22px' }}>
+                          <Icon name='refresh' />
                         </Button>
                       </Form.Field>
                       <Form.Input
@@ -353,8 +359,8 @@ const SensorDatasourceEditor = (props: IProps) => {
                     </Form.Group>
                     <Form.Group>
                       <Form.Field>
-                        <Button icon onClick={handleReset} size="small" name="min" style={{ marginTop: '22px' }}>
-                          <Icon name="refresh" />
+                        <Button icon onClick={handleReset} size='small' name='min' style={{ marginTop: '22px' }}>
+                          <Icon name='refresh' />
                         </Button>
                       </Form.Field>
                       <Form.Input

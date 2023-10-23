@@ -1,4 +1,5 @@
 import { ISensorParameter } from '../../core/model/rtm/monitoring/Sensor.type';
+import getConfig from '../../config.default';
 import uuidv4 from 'uuid';
 
 export const defaultsWithSession = (session?: any) => {
@@ -37,17 +38,17 @@ export const parameterList: ISensorParameter[] = [
 export const dataSourceList = ['file', 'online', 'prometheus'];
 export const processingList = ['value', 'time'];
 
+const getSensorsUrlParts = (url: string) => {
+  const urlObj = new URL(url);
+  return {
+    protocol: urlObj.protocol || 'https',
+    hostname: urlObj.hostname || 'api.morpheus.inowas.com',
+    pathname: urlObj.pathname || '/sensors',
+  };
+};
+
 export const servers = [
-  {
-    protocol: 'https',
-    url: 'sensors.inowas.com',
-    path: 'sensors',
-  },
-  {
-    protocol: 'https',
-    url: 'uit-sensors.inowas.com',
-    path: 'sensors',
-  },
+  { ...getSensorsUrlParts(getConfig().SENSORS_URL) },
 ];
 
 export const prometheusServers = [

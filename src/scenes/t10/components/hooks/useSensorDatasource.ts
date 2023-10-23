@@ -1,7 +1,6 @@
 import { ISensorDataSource } from '../../../../core/model/rtm/monitoring/Sensor.type';
 import { SensorDataSource } from '../../../../core/model/rtm/monitoring';
-import { cloneDeep } from 'lodash';
-import { fetchUrl } from '../../../../services/api';
+import { getAxios } from '../../../../services/api';
 import { servers } from '../../defaults';
 import { useEffect, useState } from 'react';
 
@@ -20,7 +19,7 @@ export const useSensorDatasource = (ds: SensorDataSource | null) => {
 
   useEffect(() => {
     if (!ds) {
-      const server = servers[0].url;
+      const server = servers[0].hostname;
       fetchMetaData(server, async (d) => {
         if (d.length > 0) {
           const smd = d[0];
@@ -58,38 +57,30 @@ export const useSensorDatasource = (ds: SensorDataSource | null) => {
   }, [ds]);
 
   const fetchMetaData = async (server: string, onSuccess?: (d: ISensorMetaData[]) => any) => {
-    const filteredServers = cloneDeep(servers).filter((s) => (s.url = server));
-    if (filteredServers.length === 0) {
+    const filteredServer = servers.find((s) => (s.hostname = server));
+    if (!filteredServer) {
       return;
     }
 
-    const srv = filteredServers[0];
-
     setIsFetching(true);
 
-    let url = new URL(`${srv.protocol}://${srv.url}/${srv.path}`).toString();
+    const url = new URL(`${filteredServer.protocol}${filteredServer.hostname}${filteredServer.pathname}`).toString();
+    const axios = getAxios();
 
-    // URL 'uit-sensors.inowas.com' needs to finish with a dash
-    // it's a dirty fix but it works
-    if (srv.url === 'uit-sensors.inowas.com') {
-      url += '/';
-    }
-
-    fetchUrl(
-      url,
-      (d: ISensorMetaData[]) => {
-        setMetaData(d);
-        setIsFetching(false);
-        if (onSuccess) {
-          onSuccess(d);
-        }
-      },
-      () => {
-        setIsFetching(false);
-      },
-    );
-    if (onSuccess) {
-      onSuccess([]);
+    try {
+      if (onSuccess) {
+        onSuccess([]);
+      }
+      const response = await axios.get(url);
+      const data = await response.data;
+      setMetaData(data);
+      if (onSuccess) {
+        onSuccess(data);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsFetching(false);
     }
   };
 
@@ -100,14 +91,14 @@ export const useSensorDatasource = (ds: SensorDataSource | null) => {
     setDataSource(s.toObject());
   };
 
-  const updateServer = (server: string) => {
+  const updateServer = async (server: string) => {
     if (!dataSource) {
       return;
     }
     const ds = SensorDataSource.fromObject(dataSource);
     ds.server = server;
     setDataSource(ds.toObject());
-    fetchMetaData(server);
+    await fetchMetaData(server);
   };
 
   return {

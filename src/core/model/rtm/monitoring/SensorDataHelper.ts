@@ -3,15 +3,6 @@ import moment from 'moment';
 
 export async function retrieveData(sensorData: ISensorData, caching = false) {
   const url = new URL(`${sensorData.url}`);
-
-  const localStorageObj = sessionStorage.getItem(url.toString());
-  if (localStorageObj) {
-    const obj = JSON.parse(localStorageObj);
-    if (obj.TTL && obj.TTL > moment.utc().unix()) {
-      return obj.data;
-    }
-  }
-
   const response = await fetch(url.toString(), {
     method: 'get',
     headers: {
@@ -33,16 +24,9 @@ export async function retrieveData(sensorData: ISensorData, caching = false) {
       };
     });
 
-    let TTL = moment.utc().unix() + 10 * 60; // 10 minutes
-
-    if (caching) {
-      TTL = moment.utc().unix() + 60 * 60 * 24; // 24 hours
-    }
-
-    sessionStorage.setItem(url.toString(), JSON.stringify({ data, TTL }));
-
     return data;
   } catch (e) {
+    console.error(e);
     return null;
   }
 }
@@ -63,7 +47,7 @@ export async function retrievePrometheusData(url: string) {
 }
 
 export function getUrlPathRegex(path: string) {
-  const myRe = /^\/sensors\/project\/([A-Za-z0-9-_ ]+)\/sensor\/([A-Za-z0-9-_ ]+)\/property\/([A-Za-z0-9-_ ]+)$/;
+  const myRe = /^\/sensors\/project\/([A-Za-z0-9-_ ]+)\/sensor\/([A-Za-z0-9-_ ]+)\/parameter\/([A-Za-z0-9-_ ]+)$/;
   const matchObj = myRe.exec(path);
 
   if (!matchObj) {

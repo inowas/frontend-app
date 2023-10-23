@@ -19,7 +19,7 @@ export const {
   JSON_SCHEMA_URL,
   MODFLOW_CALCULATION_URL,
   TIMEPROCESSING_URL,
-  ENABLE_BACKEND_PHP_STORM_XDEBUG
+  ENABLE_BACKEND_PHP_STORM_XDEBUG,
 } = getConfig();
 
 // TODO: Check all callback function generics
@@ -40,7 +40,7 @@ const createApi = (token: string | null = null) => {
     headers.Authorization = 'Bearer ' + token;
   }
 
-  const defaultParams: {[key: string]: string} = {};
+  const defaultParams: { [key: string]: string } = {};
   if (ENABLE_BACKEND_PHP_STORM_XDEBUG) {
     console.log('Enable backend PHPStorm XDebug');
     defaultParams['XDEBUG_SESSION_START'] = 'PHPSTORM';
@@ -52,7 +52,7 @@ const createApi = (token: string | null = null) => {
 export const sendCommand = (
   command: AbstractCommand,
   onSuccess?: CallbackFunction<undefined, void>,
-  onError?: ErrorCallbackFunction
+  onError?: ErrorCallbackFunction,
 ) => {
   const api = createApi(getToken());
   api
@@ -75,7 +75,7 @@ export const sendCommandAsync = async (command: AbstractCommand) => {
 export const uploadRasterfile = (
   file: File,
   onSuccess: CallbackFunction<{ hash: string }, void>,
-  onError: ErrorCallbackFunction
+  onError: ErrorCallbackFunction,
 ) => {
   const uploadData = new FormData();
   uploadData.append('file', file);
@@ -115,7 +115,7 @@ interface IFetchRasterData {
 export const fetchRasterData = (
   { hash, width = null, height = null, method = InterpolationType.NEAREST_NEIGHBOR }: IFetchRasterData,
   onSuccess: CallbackFunction<Array3D<number>, void>,
-  onError: ErrorCallbackFunction
+  onError: ErrorCallbackFunction,
 ) => {
   let url = GEOPROCESSING_URL + '/' + hash + '/data';
 
@@ -145,7 +145,7 @@ export const fetchRasterData = (
 export const fetchRasterMetaData = (
   { hash }: { hash: string },
   onSuccess: CallbackFunction<IRasterFileMetadata, void>,
-  onError: ErrorCallbackFunction
+  onError: ErrorCallbackFunction,
 ) => {
   const url = GEOPROCESSING_URL + '/' + hash;
 
@@ -194,7 +194,7 @@ export const makeHeatTransportRequest = (data: IHeatTransportRequest) => {
 export const makeQmraRequest = (
   data: IQmraRequestConfig,
   onSuccess: (r: any) => any,
-  onError: (e: AxiosError) => any
+  onError: (e: AxiosError) => any,
 ) => {
   const json = JSON.stringify(data);
   return axios
@@ -239,7 +239,7 @@ export const fetchCalculationDetails = (calculationId: string) => {
 export const fetchCalculationResultsBudget = (
   { calculationId, totim }: { calculationId: string; totim: number },
   onSuccess: CallbackFunction<IBudgetData, void>,
-  onError: (e: AxiosError) => any
+  onError: (e: AxiosError) => any,
 ) => {
   const url = `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/budget/idx/${totim}`;
 
@@ -268,7 +268,7 @@ interface IFetchCalculationResultsFlow {
 export const fetchCalculationResultsFlow = (
   { calculationId, layer, totim, type }: IFetchCalculationResultsFlow,
   onSuccess: CallbackFunction<Array2D<number>, void>,
-  onError: ErrorCallbackFunction
+  onError: ErrorCallbackFunction,
 ) => {
   const url = `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/${type}/layers/${layer}/idx/${totim}`;
 
@@ -297,7 +297,7 @@ interface IFetchCalculationResultsTransport {
 export const fetchCalculationResultsTransport = (
   { calculationId, substance, layer, totim }: IFetchCalculationResultsTransport,
   onSuccess: CallbackFunction<Array2D<number>, void>,
-  onError: ErrorCallbackFunction
+  onError: ErrorCallbackFunction,
 ) => {
   const url =
     `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/concentration/substance/${substance}/` +
@@ -322,7 +322,7 @@ export const fetchModflowFile = (
   calculationId: string,
   fileName: string,
   onSuccess: CallbackFunction<IModflowFile, void>,
-  onError: ErrorCallbackFunction
+  onError: ErrorCallbackFunction,
 ) => {
   const url = MODFLOW_CALCULATION_URL + '/' + calculationId + '/files/' + fileName;
 
@@ -345,7 +345,7 @@ export const fetchTool = (
   tool: string,
   id: string,
   onSuccess: CallbackFunction<ISimpleTool<any>, void>,
-  onError: ErrorCallbackFunction
+  onError: ErrorCallbackFunction,
 ) => {
   const api = createApi(getToken());
   api
@@ -369,6 +369,8 @@ export const fetchUrl = (url: string, onSuccess?: CallbackFunction<any, void>, o
     .catch(onError);
 };
 
+export const getAxios = () => createApi(getToken());
+
 export const fetchApiWithToken = (url: string) => {
   const api = createApi(getToken());
   return api.get(url);
@@ -378,7 +380,7 @@ export const fetchUrlAndUpdate = (
   url: string,
   onUpcast: (data: any) => any,
   onSuccess?: CallbackFunction<any, void>,
-  onError?: ErrorCallbackFunction
+  onError?: ErrorCallbackFunction,
 ) => {
   const api = createApi(getToken());
   api
@@ -429,7 +431,7 @@ export const dropData = (data: any, onSuccess: CallbackFunction<any, void>, onEr
 export const retrieveDroppedData = (
   filename: string,
   onSuccess: CallbackFunction<any, void>,
-  onError: ErrorCallbackFunction
+  onError: ErrorCallbackFunction,
 ) => {
   const url = DATADROPPER_URL + '/' + filename;
 

@@ -14,11 +14,16 @@ class SensorDataSource extends GenericObject<ISensorDataSource> {
   }
 
   set url(url: URL) {
-    if (this.url.toString() === url.toString()) {
+    const urlStr = url.toString();
+    if (this.url.toString() === urlStr) {
       return;
     }
 
-    this._props.url = url.toString();
+
+    this._props.url = urlStr
+      .replace('/property/', '/parameter/')
+      .replace('https://sensors.inowas.com/', 'https://api.morpheus.inowas.localhost/')
+    ;
     this._props.data = null;
   }
 
@@ -54,7 +59,7 @@ class SensorDataSource extends GenericObject<ISensorDataSource> {
 
   set project(value: string) {
     const url = this.url;
-    url.pathname = `/sensors/project/${value}/sensor/${this.sensor}/property/${this.parameter}`;
+    url.pathname = `/sensors/project/${value}/sensor/${this.sensor}/parameter/${this.parameter}`;
 
     if (!(getUrlPathRegex(url.pathname)[1] === value)) {
       throw new Error('Invalid project name');
@@ -69,7 +74,7 @@ class SensorDataSource extends GenericObject<ISensorDataSource> {
 
   set sensor(value: string) {
     const url = this.url;
-    url.pathname = `/sensors/project/${this.project}/sensor/${value}/property/${this.parameter}`;
+    url.pathname = `/sensors/project/${this.project}/sensor/${value}/parameter/${this.parameter}`;
     if (!(getUrlPathRegex(url.pathname)[2] === value)) {
       throw new Error('Invalid sensor name');
     }
@@ -83,7 +88,7 @@ class SensorDataSource extends GenericObject<ISensorDataSource> {
 
   set parameter(value: string) {
     const url = this.url;
-    url.pathname = `/sensors/project/${this.project}/sensor/${this.sensor}/property/${value}`;
+    url.pathname = `/sensors/project/${this.project}/sensor/${this.sensor}/parameter/${value}`;
 
     if (!(getUrlPathRegex(url.pathname)[3] === value)) {
       throw new Error('Invalid sensor name');
@@ -296,17 +301,18 @@ class SensorDataSource extends GenericObject<ISensorDataSource> {
   }
 
   public static fromParams(server: string, project: string, sensor: string, parameter: string) {
-    const url = `https://${server}/sensors/project/${project}/sensor/${sensor}/property/${parameter}`;
+    const url = `https://${server}/sensors/project/${project}/sensor/${sensor}/parameter/${parameter}`;
     const ds = new this({
       id: uuid.v4(),
       url,
     });
 
-    if (pathIsValid(ds.urlPathName)) {
-      return ds;
+    if (!pathIsValid(ds.urlPathName)) {
+      console.error(`Invalid path: ${ds.urlPathName}`)
+      return null;
     }
 
-    return null;
+    return ds;
   }
 
   public static fromObject(obj: ISensorDataSource) {
