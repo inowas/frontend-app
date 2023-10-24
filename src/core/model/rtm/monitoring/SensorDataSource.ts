@@ -2,8 +2,8 @@ import { GenericObject } from '../../genericObject/GenericObject';
 import { IDateTimeValue, ISensorDataSource } from './Sensor.type';
 import { cloneDeep, maxBy, minBy } from 'lodash';
 import { getUrlPathRegex, pathIsValid, retrieveData } from './SensorDataHelper';
-import uuid from 'uuid';
 import getConfig from '../../../../config.default';
+import uuid from 'uuid';
 
 class SensorDataSource extends GenericObject<ISensorDataSource> {
   get id() {
