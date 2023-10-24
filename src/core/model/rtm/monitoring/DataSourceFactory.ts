@@ -18,6 +18,9 @@ function isSensorDataSource(arg: any): arg is ISensorDataSource {
 export class DataSourceFactory {
 
     public static fromObject(obj: IDataSource): FileDataSource | SensorDataSource | PrometheusDataSource {
+
+      console.log('DataSourceFactory.fromObject', obj);
+
         if (isFileDataSource(obj)) {
             return FileDataSource.fromObject(obj);
         }

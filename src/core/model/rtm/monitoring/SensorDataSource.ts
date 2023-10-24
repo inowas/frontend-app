@@ -3,6 +3,7 @@ import { IDateTimeValue, ISensorDataSource } from './Sensor.type';
 import { cloneDeep, maxBy, minBy } from 'lodash';
 import { getUrlPathRegex, pathIsValid, retrieveData } from './SensorDataHelper';
 import uuid from 'uuid';
+import getConfig from '../../../../config.default';
 
 class SensorDataSource extends GenericObject<ISensorDataSource> {
   get id() {
@@ -19,10 +20,9 @@ class SensorDataSource extends GenericObject<ISensorDataSource> {
       return;
     }
 
-
     this._props.url = urlStr
       .replace('/property/', '/parameter/')
-      .replace('https://sensors.inowas.com/', 'https://api.morpheus.inowas.localhost/')
+      .replace('https://sensors.inowas.com/sensors', getConfig().SENSORS_URL)
     ;
     this._props.data = null;
   }
