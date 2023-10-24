@@ -1,5 +1,6 @@
 import { ISensorDataSource } from '../../../../core/model/rtm/monitoring/Sensor.type';
 import { SensorDataSource } from '../../../../core/model/rtm/monitoring';
+import { getAxios } from '../../../../services/api';
 import { servers } from '../../defaults';
 import { useEffect, useState } from 'react';
 
@@ -64,18 +65,14 @@ export const useSensorDatasource = (ds: SensorDataSource | null) => {
     setIsFetching(true);
 
     const url = new URL(`${filteredServer.protocol}${filteredServer.hostname}${filteredServer.pathname}`).toString();
+    const axios = getAxios();
+
     try {
       if (onSuccess) {
         onSuccess([]);
       }
-      const response = await fetch(url, {
-        method: 'get',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const data = await response.json() as ISensorMetaData[];
+      const response = await axios.get(url);
+      const data = await response.data;
       setMetaData(data);
       if (onSuccess) {
         onSuccess(data);
