@@ -2,7 +2,6 @@ import { GenericObject } from '../../genericObject/GenericObject';
 import { IDateTimeValue, ISensorDataSource } from './Sensor.type';
 import { cloneDeep, maxBy, minBy } from 'lodash';
 import { getUrlPathRegex, pathIsValid, retrieveData } from './SensorDataHelper';
-import getConfig from '../../../../config.default';
 import uuid from 'uuid';
 
 class SensorDataSource extends GenericObject<ISensorDataSource> {
@@ -15,15 +14,11 @@ class SensorDataSource extends GenericObject<ISensorDataSource> {
   }
 
   set url(url: URL) {
-    const urlStr = url.toString();
-    if (this.url.toString() === urlStr) {
+    if (this.url.toString() === url.toString()) {
       return;
     }
 
-    this._props.url = urlStr
-      .replace('/property/', '/parameter/')
-      .replace('https://sensors.inowas.com/sensors', getConfig().SENSORS_URL)
-    ;
+    this._props.url = url.toString();
     this._props.data = null;
   }
 
@@ -275,7 +270,7 @@ class SensorDataSource extends GenericObject<ISensorDataSource> {
     }
     this.url = url;
   }
-  
+
   get fetching() {
     return this._props.fetching;
   }
