@@ -20,7 +20,7 @@ const navigation = [
   {
     name: 'Documentation',
     path: 'https://inowas.com/tools',
-    icon: <Icon name="file alternate" />,
+    icon: <Icon name='file alternate' />,
   },
 ];
 
@@ -51,7 +51,7 @@ const Dashboard = (props: IProps) => {
     fetchUrl(
       `tools/${tool}` + (cShowPublicInstances ? '?public=true' : ''),
       (data) => {
-        setToolInstances(data);
+        setToolInstances(data.filter((d: IToolInstance) => d.tool === tool));
         setIsLoading(false);
       },
       () => {
@@ -64,7 +64,7 @@ const Dashboard = (props: IProps) => {
         if (fetchingAttempts.current > 5) {
           setErrorLoading(true);
         }
-      }
+      },
     );
   };
 
@@ -104,7 +104,7 @@ const Dashboard = (props: IProps) => {
       },
       () => {
         setIsLoading(false);
-      }
+      },
     );
   };
 
@@ -118,7 +118,7 @@ const Dashboard = (props: IProps) => {
       },
       () => {
         setIsLoading(false);
-      }
+      },
     );
   };
 
@@ -144,7 +144,7 @@ const Dashboard = (props: IProps) => {
               t.public = isPublic;
             }
             return t;
-          })
+          }),
         );
       } catch (e) {
         setErrorLoading(true);
@@ -177,11 +177,11 @@ const Dashboard = (props: IProps) => {
           <ToolsMenu activeTool={activeTool} onClick={handleToolClick} roles={roles} tools={tools} />
         </Grid.Column>
         <Grid.Column width={10}>
-          <Container className="columnContainer">
+          <Container className='columnContainer'>
             <Grid padded={true}>
               <Grid.Row columns={1}>
                 <Grid.Column>
-                  <Header as="h1" align="center" size="medium">
+                  <Header as='h1' align='center' size='medium'>
                     {showMyTools ? 'Instances of My Tools' : `Instances of ${activeTool.slug}: ${activeTool.name}`}
                   </Header>
                 </Grid.Column>
@@ -189,19 +189,19 @@ const Dashboard = (props: IProps) => {
 
               {!showMyTools && (
                 <Grid.Row columns={3}>
-                  <Grid.Column width={4} align="left">
+                  <Grid.Column width={4} align='left'>
                     <Button
-                      content="Create new"
+                      content='Create new'
                       positive={true}
-                      icon="plus"
-                      labelPosition="left"
+                      icon='plus'
+                      labelPosition='left'
                       fluid={true}
                       onClick={() => push(activeTool.path + activeTool.slug)}
                     />
                   </Grid.Column>
                   <Grid.Column width={8}>{renderImportOrSearch(activeTool)}</Grid.Column>
-                  <Grid.Column width={4} align="right">
-                    <Button.Group size="tiny">
+                  <Grid.Column width={4} align='right'>
+                    <Button.Group size='tiny'>
                       <Button onClick={() => setToPublic(false)} primary={!showPublicInstances}>
                         Private
                       </Button>
