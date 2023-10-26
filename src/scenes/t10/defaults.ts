@@ -47,10 +47,11 @@ const getSensorsUrlParts = (url: string) => {
   };
 };
 
-export const servers = [
+export const getServers = () => [
   { ...getSensorsUrlParts(getConfig().SENSORS_URL) },
   { ...getSensorsUrlParts('https://sensors.inowas.com/sensors') },
 ];
+
 
 export const prometheusServers = [
   {

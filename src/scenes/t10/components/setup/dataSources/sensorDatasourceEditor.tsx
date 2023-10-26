@@ -15,8 +15,8 @@ import { IDatePickerProps } from '../../../../shared/uiComponents/DatePicker';
 import { ISensorMetaData, useSensorDatasource } from '../../hooks/useSensorDatasource';
 import { MouseEvent, SyntheticEvent, useState } from 'react';
 import { SensorDataSource } from '../../../../../core/model/rtm/monitoring';
+import { getServers } from '../../../defaults';
 import { parseDate } from './helpers';
-import { servers } from '../../../defaults';
 import { uniqBy } from 'lodash';
 import DataSourceChart from './dataSourceChart';
 import uuid from 'uuid';
@@ -194,9 +194,9 @@ const SensorDatasourceEditor = (props: IProps) => {
                     width={6}
                     name={'server'}
                     selection={true}
-                    value={dataSource ? dataSource.server : servers[0].hostname}
+                    value={dataSource ? dataSource.server : getServers()[0].hostname}
                     onChange={handleChangeDropdown}
-                    options={servers.map(
+                    options={getServers().map(
                       (s) => ({
                         key: uuid.v4(),
                         value: s.hostname,

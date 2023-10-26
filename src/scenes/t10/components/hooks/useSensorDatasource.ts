@@ -1,7 +1,7 @@
 import { ISensorDataSource } from '../../../../core/model/rtm/monitoring/Sensor.type';
 import { SensorDataSource } from '../../../../core/model/rtm/monitoring';
 import { getAxios } from '../../../../services/api';
-import { servers } from '../../defaults';
+import { getServers } from '../../defaults';
 import { useEffect, useState } from 'react';
 
 export interface ISensorMetaData {
@@ -19,7 +19,7 @@ export const useSensorDatasource = (ds: SensorDataSource | null) => {
 
   useEffect(() => {
     if (!ds) {
-      const server = servers[0].hostname;
+      const server = getServers()[0].hostname;
       fetchMetaData(server, async (d) => {
         if (d.length > 0) {
           const smd = d[0];
@@ -57,7 +57,7 @@ export const useSensorDatasource = (ds: SensorDataSource | null) => {
   }, [ds]);
 
   const fetchMetaData = async (server: string, onSuccess?: (d: ISensorMetaData[]) => any) => {
-    const filteredServer = servers.find((s) => (s.hostname = server));
+    const filteredServer = getServers().find((s) => (s.hostname = server));
     if (!filteredServer) {
       return;
     }
