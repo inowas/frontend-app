@@ -13,6 +13,7 @@ import { Button, Dimmer, Grid, Header, List, Loader, Modal, Segment } from 'sema
 import { ChangeEvent, useState } from 'react';
 import { CoordinateSystemDisclaimer } from '../../shared/complexTools';
 import { IBoundary } from '../../../core/model/modflow/boundaries/Boundary.type';
+import { ICells } from '../../../core/model/geometry/Cells.type';
 import { IFlopyPackages } from '../../../core/model/flopy/packages/FlopyPackages.type';
 import { IModflowModel } from '../../../core/model/modflow/ModflowModel.type';
 import { ISoilmodel } from '../../../core/model/modflow/soilmodel/Soilmodel.type';
@@ -21,6 +22,7 @@ import { IVariableDensity } from '../../../core/model/modflow/variableDensity/Va
 import { JSON_SCHEMA_URL, sendCommand } from '../../../services/api';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { ValidationError } from 'ajv';
+import { asyncWorker } from '../../modflow/worker/worker';
 import { dxGeometry, dyGeometry } from '../../../services/geoTools/distance';
 import { validate } from '../../../services/jsonSchemaValidator';
 import ModelImportMap from './ModelImportMap';
@@ -42,61 +44,88 @@ const ModflowModelImport = (props: RouteComponentProps) => {
   const [showJSONImportModal, setShowJSONImportModal] = useState<boolean>(false);
 
   const fileReader = new FileReader();
-  fileReader.onload = (event) => {
+  fileReader.onload = async (event) => {
     if (event.target && event.target instanceof FileReader) {
       const target = event.target;
       if (typeof target.result === 'string') {
-        parseFileContent(target.result);
+        await parseFileContent(target.result);
       }
     }
   };
 
-  const parseFileContent = (text: string) => {
+  const loadOrCalculateCells = async (data: any,
+                                      geometry: Geometry,
+                                      boundingBox: BoundingBox,
+                                      gridSize: GridSize): Promise<ICells> => {
+
+    const cellsArray = data.discretization.cells || undefined;
+    if (cellsArray) {
+      return Cells.fromObject(cellsArray).toObject();
+    }
+
+    const cells = await asyncWorker({
+      type: 'CALCULATE_CELLS_INPUT',
+      data: {
+        geometry: geometry.toObject(),
+        boundingBox: boundingBox.toObject(),
+        gridSize: gridSize.toObject(),
+        intersection: false,
+      },
+    });
+
+    return Cells.fromObject(cells).toObject();
+  };
+
+  const parseFileContent = async (text: string) => {
     const data = JSON.parse(text);
     const schemaUrl = JSON_SCHEMA_URL + '/import/modflowModel.json';
     setIsLoading(true);
-    validate(data, schemaUrl).then(([isValid, cErrors]) => {
-      if (!isValid) {
-        setErrors(cErrors);
-        return setPayload(null);
-      }
 
-      const id = Uuid.v4();
-      const geometry = Geometry.fromGeoJson(data.discretization.geometry);
-      const boundingBox = BoundingBox.fromGeoJson(data.discretization.geometry);
-      const gridSize = Array.isArray(data.discretization.grid_size)
-        ? GridSize.fromArray(data.discretization.grid_size)
-        : GridSize.fromObject(data.discretization.grid_size);
-      const stressPeriods = Stressperiods.fromImport(data.discretization.stressperiods);
-
-      const nPayload: IPayload = {
-        id,
-        name: data.name,
-        description: data.description,
-        public: data.public,
-        discretization: {
-          geometry: geometry.toObject(),
-          bounding_box: boundingBox.toObject(),
-          grid_size: gridSize.toObject(),
-          cells: data.cells ? Cells.fromObject(data.cells).toObject() : Cells.fromGeometry(geometry, boundingBox, gridSize).toObject(),
-          stressperiods: stressPeriods.toObject(),
-          length_unit: data.discretization.length_unit,
-          time_unit: data.discretization.time_unit,
-        },
-        permissions: 'rwx',
-        calculation_id: data.calculation_id,
-        is_scenario: false,
-        boundaries: BoundaryCollection.fromExport(data.boundaries, boundingBox, gridSize).toObject(),
-        packages: { ...data.packages, model_id: id },
-        soilmodel: Soilmodel.fromExport(data.soilmodel).toObject(),
-        transport: Transport.fromObject(data.transport).toObject(),
-        variableDensity: VariableDensity.fromObject(data.variableDensity).toObject(),
-      };
-
-      setPayload(nPayload);
+    const [isValid, cErrors] = await validate(data, schemaUrl);
+    if (!isValid) {
+      setErrors(cErrors);
       setIsLoading(false);
-      return setErrors(null);
-    });
+      return setPayload(null);
+    }
+
+
+    const id = Uuid.v4();
+    const geometry = Geometry.fromGeoJson(data.discretization.geometry);
+    const boundingBox = BoundingBox.fromGeoJson(data.discretization.geometry);
+    const gridSize = Array.isArray(data.discretization.grid_size)
+      ? GridSize.fromArray(data.discretization.grid_size)
+      : GridSize.fromObject(data.discretization.grid_size);
+    const stressPeriods = Stressperiods.fromImport(data.discretization.stressperiods);
+
+
+    const nPayload: IPayload = {
+      id,
+      name: data.name,
+      description: data.description,
+      public: data.public,
+      discretization: {
+        geometry: geometry.toObject(),
+        bounding_box: boundingBox.toObject(),
+        grid_size: gridSize.toObject(),
+        cells: await loadOrCalculateCells(data, geometry, boundingBox, gridSize),
+        stressperiods: stressPeriods.toObject(),
+        length_unit: data.discretization.length_unit,
+        time_unit: data.discretization.time_unit,
+      },
+      permissions: 'rwx',
+      calculation_id: data.calculation_id,
+      is_scenario: false,
+      boundaries: BoundaryCollection.fromExport(data.boundaries, boundingBox, gridSize).toObject(),
+      packages: { ...data.packages, model_id: id },
+      soilmodel: Soilmodel.fromExport(data.soilmodel).toObject(),
+      transport: Transport.fromObject(data.transport).toObject(),
+      variableDensity: VariableDensity.fromObject(data.variableDensity).toObject(),
+    };
+
+    setPayload(nPayload);
+    setIsLoading(false);
+    return setErrors(null);
+
   };
 
   const sendImportCommand = () => {
