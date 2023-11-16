@@ -22,25 +22,25 @@ const styles = {
     stroke: false,
     fill: true,
     fillColor: '#393B89',
-    fillOpacity: 0.6
+    fillOpacity: 0.6,
   },
   inactive: {
     stroke: false,
     fill: true,
     fillColor: '#888888',
-    fillOpacity: 0.6
+    fillOpacity: 0.6,
   },
   other: {
     stroke: false,
     fill: true,
     fillColor: '#9C9EDE',
-    fillOpacity: 0.6
+    fillOpacity: 0.6,
   },
   selected: {
     color: '#ded340',
     stroke: true,
-    fill: false
-  }
+    fill: false,
+  },
 };
 
 const AffectedCellsLayer = (props: IProps) => {
@@ -70,7 +70,7 @@ const AffectedCellsLayer = (props: IProps) => {
       BoundingBox.fromObject(boundingBox),
       props.gridSize,
       props.cells.invert(props.gridSize),
-      styles.inactive
+      styles.inactive,
     );
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -82,7 +82,7 @@ const AffectedCellsLayer = (props: IProps) => {
   useEffect(() => {
     if (props.boundary) {
       const polygon = createPolygon(
-        BoundingBox.fromObject(boundingBox), props.gridSize, props.boundary.cells, styles.affected
+        BoundingBox.fromObject(boundingBox), props.gridSize, props.boundary.cells, styles.affected,
       );
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore TODO!
@@ -104,13 +104,13 @@ const AffectedCellsLayer = (props: IProps) => {
       return;
     }
     const sameTypeBoundaries = boundaries.all.filter(
-      (b) => props.boundary && b.type === props.boundary.type && b.id !== props.boundary.id
+      (b) => props.boundary && b.type === props.boundary.type && b.id !== props.boundary.id,
     );
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore Todo
     setBoundaryLayers(sameTypeBoundaries.length > 0 ? sameTypeBoundaries.map(
-      (b, key) => createPolygon(props.boundingBox, props.gridSize, b.cells, styles.other, key)
-      ) : null
+        (b, key) => createPolygon(props.boundingBox, props.gridSize, b.cells, styles.other, key),
+      ) : null,
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [T03.boundaries]);
@@ -147,7 +147,7 @@ const AffectedCellsLayer = (props: IProps) => {
               endIdx.push(cIdx);
             }
           }
-        }
+        },
       );
 
       if (startIdx.length !== endIdx.length) {
@@ -156,15 +156,26 @@ const AffectedCellsLayer = (props: IProps) => {
 
       const startEndIdxArr = startIdx.map((e, idx) => [startIdx[idx], endIdx[idx]]);
 
+      // this is a fix for the strange behaviour of the grid
+      // starting in the top left corner
+      // but the coordinates are from the bottom left corner
+      // so the distances have to be inverted
+      // and the order of the distances has to be reversed
+      const distancesYStart = gridSize.getDistancesYEnd().map((d) => 1 - d).sort((a, b) => a - b);
+      const distancesYEnd = gridSize.getDistancesYStart().map((d) => 1 - d).sort((a, b) => a - b);
+
+      const distancesXStart = gridSize.getDistancesXStart().sort((a, b) => a - b);
+      const distancesXEnd = gridSize.getDistancesXEnd().sort((a, b) => a - b);
+
       startEndIdxArr.forEach((e) => {
         const x0 = e[0];
         const x1 = e[1];
         const y = rIdx;
 
-        const cXmin = bbox.xMin + gridSize.getDistanceXStart(x0) * bbox.dX;
-        const cXmax = bbox.xMin + gridSize.getDistanceXEnd(x1) * bbox.dX;
-        const cYmin = bbox.yMax - gridSize.getDistanceYStart(y) * bbox.dY;
-        const cYmax = bbox.yMax - gridSize.getDistanceYEnd(y) * bbox.dY;
+        const cXmin = bbox.xMin + distancesXStart[x0] * bbox.dX;
+        const cXmax = bbox.xMin + distancesXEnd[x1] * bbox.dX;
+        const cYmin = bbox.yMax - distancesYStart[y] * bbox.dY;
+        const cYmax = bbox.yMax - distancesYEnd[y] * bbox.dY;
 
         mergedCells.push([cXmin, cXmax, cYmin, cYmax]);
       });
@@ -178,7 +189,7 @@ const AffectedCellsLayer = (props: IProps) => {
           [xMin, yMax],
           [xMax, yMax],
           [xMax, yMin],
-          [xMin, yMin]
+          [xMin, yMin],
         ]])
       );
     });
@@ -202,7 +213,7 @@ const AffectedCellsLayer = (props: IProps) => {
       turfPolygon = turf.transformRotate(
         turfPolygon,
         props.rotation.angle,
-        { pivot: props.rotation.geometry.centerOfMass }
+        { pivot: props.rotation.geometry.centerOfMass },
       );
     }
 
@@ -217,27 +228,27 @@ const AffectedCellsLayer = (props: IProps) => {
   };
 
   return (
-    <LayersControl position="topright">
+    <LayersControl position='topright'>
       {!!iBoundLayer &&
-      <LayersControl.Overlay name="Inactive cells" checked={true} key={iBoundKey}>
-        <FeatureGroup color={styles.inactive.fillColor}>
-          {iBoundLayer}
-        </FeatureGroup>
-      </LayersControl.Overlay>
+        <LayersControl.Overlay name='Inactive cells' checked={true} key={iBoundKey}>
+          <FeatureGroup color={styles.inactive.fillColor}>
+            {iBoundLayer}
+          </FeatureGroup>
+        </LayersControl.Overlay>
       }
       {!!boundaryLayer &&
-      <LayersControl.Overlay name="Affected cells" checked={true} key={boundaryKey}>
-        <FeatureGroup color={styles.affected.fillColor}>
-          {boundaryLayer}
-        </FeatureGroup>
-      </LayersControl.Overlay>
+        <LayersControl.Overlay name='Affected cells' checked={true} key={boundaryKey}>
+          <FeatureGroup color={styles.affected.fillColor}>
+            {boundaryLayer}
+          </FeatureGroup>
+        </LayersControl.Overlay>
       }
       {!!boundaryLayers && !!props.boundary &&
-      <LayersControl.Overlay name={`Cells of other ${props.boundary.type} boundaries`} checked={true}>
-        <FeatureGroup color={styles.other.fillColor}>
-          {boundaryLayers}
-        </FeatureGroup>
-      </LayersControl.Overlay>
+        <LayersControl.Overlay name={`Cells of other ${props.boundary.type} boundaries`} checked={true}>
+          <FeatureGroup color={styles.other.fillColor}>
+            {boundaryLayers}
+          </FeatureGroup>
+        </LayersControl.Overlay>
       }
     </LayersControl>
   );
