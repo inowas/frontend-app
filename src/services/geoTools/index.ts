@@ -50,6 +50,10 @@ const cells = [
 export const getGridCellsFromVariableGrid = (boundingBox: BoundingBox, gridSize: GridSize) => {
   const dx = boundingBox.dX;
   const dy = boundingBox.dY;
+  const distancesXStart = gridSize.getDistancesXStart();
+  const distancesXEnd = gridSize.getDistancesXEnd();
+  const distancesYStart = gridSize.getDistancesYEnd().map((d) => 1 - d).sort((a, b) => b - a);
+  const distancesYEnd = gridSize.getDistancesYStart().map((d) => 1 - d).sort((a, b) => b - a);
 
   const cells = [];
   for (let y = 0; y < gridSize.nY; y++) {
@@ -60,12 +64,12 @@ export const getGridCellsFromVariableGrid = (boundingBox: BoundingBox, gridSize:
         geometry: envelope(
           lineString([
             [
-              boundingBox.xMin + gridSize.getDistanceXStart(x) * dx,
-              boundingBox.yMax - gridSize.getDistanceYStart(gridSize.nY - y - 1) * dy,
+              boundingBox.xMin + distancesXStart[x] * dx,
+              boundingBox.yMax - distancesYStart[y] * dy,
             ],
             [
-              boundingBox.xMin + gridSize.getDistancesXEnd()[x] * dx,
-              boundingBox.yMax - gridSize.getDistancesYEnd()[gridSize.nY - y - 1] * dy,
+              boundingBox.xMin + distancesXEnd[x] * dx,
+              boundingBox.yMax - distancesYEnd[y] * dy,
             ],
           ]),
         ),
