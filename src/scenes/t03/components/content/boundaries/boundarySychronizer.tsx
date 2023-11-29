@@ -15,6 +15,7 @@ interface IProps {
   newBoundaries: BoundaryCollection;
   model: ModflowModel;
   removeExistingBoundaries: boolean;
+  recalculateActiveCells: boolean;
 }
 
 const BoundarySynchronizer = (props: IProps) => {
@@ -28,13 +29,13 @@ const BoundarySynchronizer = (props: IProps) => {
 
   useEffect(() => {
     const boundaryList: IBoundaryComparisonItem[] = props.currentBoundaries.compareWith(
-      props.model.stressperiods, props.newBoundaries, props.removeExistingBoundaries
+      props.model.stressperiods, props.newBoundaries, props.removeExistingBoundaries,
     );
-    setCommands(calculateCommands(boundaryList));
+    setCommands(calculateCommands(boundaryList, props.recalculateActiveCells));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.currentBoundaries, props.model, props.newBoundaries, props.removeExistingBoundaries]);
+  }, [props.currentBoundaries, props.model, props.newBoundaries, props.removeExistingBoundaries, props.recalculateActiveCells]);
 
-  const calculateCommands = (boundaryList: IBoundaryComparisonItem[]) => {
+  const calculateCommands = (boundaryList: IBoundaryComparisonItem[], recalculateActiveCells: boolean) => {
     const commands: ModflowModelCommand[] = [];
     boundaryList.forEach((item) => {
       if (item.state === 'noUpdate') {
@@ -47,6 +48,10 @@ const BoundarySynchronizer = (props: IProps) => {
           return;
         }
 
+        if (recalculateActiveCells) {
+          newBoundary.recalculateCells(props.model.boundingBox, props.model.gridSize);
+        }
+
         commands.push(ModflowModelCommand.updateBoundary(props.model.id, newBoundary));
       }
 
@@ -54,6 +59,10 @@ const BoundarySynchronizer = (props: IProps) => {
         const newBoundary = props.newBoundaries.findById(item.id);
         if (!(newBoundary instanceof Boundary)) {
           return;
+        }
+
+        if (recalculateActiveCells) {
+          newBoundary.recalculateCells(props.model.boundingBox, props.model.gridSize);
         }
 
         commands.push(ModflowModelCommand.addBoundary(props.model.id, newBoundary));
@@ -88,7 +97,7 @@ const BoundarySynchronizer = (props: IProps) => {
       () => {
         fetchUrl(`modflowmodels/${props.model.id}/boundaries`,
           (data: IBoundary[]) => dispatch(updateBoundaries(BoundaryCollection.fromQuery(data))));
-      }
+      },
     );
   };
 
@@ -112,7 +121,7 @@ const BoundarySynchronizer = (props: IProps) => {
       Synchronize
     </Button>
   );
-}
+};
 
 
 export default BoundarySynchronizer;

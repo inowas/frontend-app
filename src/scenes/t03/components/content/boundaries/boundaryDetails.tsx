@@ -128,6 +128,8 @@ const BoundaryDetails = (props: IProps) => {
         }
       }
 
+      cBoundary.recalculateCells(props.model.boundingBox, props.model.gridSize);
+
       setActiveInput(null);
       props.onChange(cBoundary);
     }

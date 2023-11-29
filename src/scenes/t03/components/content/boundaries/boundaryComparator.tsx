@@ -1,5 +1,5 @@
-import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
-import {BoundarySelection, BoundaryType} from '../../../../../core/model/modflow/boundaries/Boundary.type';
+import { BoundaryCollection } from '../../../../../core/model/modflow/boundaries';
+import { BoundarySelection, BoundaryType } from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import {
   Button,
   Checkbox,
@@ -10,13 +10,13 @@ import {
   Header,
   Icon,
   Menu,
-  Segment
+  Segment,
 } from 'semantic-ui-react';
-import {IBoundaryComparisonItem} from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
-import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
+import { IBoundaryComparisonItem } from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
+import { ModflowModel, Soilmodel } from '../../../../../core/model/modflow';
 import BoundaryDetailsImport from './boundaryDetailsImport';
 import BoundarySynchronizer from './boundarySychronizer';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface IBoundaryTypeObject {
   key: BoundarySelection;
@@ -39,14 +39,15 @@ const BoundaryComparator = (props: IProps) => {
   const [selectedItem, setSelectedItem] = useState<IBoundaryComparisonItem | null>(null);
   const [selectedType, setSelectedType] = useState<string>('all');
   const [removeExistingBoundaries, setRemoveExistingBoundaries] = useState<boolean>(false);
+  const [recalculateActiveCells, setRecalculateActiveCells] = useState<boolean>(true);
 
   useEffect(() => {
-    setSelectedType(props.types && props.types.length === 1 ? props.types[0] : 'all')
+    setSelectedType(props.types && props.types.length === 1 ? props.types[0] : 'all');
   }, [props.types]);
 
   useEffect(() => {
     setBoundaryList(props.currentBoundaries.compareWith(
-      props.model.stressperiods, props.newBoundaries, removeExistingBoundaries
+      props.model.stressperiods, props.newBoundaries, removeExistingBoundaries,
     ));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.currentBoundaries]);
@@ -56,26 +57,27 @@ const BoundaryComparator = (props: IProps) => {
   const boundaryTypes = (): IBoundaryTypeObject[] => {
     if (props.types) {
       const types = props.types.length > 1 ?
-        [{key: 'all' as BoundarySelection, value: 'all' as BoundarySelection, text: 'All'}] : [];
+        [{ key: 'all' as BoundarySelection, value: 'all' as BoundarySelection, text: 'All' }] : [];
       return types.concat(props.types.map((type: BoundarySelection) => {
-        return {key: type as BoundarySelection, value: type as BoundarySelection, text: type.toUpperCase()};
+        return { key: type as BoundarySelection, value: type as BoundarySelection, text: type.toUpperCase() };
       }));
     }
 
     return [
-      {key: 'all', value: 'all', text: 'All types'},
-      {key: 'chd', value: 'chd', text: 'CHD'},
-      {key: 'drn', value: 'drn', text: 'DRN'},
-      {key: 'evt', value: 'evt', text: 'EVT'},
-      {key: 'ghb', value: 'ghb', text: 'GHB'},
-      {key: 'hob', value: 'hob', text: 'HOB'},
-      {key: 'rch', value: 'rch', text: 'RCH'},
-      {key: 'riv', value: 'riv', text: 'RIV'},
-      {key: 'wel', value: 'wel', text: 'WEL'},
+      { key: 'all', value: 'all', text: 'All types' },
+      { key: 'chd', value: 'chd', text: 'CHD' },
+      { key: 'drn', value: 'drn', text: 'DRN' },
+      { key: 'evt', value: 'evt', text: 'EVT' },
+      { key: 'ghb', value: 'ghb', text: 'GHB' },
+      { key: 'hob', value: 'hob', text: 'HOB' },
+      { key: 'rch', value: 'rch', text: 'RCH' },
+      { key: 'riv', value: 'riv', text: 'RIV' },
+      { key: 'wel', value: 'wel', text: 'WEL' },
     ];
   };
 
   const handleChangeRemoveBoundaries = () => setRemoveExistingBoundaries(!removeExistingBoundaries);
+  const handleRecalculateActiveCells = () => setRecalculateActiveCells(!recalculateActiveCells);
 
   const handleClick = (id: string) => () => {
     const item = boundaryList.filter((i) => i.id === id);
@@ -83,7 +85,7 @@ const BoundaryComparator = (props: IProps) => {
       setSelectedItem(item[0]);
     }
     props.onBoundaryClick(id);
-  }
+  };
 
   const handleLocalChange = (e: React.SyntheticEvent<HTMLElement>, data: DropdownProps) =>
     setSelectedType(data.value as BoundarySelection);
@@ -116,13 +118,14 @@ const BoundaryComparator = (props: IProps) => {
             newBoundaries={props.newBoundaries}
             model={props.model}
             removeExistingBoundaries={removeExistingBoundaries}
+            recalculateActiveCells={recalculateActiveCells}
           />
         </Menu.Item>
       </Menu>
     );
   };
 
-  const {types, selectedBoundary} = props;
+  const { types, selectedBoundary } = props;
 
   if (selectedBoundary === null) {
     return null;
@@ -135,34 +138,40 @@ const BoundaryComparator = (props: IProps) => {
 
   return (
     <div>
-      <Divider horizontal={true}>
-        <Header as="h4">
-          <Icon name="eye"/>
-          Preview Changes
-        </Header>
-      </Divider>
       <Segment>
         <Checkbox
+          checked={recalculateActiveCells}
+          label='Recalculate active cells'
+          onChange={handleRecalculateActiveCells}
+        />
+        <Divider />
+        <Checkbox
           checked={removeExistingBoundaries}
-          label='Remove existing boundaries, which are not updated by the uploaded file'
+          label='Remove boundaries, which are not in uploaded file'
           onChange={handleChangeRemoveBoundaries}
         />
       </Segment>
+      <Divider horizontal={true}>
+        <Header as='h4'>
+          <Icon name='eye' />
+          Preview Changes
+        </Header>
+      </Divider>
       <Grid stackable={true}>
         <Grid.Row>
           <Grid.Column width={4}>
             {types && types.length === 1 ?
               <Button
-                className="blue"
+                className='blue'
                 fluid={true}
                 icon={true}
-                labelPosition="left"
+                labelPosition='left'
               >
-                <Icon name="plus"/>
+                <Icon name='plus' />
                 Add
               </Button>
               :
-              <Button as="div" labelPosition="left">
+              <Button as='div' labelPosition='left'>
                 <Dropdown
                   selection={true}
                   options={boundaryTypes().map((b) => {
@@ -177,7 +186,7 @@ const BoundaryComparator = (props: IProps) => {
                     return {
                       ...b,
                       disabled: b.value !== 'all' && numberOfBoundaries === 0,
-                      text: name
+                      text: name,
                     };
                   })}
                   onChange={handleLocalChange}
@@ -202,6 +211,6 @@ const BoundaryComparator = (props: IProps) => {
       </Grid>
     </div>
   );
-}
+};
 
 export default BoundaryComparator;
