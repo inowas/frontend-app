@@ -116,8 +116,6 @@ export const calculateStatistics = (data: IHobData, exclude: string[] = []): ISt
     return null;
   }
 
-  console.log(recalculatedData);
-
   recalculatedData.sort((a, b) => a.residual - b.residual);
   const recalculatedDataWithNpf = recalculatedData.map((d, idx) => (
     { ...d, npf: math.round(calculateNpf(idx + 1, n), 3) as number }
