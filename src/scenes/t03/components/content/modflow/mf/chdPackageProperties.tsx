@@ -2,7 +2,6 @@ import { FlopyModflowMfchd, FlopyModflowMfdis } from '../../../../../../core/mod
 import { Form, Grid, Header, Input, Label, Segment } from 'semantic-ui-react';
 import { GridSize } from '../../../../../../core/model/modflow';
 import { IFlopyModflowMfchd } from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfchd';
-import { RainbowOrLegend } from '../../../../../../services/rainbowvis/types';
 import { documentation } from '../../../../defaults/flow';
 import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
 import InfoPopup from '../../../../../shared/InfoPopup';
