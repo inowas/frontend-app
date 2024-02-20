@@ -13,20 +13,14 @@ import {
   nearestPointOnLine,
 } from '@turf/turf';
 
-export const getPointFromCell = (cell: ICell, boundingBox: BoundingBox, gridSize: GridSize) => {
+export const getCellCenter = (cell: ICell, boundingBox: BoundingBox, gridSize: GridSize) => {
 
   const x = cell[0];
   const y = cell[1];
 
-  const distancesXStart = gridSize.getDistancesXStart();
-  const distancesXEnd = gridSize.getDistancesXEnd();
-  const distancesYStart = gridSize.getDistancesYEnd().map((d) => 1 - d).sort((a, b) => b - a);
-  const distancesYEnd = gridSize.getDistancesYStart().map((d) => 1 - d).sort((a, b) => b - a);
-
-
   return turf.point([
-    boundingBox.xMin + (distancesXStart[x] + distancesXEnd[x]) / 2 * boundingBox.dX,
-    boundingBox.yMax - (distancesYStart[y] + distancesYEnd[y]) / 2 * boundingBox.dY,
+    boundingBox.xMin + gridSize.getCenterX(x) * boundingBox.dX,
+    boundingBox.yMax - gridSize.getCenterY(y) * boundingBox.dY,
   ]);
 };
 
@@ -111,7 +105,9 @@ export default class Cells {
     });
 
     const cellObjs = this._cells.map((cell) => {
-      const nearestPointOL = nearestPointOnLine(linestring, getPointFromCell(cell, boundingBox, gridSize));
+      const cellCenter = getCellCenter(cell, boundingBox, gridSize);
+      const nearestPointOL = nearestPointOnLine(linestring, cellCenter);
+
       return {
         x: cell[0],
         y: cell[1],

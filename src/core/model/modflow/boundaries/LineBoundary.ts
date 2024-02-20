@@ -219,8 +219,8 @@ export default abstract class LineBoundary extends Boundary {
     const ops = this.observationPoints;
     ops.push(
       ObservationPoint.create(newId, 'op', geometry, name, spValues,
-        distanceOnLine(this.geometry as LineString, geometry), dateTimes
-      )
+        distanceOnLine(this.geometry as LineString, geometry), dateTimes,
+      ),
     );
 
     this.observationPoints = ops;
@@ -233,7 +233,7 @@ export default abstract class LineBoundary extends Boundary {
       op.name + ' (clone)',
       op.geometry as Point,
       op.getSpValues(stressperiods),
-      op.dateTimes && op.dateTimes.map((dt) => dt.format('YYYY-MM-DD'))
+      op.dateTimes && op.dateTimes.map((dt) => dt.format('YYYY-MM-DD')),
     );
   };
 

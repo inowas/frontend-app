@@ -151,6 +151,7 @@ const BoundaryDetails = (props: IProps) => {
       const cBoundary = props.boundary;
       cBoundary.removeObservationPoint(observationPointId);
       setObservationPointId(cBoundary.observationPoints[0].id);
+      cBoundary.recalculateCellValues(props.model.boundingBox, props.model.gridSize);
       return props.onChange(cBoundary);
     }
   };
