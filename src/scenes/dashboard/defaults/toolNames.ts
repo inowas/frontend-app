@@ -119,14 +119,14 @@ const toolNames = [
     slug: 'T20',
     name: 'Real time modelling',
   },
-  {
-    slug: 'T100',
-    name: 'MarPro - Scenario Editor',
-  },
-  {
-    slug: 'marpro',
-    name: 'MarPro - Game'
-  }
+  // {
+  //   slug: 'T100',
+  //   name: 'MarPro - Scenario Editor',
+  // },
+  // {
+  //   slug: 'marpro',
+  //   name: 'MarPro - Game'
+  // }
 ];
 
 export default toolNames;

@@ -63,8 +63,8 @@ const getRoutes = () => {
         <Route exact={true} path="/tools/T19/:id?" component={Scenes.T19} />
         <Route exact={true} path="/tools/T20" component={Scenes.T20.CreateRealTimeModelling} />
         <Route exact={true} path="/tools/T20/:id/:property?/:pid?" component={Scenes.T20.EditRealTimeModelling} />
-        <Route exact={true} path="/tools/T100/:id?/:property?/:pid?" component={Scenes.MarProEditor} />
-        <Route exact={true} path="/tools/marpro/:id?" component={Scenes.MarProMainMenu} />
+        {/*<Route exact={true} path="/tools/T100/:id?/:property?/:pid?" component={Scenes.MarProEditor} />*/}
+        {/*<Route exact={true} path="/tools/marpro/:id?" component={Scenes.MarProMainMenu} />*/}
         <Route path="/terms-and-conditions" component={Scenes.TermsAndConditions} />
         <Route path="/login/:id?/:token?" component={Scenes.Login} />
         <Route path="/login" component={Scenes.Login} />
