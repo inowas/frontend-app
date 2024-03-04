@@ -2,6 +2,7 @@ import { FlopyModflowMfchd, FlopyModflowMfdis } from '../../../../../../core/mod
 import { Form, Grid, Header, Input, Label, Segment } from 'semantic-ui-react';
 import { GridSize } from '../../../../../../core/model/modflow';
 import { IFlopyModflowMfchd } from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfchd';
+import { cloneDeep } from 'lodash';
 import { documentation } from '../../../../defaults/flow';
 import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
 import InfoPopup from '../../../../../shared/InfoPopup';
@@ -42,21 +43,25 @@ const ChdPackageProperties = (props: IProps) => {
 
   const disPackage: FlopyModflowMfdis = mfPackages.getPackage('dis') as FlopyModflowMfdis;
 
-  const headLayers: Array<Array<Array<number | undefined>>> = [];
+  const emptyValues: Array<Array<Array<number | undefined>>> = [];
   for (let l = 0; l < disPackage.nlay; l++) {
-    headLayers[l] = [];
+    emptyValues[l] = [];
     for (let r = 0; r < disPackage.nrow; r++) {
-      headLayers[l][r] = [];
+      emptyValues[l][r] = [];
       for (let c = 0; c < disPackage.ncol; c++) {
-        headLayers[l][r][c] = undefined;
+        emptyValues[l][r][c] = undefined;
       }
     }
   }
 
+  const sHeadValues = cloneDeep(emptyValues);
+  const eHeadValues = cloneDeep(emptyValues);
+
   if (mfPackage.stress_period_data) {
     Object.values(mfPackage.stress_period_data)[0].forEach((spv: number[]) => {
       const [lay, row, col, shead, ehead] = spv;
-      headLayers[lay][row][col] = (shead + ehead) / 2;
+      sHeadValues[lay][row][col] = shead;
+      eHeadValues[lay][row][col] = ehead;
     });
   }
 
@@ -65,9 +70,24 @@ const ChdPackageProperties = (props: IProps) => {
       <Header as={'h3'} dividing={true}>CHD: Constant Head Package</Header>
       <Grid divided={'vertically'}>
         <Grid.Row columns={2}>
-          {headLayers.map((layer: any, idx) => (
+          {sHeadValues.map((layer: any, idx) => (
             <Grid.Column key={idx}>
-              <Label>Layer {idx + 1} Heads</Label>
+              <Label>SHead Layer {idx + 1} SP1</Label>
+              <RasterDataImage
+                data={layer}
+                gridSize={GridSize.fromData(layer)}
+                unit={''}
+                border={'1px dotted black'}
+              />
+            </Grid.Column>
+          ))}
+        </Grid.Row>
+      </Grid>
+      <Grid divided={'vertically'}>
+        <Grid.Row columns={2}>
+          {eHeadValues.map((layer: any, idx) => (
+            <Grid.Column key={idx}>
+              <Label>EHead Layer {idx + 1} SP1</Label>
               <RasterDataImage
                 data={layer}
                 gridSize={GridSize.fromData(layer)}
