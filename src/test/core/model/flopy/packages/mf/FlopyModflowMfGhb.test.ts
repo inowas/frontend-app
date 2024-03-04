@@ -1,4 +1,4 @@
-import { BoundaryCollection, Stressperiod } from '../../../../../../core/model/modflow';
+import { BoundaryCollection, Soilmodel, Stressperiod } from '../../../../../../core/model/modflow';
 import { BoundingBox, Cells, Geometry, GridSize } from '../../../../../../core/model/geometry';
 import { FlopyModflowMfghb } from '../../../../../../core/model/flopy/packages/mf';
 import { GeneralHeadBoundary } from '../../../../../../core/model/modflow/boundaries';
@@ -47,6 +47,12 @@ const createStressPeriods = () => {
   return stressperiods;
 };
 
+const createSoilmodelMock = (): Soilmodel => {
+  return {
+    numberOfLayers: 3,
+  } as Soilmodel;
+};
+
 test('It can instantiate FlopyModflowMfGhb', () => {
   const spData = { 0: [1, 2, 4, 4, 5], 1: [1, 2, 4, 4, 5], 2: [1, 2, 4, 4, 5] };
   const mfGhb = FlopyModflowMfghb.fromObject({ stress_period_data: spData });
@@ -55,7 +61,7 @@ test('It can instantiate FlopyModflowMfGhb', () => {
 });
 
 test('It can calculate spData of ghb-boundaries', () => {
-  const mfGhb = FlopyModflowMfghb.create(createBoundaries(), createStressPeriods()) as FlopyModflowMfghb;
+  const mfGhb = FlopyModflowMfghb.create(createBoundaries(), createStressPeriods(), createSoilmodelMock()) as FlopyModflowMfghb;
   expect(mfGhb).toBeInstanceOf(FlopyModflowMfghb);
 
   expect(mfGhb.stress_period_data).toEqual({

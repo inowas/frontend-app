@@ -1,97 +1,98 @@
-import {BoundaryCollection, HeadObservationWell} from '../../../modflow/boundaries';
-import {IPropertyValueObject} from '../../../types';
-import {calculateHeadObservationData} from '../../helpers';
+import { BoundaryCollection, HeadObservationWell } from '../../../modflow/boundaries';
+import { IPropertyValueObject } from '../../../types';
+import { Soilmodel } from '../../../modflow';
+import { calculateHeadObservationData } from '../../helpers';
 import FlopyModflowBoundary from './FlopyModflowBoundary';
 import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
 import Stressperiods from '../../../modflow/Stressperiods';
 
 export interface IFlopyModflowMfhob {
-    iuhobsv: number;
-    hobdry: number;
-    tomulth: number;
-    obs_data: IObsData[] | null;
+  iuhobsv: number;
+  hobdry: number;
+  tomulth: number;
+  obs_data: IObsData[] | null;
 }
 
 export interface IObsData {
-    obsname: string;
-    layer: number;
-    row: number;
-    column: number;
-    time_series_data: number[][];
+  obsname: string;
+  layer: number;
+  row: number;
+  column: number;
+  time_series_data: number[][];
 }
 
 export const defaults: IFlopyModflowMfhob = {
-    iuhobsv: 1051,
-    hobdry: 0,
-    tomulth: 1.0,
-    obs_data: null
+  iuhobsv: 1051,
+  hobdry: 0,
+  tomulth: 1.0,
+  obs_data: null,
 };
 
 export default class FlopyModflowMfhob extends FlopyModflowBoundary<IFlopyModflowMfhob> {
 
-    public static create(boundaries: BoundaryCollection, stressPeriods: Stressperiods) {
-        return this.fromDefault().update(boundaries, stressPeriods);
+  public static create(boundaries: BoundaryCollection, stressPeriods: Stressperiods, soilmodel: Soilmodel) {
+    return this.fromDefault().update(boundaries, stressPeriods, soilmodel);
+  }
+
+  public static fromDefault() {
+    return this.fromObject({});
+  }
+
+  public static fromObject(obj: IPropertyValueObject): FlopyModflowMfhob {
+    const d: any = FlopyModflowFlowPackage.cloneDeep(defaults);
+    for (const key in d) {
+      if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
+        d[key] = obj[key];
+      }
     }
 
-    public static fromDefault() {
-        return this.fromObject({});
+    return new this(d);
+  }
+
+  public update = (boundaries: BoundaryCollection, stressperiods: Stressperiods, soilmodel: Soilmodel) => {
+    const bd = boundaries.all.filter((b) => (b instanceof HeadObservationWell)) as HeadObservationWell[];
+    if (bd.length === 0) {
+      return null;
     }
 
-    public static fromObject(obj: IPropertyValueObject): FlopyModflowMfhob {
-        const d: any = FlopyModflowFlowPackage.cloneDeep(defaults);
-        for (const key in d) {
-            if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                d[key] = obj[key];
-            }
-        }
-
-        return new this(d);
+    const spData = calculateHeadObservationData(bd, stressperiods, soilmodel);
+    if (!spData) {
+      return null;
     }
 
-    public update = (boundaries: BoundaryCollection, stressperiods: Stressperiods) => {
-        const bd = boundaries.all.filter((b) => (b instanceof HeadObservationWell)) as HeadObservationWell[];
-        if (bd.length === 0) {
-            return null;
-        }
+    this.obs_data = spData;
+    return this;
+  };
 
-        const spData = calculateHeadObservationData(bd, stressperiods);
-        if (!spData) {
-            return null;
-        }
+  get iuhobsv() {
+    return this._props.iuhobsv;
+  }
 
-        this.obs_data = spData;
-        return this;
-    };
+  set iuhobsv(value) {
+    this._props.iuhobsv = value;
+  }
 
-    get iuhobsv() {
-        return this._props.iuhobsv;
-    }
+  get hobdry() {
+    return this._props.hobdry;
+  }
 
-    set iuhobsv(value) {
-        this._props.iuhobsv = value;
-    }
+  set hobdry(value) {
+    this._props.hobdry = value;
+  }
 
-    get hobdry() {
-        return this._props.hobdry;
-    }
+  get tomulth() {
+    return this._props.tomulth;
+  }
 
-    set hobdry(value) {
-        this._props.hobdry = value;
-    }
+  set tomulth(value) {
+    this._props.tomulth = value;
+  }
 
-    get tomulth() {
-        return this._props.tomulth;
-    }
+  get obs_data() {
+    return this._props.obs_data;
+  }
 
-    set tomulth(value) {
-        this._props.tomulth = value;
-    }
-
-    get obs_data() {
-        return this._props.obs_data;
-    }
-
-    set obs_data(value) {
-        this._props.obs_data = value;
-    }
+  set obs_data(value) {
+    this._props.obs_data = value;
+  }
 }

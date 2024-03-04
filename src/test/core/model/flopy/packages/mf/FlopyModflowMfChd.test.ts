@@ -2,7 +2,7 @@ import { BoundingBox, Cells, Geometry, GridSize } from '../../../../../../core/m
 import { ConstantHeadBoundary } from '../../../../../../core/model/modflow/boundaries';
 import { FlopyModflowMfchd } from '../../../../../../core/model/flopy/packages/mf';
 import { LineString } from 'geojson';
-import { Stressperiod } from '../../../../../../core/model/modflow';
+import { Soilmodel, Stressperiod } from '../../../../../../core/model/modflow';
 import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import Stressperiods from '../../../../../../core/model/modflow/Stressperiods';
 import Uuid from 'uuid';
@@ -48,6 +48,13 @@ const createStressPeriods = () => {
   return stressperiods;
 };
 
+const createSoilmodelMock = (): Soilmodel => {
+  return {
+    numberOfLayers: 3,
+  } as Soilmodel;
+};
+
+
 test('It can instantiate FlopyModflowMfChd', () => {
   const spData = { 0: [1, 2, 4, 4, 5], 1: [1, 2, 4, 4, 5], 2: [1, 2, 4, 4, 5] };
   const mfChd = FlopyModflowMfchd.fromObject({ stress_period_data: spData });
@@ -56,7 +63,7 @@ test('It can instantiate FlopyModflowMfChd', () => {
 });
 
 test('It can calculate spData of chd-boundaries', () => {
-  const mfChd = FlopyModflowMfchd.create(createBoundaries(), createStressPeriods()) as FlopyModflowMfchd;
+  const mfChd = FlopyModflowMfchd.create(createBoundaries(), createStressPeriods(), createSoilmodelMock()) as FlopyModflowMfchd;
   expect(mfChd).toBeInstanceOf(FlopyModflowMfchd);
 
   expect(mfChd.stress_period_data).toEqual(

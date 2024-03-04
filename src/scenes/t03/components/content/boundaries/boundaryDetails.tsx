@@ -74,13 +74,30 @@ const BoundaryDetails = (props: IProps) => {
     const name = data.name;
 
     if (name === 'layers') {
+      let layers: number[] = [];
       if (typeof data.value === 'number') {
-        value = [data.value];
+        layers = [data.value];
+      }
+
+      if (!data.value) {
+        layers = [0];
       }
 
       if (Array.isArray(data.value) && data.value.length === 0) {
-        value = [0];
+        layers = [0];
       }
+
+      if (Array.isArray(data.value)) {
+        layers = data.value as number[];
+      }
+
+      const soilmodel = props.soilmodel;
+      if (!soilmodel) {
+        return;
+      }
+
+      layers = layers.filter((v: number) => v >= 0 && v < soilmodel.numberOfLayers);
+      value = layers.length > 0 ? layers : [0];
     }
 
     const cBoundary = props.boundary;

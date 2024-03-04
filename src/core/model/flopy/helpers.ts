@@ -1,17 +1,17 @@
-import {Array2D} from '../geometry/Array2D.type';
-import {Cells} from '../modflow';
+import { Array2D } from '../geometry/Array2D.type';
+import { Cells, Soilmodel } from '../modflow';
 import {
   EvapotranspirationBoundary,
   HeadObservationWell,
   LineBoundary,
   PointBoundary,
-  RechargeBoundary
+  RechargeBoundary,
 } from '../modflow/boundaries';
-import {ICell} from '../geometry/Cells.type';
-import {IObsData} from './packages/mf/FlopyModflowMfhob';
-import {IPropertyValueObject} from '../types';
-import {Moment} from 'moment';
-import {sortedUniq, uniq} from 'lodash';
+import { ICell } from '../geometry/Cells.type';
+import { IObsData } from './packages/mf/FlopyModflowMfhob';
+import { IPropertyValueObject } from '../types';
+import { Moment } from 'moment';
+import { sortedUniq, uniq } from 'lodash';
 import FlowAndHeadBoundary from '../modflow/boundaries/FlowAndHeadBoundary';
 import Stressperiods from '../modflow/Stressperiods';
 
@@ -59,7 +59,7 @@ export const convertArrayToDict = (arr: any[]) => {
   return obj;
 };
 
-export const calculateHeadObservationData = (hobs: HeadObservationWell[], stressperiods: Stressperiods) => {
+export const calculateHeadObservationData = (hobs: HeadObservationWell[], stressperiods: Stressperiods, soilmodel: Soilmodel) => {
 
   if (hobs.length === 0) {
     return null;
@@ -72,7 +72,11 @@ export const calculateHeadObservationData = (hobs: HeadObservationWell[], stress
 
   const hobData: IObsData[] = [];
   hobs.filter((h) => h.cells.count() > 0).forEach((h) => {
-    const layer = h.layers[0];
+    const filteredLayers = h.layers.filter((l: number) => 0 <= l && l < soilmodel.numberOfLayers);
+    if (filteredLayers.length === 0) {
+      return;
+    }
+    const layer = filteredLayers[0];
     const cell = h.cells.toObject()[0];
     const hobTotims = h.getDateTimes(stressperiods).map((dt) => stressperiods.totimFromDate(dt));
     const hobSpValues = h.getSpValues(stressperiods);
@@ -89,14 +93,14 @@ export const calculateHeadObservationData = (hobs: HeadObservationWell[], stress
       layer,
       row: cell[1],
       column: cell[0],
-      time_series_data: tsData
+      time_series_data: tsData,
     });
   });
 
   return hobData;
 };
 
-export const calculateLineBoundarySpData = (boundaries: LineBoundary[], stressperiods: Stressperiods) => {
+export const calculateLineBoundarySpData = (boundaries: LineBoundary[], stressperiods: Stressperiods, soilmodel: Soilmodel) => {
 
   if (boundaries.length === 0) {
     return null;
@@ -109,8 +113,9 @@ export const calculateLineBoundarySpData = (boundaries: LineBoundary[], stresspe
 
   boundaries.forEach((b: LineBoundary) => {
     const cells = b.cells.toObject();
-    const layers = b.layers;
-    const ops = b.observationPoints.map((o) => ({spValues: o.getSpValues(stressperiods)}));
+    const layers = b.layers.filter((l) => 0 <= l && l < soilmodel.numberOfLayers);
+
+    const ops = b.observationPoints.map((o) => ({ spValues: o.getSpValues(stressperiods) }));
 
     for (let per = 0; per < stressperiods.count; per++) {
       layers.forEach((lay: number) => {
@@ -165,7 +170,7 @@ export const calculateLineBoundarySpData = (boundaries: LineBoundary[], stresspe
   return convertArrayToDict(spData);
 };
 
-export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBoundary[], stressperiods: Stressperiods) => {
+export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBoundary[], stressperiods: Stressperiods, soilmodel: Soilmodel) => {
   if (boundaries.length === 0) {
     return null;
   }
@@ -188,7 +193,7 @@ export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBounda
   });
 
   const totims: number[] = uniq(
-    dateTimes.map((dt) => stressperiods.totimFromDate(dt)).filter((t) => t >= 0)
+    dateTimes.map((dt) => stressperiods.totimFromDate(dt)).filter((t) => t >= 0),
   ).sort((a, b) => a - b);
   const bdtime = totims;
   const nbdtim = totims.length;
@@ -197,11 +202,11 @@ export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBounda
 
   boundaries.forEach((b: FlowAndHeadBoundary) => {
     const cells = b.cells.toObject();
-    const layers = b.layers;
+    const layers = b.layers.filter((l) => 0 >= l && l < soilmodel.numberOfLayers);
     const ops = b.observationPoints.map((op) => ({
       dateTimes: op.getDateTimes(stressperiods),
       spValues: op.getSpValues(stressperiods),
-      totims: op.getDateTimes(stressperiods).map((dt) => stressperiods.totimFromDate(dt))
+      totims: op.getDateTimes(stressperiods).map((dt) => stressperiods.totimFromDate(dt)),
     }));
 
     layers.forEach((lay: number) => {
@@ -227,13 +232,13 @@ export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBounda
           .map((t) => ({
             totim: t,
             flow: null,
-            head: null
+            head: null,
           }));
 
         prevOpTotims.forEach((totim, idx) => {
           prevTotimValues = prevTotimValues.map((ptv) => {
             if (ptv.totim === totim) {
-              return {totim, flow: prevOpValues[idx][1], head: prevOpValues[idx][0]};
+              return { totim, flow: prevOpValues[idx][1], head: prevOpValues[idx][0] };
             }
             return ptv;
           });
@@ -271,13 +276,13 @@ export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBounda
           .map((t) => ({
             totim: t,
             flow: null,
-            head: null
+            head: null,
           }));
 
         nextOpTotims.forEach((totim, idx) => {
           nextTotimValues = nextTotimValues.map((ptv) => {
             if (ptv.totim === totim) {
-              return {totim, flow: nextOpValues[idx][1], head: nextOpValues[idx][0]};
+              return { totim, flow: nextOpValues[idx][1], head: nextOpValues[idx][0] };
             }
             return ptv;
           });
@@ -315,11 +320,10 @@ export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBounda
   const nflw: number = ds5.length;
   const nhed: number = ds7.length;
 
-  return {bdtime, nbdtim, nflw, nhed, ds5, ds7};
+  return { bdtime, nbdtim, nflw, nhed, ds5, ds7 };
 };
 
-export const calculatePointBoundarySpData = (boundaries: PointBoundary[], stressperiods: Stressperiods,
-                                             add = true) => {
+export const calculatePointBoundarySpData = (boundaries: PointBoundary[], stressperiods: Stressperiods, soilmodel: Soilmodel, add = true) => {
 
   if (boundaries.length === 0) {
     return null;
@@ -329,7 +333,11 @@ export const calculatePointBoundarySpData = (boundaries: PointBoundary[], stress
 
   spData.forEach((sp, idx) => {
     boundaries.forEach((b) => {
-      const layer = b.layers[0];
+      const filteredLayers = b.layers.filter((l: number) => 0 <= l && l < soilmodel.numberOfLayers);
+      if (filteredLayers.length === 0) {
+        return;
+      }
+      const layer = filteredLayers[0];
       const cell = b.cells.toObject()[0];
       const data = [layer, cell[1], cell[0]].concat(b.getSpValues(stressperiods)[idx]);
 
@@ -359,14 +367,17 @@ export const calculatePointBoundarySpData = (boundaries: PointBoundary[], stress
 
 };
 
-export const calculateRechargeSpData = (boundaries: RechargeBoundary[], stressperiods: Stressperiods, nrow: number,
-                                        ncol: number) => {
+export const calculateRechargeSpData = (boundaries: RechargeBoundary[], stressperiods: Stressperiods, nrow: number, ncol: number, nlay: number) => {
 
   if (boundaries.length === 0) {
     return null;
   }
 
-  const layers = sortedUniq(boundaries.map((b) => b.layers[0]));
+  const layers = sortedUniq(boundaries.map((b) => b.layers[0])).filter((l) => 0 <= l && l < nlay);
+
+  if (layers.length === 0) {
+    return null;
+  }
 
   const spData: number[][][] = [];
   for (let per = 0; per < stressperiods.count; per++) {
@@ -394,7 +405,7 @@ export const calculateRechargeSpData = (boundaries: RechargeBoundary[], stresspe
 
   return {
     spData: convertArrayToDict(spData),
-    irch: layers.length > 1 ? layers : layers[0]
+    irch: layers.length > 1 ? layers : layers[0],
   };
 
 };
@@ -404,13 +415,17 @@ export const calculateEvapotranspirationSpData = (
   stressperiods: Stressperiods,
   nper: number,
   nrow: number,
-  ncol: number
+  ncol: number,
+  nlay: number,
 ) => {
   if (boundaries.length === 0) {
     return null;
   }
 
-  const layers = sortedUniq(boundaries.map((b) => b.layers[0]));
+  const layers = sortedUniq(boundaries.map((b) => b.layers[0])).filter((l) => 0 >= l && l < nlay);
+  if (layers.length === 0) {
+    return null;
+  }
 
   const evtrData: number[][][] = [];
   for (let per = 0; per < nper; per++) {
@@ -464,7 +479,7 @@ export const calculateEvapotranspirationSpData = (
     ievt: layers.length > 1 ? layers : layers[0],
     evtr: convertArrayToDict(evtrData),
     surf: convertArrayToDict(surfData),
-    exdp: convertArrayToDict(exdpData)
+    exdp: convertArrayToDict(exdpData),
   };
 };
 

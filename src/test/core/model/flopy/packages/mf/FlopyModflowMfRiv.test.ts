@@ -1,4 +1,4 @@
-import { BoundaryCollection, Stressperiod } from '../../../../../../core/model/modflow';
+import { BoundaryCollection, Soilmodel, Stressperiod } from '../../../../../../core/model/modflow';
 import { BoundingBox, Cells, Geometry, GridSize } from '../../../../../../core/model/geometry';
 import { FlopyModflowMfriv } from '../../../../../../core/model/flopy/packages/mf';
 import { LineString } from 'geojson';
@@ -58,6 +58,13 @@ const createStressPeriods = () => {
   return stressperiods;
 };
 
+const createSoilmodelMock = (): Soilmodel => {
+  return {
+    numberOfLayers: 1,
+  } as Soilmodel;
+};
+
+
 test('It can instantiate FlopyModflowMfRiv', () => {
   const spData = { 0: [1, 2, 4, 4, 5, 5], 1: [1, 2, 4, 4, 5, 5], 2: [1, 2, 4, 4, 5, 5] };
   const mfRiv = FlopyModflowMfriv.fromObject({ stress_period_data: spData });
@@ -66,7 +73,7 @@ test('It can instantiate FlopyModflowMfRiv', () => {
 });
 
 test('It can calculate spData river boundaries', () => {
-  const mfRiv = FlopyModflowMfriv.create(createBoundaries(), createStressPeriods()) as FlopyModflowMfriv;
+  const mfRiv = FlopyModflowMfriv.create(createBoundaries(), createStressPeriods(), createSoilmodelMock()) as FlopyModflowMfriv;
   expect(mfRiv).toBeInstanceOf(FlopyModflowMfriv);
   expect(mfRiv.stress_period_data).toEqual({
       '0': [

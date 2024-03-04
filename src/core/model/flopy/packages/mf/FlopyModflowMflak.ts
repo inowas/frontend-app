@@ -83,7 +83,8 @@ export default class FlopyModflowMflak extends FlopyModflowBoundary<IFlopyModflo
     const bdLknc: Array3D<number> = cloneDeep(lakeArray);
 
     lakeBoundaries.forEach((lakeBoundary, bIdx) => {
-      lakeBoundary.layers.forEach((l) => {
+      const layers = lakeBoundary.layers.filter((l) => l > 0 && l <= soilmodel.numberOfLayers);
+      layers.forEach((l) => {
         lakeBoundary.cells.toArray().forEach((c) => {
           lakeArray[l][c[1]][c[0]] = bIdx + 1;
           bdLknc[l][c[1]][c[0]] = lakeBoundary.bedLeakance;

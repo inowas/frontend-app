@@ -1,156 +1,157 @@
-import {Array2D} from '../../../geometry/Array2D.type';
-import {BoundaryCollection, EvapotranspirationBoundary} from '../../../modflow/boundaries';
-import {IPropertyValueObject} from '../../../types';
-import {IStressPeriodData} from './FlopyModflow.type';
-import {calculateEvapotranspirationSpData} from '../../helpers';
+import { Array2D } from '../../../geometry/Array2D.type';
+import { BoundaryCollection, EvapotranspirationBoundary } from '../../../modflow/boundaries';
+import { IPropertyValueObject } from '../../../types';
+import { IStressPeriodData } from './FlopyModflow.type';
+import { Soilmodel } from '../../../modflow';
+import { calculateEvapotranspirationSpData } from '../../helpers';
 import FlopyModflowBoundary from './FlopyModflowBoundary';
 import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
 import GridSize from '../../../geometry/GridSize';
 import Stressperiods from '../../../modflow/Stressperiods';
 
 export interface IFlopyModflowMfevt {
-    nevtop: number;
-    ipakcb: number | null;
-    surf: number | IStressPeriodData<number> | IStressPeriodData<Array2D<number>>;
-    evtr: number | IStressPeriodData<number> | IStressPeriodData<Array2D<number>>;
-    exdp: number | IStressPeriodData<number> | IStressPeriodData<Array2D<number>>;
-    ievt: number | IStressPeriodData<number> | IStressPeriodData<Array2D<number>>;
-    extension: string;
-    unitnumber: number | null;
-    filenames: null | string | string[];
+  nevtop: number;
+  ipakcb: number | null;
+  surf: number | IStressPeriodData<number> | IStressPeriodData<Array2D<number>>;
+  evtr: number | IStressPeriodData<number> | IStressPeriodData<Array2D<number>>;
+  exdp: number | IStressPeriodData<number> | IStressPeriodData<Array2D<number>>;
+  ievt: number | IStressPeriodData<number> | IStressPeriodData<Array2D<number>>;
+  extension: string;
+  unitnumber: number | null;
+  filenames: null | string | string[];
 }
 
 export const defaults: IFlopyModflowMfevt = {
-    nevtop: 3,
-    ipakcb: null,
-    surf: 0.0,
-    evtr: 0.001,
-    exdp: 1.0,
-    ievt: 1,
-    extension: 'evt',
-    unitnumber: null,
-    filenames: null
+  nevtop: 3,
+  ipakcb: null,
+  surf: 0.0,
+  evtr: 0.001,
+  exdp: 1.0,
+  ievt: 1,
+  extension: 'evt',
+  unitnumber: null,
+  filenames: null,
 };
 
 export default class FlopyModflowMfevt extends FlopyModflowBoundary<IFlopyModflowMfevt> {
 
-    public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods, gridSize: GridSize) {
-        return this.fromDefault().update(boundaries, stressperiods, gridSize.nY, gridSize.nX);
+  public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods, gridSize: GridSize, soilmodel: Soilmodel) {
+    return this.fromDefault().update(boundaries, stressperiods, gridSize.nY, gridSize.nX, soilmodel.numberOfLayers);
+  }
+
+  public static fromDefault() {
+    return this.fromObject({});
+  }
+
+  public static fromObject(obj: IPropertyValueObject): FlopyModflowMfevt {
+    const d: any = FlopyModflowFlowPackage.cloneDeep(defaults);
+    for (const key in d) {
+      // eslint-disable-next-line
+      if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
+        d[key] = obj[key];
+      }
     }
 
-    public static fromDefault() {
-        return this.fromObject({});
+    return new this(d);
+  }
+
+  public update = (boundaries: BoundaryCollection, stressperiods: Stressperiods, nrow: number, ncol: number, nlay: number) => {
+    const bd = boundaries.all.filter((b) =>
+      (b instanceof EvapotranspirationBoundary)) as EvapotranspirationBoundary[];
+    if (boundaries.length === 0) {
+      return null;
     }
 
-    public static fromObject(obj: IPropertyValueObject): FlopyModflowMfevt {
-        const d: any = FlopyModflowFlowPackage.cloneDeep(defaults);
-        for (const key in d) {
-            // eslint-disable-next-line
-            if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                d[key] = obj[key];
-            }
-        }
-
-        return new this(d);
+    const spData = calculateEvapotranspirationSpData(bd, stressperiods, stressperiods.count, nrow, ncol, nlay);
+    if (!spData) {
+      return null;
     }
 
-    public update = (boundaries: BoundaryCollection, stressperiods: Stressperiods, nrow: number, ncol: number) => {
-        const bd = boundaries.all.filter((b) =>
-            (b instanceof EvapotranspirationBoundary)) as EvapotranspirationBoundary[];
-        if (boundaries.length === 0) {
-            return null;
-        }
+    this.ievt = spData.ievt;
+    this.evtr = spData.evtr;
+    this.surf = spData.surf;
+    this.exdp = spData.exdp;
 
-        const spData = calculateEvapotranspirationSpData(bd, stressperiods, stressperiods.count, nrow, ncol);
-        if (!spData) {
-            return null;
-        }
+    return this;
+  };
 
-        this.ievt = spData.ievt;
-        this.evtr = spData.evtr;
-        this.surf = spData.surf;
-        this.exdp = spData.exdp;
+  get nevtop() {
+    return this._props.nevtop;
+  }
 
-        return this;
-    };
+  set nevtop(value) {
+    this._props.nevtop = value;
+  }
 
-    get nevtop() {
-        return this._props.nevtop;
-    }
+  get ipakcb() {
+    return this._props.ipakcb;
+  }
 
-    set nevtop(value) {
-        this._props.nevtop = value;
-    }
+  set ipakcb(value) {
+    this._props.ipakcb = value;
+  }
 
-    get ipakcb() {
-        return this._props.ipakcb;
-    }
+  get stress_period_data() {
+    return this._props.evtr;
+  }
 
-    set ipakcb(value) {
-        this._props.ipakcb = value;
-    }
+  set stress_period_data(value) {
+    this._props.evtr = value;
+  }
 
-    get stress_period_data() {
-        return this._props.evtr;
-    }
+  get ievt() {
+    return this._props.ievt;
+  }
 
-    set stress_period_data(value) {
-        this._props.evtr = value;
-    }
+  set ievt(value) {
+    this._props.ievt = value;
+  }
 
-    get ievt() {
-        return this._props.ievt;
-    }
+  get evtr() {
+    return this._props.evtr;
+  }
 
-    set ievt(value) {
-        this._props.ievt = value;
-    }
+  set evtr(value) {
+    this._props.evtr = value;
+  }
 
-    get evtr() {
-        return this._props.evtr;
-    }
+  get exdp() {
+    return this._props.exdp;
+  }
 
-    set evtr(value) {
-        this._props.evtr = value;
-    }
+  set exdp(value) {
+    this._props.exdp = value;
+  }
 
-    get exdp() {
-        return this._props.exdp;
-    }
+  get surf() {
+    return this._props.surf;
+  }
 
-    set exdp(value) {
-        this._props.exdp = value;
-    }
+  set surf(value) {
+    this._props.surf = value;
+  }
 
-    get surf() {
-        return this._props.surf;
-    }
+  get extension() {
+    return this._props.extension;
+  }
 
-    set surf(value) {
-        this._props.surf = value;
-    }
+  set extension(value) {
+    this._props.extension = value;
+  }
 
-    get extension() {
-        return this._props.extension;
-    }
+  get unitnumber() {
+    return this._props.unitnumber;
+  }
 
-    set extension(value) {
-        this._props.extension = value;
-    }
+  set unitnumber(value) {
+    this._props.unitnumber = value;
+  }
 
-    get unitnumber() {
-        return this._props.unitnumber;
-    }
+  get filenames() {
+    return this._props.filenames;
+  }
 
-    set unitnumber(value) {
-        this._props.unitnumber = value;
-    }
-
-    get filenames() {
-        return this._props.filenames;
-    }
-
-    set filenames(value) {
-        this._props.filenames = value;
-    }
+  set filenames(value) {
+    this._props.filenames = value;
+  }
 }

@@ -1,7 +1,8 @@
-import {GeneralHeadBoundary} from '../../../modflow/boundaries';
-import {IPropertyValueObject} from '../../../types';
-import {IStressPeriodData} from './FlopyModflow.type';
-import {calculateLineBoundarySpData} from '../../helpers';
+import { GeneralHeadBoundary } from '../../../modflow/boundaries';
+import { IPropertyValueObject } from '../../../types';
+import { IStressPeriodData } from './FlopyModflow.type';
+import { Soilmodel } from '../../../modflow';
+import { calculateLineBoundarySpData } from '../../helpers';
 import BoundaryCollection from '../../../modflow/boundaries/BoundaryCollection';
 import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
 import FlopyModflowLineBoundary from './FlopyModflowLineBoundary';
@@ -31,111 +32,111 @@ kper:
 */
 
 export interface IFlopyModflowMfghb {
-    ipakcb: number;
-    stress_period_data: IStressPeriodData<[[number, number, number, number, number]]> | null;
-    no_print: boolean;
-    options: null;
-    extension: string;
-    unitnumber: number | null;
-    filenames: null | string | string[];
+  ipakcb: number;
+  stress_period_data: IStressPeriodData<[[number, number, number, number, number]]> | null;
+  no_print: boolean;
+  options: null;
+  extension: string;
+  unitnumber: number | null;
+  filenames: null | string | string[];
 }
 
 export const defaults: IFlopyModflowMfghb = {
-    ipakcb: 0,
-    stress_period_data: null,
-    no_print: false,
-    options: null,
-    extension: 'ghb',
-    unitnumber: null,
-    filenames: null
+  ipakcb: 0,
+  stress_period_data: null,
+  no_print: false,
+  options: null,
+  extension: 'ghb',
+  unitnumber: null,
+  filenames: null,
 };
 
 export default class FlopyModflowMfghb extends FlopyModflowLineBoundary<IFlopyModflowMfghb> {
 
-    public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods) {
-        return this.fromDefault().update(boundaries, stressperiods);
+  public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods, soilmodel: Soilmodel) {
+    return this.fromDefault().update(boundaries, stressperiods, soilmodel);
+  }
+
+  public static fromDefault() {
+    return this.fromObject({});
+  }
+
+  public static fromObject(obj: IPropertyValueObject): FlopyModflowMfghb {
+    const d: any = FlopyModflowFlowPackage.cloneDeep(defaults);
+    for (const key in d) {
+      if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
+        d[key] = obj[key];
+      }
     }
 
-    public static fromDefault() {
-        return this.fromObject({});
+    return new this(d);
+  }
+
+  public update = (boundaries: BoundaryCollection, stressperiods: Stressperiods, soilmodel: Soilmodel) => {
+    const bd = boundaries.all.filter((b) => (b instanceof GeneralHeadBoundary)) as GeneralHeadBoundary[];
+
+    const spData = calculateLineBoundarySpData(bd, stressperiods, soilmodel);
+    if (!spData) {
+      return null;
     }
 
-    public static fromObject(obj: IPropertyValueObject): FlopyModflowMfghb {
-        const d: any = FlopyModflowFlowPackage.cloneDeep(defaults);
-        for (const key in d) {
-            if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                d[key] = obj[key];
-            }
-        }
+    this.stress_period_data = spData;
+    return this;
+  };
 
-        return new this(d);
-    }
+  get ipakcb() {
+    return this._props.ipakcb;
+  }
 
-    public update = (boundaries: BoundaryCollection, stressperiods: Stressperiods) => {
-        const bd = boundaries.all.filter((b) => (b instanceof GeneralHeadBoundary)) as GeneralHeadBoundary[];
+  set ipakcb(value) {
+    this._props.ipakcb = value;
+  }
 
-        const spData = calculateLineBoundarySpData(bd, stressperiods);
-        if (!spData) {
-            return null;
-        }
+  get stress_period_data() {
+    return this._props.stress_period_data;
+  }
 
-        this.stress_period_data = spData;
-        return this;
-    };
+  set stress_period_data(value) {
+    this._props.stress_period_data = value;
+  }
 
-    get ipakcb() {
-        return this._props.ipakcb;
-    }
+  get no_print() {
+    return this._props.no_print;
+  }
 
-    set ipakcb(value) {
-        this._props.ipakcb = value;
-    }
+  set no_print(value) {
+    this._props.no_print = value;
+  }
 
-    get stress_period_data() {
-        return this._props.stress_period_data;
-    }
+  get options() {
+    return this._props.options;
+  }
 
-    set stress_period_data(value) {
-        this._props.stress_period_data = value;
-    }
+  set options(value) {
+    this._props.options = value;
+  }
 
-    get no_print() {
-        return this._props.no_print;
-    }
+  get extension() {
+    return this._props.extension;
+  }
 
-    set no_print(value) {
-        this._props.no_print = value;
-    }
+  set extension(value) {
+    this._props.extension = value;
+  }
 
-    get options() {
-        return this._props.options;
-    }
+  get unitnumber() {
+    return this._props.unitnumber;
+  }
 
-    set options(value) {
-        this._props.options = value;
-    }
+  set unitnumber(value) {
+    this._props.unitnumber = value;
+  }
 
-    get extension() {
-        return this._props.extension;
-    }
+  get filenames() {
+    return this._props.filenames;
+  }
 
-    set extension(value) {
-        this._props.extension = value;
-    }
-
-    get unitnumber() {
-        return this._props.unitnumber;
-    }
-
-    set unitnumber(value) {
-        this._props.unitnumber = value;
-    }
-
-    get filenames() {
-        return this._props.filenames;
-    }
-
-    set filenames(value) {
-        this._props.filenames = value;
-    }
+  set filenames(value) {
+    this._props.filenames = value;
+  }
 }

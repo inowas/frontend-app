@@ -2,6 +2,7 @@ import {Array2D} from '../../../geometry/Array2D.type';
 import {IPropertyValueObject} from '../../../types';
 import {IStressPeriodData} from './FlopyModflow.type';
 import {RechargeBoundary} from '../../../modflow/boundaries';
+import { Soilmodel } from '../../../modflow';
 import {calculateRechargeSpData} from '../../helpers';
 import BoundaryCollection from '../../../modflow/boundaries/BoundaryCollection';
 import FlopyModflowBoundary from './FlopyModflowBoundary';
@@ -50,8 +51,8 @@ export const defaults: IFlopyModflowMfrch = {
 
 export default class FlopyModflowMfrch extends FlopyModflowBoundary<IFlopyModflowMfrch> {
 
-    public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods, gridSize: GridSize) {
-        return this.fromDefault().update(boundaries, stressperiods, gridSize.nY, gridSize.nX);
+    public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods, gridSize: GridSize, soilmodel: Soilmodel) {
+        return this.fromDefault().update(boundaries, stressperiods, gridSize.nY, gridSize.nX, soilmodel.numberOfLayers);
     }
 
     public static fromDefault() {
@@ -69,13 +70,13 @@ export default class FlopyModflowMfrch extends FlopyModflowBoundary<IFlopyModflo
         return new this(d);
     }
 
-    public update = (boundaries: BoundaryCollection, stressPeriods: Stressperiods, nrow: number, ncol: number) => {
+    public update = (boundaries: BoundaryCollection, stressPeriods: Stressperiods, nrow: number, ncol: number, nlay: number) => {
         const bd = boundaries.all.filter((b) => (b instanceof RechargeBoundary)) as RechargeBoundary[];
         if (boundaries.length === 0) {
             return null;
         }
 
-        const spData = calculateRechargeSpData(bd, stressPeriods, nrow, ncol);
+        const spData = calculateRechargeSpData(bd, stressPeriods, nrow, ncol, nlay);
         if (!spData) {
             return null;
         }

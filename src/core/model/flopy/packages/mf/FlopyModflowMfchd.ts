@@ -1,6 +1,7 @@
 import { BoundaryCollection, ConstantHeadBoundary } from '../../../modflow/boundaries';
 import { IPropertyValueObject } from '../../../types';
 import { IStressPeriodData } from './FlopyModflow.type';
+import { Soilmodel } from '../../../modflow';
 import { calculateLineBoundarySpData } from '../../helpers';
 import FlopyModflowLineBoundary from './FlopyModflowLineBoundary';
 import FlopyModflowPackage from './FlopyModflowPackage';
@@ -47,8 +48,8 @@ export const defaults: IFlopyModflowMfchd = {
 
 export default class FlopyModflowMfchd extends FlopyModflowLineBoundary<IFlopyModflowMfchd> {
 
-  public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods) {
-    return this.fromDefault().update(boundaries, stressperiods);
+  public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods, soilmodel: Soilmodel) {
+    return this.fromDefault().update(boundaries, stressperiods, soilmodel);
   }
 
   public static fromDefault() {
@@ -67,13 +68,13 @@ export default class FlopyModflowMfchd extends FlopyModflowLineBoundary<IFlopyMo
     return new this(d);
   }
 
-  public update = (boundaries: BoundaryCollection, stressperiods: Stressperiods) => {
+  public update = (boundaries: BoundaryCollection, stressperiods: Stressperiods, soilmodel: Soilmodel) => {
     const bd = boundaries.all.filter((b) => (b instanceof ConstantHeadBoundary)) as ConstantHeadBoundary[];
     if (boundaries.length === 0) {
       return null;
     }
 
-    const spData = calculateLineBoundarySpData(bd, stressperiods);
+    const spData = calculateLineBoundarySpData(bd, stressperiods, soilmodel);
     if (!spData) {
       return null;
     }

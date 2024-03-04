@@ -19,226 +19,227 @@ ds7 =
 ]
 */
 
-import {FlowAndHeadBoundary} from '../../../modflow/boundaries';
-import {IPropertyValueObject} from '../../../types';
-import {calculateFlowAndHeadBoundarySpData} from '../../helpers';
+import { FlowAndHeadBoundary } from '../../../modflow/boundaries';
+import { IPropertyValueObject } from '../../../types';
+import { Soilmodel } from '../../../modflow';
+import { calculateFlowAndHeadBoundarySpData } from '../../helpers';
 import BoundaryCollection from '../../../modflow/boundaries/BoundaryCollection';
 import FlopyModflowBoundary from './FlopyModflowBoundary';
 import FlopyModflowPackage from './FlopyModflowPackage';
 import Stressperiods from '../../../modflow/Stressperiods';
 
 export interface IFlopyModflowMffhb {
-    nbdtim: number;
-    nflw: number;
-    nhed: number;
-    ifhbss: number;
-    ipakcb: number | null;
-    nfhbx1: number;
-    nfhbx2: number;
-    ifhbpt: number;
-    bdtimecnstm: number;
-    bdtime: number | number[];
-    cnstm5: number;
-    ds5: number[][] | null;
-    cnstm7: number;
-    ds7: number[][] | null;
-    extension: string;
-    unitnumber: number | null;
-    filenames: null | string | string[];
+  nbdtim: number;
+  nflw: number;
+  nhed: number;
+  ifhbss: number;
+  ipakcb: number | null;
+  nfhbx1: number;
+  nfhbx2: number;
+  ifhbpt: number;
+  bdtimecnstm: number;
+  bdtime: number | number[];
+  cnstm5: number;
+  ds5: number[][] | null;
+  cnstm7: number;
+  ds7: number[][] | null;
+  extension: string;
+  unitnumber: number | null;
+  filenames: null | string | string[];
 }
 
 export const defaults: IFlopyModflowMffhb = {
-    nbdtim: 1,
-    nflw: 0,
-    nhed: 0,
-    ifhbss: 0,
-    ipakcb: null,
-    nfhbx1: 0,
-    nfhbx2: 0,
-    ifhbpt: 0,
-    bdtimecnstm: 1.0,
-    bdtime: [0.0],
-    cnstm5: 1.0,
-    ds5: null,
-    cnstm7: 1.0,
-    ds7: null,
-    extension: 'fhb',
-    unitnumber: null,
-    filenames: null
+  nbdtim: 1,
+  nflw: 0,
+  nhed: 0,
+  ifhbss: 0,
+  ipakcb: null,
+  nfhbx1: 0,
+  nfhbx2: 0,
+  ifhbpt: 0,
+  bdtimecnstm: 1.0,
+  bdtime: [0.0],
+  cnstm5: 1.0,
+  ds5: null,
+  cnstm7: 1.0,
+  ds7: null,
+  extension: 'fhb',
+  unitnumber: null,
+  filenames: null,
 };
 
 export default class FlopyModflowMffhb extends FlopyModflowBoundary<IFlopyModflowMffhb> {
 
-    public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods) {
-        return this.fromDefault().update(boundaries, stressperiods);
+  public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods, soilmodel: Soilmodel) {
+    return this.fromDefault().update(boundaries, stressperiods, soilmodel);
+  }
+
+  public static fromDefault() {
+    return this.fromObject({});
+  }
+
+  public static fromObject(obj: IPropertyValueObject): FlopyModflowMffhb {
+    const d: any = FlopyModflowPackage.cloneDeep(defaults);
+    for (const key in d) {
+      if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
+        d[key] = obj[key];
+      }
     }
 
-    public static fromDefault() {
-        return this.fromObject({});
+    return new this(d);
+  }
+
+  public update = (boundaries: BoundaryCollection, stressperiods: Stressperiods, soilmodel: Soilmodel) => {
+    const bd = boundaries.all.filter((b) => (b instanceof FlowAndHeadBoundary)) as FlowAndHeadBoundary[];
+
+    const spData = calculateFlowAndHeadBoundarySpData(bd, stressperiods, soilmodel);
+    if (!spData) {
+      return null;
     }
 
-    public static fromObject(obj: IPropertyValueObject): FlopyModflowMffhb {
-        const d: any = FlopyModflowPackage.cloneDeep(defaults);
-        for (const key in d) {
-            if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                d[key] = obj[key];
-            }
-        }
+    this.nbdtim = spData.nbdtim;
+    this.nflw = spData.nflw;
+    this.nhed = spData.nhed;
+    this.bdtime = spData.bdtime;
+    this.ds5 = spData.ds5.length === 0 ? null : spData.ds5;
+    this.ds7 = spData.ds7.length === 0 ? null : spData.ds7;
 
-        return new this(d);
-    }
+    return this;
+  };
 
-    public update = (boundaries: BoundaryCollection, stressperiods: Stressperiods) => {
-        const bd = boundaries.all.filter((b) => (b instanceof FlowAndHeadBoundary)) as FlowAndHeadBoundary[];
+  get nbdtim() {
+    return this._props.nbdtim;
+  }
 
-        const spData = calculateFlowAndHeadBoundarySpData(bd, stressperiods);
-        if (!spData) {
-            return null;
-        }
+  set nbdtim(value) {
+    this._props.nbdtim = value;
+  }
 
-        this.nbdtim = spData.nbdtim;
-        this.nflw = spData.nflw;
-        this.nhed = spData.nhed;
-        this.bdtime = spData.bdtime;
-        this.ds5 = spData.ds5.length === 0 ? null : spData.ds5;
-        this.ds7 = spData.ds7.length === 0 ? null : spData.ds7;
+  get nflw() {
+    return this._props.nflw;
+  }
 
-        return this;
-    };
+  set nflw(value) {
+    this._props.nflw = value;
+  }
 
-    get nbdtim() {
-        return this._props.nbdtim;
-    }
+  get nhed() {
+    return this._props.nhed;
+  }
 
-    set nbdtim(value) {
-        this._props.nbdtim = value;
-    }
+  set nhed(value) {
+    this._props.nhed = value;
+  }
 
-    get nflw() {
-        return this._props.nflw;
-    }
+  get ifhbss() {
+    return this._props.ifhbss;
+  }
 
-    set nflw(value) {
-        this._props.nflw = value;
-    }
+  set ifhbss(value) {
+    this._props.ifhbss = value;
+  }
 
-    get nhed() {
-        return this._props.nhed;
-    }
+  get ipakcb() {
+    return this._props.ipakcb;
+  }
 
-    set nhed(value) {
-        this._props.nhed = value;
-    }
+  set ipakcb(value) {
+    this._props.ipakcb = value;
+  }
 
-    get ifhbss() {
-        return this._props.ifhbss;
-    }
+  get nfhbx1() {
+    return this._props.nfhbx1;
+  }
 
-    set ifhbss(value) {
-        this._props.ifhbss = value;
-    }
+  set nfhbx1(value) {
+    this._props.nfhbx1 = value;
+  }
 
-    get ipakcb() {
-        return this._props.ipakcb;
-    }
+  get nfhbx2() {
+    return this._props.nfhbx2;
+  }
 
-    set ipakcb(value) {
-        this._props.ipakcb = value;
-    }
+  set nfhbx2(value) {
+    this._props.nfhbx2 = value;
+  }
 
-    get nfhbx1() {
-        return this._props.nfhbx1;
-    }
+  get ifhbpt() {
+    return this._props.ifhbpt;
+  }
 
-    set nfhbx1(value) {
-        this._props.nfhbx1 = value;
-    }
+  set ifhbpt(value) {
+    this._props.ifhbpt = value;
+  }
 
-    get nfhbx2() {
-        return this._props.nfhbx2;
-    }
+  get bdtimecnstm() {
+    return this._props.bdtimecnstm;
+  }
 
-    set nfhbx2(value) {
-        this._props.nfhbx2 = value;
-    }
+  set bdtimecnstm(value) {
+    this._props.bdtimecnstm = value;
+  }
 
-    get ifhbpt() {
-        return this._props.ifhbpt;
-    }
+  get bdtime() {
+    return this._props.bdtime;
+  }
 
-    set ifhbpt(value) {
-        this._props.ifhbpt = value;
-    }
+  set bdtime(value) {
+    this._props.bdtime = value;
+  }
 
-    get bdtimecnstm() {
-        return this._props.bdtimecnstm;
-    }
+  get cnstm5() {
+    return this._props.cnstm5;
+  }
 
-    set bdtimecnstm(value) {
-        this._props.bdtimecnstm = value;
-    }
+  set cnstm5(value) {
+    this._props.cnstm5 = value;
+  }
 
-    get bdtime() {
-        return this._props.bdtime;
-    }
+  get ds5() {
+    return this._props.ds5;
+  }
 
-    set bdtime(value) {
-        this._props.bdtime = value;
-    }
+  set ds5(value) {
+    this._props.ds5 = value;
+  }
 
-    get cnstm5() {
-        return this._props.cnstm5;
-    }
+  get cnstm7() {
+    return this._props.cnstm7;
+  }
 
-    set cnstm5(value) {
-        this._props.cnstm5 = value;
-    }
+  set cnstm7(value) {
+    this._props.cnstm7 = value;
+  }
 
-    get ds5() {
-        return this._props.ds5;
-    }
+  get ds7() {
+    return this._props.ds7;
+  }
 
-    set ds5(value) {
-        this._props.ds5 = value;
-    }
+  set ds7(value) {
+    this._props.ds7 = value;
+  }
 
-    get cnstm7() {
-        return this._props.cnstm7;
-    }
+  get extension() {
+    return this._props.extension;
+  }
 
-    set cnstm7(value) {
-        this._props.cnstm7 = value;
-    }
+  set extension(value) {
+    this._props.extension = value;
+  }
 
-    get ds7() {
-        return this._props.ds7;
-    }
+  get unitnumber() {
+    return this._props.unitnumber;
+  }
 
-    set ds7(value) {
-        this._props.ds7 = value;
-    }
+  set unitnumber(value) {
+    this._props.unitnumber = value;
+  }
 
-    get extension() {
-        return this._props.extension;
-    }
+  get filenames() {
+    return this._props.filenames;
+  }
 
-    set extension(value) {
-        this._props.extension = value;
-    }
-
-    get unitnumber() {
-        return this._props.unitnumber;
-    }
-
-    set unitnumber(value) {
-        this._props.unitnumber = value;
-    }
-
-    get filenames() {
-        return this._props.filenames;
-    }
-
-    set filenames(value) {
-        this._props.filenames = value;
-    }
+  set filenames(value) {
+    this._props.filenames = value;
+  }
 }
