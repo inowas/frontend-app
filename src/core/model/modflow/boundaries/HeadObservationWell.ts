@@ -82,7 +82,7 @@ export default class HeadObservationWell extends PointBoundary {
     spValues: ISpValues,
     isExcludedFromCalculation = false,
   ) {
-    return new this({
+    const hobBoundary = new this({
       id,
       type: 'Feature',
       geometry,
@@ -96,10 +96,14 @@ export default class HeadObservationWell extends PointBoundary {
         isExcludedFromCalculation,
       },
     });
+
+    // necessary to set the name again to ensure that it is a valid name (no spaces, no special characters)
+    hobBoundary.name = name;
+    return hobBoundary;
   }
 
   public static fromExport(obj: IHeadObservationWellExport, boundingBox: BoundingBox, gridSize: GridSize) {
-    return this.create(
+    const hobBoundary = this.create(
       obj.id ? obj.id : Uuid.v4(),
       obj.geometry,
       obj.name,
@@ -109,6 +113,10 @@ export default class HeadObservationWell extends PointBoundary {
       obj.sp_values,
       obj.is_excluded_from_calculation,
     );
+
+    // necessary to set the name again to ensure that it is a valid name (no spaces, no special characters)
+    hobBoundary.name = obj.name;
+    return hobBoundary;
   }
 
   constructor(props: IHeadObservationWell) {
