@@ -58,9 +58,21 @@ const BoundaryValuesDataTable = (props: IProps) => {
     if (!activeInput) {
       return null;
     }
-
     const cSpValues = getSpValues()?.map((row) => {
-      row[id] += (row[id] * parseFloat(activeInput.value)) / 100;
+      let value = row[id];
+      if (typeof value === 'number') {
+        value += (value * parseFloat(activeInput.value)) / 100;
+      }
+
+      if (Array.isArray(value)) {
+        for (let i = 0; i < value.length; i++) {
+          for (let j = 0; j < value[i].length; j++) {
+            value[i][j] += (value[i][j] * parseFloat(activeInput.value)) / 100;
+          }
+        }
+      }
+
+      row[id] = value;
       return row;
     });
 
@@ -140,7 +152,7 @@ const BoundaryValuesDataTable = (props: IProps) => {
   };
 
   const body = () => {
-    const {boundary, stressperiods } = props;
+    const { boundary, stressperiods } = props;
 
     const dateTimes = stressperiods.dateTimes;
 
@@ -223,8 +235,10 @@ const BoundaryValuesDataTable = (props: IProps) => {
         />
       )}
       {!props.readOnly && (
-        <p style={{ marginTop: '10px' }}>
-          <b>Time dependent boundary values{boundary instanceof LineBoundary ? ' observation point' : ''}</b>
+        <div>
+          <p style={{ marginTop: '10px', float: 'left' }}>
+            <b>Time dependent boundary values{boundary instanceof LineBoundary ? ' observation point' : ''}</b>
+          </p>
           <Button.Group floated='right' size='mini'>
             <Button
               icon={true}
@@ -244,7 +258,7 @@ const BoundaryValuesDataTable = (props: IProps) => {
               stressPeriods={props.stressperiods}
             />
           </Button.Group>
-        </p>
+        </div>
       )}
       {error && <Message error>{error}</Message>}
       {spValues && spValues.length > 20 && (

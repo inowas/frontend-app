@@ -21,6 +21,7 @@ import { misc } from '../../../defaults/colorScales';
 
 interface IData {
   sp: string;
+
   [cell: string]: number | string;
 }
 
@@ -78,7 +79,7 @@ const TimeSeriesChart = (props: IProps) => {
           const keyOfStressperiod = keys.indexOf(sp);
 
           if (keyOfStressperiod > -1) {
-            obj[hob.name] = hob.getSpValues(props.stressperiods)[keyOfStressperiod][0];
+            obj[hob.name] = hob.getSpValues(props.stressperiods)[keyOfStressperiod][0] as number;
           }
         });
 
@@ -120,43 +121,43 @@ const TimeSeriesChart = (props: IProps) => {
   return (
     <>
       <Form>
-        <Form.Group widths="equal">
+        <Form.Group widths='equal'>
           <Form.Input
             fluid
-            label="Min Head"
-            name="min"
+            label='Min Head'
+            name='min'
             onBlur={handleBlur}
             onChange={handleChange}
             value={activeInput === 'min' ? activeValue : minMax[0]}
-            type="number"
+            type='number'
           />
           <Form.Input
             fluid
-            label="Max Head"
-            name="max"
+            label='Max Head'
+            name='max'
             onBlur={handleBlur}
             onChange={handleChange}
             value={activeInput === 'max' ? activeValue : minMax[1]}
-            type="number"
+            type='number'
           />
         </Form.Group>
       </Form>
-      <div className="downloadButtons">
+      <div className='downloadButtons'>
         <Button compact={true} basic={true} icon={true} size={'small'} onClick={exportData(data, 'timeSeries')}>
-          <Icon name="download" /> CSV
+          <Icon name='download' /> CSV
         </Button>
       </div>
       <ResponsiveContainer aspect={1.5}>
         <LineChart data={data}>
-          <XAxis dataKey="sp" domain={['dataMin', 'dataMax']} />
+          <XAxis dataKey='sp' domain={['dataMin', 'dataMax']} />
           <YAxis label={getYAxisLabel()} domain={minMax} />
-          <CartesianGrid strokeDasharray="3 3" />
+          <CartesianGrid strokeDasharray='3 3' />
           <Tooltip />
-          <ReferenceLine stroke="#000" strokeDasharray="3 3" />
+          <ReferenceLine stroke='#000' strokeDasharray='3 3' />
           {props.selectedCells.map((c, key) => (
             <Line
               key={key}
-              type="monotone"
+              type='monotone'
               dataKey={`${c[0]}_${c[1]}`}
               stroke={key < misc.length ? misc[key] : misc[misc.length - 1]}
               activeDot={{ r: 8 }}
@@ -165,10 +166,10 @@ const TimeSeriesChart = (props: IProps) => {
           {props.headObservationWells.map((hob, key) => (
             <Line
               key={`${hob.name}_${key}`}
-              type="monotone"
+              type='monotone'
               dataKey={hob.name}
-              stroke="#000000"
-              strokeDasharray="2"
+              stroke='#000000'
+              strokeDasharray='2'
               activeDot={{ r: 8 }}
             />
           ))}

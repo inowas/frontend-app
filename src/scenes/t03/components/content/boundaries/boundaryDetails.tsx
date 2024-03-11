@@ -24,6 +24,7 @@ import BoundaryDateTimeValuesChart from './boundaryDateTimeValuesChart';
 import BoundaryDateTimeValuesDataTable from './boundaryDateTimeValuesDataTable';
 import BoundaryGeometryEditor from './boundaryGeometryEditor';
 import BoundaryMap from '../../maps/boundaryMap';
+import BoundaryRasterValuesDataTable from './boundaryRasterValuesDataTable';
 import BoundaryValuesDataTable from './boundaryValuesDataTable';
 import EvapotranspirationBoundary from '../../../../../core/model/modflow/boundaries/EvapotranspirationBoundary';
 import FlowAndHeadBoundary from '../../../../../core/model/modflow/boundaries/FlowAndHeadBoundary';
@@ -187,6 +188,19 @@ const BoundaryDetails = (props: IProps) => {
         <BoundaryDateTimeValuesDataTable
           boundary={boundary}
           isScenario={props.model.isScenario}
+          onChange={props.onChange}
+          readOnly={props.readOnly}
+          selectedOP={observationPointId}
+          stressperiods={stressperiods}
+        />
+      );
+    }
+    if (boundary instanceof RechargeBoundary) {
+      return (
+        <BoundaryRasterValuesDataTable
+          boundary={boundary}
+          isScenario={props.model.isScenario}
+          model={props.model}
           onChange={props.onChange}
           readOnly={props.readOnly}
           selectedOP={observationPointId}

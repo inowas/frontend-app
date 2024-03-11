@@ -113,6 +113,7 @@ export default class RechargeBoundary extends Boundary {
         unit: 'm/day',
         decimals: 5,
         default: 0,
+        canBe2D: true,
       },
     ];
   }

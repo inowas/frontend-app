@@ -136,8 +136,7 @@ export const calculateLineBoundarySpData = (boundaries: LineBoundary[], stresspe
             return;
           }
 
-          const prevSpValue = prevSpValues[per];
-
+          const prevSpValue = prevSpValues[per] as number[];
           const spvTemp = [lay, row, col];
           if (factor === 0) {
             spData[per].push(spvTemp.concat(prevSpValue));
@@ -157,7 +156,9 @@ export const calculateLineBoundarySpData = (boundaries: LineBoundary[], stresspe
           const nextSpValue = nextSpValues[per];
 
           for (let propIdx = 0; propIdx < nextSpValue.length; propIdx++) {
-            const v = prevSpValue[propIdx] + (nextSpValue[propIdx] - prevSpValue[propIdx]) * factor;
+            const prev = prevSpValue[propIdx] as number;
+            const next = nextSpValue[propIdx] as number;
+            const v = prev + (next - prev) * factor;
             spvTemp.push(Number(v.toFixed(3)));
           }
 
@@ -238,7 +239,7 @@ export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBounda
         prevOpTotims.forEach((totim, idx) => {
           prevTotimValues = prevTotimValues.map((ptv) => {
             if (ptv.totim === totim) {
-              return { totim, flow: prevOpValues[idx][1], head: prevOpValues[idx][0] };
+              return { totim, flow: prevOpValues[idx][1] as number, head: prevOpValues[idx][0] as number };
             }
             return ptv;
           });
@@ -282,7 +283,7 @@ export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBounda
         nextOpTotims.forEach((totim, idx) => {
           nextTotimValues = nextTotimValues.map((ptv) => {
             if (ptv.totim === totim) {
-              return { totim, flow: nextOpValues[idx][1], head: nextOpValues[idx][0] };
+              return { totim, flow: nextOpValues[idx][1] as number, head: nextOpValues[idx][0] as number };
             }
             return ptv;
           });
@@ -398,7 +399,9 @@ export const calculateRechargeSpData = (boundaries: RechargeBoundary[], stresspe
       cells.forEach((cell) => {
         const row = cell[1];
         const col = cell[0];
-        spData[per][row][col] += spValues[per][0];
+        const rech = spValues[per][0];
+        const rechValue = Array.isArray(rech) ? rech[row][col] : rech;
+        spData[per][row][col] += rechValue;
       });
     });
   });
@@ -468,9 +471,12 @@ export const calculateEvapotranspirationSpData = (
       cells.forEach((cell) => {
         const row = cell[1];
         const col = cell[0];
-        evtrData[per][row][col] += evtr;
-        surfData[per][row][col] += surf;
-        exdpData[per][row][col] += exdp;
+        const evtrValue = Array.isArray(evtr) ? evtr[row][col] : evtr;
+        evtrData[per][row][col] += evtrValue;
+        const surfValue = Array.isArray(surf) ? surf[row][col] : surf;
+        surfData[per][row][col] += surfValue;
+        const exdpValue = Array.isArray(exdp) ? exdp[row][col] : exdp;
+        exdpData[per][row][col] += exdpValue;
       });
     }
   });
