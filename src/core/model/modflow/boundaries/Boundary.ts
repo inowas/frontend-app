@@ -3,7 +3,7 @@ import {
   IBoundary,
   IBoundaryExport,
   ISpValues,
-  IValueProperty
+  IValueProperty,
 } from './Boundary.type';
 import { Cells, Geometry } from '../index';
 import { dxCell, dyCell } from '../../../../services/geoTools/distance';

@@ -151,7 +151,7 @@ export default class FlowAndHeadBoundary extends LineBoundary {
         const newDateTime = moment.utc(dateTimes[dateTimes.length - 1]).add(amount, unit);
         observationPoint.addDateTimeValue(
           newDateTime,
-          observationPoint.getSpValues(stressperiods)[observationPoint.getSpValues(stressperiods).length - 1],
+          observationPoint.getSpValues(stressperiods)[observationPoint.getSpValues(stressperiods).length - 1] as number[],
         );
         this.updateObservationPoint(
           opId,

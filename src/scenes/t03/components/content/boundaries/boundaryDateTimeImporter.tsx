@@ -9,8 +9,8 @@ import { Button, DropdownProps, Form, Icon, Message, Modal, Segment } from 'sema
 import { DataSourceCollection, Rtm } from '../../../../../core/model/rtm/monitoring';
 import { IDateTimeValue, ISensor, ISensorParameter } from '../../../../../core/model/rtm/monitoring/Sensor.type';
 import { IRtm } from '../../../../../core/model/rtm/monitoring/Rtm.type';
+import { ISpValues, IValueProperty } from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import { IToolInstance } from '../../../../types';
-import { IValueProperty } from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import { ProcessingCollection } from '../../../../../core/model/rtm/processing';
 import { Stressperiods } from '../../../../../core/model/modflow';
 import { SyntheticEvent, useEffect, useState } from 'react';
@@ -141,7 +141,7 @@ const BoundaryDateTimeImporter = (props: IProps) => {
       !(cBoundary instanceof HeadObservationWell) &&
       !(cBoundary instanceof FlowAndHeadBoundary)
     ) {
-      const spValues: number[][] = [];
+      const spValues: ISpValues = [];
       const s = cloneDeep(cBoundary.getSpValues(props.stressPeriods, props.selectedOP));
       props.stressPeriods.stressperiods.forEach((sp, spKey) => {
         const unix = sp.startDateTime.unix();
@@ -182,8 +182,8 @@ const BoundaryDateTimeImporter = (props: IProps) => {
       onOpen={() => setShowModal(true)}
       open={showModal}
       trigger={
-        <Button icon={true} labelPosition="left" primary={true}>
-          <Icon name="wifi" />
+        <Button icon={true} labelPosition='left' primary={true}>
+          <Icon name='wifi' />
           Sensor
         </Button>
       }
@@ -200,7 +200,7 @@ const BoundaryDateTimeImporter = (props: IProps) => {
           {t10Instances && (
             <Form.Select
               fluid
-              label="T10 Instance"
+              label='T10 Instance'
               loading={isFetching}
               selection
               options={t10Instances.map((i, key) => {
@@ -211,14 +211,14 @@ const BoundaryDateTimeImporter = (props: IProps) => {
                 };
               })}
               onChange={handleChangeInstance}
-              placeholder="Select T10 Instance"
+              placeholder='Select T10 Instance'
               value={selectedInstance ? selectedInstance.id : undefined}
             />
           )}
           {selectedInstance && (
             <Form.Select
               fluid
-              label="Sensor"
+              label='Sensor'
               loading={isFetching}
               selection
               options={selectedInstance.data.sensors.map((s, key) => {
@@ -229,14 +229,14 @@ const BoundaryDateTimeImporter = (props: IProps) => {
                 };
               })}
               onChange={handleChangeSensor}
-              placeholder="Select Sensor"
+              placeholder='Select Sensor'
               value={selectedSensor ? selectedSensor.id : undefined}
             />
           )}
           {selectedSensor && (
             <Form.Select
               fluid
-              label="Parameter"
+              label='Parameter'
               loading={isFetching}
               selection
               options={selectedSensor.parameters.map((p, key) => {
@@ -247,15 +247,15 @@ const BoundaryDateTimeImporter = (props: IProps) => {
                 };
               })}
               onChange={handleChangeParameter}
-              placeholder="Select Parameter"
+              placeholder='Select Parameter'
               value={selectedParameter ? selectedParameter.id : undefined}
             />
           )}
           {data && domain && (
             <Form.Group>
               <Form.Field>
-                <Button icon onClick={handleResetDomain} size="small" name="begin" style={{ marginTop: '22px' }}>
-                  <Icon name="refresh" />
+                <Button icon onClick={handleResetDomain} size='small' name='begin' style={{ marginTop: '22px' }}>
+                  <Icon name='refresh' />
                 </Button>
               </Form.Field>
               <DatePicker
@@ -275,7 +275,7 @@ const BoundaryDateTimeImporter = (props: IProps) => {
                 size={'small'}
               />
               <Form.Select
-                label="Apply to Parameter"
+                label='Apply to Parameter'
                 options={props.boundary.valueProperties.map((p) => {
                   return { key: p.name, value: p.name, text: `${p.name} [${p.unit}]` };
                 })}

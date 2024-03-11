@@ -118,7 +118,20 @@ const BoundaryDateTimeValuesDataTable = (props: IProps) => {
     }
 
     const cSpValues = getSpValues()?.map((row) => {
-      row[id] += (row[id] * parseFloat(activeInput.value)) / 100;
+      let value = row[id];
+      if (typeof value === 'number') {
+        value += (value * parseFloat(activeInput.value)) / 100;
+      }
+
+      if (Array.isArray(value)) {
+        for (let i = 0; i < value.length; i++) {
+          for (let j = 0; j < value[i].length; j++) {
+            value[i][j] += (value[i][j] * parseFloat(activeInput.value)) / 100;
+          }
+        }
+      }
+
+      row[id] = value;
       return row;
     });
 
@@ -244,9 +257,9 @@ const BoundaryDateTimeValuesDataTable = (props: IProps) => {
       {!props.readOnly && (
         <p style={{ marginTop: '10px' }}>
           <b>Time dependent boundary values{boundary instanceof FlowAndHeadBoundary ? ' observation point' : ''}</b>
-          <Button.Group floated="right" size="mini">
-            <Button icon={true} labelPosition="left" onClick={handleToggleUploadModal} primary={true}>
-              <Icon name="upload" />
+          <Button.Group floated='right' size='mini'>
+            <Button icon={true} labelPosition='left' onClick={handleToggleUploadModal} primary={true}>
+              <Icon name='upload' />
               Upload csv
             </Button>
             {boundary instanceof HeadObservationWell && (
@@ -289,12 +302,12 @@ const BoundaryDateTimeValuesDataTable = (props: IProps) => {
                 <Table.Cell key={`percentage_chance_${idx}`} width={2}>
                   <Input
                     label={{ icon: 'percent' }}
-                    labelPosition="left corner"
+                    labelPosition='left corner'
                     name={`percentage_${idx}`}
                     onBlur={handleBlurPercentage(idx)}
                     onChange={handleChangePercentage}
-                    placeholder="% Change"
-                    type="number"
+                    placeholder='% Change'
+                    type='number'
                     style={getCellStyle(boundary.valueProperties.length)}
                     value={activeInput && activeInput.name === `percentage_${idx}` ? activeInput.value : 0}
                   />
@@ -306,15 +319,15 @@ const BoundaryDateTimeValuesDataTable = (props: IProps) => {
         </Table.Body>
       </Table>
       {!props.readOnly && (
-        <Button.Group size="small">
+        <Button.Group size='small'>
           <Button icon={true} onClick={handleAddDateTime(1, 'days')}>
-            <Icon name="add circle" /> 1 Day
+            <Icon name='add circle' /> 1 Day
           </Button>
           <Button icon={true} onClick={handleAddDateTime(1, 'months')}>
-            <Icon name="add circle" /> 1 Month
+            <Icon name='add circle' /> 1 Month
           </Button>
           <Button icon={true} onClick={handleAddDateTime(1, 'years')}>
-            <Icon name="add circle" /> 1 Year
+            <Icon name='add circle' /> 1 Year
           </Button>
         </Button.Group>
       )}

@@ -50,8 +50,7 @@ export type IBoundaryExport =
   | IWellBoundaryExport;
 
 export type BoundarySelection = 'all' | BoundaryType;
-
-export type ISpValues = number[][];
+export type ISpValues = Array<Array<number | number[][]>>
 
 export interface IValueProperty {
   name: string;
@@ -60,6 +59,7 @@ export interface IValueProperty {
   decimals: number;
   default: number;
   canBeDisabled?: boolean;
+  canBe2D?: boolean;
 }
 
 export enum EBoundaryType {

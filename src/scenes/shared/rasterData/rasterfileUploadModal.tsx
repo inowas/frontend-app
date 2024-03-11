@@ -38,7 +38,7 @@ const styles = {
   },
 };
 
-interface IData {
+export interface IData {
   data: Array2D<number>;
   metadata: IRasterFileMetadata | null;
 }
@@ -46,7 +46,7 @@ interface IData {
 interface IProps {
   gridSize: GridSize;
   onCancel: () => any;
-  onChange: (data: IData) => any;
+  onChange: (data: IData) => void;
   onSave?: (data: Array2D<number>) => any;
   parameter: RasterParameter;
   legend?: RainbowOrLegend;
