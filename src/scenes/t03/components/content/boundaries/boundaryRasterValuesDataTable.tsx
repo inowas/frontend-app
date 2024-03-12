@@ -111,7 +111,7 @@ const BoundaryRasterValuesDataTable = (props: IProps) => {
       const updatedSpValues = spValues.map((spv, spvIdx) => {
         const newRow = cloneDeep(spv);
         if (row === spvIdx) {
-          newRow[col] = data;
+          newRow[col] = data.map((row) => row.map((value) => (value < 0 ? 0 : value)));
           return newRow;
         }
         return newRow;
