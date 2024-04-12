@@ -5,6 +5,7 @@ import { FlopyModflowMfbas } from '../../../../../core/model/flopy/packages/mf';
 import { FlopyPackages } from '../../../../../core/model/flopy';
 import { Grid, Header, Segment } from 'semantic-ui-react';
 import { fetchCalculationResultsFlow } from '../../../../../services/api';
+import AsciiFileContent from '../../../../shared/complexTools/AsciiFileContent';
 import React, { useEffect, useState } from 'react';
 import ResultsChart from '../../../../shared/complexTools/ResultsChart';
 import ResultsMap from '../../maps/resultsMap';
@@ -91,7 +92,7 @@ const CrossSection = (props: IProps) => {
         setData(cData);
         setIsLoading(false);
       },
-      () => null
+      () => null,
     );
   };
 
@@ -105,6 +106,33 @@ const CrossSection = (props: IProps) => {
   const handleClickOnCell = (colRow: number[]) => {
     setSelectedRow(colRow[1]);
     setSelectedCol(colRow[0]);
+  };
+
+  const handleCopyToClipboard = async () => {
+    await navigator.clipboard.writeText(JSON.stringify(data));
+  };
+
+  const handleSaveAsAsc = () => {
+    if (!data || !model.boundingBox) {
+      return;
+    }
+    const asciiFileContent = AsciiFileContent.fromBoundingBoxAndData(
+      {
+        xMin: model.boundingBox.xMin,
+        xMax: model.boundingBox.xMax,
+        yMin: model.boundingBox.yMin,
+        yMax: model.boundingBox.yMax,
+      },
+      data,
+    );
+
+    console.log(data);
+
+    const blob = asciiFileContent.toBlob();
+    const element = document.createElement('a');
+    element.href = URL.createObjectURL(blob);
+    element.download = `cross_section_${selectedType}_${selectedLay}_${selectedTotim}.asc`;
+    element.click();
   };
 
   return (
@@ -121,6 +149,9 @@ const CrossSection = (props: IProps) => {
           soilmodel={soilmodel}
           stressperiods={model.stressperiods}
           totalTimes={totalTimes}
+          urlTo3dViewer={`https://mfviz.inowas.com/${calculation.id}`}
+          onCopyToClipboardClick={handleCopyToClipboard}
+          onSaveAsAscClick={model.rotation === 0 ? handleSaveAsAsc : undefined}
         />
       )}
       <Segment color={'grey'} loading={isLoading}>
@@ -130,7 +161,7 @@ const CrossSection = (props: IProps) => {
             boundaries={boundaries}
             data={data}
             ibound={ibound}
-            mode="contour"
+            mode='contour'
             model={model}
             onClick={handleClickOnCell}
           />
