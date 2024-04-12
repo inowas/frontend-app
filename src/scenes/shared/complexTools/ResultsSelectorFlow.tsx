@@ -1,9 +1,9 @@
-import { DropdownProps, Form, Grid, Header, Segment } from 'semantic-ui-react';
+import { Button, ButtonGroup, DropdownProps, Form, Grid, Header, Segment } from 'semantic-ui-react';
 import { IPropertyValueObject } from '../../../core/model/types';
 import { Soilmodel, Stressperiods } from '../../../core/model/modflow';
-import { SyntheticEvent, useState } from 'react';
 import { flatten, uniq, upperFirst } from 'lodash';
 import Moment from 'moment';
+import React, { SyntheticEvent, useState } from 'react';
 import SliderWithTooltip from './SliderWithTooltip';
 
 const styles = {
@@ -34,6 +34,9 @@ interface IProps {
   totalTimes: number[];
   soilmodel: Soilmodel;
   stressperiods: Stressperiods;
+  urlTo3dViewer?: string;
+  onCopyToClipboardClick?: () => void;
+  onSaveAsAscClick?: () => void;
 }
 
 const ResultsSelectorFlow = (props: IProps) => {
@@ -105,7 +108,7 @@ const ResultsSelectorFlow = (props: IProps) => {
   };
 
   return (
-    <Grid columns={2}>
+    <Grid columns={3}>
       <Grid.Row stretched={true}>
         <Grid.Column width={6}>
           <Segment color={'grey'}>
@@ -132,7 +135,7 @@ const ResultsSelectorFlow = (props: IProps) => {
             </Form>
           </Segment>
         </Grid.Column>
-        <Grid.Column width={10}>
+        <Grid.Column width={7}>
           <Segment color={'grey'}>
             <Header textAlign={'center'} as={'h4'}>
               Select total time [days]
@@ -151,6 +154,19 @@ const ResultsSelectorFlow = (props: IProps) => {
               tipFormatter={formatTimestamp(props.totalTimes.indexOf(temporaryTotim))}
             />
           </Segment>
+        </Grid.Column>
+        <Grid.Column width={3}>
+          <ButtonGroup basic vertical>
+            {props.onCopyToClipboardClick &&
+              <Button icon={'clipboard'} content={'json'} onClick={props.onCopyToClipboardClick} />
+            }
+            {props.onSaveAsAscClick &&
+              <Button icon={'download'} content={'asc'} onClick={props.onSaveAsAscClick} />
+            }
+            {props.urlTo3dViewer &&
+              <Button icon={'external'} content={'3D view'} as={'a'} href={props.urlTo3dViewer} target={'_blank'} />
+            }
+          </ButtonGroup>
         </Grid.Column>
       </Grid.Row>
     </Grid>
