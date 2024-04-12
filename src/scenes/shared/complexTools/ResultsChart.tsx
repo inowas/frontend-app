@@ -51,14 +51,14 @@ interface IProps {
 // eslint-disable-next-line react/display-name
 const renderTooltip = (show: string) => (e: any) => {
   const data = e.payload && e.payload.length >= 1 ? e.payload[0].payload : { name: '', value: 0 };
-  let name = 'Column';
+  let name = 'Row';
 
   if (show === 'row') {
-    name = 'Row';
+    name = 'Column';
   }
 
   return (
-    <Message size="tiny" color="black" style={styles.chartTooltip}>
+    <Message size='tiny' color='black' style={styles.chartTooltip}>
       <p>
         {name} {data.name}
       </p>
@@ -98,7 +98,7 @@ const ResultsChart = ({ data, selectedModels, row, col, show, yLabel = '' }: IPr
     }
 
     if (show === 'col' && col !== undefined) {
-      processedData = data.map((r, idx) => ({ name: idx, value: r[col] })).reverse();
+      processedData = data.map((r, idx) => ({ name: idx, value: r[col] }));
       referenceTo = row;
     }
 
@@ -108,12 +108,12 @@ const ResultsChart = ({ data, selectedModels, row, col, show, yLabel = '' }: IPr
     return (
       <ResponsiveContainer aspect={1.5}>
         <AreaChart data={processedData}>
-          <XAxis dataKey="name" domain={['dataMin', 'dataMax']} label={getXAxisLabel(show)} />
+          <XAxis dataKey='name' domain={['dataMin', 'dataMax']} label={getXAxisLabel(show)} />
           <YAxis domain={[localMin, localMax]} label={getYAxisLabel(yLabel)} />
-          <CartesianGrid strokeDasharray="3 3" />
+          <CartesianGrid strokeDasharray='3 3' />
           <Tooltip content={renderTooltip(show)} />
-          <ReferenceLine x={referenceTo} stroke="#000" strokeDasharray="3 3" />
-          <Area type="linear" dataKey="value" stroke="#3ac6ff" fill="#3ac6ff" />
+          <ReferenceLine x={referenceTo} stroke='#000' strokeDasharray='3 3' />
+          <Area type='linear' dataKey='value' stroke='#3ac6ff' fill='#3ac6ff' />
         </AreaChart>
       </ResponsiveContainer>
     );
@@ -175,14 +175,14 @@ const ResultsChart = ({ data, selectedModels, row, col, show, yLabel = '' }: IPr
     return (
       <ResponsiveContainer aspect={1.5}>
         <LineChart data={processedData}>
-          <XAxis dataKey="name" domain={['dataMin', 'dataMax']} label={getXAxisLabel(show)} />
+          <XAxis dataKey='name' domain={['dataMin', 'dataMax']} label={getXAxisLabel(show)} />
           <YAxis domain={[localMin, localMax]} label={getYAxisLabel(yLabel)} />
-          <CartesianGrid strokeDasharray="3 3" />
+          <CartesianGrid strokeDasharray='3 3' />
           <Tooltip />
-          <ReferenceLine x={referenceTo} stroke="#000" strokeDasharray="3 3" />
+          <ReferenceLine x={referenceTo} stroke='#000' strokeDasharray='3 3' />
           {selectedModels
             .map((m, idx) => (
-              <Line key={m.id} type="linear" dataKey={m.name} dot={false} stroke={cbPalette[idx % cbPalette.length]} />
+              <Line key={m.id} type='linear' dataKey={m.name} dot={false} stroke={cbPalette[idx % cbPalette.length]} />
             ))
             .reverse()}
         </LineChart>
