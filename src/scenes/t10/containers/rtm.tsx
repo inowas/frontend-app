@@ -1,9 +1,14 @@
 import { AppContainer } from '../../shared';
 import { DataSourceCollection, Rtm, Sensor } from '../../../core/model/rtm/monitoring';
 import { Dimmer, Grid, Icon, Loader } from 'semantic-ui-react';
+import {
+  IDataSource,
+  ISensor,
+  ISensorDataSource,
+  ISensorParameter,
+} from '../../../core/model/rtm/monitoring/Sensor.type';
 import { IRootReducer } from '../../../reducers';
 import { IRtm } from '../../../core/model/rtm/monitoring/Rtm.type';
-import { ISensor, ISensorParameter } from '../../../core/model/rtm/monitoring/Sensor.type';
 import { IToolMetaDataEdit } from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
 import { ToolMetaData } from '../../shared/simpleTools';
 import { clear, updateRtm } from '../actions/actions';
@@ -23,7 +28,7 @@ const navigation = [
   {
     name: 'Documentation',
     path: 'https://inowas.com/tools',
-    icon: <Icon name="file" />,
+    icon: <Icon name='file' />,
   },
 ];
 
@@ -44,10 +49,34 @@ const RtmTool = () => {
   const rtm = T10.rtm ? Rtm.fromObject(T10.rtm) : null;
 
   useEffect(() => {
-    return function () {
+    return function() {
       dispatch(clear());
     };
   }, [dispatch]);
+
+  const isISensorDataSource = (dataSource: IDataSource): dataSource is ISensorDataSource => {
+    return (dataSource as ISensorDataSource).url !== undefined;
+  };
+
+  const upcastRtm = (r: IRtm) => ({
+    ...r,
+    data: {
+      ...r.data,
+      sensors: r.data.sensors.map(sensor => ({
+        ...sensor, parameters: sensor.parameters.map(parameter => ({
+          ...parameter, dataSources: parameter.dataSources.map(dataSource => {
+            if (isISensorDataSource(dataSource)) {
+              return {
+                ...dataSource,
+                url: dataSource.url.replace('https://sensors.inowas.com', 'https://api.morpheus.inowas.com').replace('property', 'parameter'),
+              };
+            }
+            return dataSource;
+          }),
+        })),
+      })),
+    },
+  });
 
   useEffect(() => {
     if (id) {
@@ -55,6 +84,7 @@ const RtmTool = () => {
       fetchUrl(
         `tools/${tool}/${id}`,
         (r: IRtm) => {
+          r = upcastRtm(r);
           dispatch(updateRtm(Rtm.fromObject(r)));
 
           if (r.data.sensors.length > 0) {
@@ -68,10 +98,11 @@ const RtmTool = () => {
         },
         () => {
           setIsFetching(false);
-        }
+        },
       );
       return;
     }
+    // eslint-disable-next-line
   }, [dispatch, history, id]);
 
   useEffect(() => {
