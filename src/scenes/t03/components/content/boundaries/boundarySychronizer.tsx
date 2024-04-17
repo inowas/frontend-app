@@ -20,8 +20,7 @@ interface IProps {
 
 const BoundarySynchronizer = (props: IProps) => {
   const [commands, setCommands] = useState<ModflowModelCommand[]>([]);
-  const [commandsErrorSent, setCommandsErrorSent] = useState<number>(0);
-  const [commandsSuccessfullySent, setCommandsSuccessfullySent] = useState<number>(0);
+  const [commandsSent, setCommandsSent] = useState<number>(0);
   const [showProgress, setShowProgress] = useState<boolean>(false);
   const [isSynchronizing, setIsSynchronizing] = useState<boolean>(false);
 
@@ -81,20 +80,21 @@ const BoundarySynchronizer = (props: IProps) => {
     setIsSynchronizing(true);
 
     const sendCommands = async (commands: AbstractCommand[]) => {
+      let numberOfSentCommands = 0;
       for (const command of commands) {
         try {
           await asyncSendCommand(command);
-          setIsSynchronizing((commandsSuccessfullySent + 1 + commandsErrorSent) < commands.length);
-          setCommandsSuccessfullySent(commandsSuccessfullySent + 1);
         } catch (e) {
-          setIsSynchronizing((commandsSuccessfullySent + 1 + commandsErrorSent) < commands.length);
-          setCommandsErrorSent(commandsErrorSent + 1);
+          console.error(e);
+        } finally {
+          setCommandsSent(numberOfSentCommands++);
+          setIsSynchronizing(numberOfSentCommands < commands.length);
         }
       }
 
       setShowProgress(false);
       setIsSynchronizing(false);
-      setCommands([]);
+      setCommandsSent(commands.length);
     };
 
     sendCommands(commands).finally(
@@ -105,10 +105,8 @@ const BoundarySynchronizer = (props: IProps) => {
     );
   };
 
-  console.log('BoundarySynchronizer', commandsSuccessfullySent);
-
   if (showProgress) {
-    const percent = commandsSuccessfullySent / commands.length * 100;
+    const percent = (commandsSent / commands.length) * 100;
     return (
       <Progress percent={percent} autoSuccess={true}>
         {percent > 99 ? 'The progress was successful' : 'Synchronizing'}
@@ -116,15 +114,19 @@ const BoundarySynchronizer = (props: IProps) => {
     );
   }
 
+  const synchronizationHasFinished = commands.length === commandsSent;
+  const nothingToSynchronize = commands.length === 0;
+
   return (
     <Button
       fluid={true}
-      positive={true}
+      color={synchronizationHasFinished ? 'green' : 'blue'}
       onClick={synchronize}
       loading={isSynchronizing}
-      disabled={commands.length === commandsErrorSent + commandsSuccessfullySent}
+      disabled={synchronizationHasFinished || nothingToSynchronize}
     >
-      Synchronize
+      {nothingToSynchronize ? 'Nothing to synchronize' : ''}
+      {synchronizationHasFinished ? 'Synchronized' : 'Synchronize'}
     </Button>
   );
 };
