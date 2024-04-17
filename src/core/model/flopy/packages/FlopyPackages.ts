@@ -169,16 +169,9 @@ export default class FlopyPackages {
     transport: Transport,
     variableDensity: VariableDensity
   ) => {
-    this.mf = this.mf.recalculate(
-      model,
-      soilmodel,
-      boundaries.filter((b) => !b.isExcludedFromCalculation)
-    );
+    this.mf = this.mf.recalculate(model, soilmodel, boundaries);
     this.mf.setTransportEnabled(transport.enabled);
-    this.mt = this.mt.recalculate(
-      transport,
-      boundaries.filter((b) => !b.isExcludedFromCalculation)
-    );
+    this.mt = this.mt.recalculate(transport, boundaries);
     this.swt = this.swt.recalculate(variableDensity);
     return this;
   };

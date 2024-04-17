@@ -36,36 +36,59 @@ const PackageActualizationWrapper = (props: IProps) => {
   const packages = T03.packages.data ? FlopyPackages.fromObject(T03.packages.data) : null;
 
   useEffect(() => {
+    // Todo: enable when debugging
+    // recalculate(false);
     recalculate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const recalculate = () => {
+  const recalculate = (async = true) => {
     if (!boundaries || !model || !soilmodel || !transport || !variableDensity) {
       return;
     }
 
     setIsCalculating(true);
     setError(false);
-    asyncWorker({
-      type: CALCULATE_PACKAGES_INPUT,
-      data: {
-        packages: packages ? packages.toObject() : null,
-        model: model.toObject(),
-        soilmodel: soilmodel.toObject(),
-        boundaries: boundaries.toObject(),
-        transport: transport.toObject(),
-        variableDensity: variableDensity.toObject(),
-      } as ICalculatePackagesInputData,
-    })
-      .then((data: IFlopyPackages) => {
-        setIsCalculating(false);
-        dispatch(updatePackages(FlopyPackages.fromObject(data)));
+
+    if (async) {
+      asyncWorker({
+        type: CALCULATE_PACKAGES_INPUT,
+        data: {
+          packages: packages ? packages.toObject() : null,
+          model: model.toObject(),
+          soilmodel: soilmodel.toObject(),
+          boundaries: boundaries.toObject(),
+          transport: transport.toObject(),
+          variableDensity: variableDensity.toObject(),
+        } as ICalculatePackagesInputData,
       })
-      .catch(() => {
-        setError(true);
-        setIsCalculating(false);
-      });
+        .then((data: IFlopyPackages) => {
+          setIsCalculating(false);
+          dispatch(updatePackages(FlopyPackages.fromObject(data)));
+        })
+        .catch(() => {
+          setError(true);
+          setIsCalculating(false);
+        });
+    }
+
+    if (!async) {
+      let updatedPackages = null;
+      if (packages instanceof FlopyPackages) {
+        try {
+          updatedPackages = packages.update(model, soilmodel, boundaries, transport, variableDensity);
+        } catch (e) {
+          updatedPackages = null;
+        }
+      }
+
+      if (updatedPackages === null) {
+        updatedPackages = FlopyPackages.createFromModelInstances(model, soilmodel, boundaries, transport, variableDensity);
+      }
+
+      setIsCalculating(false);
+      dispatch(updatePackages(updatedPackages));
+    }
   };
 
   if (!model) {

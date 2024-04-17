@@ -61,6 +61,9 @@ class FlopyMt3d extends GenericObject<IFlopyMt3d> {
   }
 
   public recalculate = (transport: Transport, boundaries: BoundaryCollection) => {
+
+    boundaries = boundaries.filter((b) => !b.isExcludedFromCalculation);
+
     this.enabled = transport.enabled;
     this._props.adv = FlopyMt3dMtadv.fromObject(this._props.adv).update().toObject();
     this._props.btn = FlopyMt3dMtbtn.fromObject(this._props.btn).update(transport).toObject();

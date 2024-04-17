@@ -203,7 +203,7 @@ export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBounda
 
   boundaries.forEach((b: FlowAndHeadBoundary) => {
     const cells = b.cells.toObject();
-    const layers = b.layers.filter((l) => 0 >= l && l < soilmodel.numberOfLayers);
+    const layers = b.layers.filter((l) => 0 <= l && l < soilmodel.numberOfLayers);
     const ops = b.observationPoints.map((op) => ({
       dateTimes: op.getDateTimes(stressperiods),
       spValues: op.getSpValues(stressperiods),

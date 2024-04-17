@@ -85,8 +85,9 @@ export const solverPackages = ['de4', 'gmg', 'sor', 'sms', 'pcg', 'pcgn', 'nwt',
 export default class FlopyModflow extends GenericObject<IFlopyModflow> {
 
   public static create(model: ModflowModel, soilmodel: Soilmodel, boundaries: BoundaryCollection) {
-    const obj: IFlopyModflow = {
+    boundaries = boundaries.filter((b) => !b.isExcludedFromCalculation);
 
+    const obj: IFlopyModflow = {
       // Discretization and BasePackages
       mf: FlopyModflowMf.create().toObject(),
       bas: FlopyModflowMfbas.create(model, soilmodel).toObject(),
@@ -170,6 +171,8 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
   }
 
   public recalculate = (model: ModflowModel, soilmodel: Soilmodel, boundaries: BoundaryCollection) => {
+    boundaries = boundaries.filter((b) => !b.isExcludedFromCalculation);
+
     // Recalculate Discretization
     ['bas', 'dis'].forEach((p: string) => this.recalculatePackage(p, model, soilmodel, boundaries));
 
