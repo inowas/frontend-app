@@ -126,8 +126,6 @@ const CrossSection = (props: IProps) => {
       data,
     );
 
-    console.log(data);
-
     const blob = asciiFileContent.toBlob();
     const element = document.createElement('a');
     element.href = URL.createObjectURL(blob);
