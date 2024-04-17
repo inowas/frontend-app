@@ -47,7 +47,7 @@ const BoundaryComparator = (props: IProps) => {
 
   useEffect(() => {
     setBoundaryList(props.currentBoundaries.compareWith(
-      props.model.stressperiods, props.newBoundaries, removeExistingBoundaries,
+      props.model.stressperiods, props.newBoundaries, removeExistingBoundaries, recalculateActiveCells,
     ));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.currentBoundaries]);

@@ -29,7 +29,7 @@ const BoundarySynchronizer = (props: IProps) => {
 
   useEffect(() => {
     const boundaryList: IBoundaryComparisonItem[] = props.currentBoundaries.compareWith(
-      props.model.stressperiods, props.newBoundaries, props.removeExistingBoundaries,
+      props.model.stressperiods, props.newBoundaries, props.removeExistingBoundaries, props.recalculateActiveCells,
     );
     setCommands(calculateCommands(boundaryList, props.recalculateActiveCells));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -91,6 +91,10 @@ const BoundarySynchronizer = (props: IProps) => {
           setCommandsErrorSent(commandsErrorSent + 1);
         }
       }
+
+      setShowProgress(false);
+      setIsSynchronizing(false);
+      setCommands([]);
     };
 
     sendCommands(commands).finally(
@@ -100,6 +104,8 @@ const BoundarySynchronizer = (props: IProps) => {
       },
     );
   };
+
+  console.log('BoundarySynchronizer', commandsSuccessfullySent);
 
   if (showProgress) {
     const percent = commandsSuccessfullySent / commands.length * 100;
