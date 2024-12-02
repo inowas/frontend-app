@@ -12,8 +12,9 @@ import {
   YAxis,
 } from 'recharts';
 import { Array2D } from '../../../core/model/geometry/Array2D.type';
+import { Button, Grid, Icon, Message } from 'semantic-ui-react';
 import { GridSize } from '../../../core/model/modflow';
-import { Message } from 'semantic-ui-react';
+import { exportChartData, exportChartImage } from './helpers';
 import { max, min } from 'lodash';
 import React from 'react';
 
@@ -105,17 +106,51 @@ const ResultsChart = ({ data, selectedModels, row, col, show, yLabel = '' }: IPr
     const localMin = Math.floor(min(processedData.map((d) => d.value)) || 0);
     const localMax = Math.ceil(max(processedData.map((d) => d.value)) || 0);
 
+    let currentChart: any = null;
+
     return (
-      <ResponsiveContainer aspect={1.5}>
-        <AreaChart data={processedData}>
-          <XAxis dataKey='name' domain={['dataMin', 'dataMax']} label={getXAxisLabel(show)} />
-          <YAxis domain={[localMin, localMax]} label={getYAxisLabel(yLabel)} />
-          <CartesianGrid strokeDasharray='3 3' />
-          <Tooltip content={renderTooltip(show)} />
-          <ReferenceLine x={referenceTo} stroke='#000' strokeDasharray='3 3' />
-          <Area type='linear' dataKey='value' stroke='#3ac6ff' fill='#3ac6ff' />
-        </AreaChart>
-      </ResponsiveContainer>
+      <Grid>
+        <Grid.Column>
+          <ResponsiveContainer aspect={1.5}>
+            <AreaChart
+              data={processedData}
+              ref={(ref) => (currentChart = ref)}
+            >
+              <XAxis dataKey='name' domain={['dataMin', 'dataMax']} label={getXAxisLabel(show)} />
+              <YAxis domain={[localMin, localMax]} label={getYAxisLabel(yLabel)} />
+              <CartesianGrid strokeDasharray='3 3' />
+              <Tooltip content={renderTooltip(show)} />
+              <ReferenceLine x={referenceTo} stroke='#000' strokeDasharray='3 3' />
+              <Area type='linear' dataKey='value' stroke='#3ac6ff' fill='#3ac6ff' />
+            </AreaChart>
+          </ResponsiveContainer>
+          <div style={{
+            position: 'absolute',
+            top: -10,
+            right: 5,
+            zIndex: 100,
+          }}>
+            <Button
+              compact={true}
+              basic={true}
+              icon={true}
+              size={'small'}
+              onClick={() => exportChartImage(currentChart)}
+            >
+              <Icon name='download' /> JPG
+            </Button>
+            <Button
+              compact={true}
+              basic={true}
+              icon={true}
+              size={'small'}
+              onClick={() => exportChartData(currentChart)}
+            >
+              <Icon name='download' /> CSV
+            </Button>
+          </div>
+        </Grid.Column>
+      </Grid>
     );
   }
 
@@ -172,21 +207,56 @@ const ResultsChart = ({ data, selectedModels, row, col, show, yLabel = '' }: IPr
     const localMin = Math.floor(min(values) || 0);
     const localMax = Math.ceil(max(values) || 0);
 
+    let currentChart: any = null;
+
     return (
-      <ResponsiveContainer aspect={1.5}>
-        <LineChart data={processedData}>
-          <XAxis dataKey='name' domain={['dataMin', 'dataMax']} label={getXAxisLabel(show)} />
-          <YAxis domain={[localMin, localMax]} label={getYAxisLabel(yLabel)} />
-          <CartesianGrid strokeDasharray='3 3' />
-          <Tooltip />
-          <ReferenceLine x={referenceTo} stroke='#000' strokeDasharray='3 3' />
-          {selectedModels
-            .map((m, idx) => (
-              <Line key={m.id} type='linear' dataKey={m.name} dot={false} stroke={cbPalette[idx % cbPalette.length]} />
-            ))
-            .reverse()}
-        </LineChart>
-      </ResponsiveContainer>
+      <Grid>
+        <Grid.Column style={{ position: 'relative' }}>
+          <ResponsiveContainer aspect={1.5}>
+            <LineChart
+              data={processedData}
+              ref={(chart) => currentChart = chart}
+            >
+              <XAxis dataKey='name' domain={['dataMin', 'dataMax']} label={getXAxisLabel(show)} />
+              <YAxis domain={[localMin, localMax]} label={getYAxisLabel(yLabel)} />
+              <CartesianGrid strokeDasharray='3 3' />
+              <Tooltip />
+              <ReferenceLine x={referenceTo} stroke='#000' strokeDasharray='3 3' />
+              {selectedModels
+                .map((m, idx) => (
+                  <Line key={m.id} type='linear' dataKey={m.name} dot={false}
+                        stroke={cbPalette[idx % cbPalette.length]} />
+                ))
+                .reverse()}
+            </LineChart>
+          </ResponsiveContainer>
+          <div style={{
+            position: 'absolute',
+            top: -10,
+            right: 5,
+            zIndex: 100,
+          }}>
+            <Button
+              compact={true}
+              basic={true}
+              icon={true}
+              size={'small'}
+              onClick={() => exportChartImage(currentChart)}
+            >
+              <Icon name='download' /> JPG
+            </Button>
+            <Button
+              compact={true}
+              basic={true}
+              icon={true}
+              size={'small'}
+              onClick={() => exportChartData(currentChart)}
+            >
+              <Icon name='download' /> CSV
+            </Button>
+          </div>
+        </Grid.Column>
+      </Grid>
     );
   }
   return null;

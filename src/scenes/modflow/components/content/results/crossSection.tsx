@@ -169,7 +169,7 @@ const CrossSection = (props: IProps) => {
         <Grid.Row columns={2}>
           <Grid.Column>
             <Segment loading={isLoading} color={'blue'}>
-              <Header textAlign={'center'} as={'h4'}>
+              <Header textAlign={'center'} as={'h4'} style={{ marginTop: 0, marginBottom: 25 }}>
                 Horizontal cross section
               </Header>
               {data && (
@@ -179,7 +179,7 @@ const CrossSection = (props: IProps) => {
           </Grid.Column>
           <Grid.Column>
             <Segment loading={isLoading} color={'blue'}>
-              <Header textAlign={'center'} as={'h4'}>
+              <Header textAlign={'center'} as={'h4'} style={{ marginTop: 0, marginBottom: 25 }}>
                 Vertical cross section
               </Header>
               {data && (
